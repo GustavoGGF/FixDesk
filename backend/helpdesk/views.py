@@ -37,14 +37,17 @@ def firstView(request):
     if request.method == "GET":
         if request.user.is_authenticated:
             Back_User = None
+            Back_Tech = None
             User = None
             data = None
             try:
                 Back_User = getenv("DJANGO_GROUP_USER")
+                Back_Tech = getenv("DJANGO_GROUP_TECH")
                 User = request.user
                 if User.groups.filter(name=Back_User):
                     return render(request, "index.html", {})
-
+                elif User.groups.filter(name=Back_Tech):
+                    return render(request, "index.html", {})
                 else:
                     return redirect("/login")
             except Exception as e:
@@ -188,9 +191,11 @@ def toDashboard(request):
         user = None
         groups = None
         group1 = None
+        group2 = None
         try:
             UserFront = request.user
             group1 = getenv("DJANGO_GROUP_USER")
+            group2 = getenv("DJANGO_GROUP_TECH")
 
             user = User.objects.get(username=UserFront)
 
@@ -199,7 +204,8 @@ def toDashboard(request):
             for group in groups:
                 if group.name == group1:
                     return JsonResponse({"status": "Credentials Invalid"}, status=403)
-
+                elif group.name == group2:
+                    return JsonResponse({"status": "Credentials Invalid"}, status=203)
         except Exception as e:
             print(e)
 

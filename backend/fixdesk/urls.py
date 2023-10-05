@@ -11,4 +11,5 @@ urlpatterns = [
     path("validation/", views.validation, name="central-validation"),
     path("login/validation/", views.validation, name="central-validation"),
     path("helpdesk/", include("helpdesk.urls")),
+    path("dashboard_TI/", include("dashboards.urls")),
 ]

@@ -20,8 +20,8 @@ def CreateOrVerifyUser(user, password, request, helpdesk):
     userAuthentic = None
     Back_User = None
     Back_Tech = None
-    Back_Leader = None
-    Back_ADM = None
+    # Back_Leader = None
+    # Back_ADM = None
     group_user = None
     Valid = None
 
@@ -33,11 +33,17 @@ def CreateOrVerifyUser(user, password, request, helpdesk):
         userAuthentic.save()
 
     Back_User = getenv("DJANGO_GROUP_USER")
+    Back_Tech = getenv("DJANGO_GROUP_TECH")
     Valid = True
 
     try:
-        group_user = Group.objects.get(name=Back_User)
         if helpdesk == "User":
+            group_user = Group.objects.get(name=Back_User)
+            userAuthentic.groups.add(group_user)
+            group_user.save()
+            Valid = True
+        elif helpdesk == "Tecnico TI":
+            group_user = Group.objects.get(name=Back_Tech)
             userAuthentic.groups.add(group_user)
             group_user.save()
             Valid = True

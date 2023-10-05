@@ -550,7 +550,7 @@ export default function Helpdesk() {
     fetch("toDashboard", {
       method: "GET",
       headers: {
-        Accept: "application/json",
+        Accept: "application/json,",
       },
     })
       .then((response) => {
@@ -560,6 +560,8 @@ export default function Helpdesk() {
           setMessageError(
             "Seu Usuário não possui permissão para acessar este modulo"
           );
+        } else if (response.status === 203) {
+          return (window.location.href = "/dashboard_TI");
         }
       })
       .then((data) => {
