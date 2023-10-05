@@ -1,2 +1,0 @@
-# FixDesk
-Ferramento de chamados
