@@ -34,8 +34,8 @@ export const Close = styled.img`
 
 export const DivChat = styled.div`
   background: #f1faee;
-  height: 200px;
-  border: 2px solid black;
+  height: 290px;
+  border: 2px solid #03c9f5;
   margin: 0 auto;
   overflow-y: scroll;
   overflow-x: hidden;

@@ -37,6 +37,7 @@ export default function History() {
     useState("");
   const [ticketID, SetTicketID] = useState("");
   const [mountChat, SetMountChat] = useState([]);
+  const [chat, SetChat] = useState(true);
 
   useEffect(() => {
     fetch("", {
@@ -73,7 +74,8 @@ export default function History() {
       .then((response) => {
         return response.json();
       })
-      .then((data) => {
+      .then((dataBack) => {
+        const data = dataBack.data[0];
         const start_date = new Date(data.start_date);
 
         var CurrentDate = new Date();
@@ -81,8 +83,6 @@ export default function History() {
         var calcDate = CurrentDate - start_date;
 
         var lifetime = Math.floor(calcDate / (1000 * 60 * 60 * 24));
-
-        console.log(data);
 
         SetTicketNAME(data.ticketRequester);
         SetTicketDEPARTMENT(data.department);
@@ -102,6 +102,9 @@ export default function History() {
           data.chat === "undefined"
         ) {
           var arrayChat = data.chat.match(/\[.*?\]/g);
+
+          const chatDiv = document.getElementById("chatDiv");
+          chatDiv.style.background = "transparent";
 
           arrayChat.forEach(function (item) {
             if (item.includes("System")) {
@@ -143,13 +146,17 @@ export default function History() {
 
             return mountChat;
           });
+        } else {
+          const chatDiv = document.getElementById("chatDiv");
+          chatDiv.style.background = "#e9ecef";
+          SetChat(false);
         }
-
         return SetTicketWindow(true);
       })
       .catch((err) => {
         return console.log(err);
       });
+    return SetTicketWindow(true);
   }
 
   useEffect(() => {
@@ -385,19 +392,25 @@ export default function History() {
             >
               {mountChat}
             </DivChat>
-            <div className="w-100 position-relative">
-              <input
-                className="form-control"
-                type="text"
-                onChange={"NewChat"}
-              />
-              <IMGChat
-                src={SendIMG}
-                className="position-absolute top-50 end-0 translate-middle-y img-fluid"
-                alt=""
-                onClick={"SendChat"}
-              />
-            </div>
+            {chat && (
+              <div className="w-100 d-flex">
+                <div className="w-100">
+                  <input
+                    className="form-control"
+                    type="text"
+                    onChange={"NewChat"}
+                  />
+                </div>
+                <div>
+                  <IMGChat
+                    src={SendIMG}
+                    className="img-fluid mt-1"
+                    alt=""
+                    onClick={"SendChat"}
+                  />
+                </div>
+              </div>
+            )}
           </div>
         </TicketOpen>
       )}
