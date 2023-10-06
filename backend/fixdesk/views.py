@@ -23,6 +23,7 @@ def CreateOrVerifyUser(user, password, request, helpdesk):
     # Back_Leader = None
     # Back_ADM = None
     group_user = None
+    group_tech = None
     Valid = None
 
     try:
@@ -37,19 +38,21 @@ def CreateOrVerifyUser(user, password, request, helpdesk):
     Valid = True
 
     try:
+        group_user = Group.objects.get(name=Back_User)
+        group_tech = Group.objects.get(name=Back_Tech)
         if helpdesk == "User":
-            group_user = Group.objects.get(name=Back_User)
             userAuthentic.groups.add(group_user)
             group_user.save()
             Valid = True
         elif helpdesk == "Tecnico TI":
-            group_user = Group.objects.get(name=Back_Tech)
-            userAuthentic.groups.add(group_user)
+            userAuthentic.groups.add(group_tech)
             group_user.save()
             Valid = True
         else:
             userAuthentic.groups.remove(group_user)
+            userAuthentic.groups.remove(group_tech)
             group_user.save()
+            group_tech.save()
             Valid = False
     except Exception as e:
         json_error = str(e)
@@ -284,16 +287,23 @@ def validation(request):
         mail = ""
         company = ""
         pid = ""
+        groups = None
 
         try:
-            if tech_user in information["memberOf"][0]:
-                helpdesk = "User"
-            if tech_ti in information["memberOf"][0]:
-                helpdesk = "Tecnico TI"
-            if tech_admin in information["memberOf"][0]:
-                helpdesk = "Admin"
-            if tech_leader in information["memberOf"][0]:
-                helpdesk = "Gestor"
+            groups = information["memberOf"]
+
+            for item in groups:
+                if tech_user in item:
+                    if helpdesk == "Tecnico TI":
+                        pass
+                    else:
+                        helpdesk = "User"
+                elif tech_ti in item:
+                    helpdesk = "Tecnico TI"
+            # if tech_admin in information["memberOf"][0]:
+            #     helpdesk = "Admin"
+            # if tech_leader in information["memberOf"][0]:
+            #     helpdesk = "Gestor"
             if "displayName" in information:
                 name = information["displayName"]
             else:
