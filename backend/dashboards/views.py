@@ -8,6 +8,7 @@ from helpdesk.models import SupportTicket
 from json import loads
 from django.core.serializers import serialize
 from django.middleware.csrf import get_token
+from django.contrib.auth.models import Group, User
 
 
 # Create your views here.
@@ -18,6 +19,10 @@ def dashboard_TI(request):
         userData = None
         data = None
         csrf = None
+        techs = None
+        group = None
+        group_name = None
+        user_in_group = None
 
         try:
             data = getenv("REACT_DATA")
@@ -26,8 +31,19 @@ def dashboard_TI(request):
 
             csrf = get_token(request)
 
+            group_name = getenv("DJANGO_GROUP_TECH")
+
+            group = Group.objects.get(name=group_name)
+
+            user_in_group = User.objects.filter(groups=group)
+
+            for user in user_in_group:
+                print(user)
+
             return JsonResponse(
-                {"userData": userData, "token": csrf}, status=200, safe=True
+                {"userData": userData, "token": csrf, "techs": techs},
+                status=200,
+                safe=True,
             )
         except Exception as e:
             print(e)

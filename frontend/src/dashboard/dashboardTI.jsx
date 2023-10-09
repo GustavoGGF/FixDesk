@@ -34,6 +34,8 @@ export default function DashboardTI() {
   const [ticketID, SetTicketID] = useState("");
   const [mountChat, SetMountChat] = useState([]);
   const [chat, SetChat] = useState(true);
+  const [selectedTech, setSelectedTech] = useState("");
+  const [techs, SetTechs] = useState([]);
 
   useEffect(() => {
     fetch("", {
@@ -44,6 +46,8 @@ export default function DashboardTI() {
         return response.json();
       })
       .then((data) => {
+        const tech = data.techs;
+        SetTechs(tech.split(","));
         SetUserData(data.userData);
         SetToken(data.token);
         return userData;
@@ -221,6 +225,12 @@ export default function DashboardTI() {
     return SetTicketWindow(false);
   }
 
+  function ChangeTechnician(event) {
+    setSelectedTech(event.target.value);
+
+    return selectedTech;
+  }
+
   return (
     <Div className="position-relative">
       {navbar && <Navbar Name={userData.name} JobTitle={userData.job_title} />}
@@ -325,6 +335,22 @@ export default function DashboardTI() {
                 className="form-control"
                 disabled
               />
+            </div>
+            <div>
+              <select
+                className="form-select"
+                onChange={ChangeTechnician}
+                value={selectedTech}
+              >
+                <option key={0} value="" disabled>
+                  Tranferir
+                </option>
+                {techs.map((tech, index) => (
+                  <option key={index + 1} value={tech}>
+                    {tech}
+                  </option>
+                ))}
+              </select>
             </div>
             <DivChat
               id="chatDiv"
