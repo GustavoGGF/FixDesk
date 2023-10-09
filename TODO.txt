@@ -158,3 +158,7 @@ gestor ve o grafico
 admin ve tudo
 
 funcções da navbar ficar na navbar
+
+filtros para dashboardpie
+
+mensagens caso não tenha chamados

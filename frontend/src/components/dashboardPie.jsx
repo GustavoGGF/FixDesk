@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
 import Loading from "./loading";
 import { Chart } from "chart.js/auto";
+import { Div } from "../styles/dashboardPie";
 
 export default function DashBoardPie({ sector }) {
-  const [message, SetMessage] = useState(false);
-  const [title, Settitle] = useState("");
-  const [messageerror, Setmessageerror] = useState("");
   const [dataPie, SetDataPie] = useState("");
   const [showpie, SetShowpie] = useState(false);
   const [loading, SetLoading] = useState(true);
@@ -18,13 +16,6 @@ export default function DashBoardPie({ sector }) {
       },
     })
       .then((response) => {
-        if (response.status === 210) {
-          Settitle("Falta de Dados");
-          Setmessageerror("Não há Chamados");
-          SetMessage(true);
-
-          return;
-        }
         return response.json();
       })
       .then((data) => {
@@ -75,10 +66,9 @@ export default function DashBoardPie({ sector }) {
   }, [dataPie]);
 
   return (
-    <div>
-      {/* {message && <Message TitleMessage={title} MessageError={messageerror} />} */}
+    <Div>
       {loading && <Loading />}
       {showpie && <canvas id="pie"></canvas>}
-    </div>
+    </Div>
   );
 }

@@ -10,6 +10,7 @@ export const Div = styled.div`
 
 export const DivDashPie = styled.div`
   height: 350px !important;
-  width: 350px !important;
-  margin: 50px auto;
+  width: 100% !important;
+  display: flex;
+  justify-content: center;
 `;

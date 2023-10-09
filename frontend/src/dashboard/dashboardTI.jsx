@@ -36,14 +36,16 @@ export default function DashboardTI() {
   return (
     <Div className="position-relative">
       <Navbar />
-      <DivDashPie className="position-absolute top-0 start-50 translate-middle-x">
+      <DivDashPie>
         <DashBoardPie sector={"TI"} />
       </DivDashPie>
-      {loading && (
-        <div className="position-absolute top-50 start-50 translate-middle">
-          <Loading />
-        </div>
-      )}
+      <div className="position-relative mt-3">
+        {loading && (
+          <div className="position-absolute top-50 start-50 translate-middle">
+            <Loading />
+          </div>
+        )}
+      </div>
     </Div>
   );
 }
