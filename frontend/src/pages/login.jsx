@@ -74,12 +74,14 @@ export default function Login() {
   return (
     <Div>
       {message && (
-        <Message
-          TypeError={typemessage}
-          MessageError={messageerror}
-          className="position-absolute top-0 start-50 translate-middle-x mt-5"
-          CloseMessage={closeMessage}
-        />
+        <div className="mt-5 position-relative">
+          <Message
+            TypeError={typemessage}
+            MessageError={messageerror}
+            className="position-absolute top-0 start-50 translate-middle-x"
+            CloseMessage={closeMessage}
+          />
+        </div>
       )}
       <IMG
         id="logo"

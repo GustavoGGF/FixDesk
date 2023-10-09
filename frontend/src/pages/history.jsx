@@ -38,6 +38,7 @@ export default function History() {
   const [ticketID, SetTicketID] = useState("");
   const [mountChat, SetMountChat] = useState([]);
   const [chat, SetChat] = useState(true);
+  const [messageChat, SetMessageChat] = useState(false);
 
   useEffect(() => {
     fetch("", {
@@ -149,6 +150,11 @@ export default function History() {
         } else {
           const chatDiv = document.getElementById("chatDiv");
           chatDiv.style.background = "#e9ecef";
+          setMessageError(
+            "O CHAT ESTÁ INDIPONIVÉL ATÉ O TECNICO INICIAR UMA CONVERSA"
+          );
+          setTypeError("PERMISSÃO NEGADA");
+          SetMessageChat(true);
           SetChat(false);
         }
         return SetTicketWindow(true);
@@ -261,6 +267,10 @@ export default function History() {
 
   function Close_ticket() {
     SetTicketWindow(false);
+  }
+
+  function closeMessage2() {
+    return SetMessageChat(false);
   }
 
   return (
@@ -391,6 +401,15 @@ export default function History() {
               }}
             >
               {mountChat}
+              {messageChat && (
+                <div className="w-100 h-100 d-flex justify-content-center align-items-center">
+                  <Message
+                    TypeError={typeError}
+                    MessageError={messageError}
+                    CloseMessage={closeMessage2}
+                  />
+                </div>
+              )}
             </DivChat>
             {chat && (
               <div className="w-100 d-flex">

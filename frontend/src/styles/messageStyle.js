@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 export const Div = styled.div`
   width: 300px;
-  margin: 50px auto;
+  margin: 0 auto;
   user-select: none;
 `;
 
