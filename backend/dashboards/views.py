@@ -5,6 +5,9 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from helpdesk.models import SupportTicket
+from json import loads
+from django.core.serializers import serialize
+from django.middleware.csrf import get_token
 
 
 # Create your views here.
@@ -12,7 +15,23 @@ from helpdesk.models import SupportTicket
 @login_required(login_url="/login")
 def dashboard_TI(request):
     if request.method == "POST":
-        return JsonResponse({"status": "ok"}, status=200, safe=True)
+        userData = None
+        data = None
+        csrf = None
+
+        try:
+            data = getenv("REACT_DATA")
+
+            userData = loads(data)
+
+            csrf = get_token(request)
+
+            return JsonResponse(
+                {"userData": userData, "token": csrf}, status=200, safe=True
+            )
+        except Exception as e:
+            print(e)
+
     if request.method == "GET":
         UserFront = None
         user = None
@@ -68,3 +87,33 @@ def getDashBoardPie(request, sector):
 
             except Exception as e:
                 print(e)
+
+
+def get_ticket_TI(request):
+    if request.method == "POST":
+        return JsonResponse({"status": "ok"}, status=200, safe=True)
+    if request.method == "GET":
+        ticket_list = []
+        ticket_data = None
+        ticket_json = None
+        try:
+            ticket_data = SupportTicket.objects.filter(respective_area="TI")
+
+            for ticket in ticket_data:
+                ticket_json = serialize("json", [ticket])
+                ticket_list.append(ticket_json)
+
+        except Exception as e:
+            print(e)
+
+        ticket_objects = []
+        try:
+            for ticket in ticket_list:
+                ticket_data = loads(ticket)[0]["fields"]
+                ticket_data["id"] = loads(ticket)[0]["pk"]
+                ticket_objects.append(ticket_data)
+
+            return JsonResponse({"tickets": ticket_objects}, status=200, safe=True)
+
+        except Exception as e:
+            print(e)

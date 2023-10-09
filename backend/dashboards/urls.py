@@ -9,4 +9,5 @@ urlpatterns = [
         views.getDashBoardPie,
         name="central-dashboard-pie",
     ),
+    path("get_ticket_TI", views.get_ticket_TI, name="central-dashboard-ticket-TI"),
 ]
