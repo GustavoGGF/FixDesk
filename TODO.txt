@@ -162,3 +162,9 @@ funcções da navbar ficar na navbar
 filtros para dashboardpie
 
 mensagens caso não tenha chamados
+
+arruamr conversa dos chamados
+
+fazer validação a casa 1s enquanto chamado aberto para ver messangesn entrando
+
+fazer tela do FAQ com os PDF'S e automatizar para fazer upload

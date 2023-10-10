@@ -12,6 +12,7 @@ import {
 } from "../styles/historyStyle";
 import CloseIMG from "../images/components/close.png";
 import SendIMG from "../images/components/enviar.png";
+import Message from "../components/message";
 
 export default function DashboardTI() {
   const [loading, SetLoading] = useState(true);
@@ -36,6 +37,9 @@ export default function DashboardTI() {
   const [chat, SetChat] = useState(true);
   const [selectedTech, setSelectedTech] = useState("");
   const [techs, SetTechs] = useState([]);
+  const [messageChat, SetMessageChat] = useState(false);
+  const [typeError, SetTypeError] = useState("");
+  const [messageError, SetMessageError] = useState("");
 
   useEffect(() => {
     fetch("", {
@@ -157,61 +161,73 @@ export default function DashboardTI() {
         SetTicketResponsible_Technician(data.responsible_technician);
         SetTicketID(data.id);
 
-        if (
-          data.chat !== null &&
-          data.chat === undefined &&
-          data.chat === "undefined"
-        ) {
-          var arrayChat = data.chat.match(/\[.*?\]/g);
+        var name_verify = userData.name;
 
-          const chatDiv = document.getElementById("chatDiv");
-          chatDiv.style.background = "transparent";
+        if (name_verify.includes("ADM")) {
+          name_verify = name_verify.replace("ADM", "").trim();
+        }
 
-          arrayChat.forEach(function (item) {
-            if (item.includes("System")) {
-              item = item
-                .replace("System:", "")
-                .replace("[", "")
-                .replace("]", "");
-              const newItem = (
-                <div className="text-center d-flex justify-content-center text-break">
-                  <p className="pChat">{item}</p>
-                </div>
-              );
-              SetMountChat((mountChat) => [...mountChat, newItem]);
-            }
-            if (item.includes("Technician")) {
-              item = item
-                .replace("Technician:", "")
-                .replace("[", "")
-                .replace("]", "");
-              const newItem = (
-                <div className="d-flex justify-content-start w-100 text-break">
-                  <p className="tChat2">{item}</p>
-                </div>
-              );
-              SetMountChat((mountChat) => [...mountChat, newItem]);
-            }
-            if (item.includes("User")) {
-              item = item
-                .replace("User:", "")
-                .replace("[", "")
-                .replace("]", "");
-              const newItem = (
-                <div className="d-flex justify-content-end w-100 text-break">
-                  <p className="uChat1">{item}</p>
-                </div>
-              );
-              SetMountChat((mountChat) => [...mountChat, newItem]);
-            }
+        if (data.responsible_technician === name_verify) {
+          if (
+            data.chat !== null &&
+            data.chat === undefined &&
+            data.chat === "undefined"
+          ) {
+            var arrayChat = data.chat.match(/\[.*?\]/g);
 
-            return mountChat;
-          });
+            const chatDiv = document.getElementById("chatDiv");
+            chatDiv.style.background = "transparent";
+
+            arrayChat.forEach(function (item) {
+              if (item.includes("System")) {
+                item = item
+                  .replace("System:", "")
+                  .replace("[", "")
+                  .replace("]", "");
+                const newItem = (
+                  <div className="text-center d-flex justify-content-center text-break">
+                    <p className="pChat">{item}</p>
+                  </div>
+                );
+                SetMountChat((mountChat) => [...mountChat, newItem]);
+              }
+              if (item.includes("Technician")) {
+                item = item
+                  .replace("Technician:", "")
+                  .replace("[", "")
+                  .replace("]", "");
+                const newItem = (
+                  <div className="d-flex justify-content-start w-100 text-break">
+                    <p className="tChat2">{item}</p>
+                  </div>
+                );
+                SetMountChat((mountChat) => [...mountChat, newItem]);
+              }
+              if (item.includes("User")) {
+                item = item
+                  .replace("User:", "")
+                  .replace("[", "")
+                  .replace("]", "");
+                const newItem = (
+                  <div className="d-flex justify-content-end w-100 text-break">
+                    <p className="uChat1">{item}</p>
+                  </div>
+                );
+                SetMountChat((mountChat) => [...mountChat, newItem]);
+              }
+
+              return mountChat;
+            });
+          }
         } else {
           const chatDiv = document.getElementById("chatDiv");
           chatDiv.style.background = "#e9ecef";
           SetChat(false);
+          SetTypeError("Permissão Negada");
+          SetMessageError("Assuma o Chamado para poder ver com mais detalhes");
+          SetMessageChat(true);
         }
+
         return SetTicketWindow(true);
       })
       .catch((err) => {
@@ -228,6 +244,10 @@ export default function DashboardTI() {
     setSelectedTech(event.target.value);
 
     return selectedTech;
+  }
+
+  function closeMessage() {
+    SetMessageChat(false);
   }
 
   return (
@@ -359,6 +379,15 @@ export default function DashboardTI() {
               }}
             >
               {mountChat}
+              {messageChat && (
+                <div className="w-100 h-100 d-flex justify-content-center align-items-center">
+                  <Message
+                    TypeError={typeError}
+                    MessageError={messageError}
+                    CloseMessage={closeMessage}
+                  />
+                </div>
+              )}
             </DivChat>
             {chat && (
               <div className="w-100 d-flex">
