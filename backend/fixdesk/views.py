@@ -14,7 +14,7 @@ from requests import post
 from django.contrib.auth import logout
 
 
-def CreateOrVerifyUser(user, password, request, helpdesk):
+def CreateOrVerifyUser(user, password, request, helpdesk, name_create_user):
     global Valid
 
     userAuthentic = None
@@ -25,12 +25,22 @@ def CreateOrVerifyUser(user, password, request, helpdesk):
     group_user = None
     group_tech = None
     Valid = None
+    name = None
 
     try:
         userAuthentic = User.objects.get(username=user)
+        name = str(name_create_user)
 
     except User.DoesNotExist:
-        userAuthentic = User.objects.create_user(username=user, password=password)
+        if "ADM" in name_create_user:
+            name = name.replace("ADM", "").strip()
+            name = name.split()
+        else:
+            name = name.split()
+
+        userAuthentic = User.objects.create_user(
+            username=user, password=password, first_name=name[0], last_name=name[1]
+        )
         userAuthentic.save()
 
     Back_User = getenv("DJANGO_GROUP_USER")
@@ -68,73 +78,6 @@ def CreateOrVerifyUser(user, password, request, helpdesk):
     except Exception as e:
         json_error = str(e)
         print(json_error)
-        return JsonResponse({"status": json_error}, status=400)
-
-
-def getTechnician(min_ping_server, dominio, user, password, base_ldap):
-    group = ""
-    server = ""
-    conn = ""
-    base_ldap = ""
-    response = None
-
-    try:
-        group = getenv("GROUP_TECH")
-
-        server = min_ping_server
-
-        conn = Connection(
-            server,
-            f"{dominio}\{user}",
-            password,
-            auto_bind=True,
-            client_strategy=SAFE_SYNC,
-        )
-
-        if conn.bind():
-            conn.read_only = True
-            search_filter = f"(sAMAccountName={group})"
-            ldap_base_dn = base_ldap
-
-            response = conn.search(
-                ldap_base_dn, search_filter, search_scope="SUBTREE", types_only=False
-            )
-
-        else:
-            return JsonResponse({"status": "error"}, status=400)
-
-    except Exception as e:
-        print(e)
-        return JsonResponse({"status": e}, status=400)
-
-    data = None
-    names = []
-    match = None
-    name = None
-
-    try:
-        data = response[3][0]
-
-        results = [
-            element.decode("utf-8") for element in data["member"] if b"CN=" in element
-        ]
-
-        pattern = r"CN=([^,]+)"
-
-        for data in results:
-            match = re_sh(pattern, data)
-
-            if match:
-                name = match.groupp(1)
-                name = name.replace("ADM", "").strip()
-                names.append(name)
-
-        environ["REACT_APP_TECHS"] = ",".join(names)
-
-        return
-
-    except Exception as e:
-        json_error = str(e)
         return JsonResponse({"status": json_error}, status=400)
 
 
@@ -290,6 +233,10 @@ def validation(request):
         groups = None
 
         try:
+            name_create_user_fn = information["givenName"]
+            name_create_user_ln = information["sn"]
+            name_create_user = name_create_user_fn + " " + name_create_user_ln
+
             groups = information["memberOf"]
 
             for item in groups:
@@ -330,7 +277,8 @@ def validation(request):
                 pid = ""
 
             task = Thread(
-                target=CreateOrVerifyUser, args=(user, password, request, helpdesk)
+                target=CreateOrVerifyUser,
+                args=(user, password, request, helpdesk, name_create_user),
             )
 
             task.start()
@@ -356,27 +304,9 @@ def validation(request):
 
             environ["REACT_DATA"] = data_json
 
+            return JsonResponse({"status": "valid"}, status=200)
+
         except Exception as e:
             error_message = str(e)
             print(error_message)
             return JsonResponse({"status": error_message}, status=400)
-
-        task2 = None
-
-        try:
-            conn.unbind()
-
-            task2 = Thread(
-                target=getTechnician,
-                args=(min_ping_server, dominio, user, password, base_ldap),
-            )
-
-            task2.start()
-
-            task.join()
-
-            return JsonResponse({"status": "valid"}, status=200)
-
-        except Exception as e:
-            print(e)
-            return JsonResponse({"status": e}, status=400)

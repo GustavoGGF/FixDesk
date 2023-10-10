@@ -19,10 +19,13 @@ def dashboard_TI(request):
         userData = None
         data = None
         csrf = None
-        techs = None
+        techs = []
         group = None
         group_name = None
         user_in_group = None
+        name_first = None
+        name_last = None
+        name_tech = None
 
         try:
             data = getenv("REACT_DATA")
@@ -38,7 +41,12 @@ def dashboard_TI(request):
             user_in_group = User.objects.filter(groups=group)
 
             for user in user_in_group:
-                print(user)
+                name_first = str(user.first_name)
+                name_last = str(user.last_name)
+
+                name_tech = name_first + " " + name_last
+
+                techs.append(name_tech)
 
             return JsonResponse(
                 {"userData": userData, "token": csrf, "techs": techs},

@@ -46,8 +46,7 @@ export default function DashboardTI() {
         return response.json();
       })
       .then((data) => {
-        const tech = data.techs;
-        SetTechs(tech.split(","));
+        SetTechs(data.techs);
         SetUserData(data.userData);
         SetToken(data.token);
         return userData;
