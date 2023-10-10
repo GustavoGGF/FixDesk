@@ -39,6 +39,7 @@ export default function History() {
   const [mountChat, SetMountChat] = useState([]);
   const [chat, SetChat] = useState(true);
   const [messageChat, SetMessageChat] = useState(false);
+  const [textChat, SetTextChat] = useState("");
 
   useEffect(() => {
     fetch("", {
@@ -76,6 +77,8 @@ export default function History() {
         return response.json();
       })
       .then((dataBack) => {
+        SetMessageChat(false);
+        SetMountChat([]);
         const data = dataBack.data[0];
         const start_date = new Date(data.start_date);
 
@@ -99,8 +102,8 @@ export default function History() {
 
         if (
           data.chat !== null &&
-          data.chat === undefined &&
-          data.chat === "undefined"
+          data.chat !== undefined &&
+          data.chat !== "undefined"
         ) {
           var arrayChat = data.chat.match(/\[.*?\]/g);
 
@@ -144,6 +147,7 @@ export default function History() {
               );
               SetMountChat((mountChat) => [...mountChat, newItem]);
             }
+            SetChat(true);
 
             return mountChat;
           });
@@ -271,6 +275,36 @@ export default function History() {
 
   function closeMessage2() {
     return SetMessageChat(false);
+  }
+
+  function NewChat(event) {
+    const newText = event.target.value;
+    SetTextChat(newText);
+
+    return textChat;
+  }
+
+  function SendChat() {
+    fetch("/helpdesk/ticket/" + ticketID, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      body: JSON.stringify({
+        User: Data.name,
+        chat: textChat,
+      }),
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        return data;
+      })
+      .catch((err) => {
+        return console.log(err);
+      });
   }
 
   return (
@@ -415,9 +449,9 @@ export default function History() {
               <div className="w-100 d-flex">
                 <div className="w-100">
                   <input
-                    className="form-control"
+                    className="form-control h-100 fs-5"
                     type="text"
-                    onChange={"NewChat"}
+                    onChange={NewChat}
                   />
                 </div>
                 <div>
@@ -425,7 +459,7 @@ export default function History() {
                     src={SendIMG}
                     className="img-fluid mt-1"
                     alt=""
-                    onClick={"SendChat"}
+                    onClick={SendChat}
                   />
                 </div>
               </div>

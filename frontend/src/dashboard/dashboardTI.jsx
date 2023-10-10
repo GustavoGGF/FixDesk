@@ -40,6 +40,8 @@ export default function DashboardTI() {
   const [messageChat, SetMessageChat] = useState(false);
   const [typeError, SetTypeError] = useState("");
   const [messageError, SetMessageError] = useState("");
+  const [textChat, SetTextChat] = useState("");
+  const [message, SetMessage] = useState(false);
 
   useEffect(() => {
     fetch("", {
@@ -141,6 +143,9 @@ export default function DashboardTI() {
       })
       .then((dataBack) => {
         const data = dataBack.data[0];
+        setSelectedTech("");
+        SetMessageChat(false);
+        SetMountChat([]);
         const start_date = new Date(data.start_date);
 
         var CurrentDate = new Date();
@@ -170,8 +175,8 @@ export default function DashboardTI() {
         if (data.responsible_technician === name_verify) {
           if (
             data.chat !== null &&
-            data.chat === undefined &&
-            data.chat === "undefined"
+            data.chat !== undefined &&
+            data.chat !== "undefined"
           ) {
             var arrayChat = data.chat.match(/\[.*?\]/g);
 
@@ -197,8 +202,8 @@ export default function DashboardTI() {
                   .replace("[", "")
                   .replace("]", "");
                 const newItem = (
-                  <div className="d-flex justify-content-start w-100 text-break">
-                    <p className="tChat2">{item}</p>
+                  <div className="d-flex justify-content-end w-100 text-break">
+                    <p className="tChat1">{item}</p>
                   </div>
                 );
                 SetMountChat((mountChat) => [...mountChat, newItem]);
@@ -209,13 +214,13 @@ export default function DashboardTI() {
                   .replace("[", "")
                   .replace("]", "");
                 const newItem = (
-                  <div className="d-flex justify-content-end w-100 text-break">
-                    <p className="uChat1">{item}</p>
+                  <div className="d-flex justify-content-start w-100 text-break">
+                    <p className="uChat2">{item}</p>
                   </div>
                 );
                 SetMountChat((mountChat) => [...mountChat, newItem]);
               }
-
+              SetChat(true);
               return mountChat;
             });
           }
@@ -250,9 +255,85 @@ export default function DashboardTI() {
     SetMessageChat(false);
   }
 
+  useEffect(() => {
+    if (selectedTech.length > 1) {
+      fetch("/helpdesk/ticket/" + ticketID, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": token,
+        },
+        body: JSON.stringify({
+          responsible_technician: selectedTech,
+          technician: userData.name,
+        }),
+      })
+        .then((response) => {
+          response.json();
+
+          if (response.status === 200) {
+            return window.location.reload();
+          } else if (response.status === 304) {
+            SetTypeError("Sistema Anti-Idiota");
+            SetMessageError(
+              "Está tentando transferir o Chamado para si mesmo sendo que já assumiu o mesmo??"
+            );
+            return SetMessage(true);
+          }
+        })
+        .catch((err) => {
+          return console.log(err);
+        });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedTech]);
+
+  function NewChat(event) {
+    const newText = event.target.value;
+    SetTextChat(newText);
+
+    return textChat;
+  }
+
+  function SendChat() {
+    fetch("/helpdesk/ticket/" + ticketID, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      body: JSON.stringify({
+        technician: userData.name,
+        chat: textChat,
+      }),
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        return data;
+      })
+      .catch((err) => {
+        return console.log(err);
+      });
+  }
+
+  function closeMessage2() {
+    SetMessage(false);
+  }
+
   return (
     <Div className="position-relative">
       {navbar && <Navbar Name={userData.name} JobTitle={userData.job_title} />}
+      {message && (
+        <div className="position-absolute top-0 start-50 translate-middle-x mt-5 z-3">
+          <Message
+            TypeError={typeError}
+            MessageError={messageError}
+            CloseMessage={closeMessage2}
+          />
+        </div>
+      )}
       <DivDashPie>
         <DashBoardPie sector={"TI"} />
       </DivDashPie>
@@ -272,7 +353,7 @@ export default function DashboardTI() {
             <Close src={CloseIMG} alt="" />
           </CloseBTN>
           {loading && <Loading />}
-          <div>
+          <div className="overflow-hidden">
             <h3 className="text-center text-uppercase fw-bold text-danger mt-3">
               chamado {ticketID}
             </h3>
@@ -393,9 +474,9 @@ export default function DashboardTI() {
               <div className="w-100 d-flex">
                 <div className="w-100">
                   <input
-                    className="form-control"
+                    className="form-control h-100 fs-5"
                     type="text"
-                    onChange={"NewChat"}
+                    onChange={NewChat}
                   />
                 </div>
                 <div>
@@ -403,7 +484,7 @@ export default function DashboardTI() {
                     src={SendIMG}
                     className="img-fluid mt-1"
                     alt=""
-                    onClick={"SendChat"}
+                    onClick={SendChat}
                   />
                 </div>
               </div>

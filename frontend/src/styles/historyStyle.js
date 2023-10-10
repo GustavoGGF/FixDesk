@@ -34,7 +34,7 @@ export const Close = styled.img`
 
 export const DivChat = styled.div`
   background: #f1faee;
-  height: 290px;
+  height: 250px;
   border: 2px solid #03c9f5;
   margin: 0 auto;
   overflow-y: scroll;
@@ -42,8 +42,6 @@ export const DivChat = styled.div`
 `;
 
 export const IMGChat = styled.img`
-  width: 30px;
-  height: 30px;
-  margin-right: 5px;
   cursor: pointer;
+  margin: 0 auto;
 `;

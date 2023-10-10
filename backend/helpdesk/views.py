@@ -235,7 +235,52 @@ def exit(request):
 @requires_csrf_token
 def ticket(request, id):
     if request.method == "POST":
-        return
+        body = None
+        technician = None
+        ticket = None
+        current_responsible_technician = None
+        responsible_technician = None
+        try:
+            body = loads(request.body)
+
+            if "responsible_technician" in body:
+                responsible_technician = body["responsible_technician"]
+                technician = body["technician"]
+
+                ticket = SupportTicket.objects.get(id=id)
+
+                current_responsible_technician = ticket.responsible_technician
+
+                if current_responsible_technician == responsible_technician:
+                    return JsonResponse(
+                        {"status": "invalid modify"}, status=304, safe=True
+                    )
+
+                SupportTicket.objects.filter(id=id).update(
+                    responsible_technician=responsible_technician,
+                    chat=f"[System:{technician} atendeu ao Chamado]",
+                )
+
+            if "chat" in body:
+                if "technician" in body:
+                    chat = body["chat"]
+                    ticket = SupportTicket.objects.get(id=id)
+                    ticket.chat += f"[Technician: {chat}]"
+
+                    ticket.save()
+
+                if "User" in body:
+                    chat = body["chat"]
+                    ticket = SupportTicket.objects.get(id=id)
+                    ticket.chat += f"[User: {chat}]"
+
+                    ticket.save()
+
+            return JsonResponse({"status": "ok"}, status=200, safe=True)
+        except Exception as e:
+            print(e)
+            return
+
     if request.method == "GET":
         ticket = None
         pid = None
