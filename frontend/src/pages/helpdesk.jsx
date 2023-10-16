@@ -31,6 +31,7 @@ export default function Helpdesk() {
   const [navbar, SetNavbar] = useState(false);
   const [dashboard, SetDashboard] = useState(false);
   const [infra, setInfra] = useState(false);
+  const [system, SetSystem] = useState(false);
   const [backup, setBackup] = useState(false);
   const [alert, setAlert] = useState(false);
   const [machine, setMachine] = useState(false);
@@ -48,6 +49,12 @@ export default function Helpdesk() {
   const [messageError, setMessageError] = useState("");
   const [respectiveTI, setRespectiveTI] = useState(false);
   const [respectiveArea, setRespectiveArea] = useState("");
+  const [sap, SetSAP] = useState(false);
+  const [mbi, SetMBI] = useState(false);
+  const [synch, SetSynch] = useState(false);
+  const [office, SetOffice] = useState(false);
+  const [eng, SetEng] = useState(false);
+  const [alocate, SetAlocate] = useState(false);
 
   const footerDay = selectedDay ? (
     <p>Você selecionou {format(selectedDay, "PPP")}</p>
@@ -126,7 +133,14 @@ export default function Helpdesk() {
       setFolder(false);
       setAlertVerify(false);
       setsector("Infraestrutura");
+      SetSystem(false);
+      SetMBI(false);
+      SetSAP(false);
+      SetOffice(false);
+      SetSynch(false);
+      SetEng(false);
     } else if (option === "sistema") {
+      SetSystem(true);
       setInfra(false);
       setAlert(false);
       setBackup(false);
@@ -139,8 +153,14 @@ export default function Helpdesk() {
       setFolder(false);
       setsector("Sistema");
       setAlertVerify(false);
+      SetMBI(false);
+      SetSAP(false);
+      SetSynch(false);
+      SetOffice(false);
+      SetEng(false);
     } else if (option === "none") {
       setInfra(false);
+      SetSystem(false);
       setAlert(false);
       setBackup(false);
       setMail(false);
@@ -150,6 +170,12 @@ export default function Helpdesk() {
       setUser(false);
       setInternet(false);
       setFolder(false);
+      setsector("");
+      SetMBI(false);
+      SetSAP(false);
+      SetSynch(false);
+      SetOffice(false);
+      SetEng(false);
     }
   }
   function selectProblem() {
@@ -169,6 +195,11 @@ export default function Helpdesk() {
       setFolder(false);
       setOccurrence("Backup");
       setAlertVerify(false);
+      SetSAP(false);
+      SetMBI(false);
+      SetSynch(false);
+      SetOffice(false);
+      SetEng(false);
     } else if (option === "mail") {
       setMail(true);
       setBackup(false);
@@ -181,6 +212,11 @@ export default function Helpdesk() {
       setFolder(false);
       setOccurrence("E-mail");
       setAlertVerify(false);
+      SetSAP(false);
+      SetMBI(false);
+      SetSynch(false);
+      SetOffice(false);
+      SetEng(false);
     } else if (option === "equip") {
       setEquip(true);
       setBackup(false);
@@ -193,6 +229,11 @@ export default function Helpdesk() {
       setFolder(false);
       setAlertVerify(false);
       setOccurrence("Equipamento");
+      SetSAP(false);
+      SetMBI(false);
+      SetSynch(false);
+      SetOffice(false);
+      SetEng(false);
     } else if (option === "user") {
       setUser(true);
       setBackup(false);
@@ -205,6 +246,11 @@ export default function Helpdesk() {
       setFolder(false);
       setAlertVerify(false);
       setOccurrence("Gerenciamento de Usuario");
+      SetSAP(false);
+      SetMBI(false);
+      SetSynch(false);
+      SetOffice(false);
+      SetEng(false);
     } else if (option === "internet") {
       setInternet(true);
       setBackup(false);
@@ -217,6 +263,11 @@ export default function Helpdesk() {
       setFolder(false);
       setAlertVerify(false);
       setOccurrence("Internet");
+      SetSAP(false);
+      SetMBI(false);
+      SetSynch(false);
+      SetOffice(false);
+      SetEng(false);
     } else if (option === "folder") {
       setFolder(true);
       setBackup(false);
@@ -229,6 +280,11 @@ export default function Helpdesk() {
       setInternet(false);
       setAlertVerify(false);
       setOccurrence("Permissão");
+      SetSAP(false);
+      SetMBI(false);
+      SetSynch(false);
+      SetOffice(false);
+      SetEng(false);
     } else if (option === "none") {
       setBackup(false);
       setAlert(false);
@@ -239,6 +295,229 @@ export default function Helpdesk() {
       setFormDelUser(false);
       setInternet(false);
       setFolder(false);
+      SetSAP(false);
+      SetMBI(false);
+      SetSynch(false);
+      SetOffice(false);
+      SetEng(false);
+    } else if (option === "sap") {
+      SetSAP(true);
+      SetMBI(false);
+      SetSynch(false);
+      SetOffice(false);
+      setBackup(false);
+      setAlert(false);
+      setMail(false);
+      setEquip(false);
+      setUser(false);
+      setFormNewUser(false);
+      setFormDelUser(false);
+      setInternet(false);
+      setFolder(false);
+      setOccurrence("SAP");
+      SetEng(false);
+    } else if (option === "mbi") {
+      SetMBI(true);
+      SetSAP(false);
+      setBackup(false);
+      setAlert(false);
+      setMail(false);
+      setEquip(false);
+      setUser(false);
+      setFormNewUser(false);
+      setFormDelUser(false);
+      setInternet(false);
+      setFolder(false);
+      setOccurrence("MBI");
+      SetSynch(false);
+      SetOffice(false);
+      SetEng(false);
+    } else if (option === "synch") {
+      SetSynch(true);
+      SetMBI(false);
+      SetSAP(false);
+      setBackup(false);
+      setAlert(false);
+      setMail(false);
+      setEquip(false);
+      setUser(false);
+      setFormNewUser(false);
+      setFormDelUser(false);
+      setInternet(false);
+      setFolder(false);
+      setOccurrence("Synchro");
+      SetOffice(false);
+      SetEng(false);
+    } else if (option === "office") {
+      SetOffice(true);
+      SetSynch(false);
+      SetMBI(false);
+      SetSAP(false);
+      setBackup(false);
+      setAlert(false);
+      setMail(false);
+      setEquip(false);
+      setUser(false);
+      setFormNewUser(false);
+      setFormDelUser(false);
+      setInternet(false);
+      setFolder(false);
+      SetEng(false);
+      setOccurrence("Office");
+    } else if (option === "eng") {
+      SetEng(true);
+      SetOffice(false);
+      SetSynch(false);
+      SetMBI(false);
+      SetSAP(false);
+      setBackup(false);
+      setAlert(false);
+      setMail(false);
+      setEquip(false);
+      setUser(false);
+      setFormNewUser(false);
+      setFormDelUser(false);
+      setInternet(false);
+      setFolder(false);
+      setOccurrence("Softwares de Eng");
+    }
+  }
+
+  function selectSynch() {
+    const selectSynch = document.getElementById("select-synch");
+    const optionSynch = selectSynch.options[selectSynch.selectedIndex].value;
+
+    if (optionSynch === "user") {
+      setAlert(true);
+      setMessagetitle("Caso de Criação/exclusão de usuários");
+      setmessageinfo1(
+        "1. Informar o usuário que deverá ser criado ou excluido"
+      );
+      setmessageinfo2("2. Informar os acessos que o mesmo poderá utilizar");
+      setProblemn("Criação/exclusão usuário");
+      setAlertVerify(false);
+    } else if (optionSynch === "access") {
+      setAlert(true);
+      setMessagetitle("Caso de Liberação/bloqueio de acessos");
+      setmessageinfo1("1. Descreva o que deseja bloquear e/ou liberar");
+      setmessageinfo2("");
+      setProblemn("Liberação/bloqueio de acessos");
+      setAlertVerify(false);
+    } else if (optionSynch === "quest") {
+      setAlert(true);
+      setMessagetitle("Caso de Dúvidas operacionais");
+      setmessageinfo1("1. Descreva o que deseja saber");
+      setmessageinfo2("");
+      setProblemn("Dúvidas operacionais");
+      setAlertVerify(false);
+    } else if (optionSynch === "error") {
+      setAlert(true);
+      setMessagetitle("Caso de Correção de falhas");
+      setmessageinfo1("1. Informe o Erro");
+      setmessageinfo2("");
+      setProblemn("Correção de falhas");
+      setAlertVerify(false);
+    } else if (optionSynch === "none") {
+      setAlert(false);
+    }
+  }
+
+  function selectMBI() {
+    const select_MBI = document.getElementById("select-mbi");
+    const optionMBI = select_MBI.options[select_MBI.selectedIndex].value;
+
+    if (optionMBI === "user") {
+      setAlert(true);
+      setMessagetitle("Caso de Criação/exclusão de usuários");
+      setmessageinfo1(
+        "1. Informar o usuário que deverá ser criado ou excluido"
+      );
+      setmessageinfo2("2. Informar os acessos que o mesmo poderá utilizar");
+      setProblemn("Criação/exclusão usuário");
+      setAlertVerify(false);
+    } else if (optionMBI === "access") {
+      setAlert(true);
+      setMessagetitle("Caso de Liberação/bloqueio de acessos");
+      setmessageinfo1("1. Descreva o que deseja bloquear e/ou liberar");
+      setmessageinfo2("");
+      setProblemn("Liberação/bloqueio de acessos");
+      setAlertVerify(false);
+    } else if (optionMBI === "quest") {
+      setAlert(true);
+      setMessagetitle("Caso de Dúvidas operacionais");
+      setmessageinfo1("1. Descreva o que deseja saber");
+      setmessageinfo2("");
+      setProblemn("Dúvidas operacionais");
+      setAlertVerify(false);
+    } else if (optionMBI === "error") {
+      setAlert(true);
+      setMessagetitle("Caso de Correção de falhas");
+      setmessageinfo1("1. Informe o Erro");
+      setmessageinfo2("");
+      setProblemn("Correção de falhas");
+      setAlertVerify(false);
+    } else if (optionMBI === "none") {
+      setAlert(false);
+    }
+  }
+  function selectSAP() {
+    const selectSAP = document.getElementById("select-sap");
+    const optionSAP = selectSAP.options[selectSAP.selectedIndex].value;
+
+    if (optionSAP === "user") {
+      setAlert(true);
+      setMessagetitle("Caso de Criação/exclusão de usuários");
+      setmessageinfo1(
+        "1. Informar o usuário que deverá ser criado ou excluido"
+      );
+      setmessageinfo2("2. Informar os acessos que o mesmo poderá utilizar");
+      setProblemn("Criação/exclusão usuário");
+      setAlertVerify(false);
+    } else if (optionSAP === "access") {
+      setAlert(true);
+      setMessagetitle("Caso de Liberação/bloqueio de acessos");
+      setmessageinfo1("1. Descreva o que deseja bloquear e/ou liberar");
+      setmessageinfo2("");
+      setProblemn("Liberação/bloqueio de acessos");
+      setAlertVerify(false);
+    } else if (optionSAP === "quest") {
+      setAlert(true);
+      setMessagetitle("Caso de Dúvidas operacionais");
+      setmessageinfo1("1. Descreva o que deseja saber");
+      setmessageinfo2("");
+      setProblemn("Dúvidas operacionais");
+      setAlertVerify(false);
+    } else if (optionSAP === "error") {
+      setAlert(true);
+      setMessagetitle("Caso de Correção de falhas");
+      setmessageinfo1("1. Informe o Erro");
+      setmessageinfo2("");
+      setProblemn("Correção de falhas");
+      setAlertVerify(false);
+    } else if (optionSAP === "none") {
+      setAlert(false);
+    }
+  }
+  function selectOffice() {
+    const selectOffice = document.getElementById("select-office");
+    const optionOffice = selectOffice.options[selectOffice.selectedIndex].value;
+
+    if (optionOffice === "buy") {
+      setAlert(true);
+      setMessagetitle("Aquisição de software/licenciamento");
+      setmessageinfo1("1. Informe para quem será a licença");
+      setmessageinfo2("");
+      setProblemn("Aquisição de software/licenciamento");
+      setAlertVerify(false);
+    } else if (optionOffice === "error") {
+      setAlert(true);
+      setMessagetitle("Caso de Correção de falhas");
+      setmessageinfo1("1. Informe o Erro");
+      setmessageinfo2("");
+      setProblemn("Correção de falhas");
+      setAlertVerify(false);
+    } else if (optionOffice === "none") {
+      setAlert(false);
     }
   }
   function getObservation() {
@@ -248,6 +527,30 @@ export default function Helpdesk() {
 
     return;
   }
+
+  function selectEng() {
+    const selectEng = document.getElementById("select-eng");
+    const optionEng = selectEng.options[selectEng.selectedIndex].value;
+
+    if (optionEng === "buy") {
+      setAlert(true);
+      setMessagetitle("Aquisição de software/licenciamento");
+      setmessageinfo1("1. Informe para quem será a licença");
+      setmessageinfo2("");
+      setProblemn("Aquisição de software/licenciamento");
+      setAlertVerify(false);
+    } else if (optionEng === "error") {
+      setAlert(true);
+      setMessagetitle("Caso de Correção de falhas");
+      setmessageinfo1("1. Informe o Erro");
+      setmessageinfo2("");
+      setProblemn("Correção de falhas");
+      setAlertVerify(false);
+    } else if (optionEng === "none") {
+      setAlert(false);
+    }
+  }
+
   function selectBackup() {
     const selectBackup = document.getElementById("select-backup");
     const optionBackup = selectBackup.options[selectBackup.selectedIndex].value;
@@ -329,6 +632,15 @@ export default function Helpdesk() {
       setAlertVerify(false);
     } else if (optionEquip === "none") {
       setAlert(false);
+    } else if (optionEquip === "alocate") {
+      setAlert(true);
+      setMessagetitle("Caso de Alocação de equipamento");
+      setmessageinfo1("1. Selecionar o equipamento desejado");
+      setmessageinfo2(
+        "2. Informar a data e a necessidade de equipamentos adicionar como teclado, etc..."
+      );
+      setAlertVerify(false);
+      SetAlocate(true);
     }
   }
   function selectUser() {
@@ -461,15 +773,15 @@ export default function Helpdesk() {
       return;
     } else if (sector.length === 0) {
       setAlertVerify(true);
-      setMessagetitle("Selecione a categoria");
+      setMessagetitle("Selecione um tipo de ocorrencia");
       return;
     } else if (occurrence.length === 0) {
       setAlertVerify(true);
-      setMessagetitle("Selecione um tipo de ocorrencia");
+      setMessagetitle("Selecione um tipo de problema");
       return;
     } else if (problemn.length === 0) {
       setAlertVerify(true);
-      setMessagetitle("Selecione um problema");
+      setMessagetitle("Selecione o problema em especifico");
       return;
     } else {
       setAlertVerify(false);
@@ -509,7 +821,7 @@ export default function Helpdesk() {
         sector: sector,
         occurrence: occurrence,
         problemn: problemn,
-        obvservation: observation,
+        observation: observation,
         start_date: dataFormatada,
         PID: Data.pid,
         respective_area: respectiveArea,
@@ -520,7 +832,7 @@ export default function Helpdesk() {
         return response.json();
       })
       .then((data) => {
-        if (Status === 400) {
+        if (Status === 403) {
           SetMessage(true);
           setTypeError("Falta de dados");
           setMessageError("PID Não cadastrado, favor contatar equipe de TI");
@@ -756,6 +1068,7 @@ export default function Helpdesk() {
               <option value="printer">Problema com a impressora</option>
               <option value="roaming">Mudança de local de trabalho</option>
               <option value="usb">Liberação/Bloqueio de USB</option>
+              <option value="alocate">Alocar equipamento</option>
             </Select>
           )}
           {user && (
@@ -1117,6 +1430,99 @@ export default function Helpdesk() {
               <option value="block">Bloqueio de Pasta</option>
             </Select>
           )}
+          {system && (
+            <Select
+              className="form-select mb-3"
+              aria-label="Default select example"
+              id="select-error"
+              onChange={selectProblem}
+            >
+              <option value="none" disabled selected>
+                Selecione o Sistema
+              </option>
+              <option value="sap">SAP</option>
+              <option value="mbi">MBI</option>
+              <option value="synch">Synchro</option>
+              <option value="office">Office</option>
+              <option value="eng">Softwares de Engenharia</option>
+            </Select>
+          )}
+          {sap && (
+            <Select
+              className="form-select mb-3"
+              aria-label="Default select example"
+              id="select-sap"
+              onChange={selectSAP}
+            >
+              <option value="none" disabled selected>
+                Selecione o Problema
+              </option>
+              <option value="user">Criação/exclusão de usuários</option>
+              <option value="access">Liberação/bloqueio de acessos</option>
+              <option value="quest">Dúvidas operacionais</option>
+              <option value="error">Correção de falhas</option>
+            </Select>
+          )}
+          {mbi && (
+            <Select
+              className="form-select mb-3"
+              aria-label="Default select example"
+              id="select-mbi"
+              onChange={selectMBI}
+            >
+              <option value="none" disabled selected>
+                Selecione o Problema
+              </option>
+              <option value="user">Criação/exclusão de usuários</option>
+              <option value="access">Liberação/bloqueio de acessos</option>
+              <option value="quest">Dúvidas operacionais</option>
+              <option value="error">Correção de falhas</option>
+            </Select>
+          )}
+          {synch && (
+            <Select
+              className="form-select mb-3"
+              aria-label="Default select example"
+              id="select-synch"
+              onChange={selectSynch}
+            >
+              <option value="none" disabled selected>
+                Selecione o Problema
+              </option>
+              <option value="user">Criação/exclusão de usuários</option>
+              <option value="access">Liberação/bloqueio de acessos</option>
+              <option value="quest">Dúvidas operacionais</option>
+              <option value="error">Correção de falhas</option>
+            </Select>
+          )}
+          {office && (
+            <Select
+              className="form-select mb-3"
+              aria-label="Default select example"
+              id="select-office"
+              onChange={selectOffice}
+            >
+              <option value="none" disabled selected>
+                Selecione o Problema
+              </option>
+              <option value="buy">Aquisição de software/licenciamento</option>
+              <option value="error">Correção de falhas</option>
+            </Select>
+          )}
+          {eng && (
+            <Select
+              className="form-select mb-3"
+              aria-label="Default select example"
+              id="select-eng"
+              onChange={selectEng}
+            >
+              <option value="none" disabled selected>
+                Selecione o Problema
+              </option>
+              <option value="buy">Aquisição de software/licenciamento</option>
+              <option value="error">Correção de falhas</option>
+            </Select>
+          )}
           {alert && (
             <div className="alert alert-info d-flex flex-column" role="alert">
               <h5 className="fw-bold">{messagetitle}</h5>
@@ -1129,6 +1535,7 @@ export default function Helpdesk() {
               <h5 className="fw-bold">{messagetitle}</h5>
             </div>
           )}
+          {alocate && <div>Equipamentos</div>}
           <div className="d-flex flex-column">
             <div className="form-floating mb-3 mx-auto">
               <Textarea

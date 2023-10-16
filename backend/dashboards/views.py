@@ -9,6 +9,7 @@ from json import loads
 from django.core.serializers import serialize
 from django.middleware.csrf import get_token
 from django.contrib.auth.models import Group, User
+from .models import Equipaments
 
 
 # Create your views here.
@@ -141,3 +142,29 @@ def get_ticket_TI(request):
 
         except Exception as e:
             print(e)
+
+
+def equipment_inventory(request):
+    if request.method == "POST":
+        image = None
+        company = None
+        model = None
+        Equipament = None
+        try:
+            image = request.FILES.get("image")
+            company = request.POST.get("company")
+            model = request.POST.get("model")
+
+            print(model)
+
+            Equipament = Equipaments(equipament=image, company=company, model=model)
+
+            Equipament.save()
+
+            return JsonResponse({"status": "ok"}, status=200, safe=True)
+
+        except Exception as e:
+            print(e)
+
+    if request.method == "GET":
+        return JsonResponse({"status": "ok"}, status=200, safe=True)

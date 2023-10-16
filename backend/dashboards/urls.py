@@ -10,4 +10,9 @@ urlpatterns = [
         name="central-dashboard-pie",
     ),
     path("get_ticket_TI", views.get_ticket_TI, name="central-dashboard-ticket-TI"),
+    path(
+        "equipment_inventory/",
+        views.equipment_inventory,
+        name="central-equipment-inventory",
+    ),
 ]

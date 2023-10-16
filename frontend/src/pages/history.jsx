@@ -58,6 +58,14 @@ export default function History() {
         SetToken(data.token);
         SetData(data.data);
         SetTickets(data.tickets);
+        if (data.tickets.length === 0) {
+          setTypeError("Falta de Dados");
+          setMessageError("Você Ainda não abriu nenhum chamado");
+          SetLoadingDash(false);
+          SetLoading(false);
+          SetMessage(true);
+          SetNavbar(true);
+        }
         return;
       })
       .catch((err) => {

@@ -94,10 +94,12 @@ def submitTicket(request):
             )
             pid = body.get("PID")
 
+            print(observation)
+
             if pid:
                 pass
             else:
-                return JsonResponse({"error": "error"}, status=400, safe=True)
+                return JsonResponse({"error": "error"}, status=403, safe=True)
 
         except Exception as e:
             print(e)

@@ -1,6 +1,30 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useEffect, useState } from "react";
 import Navbar from "../components/navbar";
-import { Div, DivDashPie } from "../styles/dashboardTIStyle";
+import {
+  Div,
+  DivDashPie,
+  DropdownConten,
+  Dropdown,
+  DropdownButton,
+  DivDrop,
+  P1,
+  DivUpload,
+  HeaderFiles,
+  PFiles,
+  BodyFiles,
+  FooterFiles,
+  PFiles2,
+  B1,
+  IMGFile,
+  InputFiles,
+  Span1,
+  Span2,
+  Divider,
+  Span3,
+  ListFiles,
+  IMGFile2,
+} from "../styles/dashboardTIStyle";
 import Loading from "../components/loading";
 import DashBoardPie from "../components/dashboardPie";
 import {
@@ -12,7 +36,13 @@ import {
 } from "../styles/historyStyle";
 import CloseIMG from "../images/components/close.png";
 import SendIMG from "../images/components/enviar.png";
+import Cloud from "../images/components/cloud-uploading.png";
+import File from "../images/components/upload-de-arquivo.png";
 import Message from "../components/message";
+import "../styles/bootstrap-5.3.0-dist/css/bootstrap.css";
+import "../styles/bootstrap-5.3.0-dist/js/bootstrap.js";
+import "../styles/bootstrap-5.3.0-dist/js/bootstrap.bundle";
+import "../styles/bootstrap-5.3.0-dist/js/bootstrap.esm";
 
 export default function DashboardTI() {
   const [loading, SetLoading] = useState(true);
@@ -42,6 +72,12 @@ export default function DashboardTI() {
   const [messageError, SetMessageError] = useState("");
   const [textChat, SetTextChat] = useState("");
   const [message, SetMessage] = useState(false);
+  const [equipamentforuser, SetEquipamentForUser] = useState(false);
+  const [dropdownBTN, SetDropDownBTN] = useState(false);
+  const [companyname, SetCompanyName] = useState("");
+  const [filename, SetFileName] = useState("");
+  const [fileimg, SetFileImg] = useState();
+  const [modelequipament, SetModelEquipament] = useState("");
 
   useEffect(() => {
     fetch("", {
@@ -65,8 +101,8 @@ export default function DashboardTI() {
 
   useEffect(() => {
     if (userData && Object.keys(userData).length > 0) {
-      console.log(userData.name);
       SetNavbar(true);
+      SetDropDownBTN(true);
       fetch("get_ticket_TI", {
         method: "GET",
         headers: { Accept: "application/json" },
@@ -256,6 +292,76 @@ export default function DashboardTI() {
   }
 
   useEffect(() => {
+    if (equipamentforuser === true) {
+      //DOM
+      const $ = document.querySelector.bind(document);
+
+      //APP
+      let App = {};
+      App.init = (function () {
+        //Init
+        function handleFileSelect(evt) {
+          const files = evt.target.files; // FileList object
+
+          //files template
+          let template = `${Object.keys(files).join("")}`;
+
+          $("#drop").classList.add("hidden");
+          $("footer").classList.add("hasFiles");
+          $(".importar").classList.add("active");
+          setTimeout(() => {
+            $("#list-files").innerHTML = template;
+          }, 1000);
+
+          Object.keys(files).forEach((file) => {
+            let load = 2000 + file * 2000; // fake load
+            setTimeout(() => {
+              $(`.file--${file}`)
+                .querySelector(".progress")
+                .classList.remove("active");
+              $(`.file--${file}`).querySelector(".done").classList.add("anim");
+            }, load);
+          });
+        }
+
+        // drop events
+        $("#drop").ondragleave = (evt) => {
+          $("#drop").classList.remove("active");
+          $("#divider").classList.remove("overflow-hidden");
+          evt.preventDefault();
+        };
+        $("#drop").ondragover = $("#drop").ondragenter = (evt) => {
+          $("#drop").classList.add("active");
+          evt.preventDefault();
+        };
+        $("#drop").ondrop = (evt) => {
+          $("input[type=file]").files = evt.dataTransfer.files;
+          $("footer").classList.add("hasFiles");
+          $("#divider").classList.remove("overflow-hidden");
+          $("#divider").classList.add("lineTop");
+          $("#drop").classList.remove("active");
+          evt.preventDefault();
+        };
+
+        //upload more
+        $(".importar").addEventListener("click", () => {
+          $("#list-files").innerHTML = "";
+          $("footer").classList.remove("hasFiles");
+          $(".importar").classList.remove("active");
+          setTimeout(() => {
+            $("#drop").classList.remove("hidden");
+          }, 500);
+        });
+
+        // input change
+        $("input[type=file]").addEventListener("change", handleFileSelect);
+      })();
+    } else {
+      return;
+    }
+  }, [equipamentforuser]);
+
+  useEffect(() => {
     if (selectedTech.length > 1) {
       fetch("/helpdesk/ticket/" + ticketID, {
         method: "POST",
@@ -295,6 +401,25 @@ export default function DashboardTI() {
     return textChat;
   }
 
+  function Select_Company() {
+    const select = document.getElementById("select_company");
+    var option = select.options[select.selectedIndex].value;
+
+    if (option === "none") {
+      return;
+    } else if (option === "csc") {
+      return SetCompanyName("CSC");
+    } else if (option === "ropes") {
+      return SetCompanyName("ROPES");
+    } else if (option === "fiber") {
+      return SetCompanyName("FIBER");
+    } else if (option === "vera") {
+      return SetCompanyName("VERA");
+    } else if (option === "mna") {
+      return SetCompanyName("MNA");
+    }
+  }
+
   function SendChat() {
     fetch("/helpdesk/ticket/" + ticketID, {
       method: "POST",
@@ -322,6 +447,95 @@ export default function DashboardTI() {
     SetMessage(false);
   }
 
+  function dropdown() {
+    const btn = document.getElementById("myDropdown");
+
+    return btn.classList.toggle("showDP");
+  }
+
+  window.onclick = function (event) {
+    if (
+      !event.target.matches(".dropbtn") &&
+      !event.target.matches(".dropdown-content")
+    ) {
+      var dropdowns = document.getElementsByClassName("dropdown-content");
+      var i;
+      for (i = 0; i < dropdowns.length; i++) {
+        var openDropdown = dropdowns[i];
+        if (openDropdown.classList.contains("showDP")) {
+          openDropdown.classList.remove("showDP");
+        }
+      }
+    }
+  };
+
+  function equipamentForUser() {
+    return SetEquipamentForUser(true);
+  }
+
+  function inputDrop() {
+    const input = document.getElementById("inputName");
+    const p = document.getElementById("namefile");
+
+    SetFileImg(input.files[0]);
+    SetFileName(input.files[0].name);
+
+    return (p.innerText = input.files[0].name);
+  }
+
+  function updateEquipament() {
+    if (filename.length === 0) {
+      SetTypeError("Dados insuficientes");
+      SetMessageError("Imagem do equipamento obrigatoria");
+      return SetMessage(true);
+    }
+
+    if (companyname.length === 0) {
+      SetTypeError("Dados insuficientes");
+      SetMessageError("Filial obrigatória");
+      return SetMessage(true);
+    }
+
+    if (modelequipament.length === 0) {
+      SetTypeError("Dados insuficientes");
+      SetMessageError("Modelo Obrigatório");
+      return SetMessage(true);
+    }
+
+    const formData = new FormData();
+
+    formData.append("image", fileimg);
+    formData.append("company", companyname);
+    formData.append("model", modelequipament);
+
+    console.log(modelequipament);
+
+    fetch("equipment_inventory/", {
+      method: "POST",
+
+      headers: {
+        "X-CSRFToken": token,
+      },
+      body: formData,
+    })
+      .then((response) => {
+        if (response.status === 200) {
+          return window.location.reload();
+        }
+        return response.json();
+      })
+      .catch((err) => {
+        return console.log(err);
+      });
+  }
+
+  function modelEquip(event) {
+    const newModel = event.target.value;
+    SetModelEquipament(newModel);
+
+    return modelequipament;
+  }
+
   return (
     <Div className="position-relative">
       {navbar && <Navbar Name={userData.name} JobTitle={userData.job_title} />}
@@ -333,6 +547,21 @@ export default function DashboardTI() {
             CloseMessage={closeMessage2}
           />
         </div>
+      )}
+      {dropdownBTN && (
+        <DivDrop className="position-absolute top-0 start-0">
+          <Dropdown>
+            <DropdownButton
+              onClick={dropdown}
+              className="dropbtn"
+            ></DropdownButton>
+            <DropdownConten id="myDropdown" className="dropdown-content">
+              <P1 className="d-block" onClick={equipamentForUser}>
+                Adicionar Equipamento
+              </P1>
+            </DropdownConten>
+          </Dropdown>
+        </DivDrop>
       )}
       <DivDashPie>
         <DashBoardPie sector={"TI"} />
@@ -490,6 +719,69 @@ export default function DashboardTI() {
               </div>
             )}
           </div>
+        </TicketOpen>
+      )}
+      {equipamentforuser && (
+        <TicketOpen
+          className="position-fixed
+          top-50
+          start-50
+          translate-middle"
+        >
+          <h3 className="text-center mt-1">Cadastro de Equipamentos</h3>
+          <p className="text-center">Imagem do Equipamento</p>
+          <DivUpload className="upload">
+            <div className="upload-files">
+              <HeaderFiles>
+                <PFiles>
+                  <IMGFile2 src={Cloud} alt="" />
+                  <Span1 className="up">up</Span1>
+                  <Span2 className="load">load</Span2>
+                </PFiles>
+              </HeaderFiles>
+              <BodyFiles className="body" id="drop" onDrop={inputDrop}>
+                <IMGFile src={File} alt="" />
+                <PFiles2 className="pointer-none">
+                  <B1>Drag and drop</B1> files here to begin the upload
+                </PFiles2>
+                <InputFiles type="file" id="inputName" />
+              </BodyFiles>
+              <FooterFiles id="footerFiles">
+                <Divider className="divider overflow-hidden" id="divider">
+                  <Span3 className="mb-3">FILE</Span3>
+                </Divider>
+                <ListFiles className="list-files" id="list-files">
+                  <p id="namefile"></p>
+                </ListFiles>
+                <input
+                  type="text"
+                  className="form-control mx-auto mb-2"
+                  placeholder="Modelo"
+                  onChange={modelEquip}
+                />
+                <select
+                  className="form-select mx-auto w-25"
+                  id="select_company"
+                  onChange={Select_Company}
+                >
+                  <option value="none" selected disabled>
+                    Filial
+                  </option>
+                  <option value="csc">CSC</option>
+                  <option value="fiber">Fiber</option>
+                  <option value="ropes">Ropes</option>
+                  <option value="vera">Vera</option>
+                  <option value="mna">MNA</option>
+                </select>
+                <button
+                  className="importar btn btn-success mt-3"
+                  onClick={updateEquipament}
+                >
+                  Cadastrar Equipamento
+                </button>
+              </FooterFiles>
+            </div>
+          </DivUpload>
         </TicketOpen>
       )}
     </Div>

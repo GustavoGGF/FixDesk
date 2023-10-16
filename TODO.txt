@@ -170,3 +170,15 @@ fazer validação a casa 1s enquanto chamado aberto para ver messangesn entrando
 fazer tela do FAQ com os PDF'S e automatizar para fazer upload
 
 no chat de conver usar um button submit para o enter tambem funcionar
+
+mostrar em listas os chamados tambem e filtros que ficam salvos no localhost
+
+resetar variaveis front end
+
+arumar data front nos tickets
+
+verificar como fica para criação de usuario
+
+tela helpodesk é um component
+
+upload tbm é componente
