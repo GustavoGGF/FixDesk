@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import SubmitIMG from "../images/components/enviar.png";
 
 export const Div = styled.div`
   height: 100vh !important;
@@ -11,7 +12,6 @@ export const Div = styled.div`
 export const TicketOpen = styled.div`
   background: #f9f9f9;
   width: 80%;
-  height: 90%;
   position: relative;
   border-radius: 20px;
 `;
@@ -41,7 +41,10 @@ export const DivChat = styled.div`
   overflow-x: hidden;
 `;
 
-export const IMGChat = styled.img`
-  cursor: pointer;
-  margin: 0 auto;
+export const BtnChat = styled.button`
+  height: 60px;
+  width: 60px;
+  background-image: url(${SubmitIMG});
+  background-position: center;
+  background-size: cover;
 `;

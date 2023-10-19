@@ -9,4 +9,5 @@ urlpatterns = [
     path("FAQ/", views.faq, name="central-faq"),
     path("exit/", views.exit, name="central-exit"),
     path("ticket/<int:id>", views.ticket, name="central-ticket"),
+    path("update_chat/<int:id>", views.update_chat, name="central-update-chat"),
 ]

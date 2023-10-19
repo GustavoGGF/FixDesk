@@ -32,10 +32,9 @@ import {
   CloseBTN,
   Close,
   DivChat,
-  IMGChat,
+  BtnChat,
 } from "../styles/historyStyle";
 import CloseIMG from "../images/components/close.png";
-import SendIMG from "../images/components/enviar.png";
 import Cloud from "../images/components/cloud-uploading.png";
 import File from "../images/components/upload-de-arquivo.png";
 import Message from "../components/message";
@@ -77,7 +76,23 @@ export default function DashboardTI() {
   const [companyname, SetCompanyName] = useState("");
   const [filename, SetFileName] = useState("");
   const [fileimg, SetFileImg] = useState();
+  const [fetchchat, SetFetchChat] = useState(false);
+  const [countchat, SetCountChat] = useState();
+  const [initUpdateChat, SetInitUpdateChat] = useState();
   const [modelequipament, SetModelEquipament] = useState("");
+
+  let count = 0;
+  let timeoutId;
+
+  function aumentarCount() {
+    count++;
+
+    SetInitUpdateChat(count);
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+    timeoutId = setTimeout(aumentarCount, 5000); // Chama a função novamente após 5 segundos
+  }
 
   useEffect(() => {
     fetch("", {
@@ -214,6 +229,9 @@ export default function DashboardTI() {
             data.chat !== undefined &&
             data.chat !== "undefined"
           ) {
+            SetCountChat(data.chat.length);
+            SetFetchChat(true);
+
             var arrayChat = data.chat.match(/\[.*?\]/g);
 
             const chatDiv = document.getElementById("chatDiv");
@@ -257,8 +275,8 @@ export default function DashboardTI() {
                 SetMountChat((mountChat) => [...mountChat, newItem]);
               }
               SetChat(true);
-              return mountChat;
             });
+            aumentarCount();
           }
         } else {
           const chatDiv = document.getElementById("chatDiv");
@@ -277,8 +295,38 @@ export default function DashboardTI() {
     return SetTicketWindow(true);
   }
 
+  useEffect(() => {
+    if (fetchchat === true) {
+      fetch("/helpdesk/update_chat/" + ticketID, {
+        method: "GET",
+        headers: { Accept: "application/json" },
+      })
+        .then((response) => {
+          return response.json();
+        })
+        .then((data) => {
+          var newChat = parseInt(data.chat.length);
+          if (newChat > countchat) {
+            SetCountChat(newChat);
+            reloadChat({ data: data });
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      return;
+    } else if (fetchchat === false) {
+      return;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initUpdateChat]);
+
   function Close_ticket() {
-    return SetTicketWindow(false);
+    SetTicketWindow(false);
+    SetFetchChat(false);
+    count = 0;
+    clearTimeout(timeoutId);
+    return;
   }
 
   function ChangeTechnician(event) {
@@ -396,9 +444,16 @@ export default function DashboardTI() {
 
   function NewChat(event) {
     const newText = event.target.value;
-    SetTextChat(newText);
+    if (event.key === "Enter") {
+      SetTextChat(newText);
+      SendChat();
+      event.preventDefault();
+    } else {
+      SetTextChat(newText);
+      return;
+    }
 
-    return textChat;
+    return;
   }
 
   function Select_Company() {
@@ -421,6 +476,8 @@ export default function DashboardTI() {
   }
 
   function SendChat() {
+    const input = document.getElementById("input-chat");
+    input.value = "";
     fetch("/helpdesk/ticket/" + ticketID, {
       method: "POST",
       headers: {
@@ -436,11 +493,60 @@ export default function DashboardTI() {
         return response.json();
       })
       .then((data) => {
-        return data;
+        return reloadChat({ data: data });
       })
       .catch((err) => {
         return console.log(err);
       });
+  }
+
+  function reloadChat({ data }) {
+    if (
+      data.chat !== null &&
+      data.chat !== undefined &&
+      data.chat !== "undefined"
+    ) {
+      var arrayChat = data.chat.match(/\[.*?\]/g);
+
+      const chatDiv = document.getElementById("chatDiv");
+      chatDiv.style.background = "transparent";
+
+      arrayChat.forEach(function (item) {
+        if (item.includes("System")) {
+          item = item.replace("System:", "").replace("[", "").replace("]", "");
+          const newItem = (
+            <div className="text-center d-flex justify-content-center text-break">
+              <p className="pChat">{item}</p>
+            </div>
+          );
+          SetMountChat((mountChat) => [...mountChat, newItem]);
+        }
+        if (item.includes("Technician")) {
+          item = item
+            .replace("Technician:", "")
+            .replace("[", "")
+            .replace("]", "");
+          const newItem = (
+            <div className="d-flex justify-content-end w-100 text-break">
+              <p className="tChat1">{item}</p>
+            </div>
+          );
+          SetMountChat((mountChat) => [...mountChat, newItem]);
+        }
+        if (item.includes("User")) {
+          item = item.replace("User:", "").replace("[", "").replace("]", "");
+          const newItem = (
+            <div className="d-flex justify-content-start w-100 text-break">
+              <p className="uChat2">{item}</p>
+            </div>
+          );
+          SetMountChat((mountChat) => [...mountChat, newItem]);
+        }
+        SetChat(true);
+
+        return mountChat;
+      });
+    }
   }
 
   function closeMessage2() {
@@ -572,7 +678,7 @@ export default function DashboardTI() {
       <div
         id="dashboard"
         className="container d-flex flex-wrap justify-content-around p-5 mt-5 w-100"
-      ></div>{" "}
+      ></div>
       {ticketWindow && (
         <TicketOpen className="position-fixed top-50 start-50 translate-middle">
           <CloseBTN
@@ -705,16 +811,16 @@ export default function DashboardTI() {
                   <input
                     className="form-control h-100 fs-5"
                     type="text"
-                    onChange={NewChat}
+                    onKeyDown={NewChat}
+                    id="input-chat"
                   />
                 </div>
                 <div>
-                  <IMGChat
-                    src={SendIMG}
-                    className="img-fluid mt-1"
-                    alt=""
+                  <BtnChat
+                    className="btn"
+                    type="submit"
                     onClick={SendChat}
-                  />
+                  ></BtnChat>
                 </div>
               </div>
             )}

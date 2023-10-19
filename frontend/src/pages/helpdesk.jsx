@@ -10,6 +10,8 @@ import {
   Div2,
   Calendar,
   Textarea,
+  ImageEquip,
+  DivEquip,
 } from "../styles/helpdeskStyle";
 import { DayPicker } from "react-day-picker";
 import { format } from "date-fns";
@@ -55,6 +57,8 @@ export default function Helpdesk() {
   const [office, SetOffice] = useState(false);
   const [eng, SetEng] = useState(false);
   const [alocate, SetAlocate] = useState(false);
+  const [equipaments, SetEquipaments] = useState();
+  const [dashequipaments, SetDashEquipaments] = useState("");
 
   const footerDay = selectedDay ? (
     <p>Você selecionou {format(selectedDay, "PPP")}</p>
@@ -74,6 +78,7 @@ export default function Helpdesk() {
         return response.json();
       })
       .then((data) => {
+        SetEquipaments(data.equipaments);
         SetCSRFToken(data.token);
         return SetData(data.data);
       })
@@ -637,10 +642,32 @@ export default function Helpdesk() {
       setMessagetitle("Caso de Alocação de equipamento");
       setmessageinfo1("1. Selecionar o equipamento desejado");
       setmessageinfo2(
-        "2. Informar a data e a necessidade de equipamentos adicionar como teclado, etc..."
+        "2. Informar a data e a necessidade de equipamentos adicionais como teclado, etc..."
       );
       setAlertVerify(false);
       SetAlocate(true);
+
+      if (equipaments && Object.keys(equipaments).length > 0) {
+        equipaments.forEach((equipament) => {
+          const Div = (
+            <DivEquip>
+              <ImageEquip
+                src={`data:image/jpeg;base64,${equipament.image}`}
+                alt=""
+              />
+              <p>Modelo: {equipament.model}</p>
+              <p>Empresa: {equipament.company}</p>
+            </DivEquip>
+          );
+
+          // Img.setAttribute("src", equipament.image);
+
+          SetDashEquipaments((prvDiv) => [...prvDiv, Div]);
+        });
+      } else {
+        setTypeError("Falta de Dados");
+        setMessageError("Nenhum equipamento Cadastrado");
+      }
     }
   }
   function selectUser() {
@@ -1535,7 +1562,11 @@ export default function Helpdesk() {
               <h5 className="fw-bold">{messagetitle}</h5>
             </div>
           )}
-          {alocate && <div>Equipamentos</div>}
+          {alocate && (
+            <div className="d-flex flex-wrap justify-content-center">
+              {dashequipaments}
+            </div>
+          )}
           <div className="d-flex flex-column">
             <div className="form-floating mb-3 mx-auto">
               <Textarea

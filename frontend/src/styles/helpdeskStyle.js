@@ -56,3 +56,19 @@ export const Notification = styled.div`
   background: #fee440;
   border-radius: 10px;
 `;
+
+export const ImageEquip = styled.img`
+  width: 250px;
+`;
+
+export const DivEquip = styled.div`
+  margin: 10px;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  padding: 10px;
+  text-align: center;
+  &:hover {
+    border: dashed 1px black;
+  }
+`;

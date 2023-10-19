@@ -12,6 +12,10 @@ from django.contrib.auth.models import User
 from .models import SupportTicket
 from django.core.serializers import serialize
 from django.contrib.auth import logout
+from dashboards.models import Equipaments
+from base64 import b64encode
+from PIL import Image
+from io import BytesIO
 
 
 # Create your views here.
@@ -22,6 +26,7 @@ def firstView(request):
         data = None
         Data_User = None
         csrf = None
+        equipament_list = []
         try:
             data = getenv("REACT_DATA")
 
@@ -29,7 +34,32 @@ def firstView(request):
 
             csrf = get_token(request)
 
-            return JsonResponse({"data": Data_User, "token": csrf}, status=200)
+            equipaments = Equipaments.objects.all()
+
+            for equipament in equipaments:
+                image = equipament.equipament
+
+                with image.open() as img:
+                    pil_image = Image.open(img)
+
+                    img_bytes = BytesIO()
+
+                    pil_image.save(img_bytes, format="PNG")
+
+                    image_data = b64encode(img_bytes.getvalue()).decode("utf-8")
+
+                equipaments = {
+                    "image": image_data,
+                    "model": equipament.model,
+                    "company": equipament.company,
+                }
+
+                equipament_list.append(equipaments)
+
+            return JsonResponse(
+                {"data": Data_User, "token": csrf, "equipaments": equipament_list},
+                status=200,
+            )
         except Exception as e:
             json_error = str(e)
             print(json_error)
@@ -93,8 +123,6 @@ def submitTicket(request):
                 tzinfo=pytz.timezone("America/Sao_Paulo")
             )
             pid = body.get("PID")
-
-            print(observation)
 
             if pid:
                 pass
@@ -271,12 +299,16 @@ def ticket(request, id):
 
                     ticket.save()
 
+                    return JsonResponse({"chat": ticket.chat}, status=200, safe=True)
+
                 if "User" in body:
                     chat = body["chat"]
                     ticket = SupportTicket.objects.get(id=id)
                     ticket.chat += f"[User: {chat}]"
 
                     ticket.save()
+
+                    return JsonResponse({"chat": ticket.chat}, status=200, safe=True)
 
             return JsonResponse({"status": "ok"}, status=200, safe=True)
         except Exception as e:
@@ -347,3 +379,19 @@ def ticket(request, id):
 
         except Exception as e:
             print(e)
+
+
+def update_chat(request, id):
+    if request.method == "GET":
+        ticket = None
+        chat = None
+        try:
+            ticket = SupportTicket.objects.get(id=id)
+
+            chat = ticket.chat
+
+            return JsonResponse({"chat": chat}, status=200, safe=True)
+        except Exception as e:
+            print(e)
+    if request.method == "POST":
+        return

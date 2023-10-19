@@ -7,11 +7,10 @@ import {
   Close,
   CloseBTN,
   DivChat,
-  IMGChat,
+  BtnChat,
 } from "../styles/historyStyle";
 import Message from "../components/message";
 import CloseIMG from "../images/components/close.png";
-import SendIMG from "../images/components/enviar.png";
 
 export default function History() {
   const [navbar, SetNavbar] = useState(false);
@@ -40,6 +39,22 @@ export default function History() {
   const [chat, SetChat] = useState(true);
   const [messageChat, SetMessageChat] = useState(false);
   const [textChat, SetTextChat] = useState("");
+  const [fetchchat, SetFetchChat] = useState(false);
+  const [countchat, SetCountChat] = useState();
+  const [initUpdateChat, SetInitUpdateChat] = useState();
+
+  let count = 0;
+  let timeoutId;
+
+  function aumentarCount() {
+    count++;
+
+    SetInitUpdateChat(count);
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+    timeoutId = setTimeout(aumentarCount, 5000); // Chama a função novamente após 5 segundos
+  }
 
   useEffect(() => {
     fetch("", {
@@ -113,6 +128,9 @@ export default function History() {
           data.chat !== undefined &&
           data.chat !== "undefined"
         ) {
+          SetCountChat(data.chat.length);
+          SetFetchChat(true);
+
           var arrayChat = data.chat.match(/\[.*?\]/g);
 
           const chatDiv = document.getElementById("chatDiv");
@@ -156,9 +174,8 @@ export default function History() {
               SetMountChat((mountChat) => [...mountChat, newItem]);
             }
             SetChat(true);
-
-            return mountChat;
           });
+          aumentarCount();
         } else {
           const chatDiv = document.getElementById("chatDiv");
           chatDiv.style.background = "#e9ecef";
@@ -169,12 +186,46 @@ export default function History() {
           SetMessageChat(true);
           SetChat(false);
         }
-        return SetTicketWindow(true);
       })
       .catch((err) => {
         return console.log(err);
       });
+
     return SetTicketWindow(true);
+  }
+
+  useEffect(() => {
+    if (fetchchat === true) {
+      fetch("/helpdesk/update_chat/" + ticketID, {
+        method: "GET",
+        headers: { Accept: "application/json" },
+      })
+        .then((response) => {
+          return response.json();
+        })
+        .then((data) => {
+          var newChat = parseInt(data.chat.length);
+          if (newChat > countchat) {
+            SetCountChat(newChat);
+            reloadChat({ data: data });
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      return;
+    } else if (fetchchat === false) {
+      return;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initUpdateChat]);
+
+  async function Close_ticket() {
+    SetTicketWindow(false);
+    SetFetchChat(false);
+    count = 0;
+    clearTimeout(timeoutId);
+    return;
   }
 
   useEffect(() => {
@@ -277,22 +328,27 @@ export default function History() {
       });
   }
 
-  function Close_ticket() {
-    SetTicketWindow(false);
-  }
-
   function closeMessage2() {
     return SetMessageChat(false);
   }
 
   function NewChat(event) {
     const newText = event.target.value;
-    SetTextChat(newText);
+    if (event.key === "Enter") {
+      SetTextChat(newText);
+      SendChat();
+      event.preventDefault();
+    } else {
+      SetTextChat(newText);
+      return;
+    }
 
-    return textChat;
+    return;
   }
 
   function SendChat() {
+    const input = document.getElementById("input-chat");
+    input.value = "";
     fetch("/helpdesk/ticket/" + ticketID, {
       method: "POST",
       headers: {
@@ -308,11 +364,71 @@ export default function History() {
         return response.json();
       })
       .then((data) => {
-        return data;
+        reloadChat({ data: data });
       })
       .catch((err) => {
         return console.log(err);
       });
+  }
+
+  async function reloadChat({ data }) {
+    if (
+      data.chat !== null &&
+      data.chat !== undefined &&
+      data.chat !== "undefined"
+    ) {
+      SetMountChat([]);
+      var arrayChat = data.chat.match(/\[.*?\]/g);
+
+      const chatDiv = document.getElementById("chatDiv");
+
+      chatDiv.style.background = "transparent";
+
+      arrayChat.forEach(function (item) {
+        if (item.includes("System")) {
+          item = item.replace("System:", "").replace("[", "").replace("]", "");
+          const newItem = (
+            <div className="text-center d-flex justify-content-center text-break">
+              <p className="pChat">{item}</p>
+            </div>
+          );
+          SetMountChat((mountChat) => [...mountChat, newItem]);
+        }
+        if (item.includes("Technician")) {
+          item = item
+            .replace("Technician:", "")
+            .replace("[", "")
+            .replace("]", "");
+          const newItem = (
+            <div className="d-flex justify-content-start w-100 text-break">
+              <p className="tChat2">{item}</p>
+            </div>
+          );
+          SetMountChat((mountChat) => [...mountChat, newItem]);
+        }
+        if (item.includes("User")) {
+          item = item.replace("User:", "").replace("[", "").replace("]", "");
+          const newItem = (
+            <div className="d-flex justify-content-end w-100 text-break">
+              <p className="uChat1">{item}</p>
+            </div>
+          );
+          SetMountChat((mountChat) => [...mountChat, newItem]);
+        }
+        SetChat(true);
+
+        return mountChat;
+      });
+    } else {
+      const chatDiv = document.getElementById("chatDiv");
+      chatDiv.style.background = "#e9ecef";
+      setMessageError(
+        "O CHAT ESTÁ INDIPONIVÉL ATÉ O TECNICO INICIAR UMA CONVERSA"
+      );
+      setTypeError("PERMISSÃO NEGADA");
+      SetMessageChat(true);
+      SetChat(false);
+    }
   }
 
   return (
@@ -459,16 +575,16 @@ export default function History() {
                   <input
                     className="form-control h-100 fs-5"
                     type="text"
-                    onChange={NewChat}
+                    onKeyDown={NewChat}
+                    id="input-chat"
                   />
                 </div>
                 <div>
-                  <IMGChat
-                    src={SendIMG}
-                    className="img-fluid mt-1"
-                    alt=""
+                  <BtnChat
+                    className="btn"
+                    type="submit"
                     onClick={SendChat}
-                  />
+                  ></BtnChat>
                 </div>
               </div>
             )}

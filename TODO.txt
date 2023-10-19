@@ -1,6 +1,6 @@
 responsividade
 
-fazer alocagem de equipamento
+limpar input onde fica a mensagem que sera enviada
 
 tentar acessar qualquer outra url, direcionar para login
 
@@ -182,3 +182,11 @@ verificar como fica para criação de usuario
 tela helpodesk é um component
 
 upload tbm é componente
+
+botao de fechar o cadastro de Equipamentos
+
+abertura de ticket de alocação de equipamento com data
+
+verificar se notebook ja esta sendo usado
+
+alocagem ter filtro por filial por localidade
