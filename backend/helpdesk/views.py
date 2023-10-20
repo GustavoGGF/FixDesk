@@ -94,7 +94,6 @@ def firstView(request):
 @login_required(login_url="/login")
 def submitTicket(request):
     if request.method == "POST":
-        body = None
         ticketRequester = None
         department = None
         mail = None
@@ -108,21 +107,21 @@ def submitTicket(request):
         start_date = None
         pid = None
         try:
-            body = loads(request.body)
-            ticketRequester = body.get("ticketRequester")
-            department = body.get("department")
-            mail = body.get("mail")
-            company = body.get("company")
-            sector = body.get("sector")
-            respective_area = body.get("respective_area")
-            occurrence = body.get("occurrence")
-            problemn = body.get("problemn")
-            observation = body.get("observation")
-            start_date_str = body.get("start_date")
+            print(request.POST)
+            ticketRequester = request.POST.get("ticketRequester")
+            department = request.POST.get("department")
+            mail = request.POST.get("mail")
+            company = request.POST.get("company")
+            sector = request.POST.get("sector")
+            respective_area = request.POST.get("respective_area")
+            occurrence = request.POST.get("occurrence")
+            problemn = request.POST.get("problemn")
+            observation = request.POST.get("observation")
+            start_date_str = request.POST.get("start_date")
             start_date = datetime.strptime(start_date_str, "%Y-%m-%d").replace(
                 tzinfo=pytz.timezone("America/Sao_Paulo")
             )
-            pid = body.get("PID")
+            pid = request.POST.get("PID")
 
             if pid:
                 pass
@@ -133,28 +132,56 @@ def submitTicket(request):
             print(e)
             return
 
-        try:
-            Ticket = SupportTicket(
-                ticketRequester=ticketRequester,
-                department=department,
-                mail=mail,
-                company=company,
-                sector=sector,
-                respective_area=respective_area,
-                occurrence=occurrence,
-                problemn=problemn,
-                observation=observation,
-                start_date=start_date,
-                PID=pid,
-            )
+        Ticket = None
+        image = None
+        if "image" in request.FILES:
+            try:
+                image = request.FILES.get("image")
+                Ticket = SupportTicket(
+                    ticketRequester=ticketRequester,
+                    department=department,
+                    mail=mail,
+                    company=company,
+                    sector=sector,
+                    respective_area=respective_area,
+                    occurrence=occurrence,
+                    problemn=problemn,
+                    observation=observation,
+                    start_date=start_date,
+                    PID=pid,
+                    file=image,
+                )
 
-            Ticket.save()
-            # * Monta o ticket e salva no banco
+                Ticket.save()
+                # * Monta o ticket e salva no banco
 
-            return JsonResponse({"status": "ok"}, status=200, safe=True)
-        except Exception as e:
-            print(e)
-            return
+                return JsonResponse({"status": "ok"}, status=200, safe=True)
+            except Exception as e:
+                print(e)
+
+        else:
+            try:
+                Ticket = SupportTicket(
+                    ticketRequester=ticketRequester,
+                    department=department,
+                    mail=mail,
+                    company=company,
+                    sector=sector,
+                    respective_area=respective_area,
+                    occurrence=occurrence,
+                    problemn=problemn,
+                    observation=observation,
+                    start_date=start_date,
+                    PID=pid,
+                )
+
+                Ticket.save()
+                # * Monta o ticket e salva no banco
+
+                return JsonResponse({"status": "ok"}, status=200, safe=True)
+            except Exception as e:
+                print(e)
+                return
     if request.method == "GET":
         return redirect("/helpdesk")
 

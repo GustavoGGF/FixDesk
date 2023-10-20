@@ -13,10 +13,28 @@ import {
   ImageEquip,
   DivEquip,
 } from "../styles/helpdeskStyle";
+import {
+  DivUpload,
+  HeaderFiles,
+  PFiles,
+  IMGFile,
+  Span1,
+  Span2,
+  BodyFiles,
+  PFiles2,
+  B1,
+  InputFiles,
+  IMGFile2,
+  FooterFiles,
+  Divider,
+  Span3,
+  ListFiles,
+} from "../styles/Equipment_RegistrationStyle";
 import { DayPicker } from "react-day-picker";
 import { format } from "date-fns";
 import Loading from "../components/loading";
 import Message from "../components/message";
+import Cloud from "../images/components/cloud-uploading.png";
 
 export default function Helpdesk() {
   const [csrf, SetCSRFToken] = useState("");
@@ -59,6 +77,9 @@ export default function Helpdesk() {
   const [alocate, SetAlocate] = useState(false);
   const [equipaments, SetEquipaments] = useState();
   const [dashequipaments, SetDashEquipaments] = useState("");
+  const [filename, SetFileName] = useState("");
+  const [fileimg, SetFileImg] = useState();
+  const [uploadRuninng, SetUploadRunning] = useState();
 
   const footerDay = selectedDay ? (
     <p>Você selecionou {format(selectedDay, "PPP")}</p>
@@ -93,11 +114,83 @@ export default function Helpdesk() {
     if (Data && Object.keys(Data).length > 0) {
       SetLoading(false);
       SetNavbar(true);
-      return SetDashboard(true);
+      SetDashboard(true);
+      return SetUploadRunning("Running");
     } else {
       return;
     }
   }, [Data]);
+
+  useEffect(() => {
+    if (dashboard === true) {
+      //DOM
+      const $ = document.querySelector.bind(document);
+
+      //APP
+      let App = {};
+      App.init = (function () {
+        //Init
+        function handleFileSelect(evt) {
+          const files = evt.target.files; // FileList object
+
+          //files template
+          let template = `${Object.keys(files).join("")}`;
+
+          $("#drop").classList.add("hidden");
+          $("footer").classList.add("hasFiles");
+          $(".importar").classList.add("active");
+          setTimeout(() => {
+            $("#list-files").innerHTML = template;
+          }, 1000);
+
+          Object.keys(files).forEach((file) => {
+            let load = 2000 + file * 2000; // fake load
+            setTimeout(() => {
+              $(`.file--${file}`)
+                .querySelector(".progress")
+                .classList.remove("active");
+              $(`.file--${file}`).querySelector(".done").classList.add("anim");
+            }, load);
+          });
+        }
+
+        // drop events
+        $("#drop").ondragleave = (evt) => {
+          $("#drop").classList.remove("active");
+          $("#divider").classList.remove("overflow-hidden");
+          evt.preventDefault();
+        };
+        $("#drop").ondragover = $("#drop").ondragenter = (evt) => {
+          $("#drop").classList.add("active");
+          evt.preventDefault();
+        };
+        $("#drop").ondrop = (evt) => {
+          $("input[type=file]").files = evt.dataTransfer.files;
+          $("footer").classList.add("hasFiles");
+          $("#divider").classList.remove("overflow-hidden");
+          $("#divider").classList.add("lineTop");
+          $("#drop").classList.remove("active");
+          evt.preventDefault();
+        };
+
+        //upload more
+        $(".importar").addEventListener("click", () => {
+          $("#list-files").innerHTML = "";
+          $("footer").classList.remove("hasFiles");
+          $(".importar").classList.remove("active");
+          setTimeout(() => {
+            $("#drop").classList.remove("hidden");
+          }, 500);
+        });
+
+        // input change
+        $("input[type=file]").addEventListener("change", handleFileSelect);
+      })();
+    } else {
+      return;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [uploadRuninng]);
 
   function HelpdeskPage() {
     window.location.reload();
@@ -858,26 +951,45 @@ export default function Helpdesk() {
 
     let Status;
 
+    const formData = new FormData();
+
+    console.log(dataFormatada);
+
+    if (filename.length > 0) {
+      formData.append("ticketRequester", Data.name);
+      formData.append("department", Data.department);
+      formData.append("mail", Data.mail);
+      formData.append("company", Data.company);
+      formData.append("phone", Data.phone);
+      formData.append("sector", sector);
+      formData.append("occurrence", occurrence);
+      formData.append("problemn", problemn);
+      formData.append("observation", observation);
+      formData.append("start_date", dataFormatada);
+      formData.append("PID", Data.pid);
+      formData.append("respective_area", respectiveArea);
+      formData.append("image", fileimg);
+    } else {
+      formData.append("ticketRequester", Data.name);
+      formData.append("department", Data.department);
+      formData.append("mail", Data.mail);
+      formData.append("company", Data.company);
+      formData.append("phone", Data.phone);
+      formData.append("sector", sector);
+      formData.append("occurrence", occurrence);
+      formData.append("problemn", problemn);
+      formData.append("observation", observation);
+      formData.append("start_date", dataFormatada);
+      formData.append("PID", Data.pid);
+      formData.append("respective_area", respectiveArea);
+    }
+
     fetch("submitTicket/", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
         "X-CSRFToken": csrf,
       },
-      body: JSON.stringify({
-        ticketRequester: Data.name,
-        department: Data.department,
-        mail: Data.mail,
-        company: Data.company,
-        phone: Data.phone,
-        sector: sector,
-        occurrence: occurrence,
-        problemn: problemn,
-        observation: observation,
-        start_date: dataFormatada,
-        PID: Data.pid,
-        respective_area: respectiveArea,
-      }),
+      body: formData,
     })
       .then((response) => {
         Status = response.status;
@@ -953,6 +1065,16 @@ export default function Helpdesk() {
       .catch((err) => {
         return console.log(err);
       });
+  }
+
+  function inputDrop() {
+    const input = document.getElementById("inputName");
+    const p = document.getElementById("namefile");
+
+    SetFileImg(input.files[0]);
+    SetFileName(input.files[0].name);
+
+    return (p.innerText = input.files[0].name);
   }
 
   return (
@@ -1601,11 +1723,37 @@ export default function Helpdesk() {
               ></Textarea>
               <label htmlFor="floatingTextarea2">Observação</label>
             </div>
-            {/* <UploadField token={csrf} equipamentforuser={true} /> */}
+            <h3 className="text-center mt-1">Upload de Arquivos</h3>
+            <DivUpload className="upload">
+              <div className="upload-files">
+                <HeaderFiles>
+                  <PFiles>
+                    <IMGFile2 src={Cloud} alt="" />
+                    <Span1 className="up">up</Span1>
+                    <Span2 className="load">load</Span2>
+                  </PFiles>
+                </HeaderFiles>
+                <BodyFiles className="body" id="drop" onDrop={inputDrop}>
+                  <IMGFile src={File} alt="" />
+                  <PFiles2 className="pointer-none">
+                    <B1>Drag and drop</B1> files here to begin the upload
+                  </PFiles2>
+                  <InputFiles type="file" id="inputName" />
+                </BodyFiles>
+                <FooterFiles id="footerFiles">
+                  <Divider className="divider overflow-hidden" id="divider">
+                    <Span3 className="mb-3">FILE</Span3>
+                  </Divider>
+                  <ListFiles className="list-files" id="list-files">
+                    <p id="namefile"></p>
+                  </ListFiles>
+                </FooterFiles>
+              </div>
+            </DivUpload>
           </div>
           <input
             type="submit"
-            className="btn btn-primary mt-3"
+            className="importar btn btn-primary mt-3"
             onClick={submitTicket}
             value={"Enviar"}
           />
