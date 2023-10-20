@@ -1,20 +1,8 @@
 responsividade
 
-limpar input onde fica a mensagem que sera enviada
-
 tentar acessar qualquer outra url, direcionar para login
 
-Chat para conversa entre os chamados (responsividade na parte do usuario e alguns bugs visuais)
-
-filtro de pesquisa de chamado
-
-passa os usuarios para lowercase
-
 colocar safe nos JsonResponse
-
-cologar log em todos os exept
-
-verificar os log e print
 
 fazer verificação se precisa anexar algo ou não
 
@@ -190,3 +178,5 @@ abertura de ticket de alocação de equipamento com data
 verificar se notebook ja esta sendo usado
 
 alocagem ter filtro por filial por localidade
+
+filtro de pesquisa de chamado

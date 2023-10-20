@@ -144,6 +144,7 @@ export default function Helpdesk() {
       SetOffice(false);
       SetSynch(false);
       SetEng(false);
+      SetAlocate(false);
     } else if (option === "sistema") {
       SetSystem(true);
       setInfra(false);
@@ -163,6 +164,7 @@ export default function Helpdesk() {
       SetSynch(false);
       SetOffice(false);
       SetEng(false);
+      SetAlocate(false);
     } else if (option === "none") {
       setInfra(false);
       SetSystem(false);
@@ -181,6 +183,7 @@ export default function Helpdesk() {
       SetSynch(false);
       SetOffice(false);
       SetEng(false);
+      SetAlocate(false);
     }
   }
   function selectProblem() {
@@ -205,6 +208,7 @@ export default function Helpdesk() {
       SetSynch(false);
       SetOffice(false);
       SetEng(false);
+      SetAlocate(false);
     } else if (option === "mail") {
       setMail(true);
       setBackup(false);
@@ -222,6 +226,7 @@ export default function Helpdesk() {
       SetSynch(false);
       SetOffice(false);
       SetEng(false);
+      SetAlocate(false);
     } else if (option === "equip") {
       setEquip(true);
       setBackup(false);
@@ -233,12 +238,14 @@ export default function Helpdesk() {
       setInternet(false);
       setFolder(false);
       setAlertVerify(false);
+      SetAlocate(false);
       setOccurrence("Equipamento");
       SetSAP(false);
       SetMBI(false);
       SetSynch(false);
       SetOffice(false);
       SetEng(false);
+      SetAlocate(false);
     } else if (option === "user") {
       setUser(true);
       setBackup(false);
@@ -250,12 +257,14 @@ export default function Helpdesk() {
       setInternet(false);
       setFolder(false);
       setAlertVerify(false);
+      SetAlocate(false);
       setOccurrence("Gerenciamento de Usuario");
       SetSAP(false);
       SetMBI(false);
       SetSynch(false);
       SetOffice(false);
       SetEng(false);
+      SetAlocate(false);
     } else if (option === "internet") {
       setInternet(true);
       setBackup(false);
@@ -267,12 +276,14 @@ export default function Helpdesk() {
       setFormDelUser(false);
       setFolder(false);
       setAlertVerify(false);
+      SetAlocate(false);
       setOccurrence("Internet");
       SetSAP(false);
       SetMBI(false);
       SetSynch(false);
       SetOffice(false);
       SetEng(false);
+      SetAlocate(false);
     } else if (option === "folder") {
       setFolder(true);
       setBackup(false);
@@ -284,12 +295,14 @@ export default function Helpdesk() {
       setFormDelUser(false);
       setInternet(false);
       setAlertVerify(false);
+      SetAlocate(false);
       setOccurrence("Permissão");
       SetSAP(false);
       SetMBI(false);
       SetSynch(false);
       SetOffice(false);
       SetEng(false);
+      SetAlocate(false);
     } else if (option === "none") {
       setBackup(false);
       setAlert(false);
@@ -305,6 +318,7 @@ export default function Helpdesk() {
       SetSynch(false);
       SetOffice(false);
       SetEng(false);
+      SetAlocate(false);
     } else if (option === "sap") {
       SetSAP(true);
       SetMBI(false);
@@ -321,6 +335,7 @@ export default function Helpdesk() {
       setFolder(false);
       setOccurrence("SAP");
       SetEng(false);
+      SetAlocate(false);
     } else if (option === "mbi") {
       SetMBI(true);
       SetSAP(false);
@@ -336,6 +351,7 @@ export default function Helpdesk() {
       setOccurrence("MBI");
       SetSynch(false);
       SetOffice(false);
+      SetAlocate(false);
       SetEng(false);
     } else if (option === "synch") {
       SetSynch(true);
@@ -352,6 +368,7 @@ export default function Helpdesk() {
       setFolder(false);
       setOccurrence("Synchro");
       SetOffice(false);
+      SetAlocate(false);
       SetEng(false);
     } else if (option === "office") {
       SetOffice(true);
@@ -363,6 +380,7 @@ export default function Helpdesk() {
       setMail(false);
       setEquip(false);
       setUser(false);
+      SetAlocate(false);
       setFormNewUser(false);
       setFormDelUser(false);
       setInternet(false);
@@ -376,6 +394,7 @@ export default function Helpdesk() {
       SetMBI(false);
       SetSAP(false);
       setBackup(false);
+      SetAlocate(false);
       setAlert(false);
       setMail(false);
       setEquip(false);
@@ -602,6 +621,7 @@ export default function Helpdesk() {
     const optionEquip = selectEquip.options[selectEquip.selectedIndex].value;
 
     if (optionEquip === "off") {
+      SetAlocate(false);
       setAlert(true);
       setMessagetitle("Caso de computador não ligar");
       setmessageinfo1(
@@ -611,6 +631,7 @@ export default function Helpdesk() {
       setProblemn("Equipamento não liga");
       setAlertVerify(false);
     } else if (optionEquip === "printer") {
+      SetAlocate(false);
       setAlert(true);
       setMessagetitle("Caso de problema com a impressora");
       setmessageinfo1("1. Informar onde a impressora está localizada");
@@ -618,6 +639,7 @@ export default function Helpdesk() {
       setProblemn("Problema com a impressora");
       setAlertVerify(false);
     } else if (optionEquip === "roaming") {
+      SetAlocate(false);
       setAlert(true);
       setMessagetitle("Caso de troca de local de trabalho");
       setmessageinfo1(
@@ -627,6 +649,7 @@ export default function Helpdesk() {
       setProblemn("Mudanca de local de trabalho");
       setAlertVerify(false);
     } else if (optionEquip === "usb") {
+      SetAlocate(false);
       setAlert(true);
       setMessagetitle("Caso de liberação/bloqueio de USB");
       setmessageinfo1("1. Justificar a solicitação");
@@ -637,7 +660,9 @@ export default function Helpdesk() {
       setAlertVerify(false);
     } else if (optionEquip === "none") {
       setAlert(false);
+      SetAlocate(false);
     } else if (optionEquip === "alocate") {
+      SetDashEquipaments("");
       setAlert(true);
       setMessagetitle("Caso de Alocação de equipamento");
       setmessageinfo1("1. Selecionar o equipamento desejado");
@@ -1576,17 +1601,7 @@ export default function Helpdesk() {
               ></Textarea>
               <label htmlFor="floatingTextarea2">Observação</label>
             </div>
-            <div className="input-group mb-3">
-              <Input
-                type="file"
-                className="form-control"
-                id="inputGroupFile02"
-                multiple
-              />
-              <label className="input-group-text" htmlFor="inputGroupFile02">
-                Upload
-              </label>
-            </div>
+            {/* <UploadField token={csrf} equipamentforuser={true} /> */}
           </div>
           <input
             type="submit"

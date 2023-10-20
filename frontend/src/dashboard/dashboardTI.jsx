@@ -9,21 +9,12 @@ import {
   DropdownButton,
   DivDrop,
   P1,
-  DivUpload,
-  HeaderFiles,
-  PFiles,
-  BodyFiles,
-  FooterFiles,
-  PFiles2,
-  B1,
-  IMGFile,
-  InputFiles,
-  Span1,
-  Span2,
-  Divider,
-  Span3,
-  ListFiles,
-  IMGFile2,
+  DivFilter,
+  Input1,
+  Select1,
+  DivContainerImages,
+  DivImages,
+  IMGS1,
 } from "../styles/dashboardTIStyle";
 import Loading from "../components/loading";
 import DashBoardPie from "../components/dashboardPie";
@@ -35,13 +26,16 @@ import {
   BtnChat,
 } from "../styles/historyStyle";
 import CloseIMG from "../images/components/close.png";
-import Cloud from "../images/components/cloud-uploading.png";
-import File from "../images/components/upload-de-arquivo.png";
 import Message from "../components/message";
 import "../styles/bootstrap-5.3.0-dist/css/bootstrap.css";
 import "../styles/bootstrap-5.3.0-dist/js/bootstrap.js";
 import "../styles/bootstrap-5.3.0-dist/js/bootstrap.bundle";
 import "../styles/bootstrap-5.3.0-dist/js/bootstrap.esm";
+import IMG1 from "../images/dashboard_TI/quantity_1.png";
+import IMG2 from "../images/dashboard_TI/quantity_2.png";
+import IMG3 from "../images/dashboard_TI/quantity_3.png";
+import IMG4 from "../images/dashboard_TI/quantity_4.png";
+import Registration from "../components/equipment_registration";
 
 export default function DashboardTI() {
   const [loading, SetLoading] = useState(true);
@@ -71,15 +65,13 @@ export default function DashboardTI() {
   const [messageError, SetMessageError] = useState("");
   const [textChat, SetTextChat] = useState("");
   const [message, SetMessage] = useState(false);
-  const [equipamentforuser, SetEquipamentForUser] = useState(false);
   const [dropdownBTN, SetDropDownBTN] = useState(false);
-  const [companyname, SetCompanyName] = useState("");
-  const [filename, SetFileName] = useState("");
-  const [fileimg, SetFileImg] = useState();
   const [fetchchat, SetFetchChat] = useState(false);
   const [countchat, SetCountChat] = useState();
   const [initUpdateChat, SetInitUpdateChat] = useState();
-  const [modelequipament, SetModelEquipament] = useState("");
+  const [fakeSelect, SetFakeSelect] = useState(true);
+  const [problemInfra, SetProblemInfra] = useState(false);
+  const [equipamentforuser, SetEquipamentForUser] = useState(false);
 
   let count = 0;
   let timeoutId;
@@ -340,76 +332,6 @@ export default function DashboardTI() {
   }
 
   useEffect(() => {
-    if (equipamentforuser === true) {
-      //DOM
-      const $ = document.querySelector.bind(document);
-
-      //APP
-      let App = {};
-      App.init = (function () {
-        //Init
-        function handleFileSelect(evt) {
-          const files = evt.target.files; // FileList object
-
-          //files template
-          let template = `${Object.keys(files).join("")}`;
-
-          $("#drop").classList.add("hidden");
-          $("footer").classList.add("hasFiles");
-          $(".importar").classList.add("active");
-          setTimeout(() => {
-            $("#list-files").innerHTML = template;
-          }, 1000);
-
-          Object.keys(files).forEach((file) => {
-            let load = 2000 + file * 2000; // fake load
-            setTimeout(() => {
-              $(`.file--${file}`)
-                .querySelector(".progress")
-                .classList.remove("active");
-              $(`.file--${file}`).querySelector(".done").classList.add("anim");
-            }, load);
-          });
-        }
-
-        // drop events
-        $("#drop").ondragleave = (evt) => {
-          $("#drop").classList.remove("active");
-          $("#divider").classList.remove("overflow-hidden");
-          evt.preventDefault();
-        };
-        $("#drop").ondragover = $("#drop").ondragenter = (evt) => {
-          $("#drop").classList.add("active");
-          evt.preventDefault();
-        };
-        $("#drop").ondrop = (evt) => {
-          $("input[type=file]").files = evt.dataTransfer.files;
-          $("footer").classList.add("hasFiles");
-          $("#divider").classList.remove("overflow-hidden");
-          $("#divider").classList.add("lineTop");
-          $("#drop").classList.remove("active");
-          evt.preventDefault();
-        };
-
-        //upload more
-        $(".importar").addEventListener("click", () => {
-          $("#list-files").innerHTML = "";
-          $("footer").classList.remove("hasFiles");
-          $(".importar").classList.remove("active");
-          setTimeout(() => {
-            $("#drop").classList.remove("hidden");
-          }, 500);
-        });
-
-        // input change
-        $("input[type=file]").addEventListener("change", handleFileSelect);
-      })();
-    } else {
-      return;
-    }
-  }, [equipamentforuser]);
-
-  useEffect(() => {
     if (selectedTech.length > 1) {
       fetch("/helpdesk/ticket/" + ticketID, {
         method: "POST",
@@ -454,25 +376,6 @@ export default function DashboardTI() {
     }
 
     return;
-  }
-
-  function Select_Company() {
-    const select = document.getElementById("select_company");
-    var option = select.options[select.selectedIndex].value;
-
-    if (option === "none") {
-      return;
-    } else if (option === "csc") {
-      return SetCompanyName("CSC");
-    } else if (option === "ropes") {
-      return SetCompanyName("ROPES");
-    } else if (option === "fiber") {
-      return SetCompanyName("FIBER");
-    } else if (option === "vera") {
-      return SetCompanyName("VERA");
-    } else if (option === "mna") {
-      return SetCompanyName("MNA");
-    }
   }
 
   function SendChat() {
@@ -575,71 +478,33 @@ export default function DashboardTI() {
     }
   };
 
+  function enableProblem() {
+    const select = document.getElementById("selectOcorrence");
+    const option = select.options[select.selectedIndex].value;
+
+    console.log(option);
+
+    if (option === "infra") {
+      SetFakeSelect(false);
+      SetProblemInfra(true);
+      return;
+    } else if (option === "system") {
+      SetFakeSelect(false);
+      SetProblemInfra(false);
+      return;
+    } else if (option === "null") {
+      SetFakeSelect(true);
+      SetProblemInfra(false);
+      return;
+    }
+  }
+
   function equipamentForUser() {
     return SetEquipamentForUser(true);
   }
 
-  function inputDrop() {
-    const input = document.getElementById("inputName");
-    const p = document.getElementById("namefile");
-
-    SetFileImg(input.files[0]);
-    SetFileName(input.files[0].name);
-
-    return (p.innerText = input.files[0].name);
-  }
-
-  function updateEquipament() {
-    if (filename.length === 0) {
-      SetTypeError("Dados insuficientes");
-      SetMessageError("Imagem do equipamento obrigatoria");
-      return SetMessage(true);
-    }
-
-    if (companyname.length === 0) {
-      SetTypeError("Dados insuficientes");
-      SetMessageError("Filial obrigatória");
-      return SetMessage(true);
-    }
-
-    if (modelequipament.length === 0) {
-      SetTypeError("Dados insuficientes");
-      SetMessageError("Modelo Obrigatório");
-      return SetMessage(true);
-    }
-
-    const formData = new FormData();
-
-    formData.append("image", fileimg);
-    formData.append("company", companyname);
-    formData.append("model", modelequipament);
-
-    console.log(modelequipament);
-
-    fetch("equipment_inventory/", {
-      method: "POST",
-
-      headers: {
-        "X-CSRFToken": token,
-      },
-      body: formData,
-    })
-      .then((response) => {
-        if (response.status === 200) {
-          return window.location.reload();
-        }
-        return response.json();
-      })
-      .catch((err) => {
-        return console.log(err);
-      });
-  }
-
-  function modelEquip(event) {
-    const newModel = event.target.value;
-    SetModelEquipament(newModel);
-
-    return modelequipament;
+  function closeUpload() {
+    SetEquipamentForUser(false);
   }
 
   return (
@@ -672,12 +537,68 @@ export default function DashboardTI() {
       <DivDashPie>
         <DashBoardPie sector={"TI"} />
       </DivDashPie>
+      <DivFilter>
+        <div className="form-floating">
+          <Input1 type="text" className="form-control" id="floatingInput" />
+          <label htmlFor="floatingInput">Nome | Número | Problema...</label>
+        </div>
+        <Select1
+          id="selectOcorrence"
+          className="form-select"
+          onChange={enableProblem}
+        >
+          <option value="null" selected disabled>
+            Tipo de Ocorrência
+          </option>
+          <option value="infra">Infra</option>
+          <option value="system">Sistema</option>
+        </Select1>
+        {fakeSelect && (
+          <Select1 className="form-select" disabled>
+            <option selected>Problema</option>
+          </Select1>
+        )}
+        {problemInfra && (
+          <Select1 id="" className="form-select">
+            <option value="" selected disabled>
+              Problema
+            </option>
+            <option value="">Backup/Restore</option>
+            <option value="">E-mail</option>
+            <option value="">Equipamento</option>
+            <option value="">Gerenciamento de Usuario</option>
+            <option value="">Internet</option>
+            <option value="">Pasta</option>
+          </Select1>
+        )}
+        <Select1 name="" id="" className="form-select">
+          <option value="" selected disabled>
+            Ordernar
+          </option>
+          <option value="">Data Recente</option>
+          <option value="">Data Antiga</option>
+        </Select1>
+        <DivContainerImages className="d-flex">
+          <DivImages className="btn">
+            <IMGS1 src={IMG1} alt="" />
+          </DivImages>
+          <DivImages className="btn">
+            <IMGS1 src={IMG2} alt="" />
+          </DivImages>
+          <DivImages className="btn">
+            <IMGS1 src={IMG3} alt="" />
+          </DivImages>
+          <DivImages className="btn">
+            <IMGS1 src={IMG4} alt="" />
+          </DivImages>
+        </DivContainerImages>
+      </DivFilter>
       <div className="w-100 d-flex justify-content-center mt-5">
         {loading && <Loading />}
       </div>
       <div
         id="dashboard"
-        className="container d-flex flex-wrap justify-content-around p-5 mt-5 w-100"
+        className="container d-flex flex-wrap justify-content-around p-5 mt-3 w-100"
       ></div>
       {ticketWindow && (
         <TicketOpen className="position-fixed top-50 start-50 translate-middle">
@@ -828,67 +749,11 @@ export default function DashboardTI() {
         </TicketOpen>
       )}
       {equipamentforuser && (
-        <TicketOpen
-          className="position-fixed
-          top-50
-          start-50
-          translate-middle"
-        >
-          <h3 className="text-center mt-1">Cadastro de Equipamentos</h3>
-          <p className="text-center">Imagem do Equipamento</p>
-          <DivUpload className="upload">
-            <div className="upload-files">
-              <HeaderFiles>
-                <PFiles>
-                  <IMGFile2 src={Cloud} alt="" />
-                  <Span1 className="up">up</Span1>
-                  <Span2 className="load">load</Span2>
-                </PFiles>
-              </HeaderFiles>
-              <BodyFiles className="body" id="drop" onDrop={inputDrop}>
-                <IMGFile src={File} alt="" />
-                <PFiles2 className="pointer-none">
-                  <B1>Drag and drop</B1> files here to begin the upload
-                </PFiles2>
-                <InputFiles type="file" id="inputName" />
-              </BodyFiles>
-              <FooterFiles id="footerFiles">
-                <Divider className="divider overflow-hidden" id="divider">
-                  <Span3 className="mb-3">FILE</Span3>
-                </Divider>
-                <ListFiles className="list-files" id="list-files">
-                  <p id="namefile"></p>
-                </ListFiles>
-                <input
-                  type="text"
-                  className="form-control mx-auto mb-2"
-                  placeholder="Modelo"
-                  onChange={modelEquip}
-                />
-                <select
-                  className="form-select mx-auto w-25"
-                  id="select_company"
-                  onChange={Select_Company}
-                >
-                  <option value="none" selected disabled>
-                    Filial
-                  </option>
-                  <option value="csc">CSC</option>
-                  <option value="fiber">Fiber</option>
-                  <option value="ropes">Ropes</option>
-                  <option value="vera">Vera</option>
-                  <option value="mna">MNA</option>
-                </select>
-                <button
-                  className="importar btn btn-success mt-3"
-                  onClick={updateEquipament}
-                >
-                  Cadastrar Equipamento
-                </button>
-              </FooterFiles>
-            </div>
-          </DivUpload>
-        </TicketOpen>
+        <Registration
+          token={token}
+          equipamentforuser={equipamentforuser}
+          CloseFunct={closeUpload}
+        />
       )}
     </Div>
   );
