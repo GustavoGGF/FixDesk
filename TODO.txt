@@ -4,23 +4,6 @@ tentar acessar qualquer outra url, direcionar para login
 
 colocar safe nos JsonResponse
 
-validar o ramal
-
-colocar os required
-
-mudar o helpdesk por grupo do Ad e não job_title
-
-validar, saiu para o login, não pode voltar
-
-quando faz chamado, ter carregamento e reload
-
-arrumar data dos meus chamados
-
-
-baixar as dependencias, como bootstrap e afins
-
-busca especfica e se não consrguir, buscar pelos CN,
-
 Usar HTTPS para criptografar a comunicação entre o navegador do usuário e o servidor.
 
 Usar cabeçalhos de segurança HTTP, como o Content-Security-Policy, para ajudar a mitigar ataques de XSS e outros tipos de ataques.
@@ -182,3 +165,5 @@ filtro de pesquisa de chamado
 Adicionar item para chamado: troca de equipamento, tipo de equipamento e motivo da troca
 
 capacidade maxima de anexar arquivo de 5 MB
+
+ajustar quando criar chamado de criação de user/del

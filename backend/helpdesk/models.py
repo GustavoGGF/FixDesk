@@ -7,7 +7,6 @@ class SupportTicket(models.Model):
     department = models.CharField(max_length=10, null=True, blank=True)
     mail = models.EmailField(max_length=50, blank=False)
     company = models.CharField(max_length=15)
-    phone = models.CharField(max_length=15, blank=True, null=True)
     sector = models.CharField(max_length=20, blank=False)
     occurrence = models.CharField(max_length=20, blank=False, null=False)
     problemn = models.CharField(max_length=20, blank=False, null=False)

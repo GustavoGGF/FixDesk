@@ -258,7 +258,15 @@ export default function History() {
 
         const Span4 = document.createElement("span");
         Span4.classList.add("SPAN1");
-        Span4.innerText = ticket["start_date"];
+        var date = new Date(ticket["start_date"]);
+
+        var day = date.getDate();
+        var month = date.getMonth() + 1;
+        var year = date.getFullYear();
+
+        var newDate = day + "-" + month + "-" + year;
+
+        Span4.innerText = newDate;
 
         div1.appendChild(H5);
         div1.appendChild(Span1);

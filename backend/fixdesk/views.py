@@ -247,10 +247,6 @@ def validation(request):
                         helpdesk = "User"
                 elif tech_ti in item:
                     helpdesk = "Tecnico TI"
-            # if tech_admin in information["memberOf"][0]:
-            #     helpdesk = "Admin"
-            # if tech_leader in information["memberOf"][0]:
-            #     helpdesk = "Gestor"
             if "displayName" in information:
                 name = information["displayName"]
             else:
