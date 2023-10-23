@@ -953,8 +953,6 @@ export default function Helpdesk() {
 
     const formData = new FormData();
 
-    console.log(dataFormatada);
-
     if (filename.length > 0) {
       formData.append("ticketRequester", Data.name);
       formData.append("department", Data.department);
@@ -1004,9 +1002,17 @@ export default function Helpdesk() {
             top: 0,
             behavior: "smooth",
           });
-        } else {
+        } else if (Status === 200) {
           SetMessage(false);
           window.location.reload();
+        } else if (Status === 320) {
+          SetMessage(true);
+          setTypeError("Dados Inválidos");
+          setMessageError("Arquivo Anexado Inválido");
+          return window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+          });
         }
       })
       .catch((err) => {
@@ -1071,8 +1077,10 @@ export default function Helpdesk() {
     const input = document.getElementById("inputName");
     const p = document.getElementById("namefile");
 
-    SetFileImg(input.files[0]);
-    SetFileName(input.files[0].name);
+    const file = input.files[0];
+
+    SetFileImg(file);
+    SetFileName(file.name);
 
     return (p.innerText = input.files[0].name);
   }
@@ -1096,7 +1104,7 @@ export default function Helpdesk() {
         </div>
       )}
       {message && (
-        <div className="position-absolute top-0 start-50 translate-middle-x mt-5">
+        <div className="position-fixed top-50 start-50 translate-middle z-3">
           <Message
             TypeError={typeError}
             MessageError={messageError}
@@ -1753,7 +1761,7 @@ export default function Helpdesk() {
           </div>
           <input
             type="submit"
-            className="importar btn btn-primary mt-3"
+            className="importar btn btn-primary mt-3 mb-3"
             onClick={submitTicket}
             value={"Enviar"}
           />

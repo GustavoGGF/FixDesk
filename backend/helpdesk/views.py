@@ -16,6 +16,7 @@ from dashboards.models import Equipaments
 from base64 import b64encode
 from PIL import Image
 from io import BytesIO
+from magic import Magic
 
 
 # Create your views here.
@@ -107,7 +108,6 @@ def submitTicket(request):
         start_date = None
         pid = None
         try:
-            print(request.POST)
             ticketRequester = request.POST.get("ticketRequester")
             department = request.POST.get("department")
             mail = request.POST.get("mail")
@@ -134,28 +134,56 @@ def submitTicket(request):
 
         Ticket = None
         image = None
+        image_bytes = None
+        mime = None
+        file_type = None
+        types = None
+        valid = None
+        types_str = None
+        find_text = None
         if "image" in request.FILES:
             try:
                 image = request.FILES.get("image")
-                Ticket = SupportTicket(
-                    ticketRequester=ticketRequester,
-                    department=department,
-                    mail=mail,
-                    company=company,
-                    sector=sector,
-                    respective_area=respective_area,
-                    occurrence=occurrence,
-                    problemn=problemn,
-                    observation=observation,
-                    start_date=start_date,
-                    PID=pid,
-                    file=image,
-                )
 
-                Ticket.save()
-                # * Monta o ticket e salva no banco
+                image_bytes = image.read()
 
-                return JsonResponse({"status": "ok"}, status=200, safe=True)
+                mime = Magic()
+
+                file_type = mime.from_buffer(image_bytes)
+
+                types_str = getenv("VALID_TYPES")
+
+                types_str = types_str.strip("[]")
+
+                types = [type.strip() for type in types_str.split(",")]
+
+                for typeUn in types:
+                    if typeUn.replace('"', "").lower() in file_type.lower():
+                        valid = True
+                        break
+
+                if valid:
+                    Ticket = SupportTicket(
+                        ticketRequester=ticketRequester,
+                        department=department,
+                        mail=mail,
+                        company=company,
+                        sector=sector,
+                        respective_area=respective_area,
+                        occurrence=occurrence,
+                        problemn=problemn,
+                        observation=observation,
+                        start_date=start_date,
+                        PID=pid,
+                        file=image,
+                    )
+
+                    Ticket.save()
+                    # * Monta o ticket e salva no banco
+                    return JsonResponse({"status": "ok"}, status=200, safe=True)
+
+                else:
+                    return JsonResponse({"status": "Invalid"}, status=320, safe=True)
             except Exception as e:
                 print(e)
 

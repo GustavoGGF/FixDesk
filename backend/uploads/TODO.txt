@@ -4,6 +4,8 @@ tentar acessar qualquer outra url, direcionar para login
 
 colocar safe nos JsonResponse
 
+fazer verificação se precisa anexar algo ou não
+
 validar o ramal
 
 colocar os required
@@ -180,5 +182,3 @@ alocagem ter filtro por filial por localidade
 filtro de pesquisa de chamado
 
 Adicionar item para chamado: troca de equipamento, tipo de equipamento e motivo da troca
-
-capacidade maxima de anexar arquivo de 5 MB
