@@ -14,6 +14,7 @@ export const TicketOpen = styled.div`
   width: 80%;
   position: relative;
   border-radius: 20px;
+  z-index: 10 !important;
 `;
 
 export const CloseBTN = styled.button`
@@ -21,15 +22,15 @@ export const CloseBTN = styled.button`
   height: 30px;
   cursor: pointer;
   border: none;
-  margin: 10px;
   position: absolute;
   background: #f9f9f9;
+  margin-right: 15px;
+  margin-top: 10px;
 `;
 
 export const Close = styled.img`
   width: 30px;
   height: 30px;
-  background: #f9f9f9;
 `;
 
 export const DivChat = styled.div`
@@ -47,4 +48,106 @@ export const BtnChat = styled.button`
   background-image: url(${SubmitIMG});
   background-position: center;
   background-size: cover;
+`;
+
+export const IMGFiles = styled.img`
+  width: 60px;
+  height: 60px;
+  border: 5px;
+  cursor: pointer;
+  transition: 0.7s;
+  &:hover {
+    transform: scale(1.5);
+  }
+`;
+
+export const DivImageOpen = styled.div`
+  width: 100vh;
+  z-index: 10000 !important;
+`;
+
+export const ImageOpen = styled.img`
+  width: 100%;
+`;
+
+export const BtnOpen = styled.button`
+  background: transparent;
+  border: none;
+`;
+
+export const ImgSelectView = styled.img`
+  width: 30px;
+`;
+
+export const DivSelectView = styled.div`
+  position: relative;
+  border: 1px dashed #adb5bd;
+  height: 100%;
+  padding: 5px;
+  border-radius: 2px;
+`;
+
+export const PSelectView = styled.p`
+  font-size: 0.6em;
+`;
+
+export const DivCard = styled.div`
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: column;
+  cursor: pointer;
+  transition: 1s;
+  justify-content: space-around;
+  width: 250px;
+  height: 300px;
+  border: 5px solid #ffc300;
+  margin-bottom: 30px;
+  border-radius: 10px;
+  padding: 5px;
+  background-color: transparent;
+  margin: 10px;
+  transition: 0.7s;
+  &:hover {
+    transform: scale(1.1);
+  }
+`;
+
+export const H5Card = styled.h5`
+  text-align: center;
+  text-transform: uppercase;
+  color: #caf0f8;
+`;
+
+export const SpanCard = styled.span`
+  margin-top: 15px;
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: bold;
+  color: #caf0f8;
+`;
+
+export const DivList = styled.div`
+  display: flex;
+  cursor: pointer;
+  transition: 1s;
+  justify-content: space-between;
+  width: 100%;
+  border-top: 5px solid #ffc300;
+  border-bottom: 5px solid #ffc300;
+  border-left: 3px solid #ffc300;
+  border-right: 3px solid #ffc300;
+  padding: 20px;
+  background-color: transparent;
+  transition: 0.7s;
+  margin-bottom: 10px;
+  &:hover {
+    transform: scale(1.07);
+  }
+`;
+
+export const SpanList = styled.span`
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: bold;
+  color: #caf0f8;
 `;

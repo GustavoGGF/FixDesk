@@ -1,17 +1,18 @@
 {
   "files": {
-    "main.css": "/static/css/main.55168e00.css",
-    "main.js": "/static/js/main.ee1b256d.js",
+    "main.css": "/static/css/main.84b1d111.css",
+    "main.js": "/static/js/main.ac9cb744.js",
     "static/media/lupalogo.png": "/static/media/lupalogo.0a08762f90fe37fe47db.png",
     "static/media/definicoes.png": "/static/media/definicoes.25f9223de2d58f6bf587.png",
     "static/media/close.png": "/static/media/close.92eb52856aeed7bf88fc.png",
     "static/media/fixdesk.png": "/static/media/fixdesk.ac323cae5cc46de51786.png",
+    "static/media/identificacao.png": "/static/media/identificacao.ef008ff7999bbf4d6a1f.png",
     "index.html": "/index.html",
-    "main.55168e00.css.map": "/static/css/main.55168e00.css.map",
-    "main.ee1b256d.js.map": "/static/js/main.ee1b256d.js.map"
+    "main.84b1d111.css.map": "/static/css/main.84b1d111.css.map",
+    "main.ac9cb744.js.map": "/static/js/main.ac9cb744.js.map"
   },
   "entrypoints": [
-    "static/css/main.55168e00.css",
-    "static/js/main.ee1b256d.js"
+    "static/css/main.84b1d111.css",
+    "static/js/main.ac9cb744.js"
   ]
 }

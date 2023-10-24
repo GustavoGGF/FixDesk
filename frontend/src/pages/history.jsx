@@ -8,9 +8,35 @@ import {
   CloseBTN,
   DivChat,
   BtnChat,
+  IMGFiles,
+  ImageOpen,
+  DivImageOpen,
+  BtnOpen,
+  ImgSelectView,
+  DivSelectView,
+  PSelectView,
+  DivCard,
+  H5Card,
+  SpanCard,
+  DivList,
+  SpanList,
 } from "../styles/historyStyle";
+import {
+  DivFilter,
+  Input1,
+  Select1,
+  DivContainerImages,
+  DivImages,
+  IMGS1,
+} from "../styles/dashboardTIStyle";
 import Message from "../components/message";
 import CloseIMG from "../images/components/close.png";
+import IMG1 from "../images/dashboard_TI/quantity_1.png";
+import IMG2 from "../images/dashboard_TI/quantity_2.png";
+import IMG3 from "../images/dashboard_TI/quantity_3.png";
+import IMG4 from "../images/dashboard_TI/quantity_4.png";
+import List from "../images/components/lista-de-itens.png";
+import Card from "../images/components/identificacao.png";
 
 export default function History() {
   const [navbar, SetNavbar] = useState(false);
@@ -42,6 +68,12 @@ export default function History() {
   const [fetchchat, SetFetchChat] = useState(false);
   const [countchat, SetCountChat] = useState();
   const [initUpdateChat, SetInitUpdateChat] = useState();
+  const [fileticket, SetFileTicket] = useState();
+  const [imageurl, SetImageUrl] = useState();
+  const [imageopen, SetImageOpen] = useState(false);
+  const [fakeSelect, SetFakeSelect] = useState(true);
+  const [problemInfra, SetProblemInfra] = useState(false);
+  const [ticketsDash, SetTicketsDash] = useState([]);
 
   let count = 0;
   let timeoutId;
@@ -88,6 +120,10 @@ export default function History() {
       });
   }, []);
 
+  function openImage() {
+    SetImageOpen(true);
+  }
+
   function helpdeskPage({ id }) {
     fetch("/helpdesk/ticket/" + id, {
       method: "GET",
@@ -103,6 +139,7 @@ export default function History() {
         SetMessageChat(false);
         SetMountChat([]);
         const data = dataBack.data[0];
+        console.log(data);
         const start_date = new Date(data.start_date);
 
         var CurrentDate = new Date();
@@ -122,6 +159,20 @@ export default function History() {
         SetLifetime(lifetime);
         SetTicketResponsible_Technician(data.responsible_technician);
         SetTicketID(data.id);
+
+        SetImageUrl(`data:image/jpeg;base64,${data.file}`);
+
+        if (data.file.length > 1) {
+          const Div = (
+            <IMGFiles
+              src={`data:image/jpeg;base64,${data.file}`}
+              onClick={openImage}
+              alt=""
+            />
+          );
+
+          SetFileTicket(Div);
+        }
 
         if (
           data.chat !== null &&
@@ -230,56 +281,104 @@ export default function History() {
 
   useEffect(() => {
     if (tickets && Object.keys(tickets).length > 0) {
-      const dashboard = document.getElementById("dashboard");
-      SetLoading(false);
-      SetNavbar(true);
-      tickets.forEach((ticket) => {
-        const div1 = document.createElement("div");
-        div1.classList.add("DIV1");
-        div1.addEventListener("click", () => {
-          helpdeskPage({ id: ticket["id"] });
-        });
-
-        const H5 = document.createElement("h5");
-        H5.classList.add("H5");
-        H5.innerText = "chamado " + ticket["id"];
-
-        const Span1 = document.createElement("span");
-        Span1.classList.add("SPAN1");
-        Span1.innerText = ticket["ticketRequester"];
-
-        const Span2 = document.createElement("span");
-        Span2.classList.add("SPAN1");
-        Span2.innerText = "Ocorrência: " + ticket["occurrence"];
-
-        const Span3 = document.createElement("span");
-        Span3.classList.add("SPAN1");
-        Span3.innerText = "Problema: " + ticket["problemn"];
-
-        const Span4 = document.createElement("span");
-        Span4.classList.add("SPAN1");
-        var date = new Date(ticket["start_date"]);
-
-        var day = date.getDate();
-        var month = date.getMonth() + 1;
-        var year = date.getFullYear();
-
-        var newDate = day + "-" + month + "-" + year;
-
-        Span4.innerText = newDate;
-
-        div1.appendChild(H5);
-        div1.appendChild(Span1);
-        div1.appendChild(Span2);
-        div1.appendChild(Span3);
-        div1.appendChild(Span4);
-        dashboard.appendChild(div1);
-
-        return SetLoadingDash(false);
-      });
+      const selectView = localStorage.getItem("selectView");
+      if (selectView === null) {
+        localStorage.setItem("selectView", "card");
+        viewCard();
+      } else if (selectView === "card") {
+        viewCard();
+      } else if (selectView === "list") {
+        listCard();
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tickets]);
+
+  function viewCard() {
+    SetTicketsDash([]);
+    SetLoading(false);
+    SetNavbar(true);
+
+    localStorage.setItem("selectView", "card");
+
+    const btn = document.getElementById("selectView-Card");
+    btn.style.backgroundColor = "#00B4D8";
+
+    const btn2 = document.getElementById("selectView-List");
+    btn2.style.backgroundColor = "transparent";
+
+    tickets.forEach((ticket) => {
+      var date = new Date(ticket["start_date"]);
+
+      var day = date.getDate();
+      var month = date.getMonth() + 1;
+      var year = date.getFullYear();
+      var newDate = day + "-" + month + "-" + year;
+      const Div = (
+        <DivCard
+          onClick={() => {
+            helpdeskPage({ id: ticket["id"] });
+          }}
+        >
+          <H5Card>chamado {ticket["id"]}</H5Card>
+          <SpanCard>{ticket["ticketRequester"]}</SpanCard>
+          <SpanCard>Ocorrência: {ticket["occurrence"]}</SpanCard>
+          <SpanCard>Problema: {ticket["problemn"]}</SpanCard>
+          <SpanCard>{newDate}</SpanCard>
+        </DivCard>
+      );
+
+      SetTicketsDash((ticketsDash) => [...ticketsDash, Div]);
+      const dash = document.getElementById("dashboard");
+      dash.classList.add("dashCard");
+
+      SetLoadingDash(false);
+      return ticketsDash;
+    });
+  }
+
+  function listCard() {
+    SetTicketsDash([]);
+    SetNavbar(true);
+    SetLoading(false);
+
+    localStorage.setItem("selectView", "list");
+
+    const btn = document.getElementById("selectView-List");
+    btn.style.backgroundColor = "#00B4D8";
+
+    const btn2 = document.getElementById("selectView-Card");
+    btn2.style.backgroundColor = "transparent";
+
+    tickets.forEach((ticket) => {
+      var date = new Date(ticket["start_date"]);
+
+      var day = date.getDate();
+      var month = date.getMonth() + 1;
+      var year = date.getFullYear();
+      var newDate = day + "-" + month + "-" + year;
+      const Div = (
+        <DivList
+          onClick={() => {
+            helpdeskPage({ id: ticket["id"] });
+          }}
+        >
+          <H5Card>chamado {ticket["id"]}</H5Card>
+          <SpanList>{ticket["ticketRequester"]}</SpanList>
+          <SpanList>Ocorrência: {ticket["occurrence"]}</SpanList>
+          <SpanList>Problema: {ticket["problemn"]}</SpanList>
+          <SpanList>{newDate}</SpanList>
+        </DivList>
+      );
+
+      SetTicketsDash((ticketsDash) => [...ticketsDash, Div]);
+      const dash = document.getElementById("dashboard");
+      dash.classList.add("dashCard");
+
+      SetLoadingDash(false);
+      return ticketsDash;
+    });
+  }
 
   function HelpdeskPage() {
     return (window.location.href = "/helpdesk/");
@@ -439,6 +538,31 @@ export default function History() {
     }
   }
 
+  function imageclose() {
+    SetImageOpen(false);
+  }
+
+  function enableProblem() {
+    const select = document.getElementById("selectOcorrence");
+    const option = select.options[select.selectedIndex].value;
+
+    console.log(option);
+
+    if (option === "infra") {
+      SetFakeSelect(false);
+      SetProblemInfra(true);
+      return;
+    } else if (option === "system") {
+      SetFakeSelect(false);
+      SetProblemInfra(false);
+      return;
+    } else if (option === "null") {
+      SetFakeSelect(true);
+      SetProblemInfra(false);
+      return;
+    }
+  }
+
   return (
     <Div>
       {navbar && (
@@ -461,11 +585,82 @@ export default function History() {
           />
         </div>
       )}
-      <section
-        id="dashboard"
-        className="container d-flex flex-wrap justify-content-around p-5 mt-5"
-      >
-        {loadingDash && <Loading />}
+
+      <DivFilter>
+        <div className="form-floating">
+          <Input1 type="text" className="form-control" id="floatingInput" />
+          <label htmlFor="floatingInput">Nome | Número | Problema...</label>
+        </div>
+        <Select1
+          id="selectOcorrence"
+          className="form-select"
+          onChange={enableProblem}
+        >
+          <option value="null" selected disabled>
+            Tipo de Ocorrência
+          </option>
+          <option value="infra">Infra</option>
+          <option value="system">Sistema</option>
+        </Select1>
+        {fakeSelect && (
+          <Select1 className="form-select" disabled>
+            <option selected>Problema</option>
+          </Select1>
+        )}
+        {problemInfra && (
+          <Select1 id="" className="form-select">
+            <option value="" selected disabled>
+              Problema
+            </option>
+            <option value="">Backup/Restore</option>
+            <option value="">E-mail</option>
+            <option value="">Equipamento</option>
+            <option value="">Gerenciamento de Usuario</option>
+            <option value="">Internet</option>
+            <option value="">Pasta</option>
+          </Select1>
+        )}
+        <Select1 name="" id="" className="form-select">
+          <option value="" selected disabled>
+            Ordernar
+          </option>
+          <option value="">Data Recente</option>
+          <option value="">Data Antiga</option>
+        </Select1>
+        <DivContainerImages className="d-flex">
+          <DivImages className="btn">
+            <IMGS1 src={IMG1} alt="" />
+          </DivImages>
+          <DivImages className="btn">
+            <IMGS1 src={IMG2} alt="" />
+          </DivImages>
+          <DivImages className="btn">
+            <IMGS1 src={IMG3} alt="" />
+          </DivImages>
+          <DivImages className="btn">
+            <IMGS1 src={IMG4} alt="" />
+          </DivImages>
+        </DivContainerImages>
+        <DivSelectView>
+          <PSelectView className="position-absolute top-0 start-0 translate-middle">
+            Modo de Visualização
+          </PSelectView>
+          <button className="btn" id="selectView-List" onClick={listCard}>
+            <ImgSelectView src={List} className="img-fluid" alt="" />
+          </button>
+          <button className="btn" id="selectView-Card" onClick={viewCard}>
+            <ImgSelectView src={Card} clasName="img-fluid" alt="" />
+          </button>
+        </DivSelectView>
+      </DivFilter>
+
+      <section id="dashboard">
+        {loadingDash && (
+          <div className="position-absolute top-50 start-50 translate-middle">
+            <Loading />
+          </div>
+        )}
+        {ticketsDash}
       </section>
       {ticketWindow && (
         <TicketOpen className="position-fixed top-50 start-50 translate-middle">
@@ -547,6 +742,7 @@ export default function History() {
                   disabled
                 />
               </div>
+              <div className="w-100 d-flex">{fileticket}</div>
               <input
                 type="text"
                 value={
@@ -598,6 +794,16 @@ export default function History() {
             )}
           </div>
         </TicketOpen>
+      )}
+      {imageopen && (
+        <DivImageOpen className="position-fixed top-50 start-50 translate-middle">
+          <div className="w-100 text-sm-end">
+            <BtnOpen onClick={imageclose}>
+              <Close src={CloseIMG} alt="" />
+            </BtnOpen>
+          </div>
+          <ImageOpen src={imageurl} alt="" />
+        </DivImageOpen>
       )}
     </Div>
   );

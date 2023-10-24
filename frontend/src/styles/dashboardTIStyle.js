@@ -107,6 +107,7 @@ export const DivFilter = styled.div`
   justify-content: space-around;
   flex-wrap: wrap;
   border-radius: 20px;
+  padding: 20px;
 `;
 
 export const Input1 = styled.input`
@@ -124,6 +125,7 @@ export const DivContainerImages = styled.div`
   align-items: center;
   justify-content: center;
   text-align: center;
+  border: 2px dashed #adb5bd;
 `;
 
 export const DivImages = styled.div`

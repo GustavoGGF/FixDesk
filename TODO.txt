@@ -6,23 +6,13 @@ colocar safe nos JsonResponse
 
 Usar HTTPS para criptografar a comunicação entre o navegador do usuário e o servidor.
 
-Usar cabeçalhos de segurança HTTP, como o Content-Security-Policy, para ajudar a mitigar ataques de XSS e outros tipos de ataques.
-
 diagrama de como funcikona
 
-implementar Redis | Kubernetes | Docker
-
-Ajustar caixa de erro login
-
-dados navbar do history
+implementar Kubernetes | Docker
 
 return em todas as funções
 
 try e cath todo codigo
-
-chamados, mostrar ultimos 7, demais ter um botão
-
-anexar imagens no chat do chamado
 
 tema dark light
 
@@ -167,3 +157,17 @@ Adicionar item para chamado: troca de equipamento, tipo de equipamento e motivo 
 capacidade maxima de anexar arquivo de 5 MB
 
 ajustar quando criar chamado de criação de user/del
+
+por nos cabeçalhos fetch Content Security Policy (CSP, X-Content-Type-Options,X-Frame-Options
+Strict-Transport-Security, X-XSS-Protection,Referrer-Policy,Feature-Policy,X-Content-Security-Policy
+Cross-Origin Resource Sharing (CORS) 
+
+titckets e imagens dos ticker ter um fundo com blur
+
+animação nos buttons
+
+multiple files no upload
+
+anexar imagens no chat do chamado
+
+borda do ticket muda conforme status, aberto, em atendimento, fechado

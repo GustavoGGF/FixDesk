@@ -1731,7 +1731,7 @@ export default function Helpdesk() {
               ></Textarea>
               <label htmlFor="floatingTextarea2">Observação</label>
             </div>
-            <h3 className="text-center mt-1">Upload de Arquivos</h3>
+            <h3 className="text-center mt-1">Upload de Arquivo</h3>
             <DivUpload className="upload">
               <div className="upload-files">
                 <HeaderFiles>

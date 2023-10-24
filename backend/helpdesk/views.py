@@ -412,6 +412,24 @@ def ticket(request, id):
         serialized_ticket = []
         try:
             for t in ticket:
+                try:
+                    image = ""
+                    pil_image = None
+                    img_bytes = None
+                    image_data = None
+                    if t.file:
+                        image = t.file
+
+                        with image.open() as img:
+                            pil_image = Image.open(img)
+
+                            img_bytes = BytesIO()
+
+                            pil_image.save(img_bytes, format="PNG")
+
+                            image_data = b64encode(img_bytes.getvalue()).decode("utf-8")
+                except Exception as e:
+                    print(e)
                 serialized_ticket.append(
                     {
                         "ticketRequester": t.ticketRequester,
@@ -427,6 +445,7 @@ def ticket(request, id):
                         "responsible_technician": t.responsible_technician,
                         "id": t.id,
                         "chat": t.chat,
+                        "file": image_data,
                     }
                 )
 
