@@ -486,9 +486,22 @@ def moreTicket(request):
             newCount = int(request.META.get("HTTP_TICKET_CURRENT"))
             count = count + newCount
 
-            ticket_data = SupportTicket.objects.filter(
-                ticketRequester=username
-            ).order_by("-id")[:count]
+            if "HTTP_ORDER_BY" in request.META:
+                order = request.META.get("HTTP_ORDER_BY")
+                if order == "-id":
+                    ticket_data = SupportTicket.objects.filter(
+                        ticketRequester=username
+                    ).order_by("-id")[:count]
+
+                else:
+                    ticket_data = SupportTicket.objects.filter(
+                        ticketRequester=username
+                    )[:count]
+
+            else:
+                ticket_data = SupportTicket.objects.filter(ticketRequester=username)[
+                    :count
+                ]
 
             for ticket in ticket_data:
                 ticket_json = serialize("json", [ticket])
@@ -519,13 +532,29 @@ def getTicketFilter(request):
         ticket_data = None
         ticket_list = []
         ticket_json = None
+        order = None
         try:
             username = request.META.get("HTTP_DATA_USER")
             Quantity_tickets = int(request.META.get("HTTP_QUANTITY_TICKETS"))
 
-            ticket_data = SupportTicket.objects.filter(
-                ticketRequester=username
-            ).order_by("-id")[:Quantity_tickets]
+            print(Quantity_tickets)
+
+            if "HTTP_ORDER_BY" in request.META:
+                order = request.META.get("HTTP_ORDER_BY")
+                if order == "-id":
+                    ticket_data = SupportTicket.objects.filter(
+                        ticketRequester=username
+                    ).order_by("-id")[:Quantity_tickets]
+
+                else:
+                    ticket_data = SupportTicket.objects.filter(
+                        ticketRequester=username
+                    )[:Quantity_tickets]
+
+            else:
+                ticket_data = SupportTicket.objects.filter(ticketRequester=username)[
+                    :Quantity_tickets
+                ]
 
             for ticket in ticket_data:
                 ticket_json = serialize("json", [ticket])

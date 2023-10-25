@@ -76,6 +76,8 @@ export default function History() {
   const [problemInfra, SetProblemInfra] = useState(false);
   const [ticketsDash, SetTicketsDash] = useState([]);
   const [countTicket, SetCountTicket] = useState(0);
+  const [idquantity, SetIDQuantity] = useState("");
+  const [orderby, SetOrderBy] = useState("");
 
   let count = 0;
   let timeoutId;
@@ -108,6 +110,8 @@ export default function History() {
         SetData(data.data);
         SetTickets(data.tickets);
         SetCountTicket(10);
+        SetIDQuantity("thenView");
+        SetOrderBy("-id");
         const btn = document.getElementById("thenView");
         btn.style.backgroundColor = "#00B4D8";
         if (data.tickets.length === 0) {
@@ -285,6 +289,7 @@ export default function History() {
   }
 
   useEffect(() => {
+    console.log(idquantity);
     if (tickets && Object.keys(tickets).length > 0) {
       const selectView = localStorage.getItem("selectView");
       if (selectView === null) {
@@ -576,6 +581,7 @@ export default function History() {
         Accept: "application/json",
         "Ticket-Current": countTicket,
         "User-Data": Data.name,
+        "ORDER-BY": orderby,
       },
     })
       .then((response) => {
@@ -606,6 +612,7 @@ export default function History() {
 
     const btn4 = document.getElementById("allView");
     btn4.style.backgroundColor = "transparent";
+    console.log(id);
 
     const btn5 = document.getElementById(id);
     btn5.style.backgroundColor = "#00B4D8";
@@ -616,6 +623,7 @@ export default function History() {
         Accept: "application/json",
         "Data-User": Data.name,
         "Quantity-tickets": quantity,
+        "Order-by": orderby,
       },
     })
       .then((response) => {
@@ -628,6 +636,42 @@ export default function History() {
       .catch((err) => {
         return console.log(err);
       });
+  }
+
+  function getTicketFilterOrderTime({ order }) {
+    SetTickets([]);
+    fetch("/helpdesk/getTicketFilter/", {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Data-User": Data.name,
+        "Quantity-tickets": countTicket,
+        "Order-By": order,
+      },
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        SetLoadingDash(false);
+        return SetTickets(data.tickets);
+      })
+      .catch((err) => {
+        return console.log(err);
+      });
+  }
+
+  function selectOrder() {
+    const select = document.getElementById("select-order");
+    const option = select.options[select.selectedIndex].value;
+
+    if (option === "recent") {
+      getTicketFilterOrderTime({ order: "-id" });
+      SetOrderBy("-id");
+    } else if (option === "ancient") {
+      getTicketFilterOrderTime({ order: "id" });
+      SetOrderBy("id");
+    }
   }
 
   return (
@@ -687,12 +731,19 @@ export default function History() {
             <option value="">Pasta</option>
           </Select1>
         )}
-        <Select1 name="" id="" className="form-select">
-          <option value="" selected disabled>
+        <Select1
+          name=""
+          id="select-order"
+          className="form-select"
+          onChange={selectOrder}
+        >
+          <option value="none" disabled>
             Ordernar
           </option>
-          <option value="">Data Recente</option>
-          <option value="">Data Antiga</option>
+          <option selected value="recent">
+            Data Recente
+          </option>
+          <option value="ancient">Data Antiga</option>
         </Select1>
         <DivContainerImages className="d-flex">
           <PSelectView className="position-absolute top-0 start-0 translate-middle">
@@ -703,6 +754,7 @@ export default function History() {
             id="fiveView"
             onClick={() => {
               SetCountTicket(5);
+              SetIDQuantity("fiveView");
               getTicketFilter({ id: "fiveView", quantity: 5 });
             }}
           >
@@ -714,7 +766,8 @@ export default function History() {
             id="thenView"
             onClick={() => {
               SetCountTicket(10);
-              getTicketFilter({ id: "fiveView", quantity: 10 });
+              SetIDQuantity("thenView");
+              getTicketFilter({ id: "thenView", quantity: 10 });
             }}
           >
             <IMGS1 src={IMG2} alt="" />
@@ -725,6 +778,7 @@ export default function History() {
             id="fiftyView"
             onClick={() => {
               SetCountTicket(50);
+              SetIDQuantity("fiftyView");
               getTicketFilter({ id: "fiftyView", quantity: 50 });
             }}
           >
@@ -736,6 +790,7 @@ export default function History() {
             id="allView"
             onClick={() => {
               SetCountTicket(100000);
+              SetIDQuantity("allView");
               getTicketFilter({ id: "allView", quantity: 100000 });
             }}
           >
