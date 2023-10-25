@@ -121,11 +121,12 @@ export const Select1 = styled.select`
 `;
 
 export const DivContainerImages = styled.div`
-  max-height: 58px;
+  height: 100%;
   align-items: center;
   justify-content: center;
   text-align: center;
-  border: 2px dashed #adb5bd;
+  border: 1px dashed #adb5bd;
+  position: relative;
 `;
 
 export const DivImages = styled.div`

@@ -20,6 +20,7 @@ import {
   SpanCard,
   DivList,
   SpanList,
+  PQuantity,
 } from "../styles/historyStyle";
 import {
   DivFilter,
@@ -74,6 +75,7 @@ export default function History() {
   const [fakeSelect, SetFakeSelect] = useState(true);
   const [problemInfra, SetProblemInfra] = useState(false);
   const [ticketsDash, SetTicketsDash] = useState([]);
+  const [countTicket, SetCountTicket] = useState(0);
 
   let count = 0;
   let timeoutId;
@@ -105,6 +107,9 @@ export default function History() {
         SetToken(data.token);
         SetData(data.data);
         SetTickets(data.tickets);
+        SetCountTicket(10);
+        const btn = document.getElementById("thenView");
+        btn.style.backgroundColor = "#00B4D8";
         if (data.tickets.length === 0) {
           setTypeError("Falta de Dados");
           setMessageError("Você Ainda não abriu nenhum chamado");
@@ -563,6 +568,68 @@ export default function History() {
     }
   }
 
+  function moreTickets() {
+    console.log(countTicket);
+    fetch("/helpdesk/moreTicket/", {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Ticket-Current": countTicket,
+        "User-Data": Data.name,
+      },
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        console.log(data.count);
+        SetCountTicket(data.count);
+        SetTickets(data.tickets);
+        return countTicket;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
+  function getTicketFilter({ id, quantity }) {
+    SetTickets([]);
+    SetLoadingDash(true);
+    const btn1 = document.getElementById("fiveView");
+    btn1.style.backgroundColor = "transparent";
+
+    const btn2 = document.getElementById("thenView");
+    btn2.style.backgroundColor = "transparent";
+
+    const btn3 = document.getElementById("fiftyView");
+    btn3.style.backgroundColor = "transparent";
+
+    const btn4 = document.getElementById("allView");
+    btn4.style.backgroundColor = "transparent";
+
+    const btn5 = document.getElementById(id);
+    btn5.style.backgroundColor = "#00B4D8";
+
+    fetch("/helpdesk/getTicketFilter/", {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Data-User": Data.name,
+        "Quantity-tickets": quantity,
+      },
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        SetLoadingDash(false);
+        return SetTickets(data.tickets);
+      })
+      .catch((err) => {
+        return console.log(err);
+      });
+  }
+
   return (
     <Div>
       {navbar && (
@@ -628,17 +695,52 @@ export default function History() {
           <option value="">Data Antiga</option>
         </Select1>
         <DivContainerImages className="d-flex">
-          <DivImages className="btn">
+          <PSelectView className="position-absolute top-0 start-0 translate-middle">
+            Quantidade
+          </PSelectView>
+          <DivImages
+            className="btn"
+            id="fiveView"
+            onClick={() => {
+              SetCountTicket(5);
+              getTicketFilter({ id: "fiveView", quantity: 5 });
+            }}
+          >
             <IMGS1 src={IMG1} alt="" />
+            <PQuantity>5</PQuantity>
           </DivImages>
-          <DivImages className="btn">
+          <DivImages
+            className="btn"
+            id="thenView"
+            onClick={() => {
+              SetCountTicket(10);
+              getTicketFilter({ id: "fiveView", quantity: 10 });
+            }}
+          >
             <IMGS1 src={IMG2} alt="" />
+            <PQuantity>10</PQuantity>
           </DivImages>
-          <DivImages className="btn">
+          <DivImages
+            className="btn"
+            id="fiftyView"
+            onClick={() => {
+              SetCountTicket(50);
+              getTicketFilter({ id: "fiftyView", quantity: 50 });
+            }}
+          >
             <IMGS1 src={IMG3} alt="" />
+            <PQuantity>50</PQuantity>
           </DivImages>
-          <DivImages className="btn">
+          <DivImages
+            className="btn"
+            id="allView"
+            onClick={() => {
+              SetCountTicket(100000);
+              getTicketFilter({ id: "allView", quantity: 100000 });
+            }}
+          >
             <IMGS1 src={IMG4} alt="" />
+            <PQuantity>todos</PQuantity>
           </DivImages>
         </DivContainerImages>
         <DivSelectView>
@@ -795,6 +897,11 @@ export default function History() {
           </div>
         </TicketOpen>
       )}
+      <div className="w-100 text-center">
+        <button className="btn btn-info mb-5" onClick={moreTickets}>
+          Carregar Mais
+        </button>
+      </div>
       {imageopen && (
         <DivImageOpen className="position-fixed top-50 start-50 translate-middle">
           <div className="w-100 text-sm-end">

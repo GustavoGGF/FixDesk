@@ -239,7 +239,7 @@ def history(request):
         try:
             ticket_data = SupportTicket.objects.filter(
                 ticketRequester=Data_User["name"]
-            )
+            ).order_by("-id")[:10]
 
             for ticket in ticket_data:
                 ticket_json = serialize("json", [ticket])
@@ -467,5 +467,84 @@ def update_chat(request, id):
             return JsonResponse({"chat": chat}, status=200, safe=True)
         except Exception as e:
             print(e)
+    if request.method == "POST":
+        return
+
+
+def moreTicket(request):
+    if request.method == "POST":
+        return
+    if request.method == "GET":
+        username = None
+        newCount = None
+        count = 10
+        ticket_list = []
+        ticket_data = None
+        ticket_json = None
+        try:
+            username = request.META.get("HTTP_USER_DATA")
+            newCount = int(request.META.get("HTTP_TICKET_CURRENT"))
+            count = count + newCount
+
+            ticket_data = SupportTicket.objects.filter(
+                ticketRequester=username
+            ).order_by("-id")[:count]
+
+            for ticket in ticket_data:
+                ticket_json = serialize("json", [ticket])
+                ticket_list.append(ticket_json)
+
+        except Exception as e:
+            print(e)
+
+        ticket_objects = []
+        try:
+            for ticket in ticket_list:
+                ticket_data = loads(ticket)[0]["fields"]
+                ticket_data["id"] = loads(ticket)[0]["pk"]
+                ticket_objects.append(ticket_data)
+
+            return JsonResponse(
+                {"tickets": ticket_objects, "count": count}, status=200, safe=True
+            )
+
+        except Exception as e:
+            print(e)
+
+
+def getTicketFilter(request):
+    if request.method == "GET":
+        username = None
+        Quantity_tickets = None
+        ticket_data = None
+        ticket_list = []
+        ticket_json = None
+        try:
+            username = request.META.get("HTTP_DATA_USER")
+            Quantity_tickets = int(request.META.get("HTTP_QUANTITY_TICKETS"))
+
+            ticket_data = SupportTicket.objects.filter(
+                ticketRequester=username
+            ).order_by("-id")[:Quantity_tickets]
+
+            for ticket in ticket_data:
+                ticket_json = serialize("json", [ticket])
+                ticket_list.append(ticket_json)
+
+        except Exception as e:
+            print(e)
+
+        ticket_objects = []
+        try:
+            for ticket in ticket_list:
+                ticket_data = loads(ticket)[0]["fields"]
+                ticket_data["id"] = loads(ticket)[0]["pk"]
+                ticket_objects.append(ticket_data)
+
+            return JsonResponse({"tickets": ticket_objects}, status=200, safe=True)
+
+        except Exception as e:
+            print(e)
+
     if request.method == "POST":
         return

@@ -141,7 +141,7 @@ export const DivList = styled.div`
   transition: 0.7s;
   margin-bottom: 10px;
   &:hover {
-    transform: scale(1.07);
+    transform: scale(1.03);
   }
 `;
 
@@ -150,4 +150,9 @@ export const SpanList = styled.span`
   text-transform: uppercase;
   font-weight: bold;
   color: #caf0f8;
+`;
+
+export const PQuantity = styled.p`
+  font-size: 0.8em;
+  margin: 0 auto;
 `;

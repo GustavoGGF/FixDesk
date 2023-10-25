@@ -10,4 +10,6 @@ urlpatterns = [
     path("exit/", views.exit, name="central-exit"),
     path("ticket/<int:id>", views.ticket, name="central-ticket"),
     path("update_chat/<int:id>", views.update_chat, name="central-update-chat"),
+    path("moreTicket/", views.moreTicket, name="central-more-ticket"),
+    path("getTicketFilter/", views.getTicketFilter, name="central-get-ticket-filter"),
 ]
