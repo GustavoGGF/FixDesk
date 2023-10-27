@@ -69,7 +69,7 @@ export default function Equipment_Registration({
 
           $("#drop").classList.add("hidden");
           $("footer").classList.add("hasFiles");
-          $(".importar").classList.add("active");
+          $("#importar").classList.add("active");
           setTimeout(() => {
             $("#list-files").innerHTML = template;
           }, 1000);
@@ -105,10 +105,10 @@ export default function Equipment_Registration({
         };
 
         //upload more
-        $(".importar").addEventListener("click", () => {
+        $("#importar").addEventListener("click", () => {
           $("#list-files").innerHTML = "";
           $("footer").classList.remove("hasFiles");
-          $(".importar").classList.remove("active");
+          $("#importar").classList.remove("active");
           setTimeout(() => {
             $("#drop").classList.remove("hidden");
           }, 500);
@@ -214,7 +214,7 @@ export default function Equipment_Registration({
               <Span2 className="load">load</Span2>
             </PFiles>
           </HeaderFiles>
-          <BodyFiles className="body" id="drop" onDrop={inputDrop}>
+          <BodyFiles className="body" id="drop" onDrop={() => inputDrop()}>
             <IMGFile src={File} alt="" />
             <PFiles2 className="pointer-none">
               <B1>Drag and drop</B1> files here to begin the upload
@@ -249,7 +249,8 @@ export default function Equipment_Registration({
               <option value="mna">MNA</option>
             </select>
             <button
-              className="importar btn btn-success mt-3"
+              id="importar"
+              className="btn btn-success mt-3"
               onClick={updateEquipament}
             >
               Cadastrar Equipamento

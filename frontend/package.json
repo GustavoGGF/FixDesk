@@ -39,6 +39,8 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "date-fns": "^2.30.0",
+    "react-day-picker": "^8.9.1",
     "styled-components": "^5.3.10"
   }
 }

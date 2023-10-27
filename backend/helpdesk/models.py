@@ -1,4 +1,5 @@
 from django.db import models
+from dashboards.models import Equipaments
 
 
 # Create your models here.
@@ -22,6 +23,10 @@ class SupportTicket(models.Model):
     file = models.FileField(upload_to="uploads/", blank=True, null=True)
     open = models.BooleanField(default=True)
     chat = models.TextField(max_length=10000, blank=True, null=True)
+    equipament = models.ForeignKey(
+        Equipaments, blank=True, null=True, on_delete=models.SET_NULL
+    )
+    date_alocate = models.TextField(max_length=1000, blank=True, null=False)
 
     def __str__(self):
         return str(self.id)

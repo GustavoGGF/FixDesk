@@ -53,6 +53,7 @@ def firstView(request):
                     "image": image_data,
                     "model": equipament.model,
                     "company": equipament.company,
+                    "id": equipament.id,
                 }
 
                 equipament_list.append(equipaments)
@@ -184,6 +185,39 @@ def submitTicket(request):
 
                 else:
                     return JsonResponse({"status": "Invalid"}, status=320, safe=True)
+            except Exception as e:
+                print(e)
+
+        elif "id_equipament" in request.POST:
+            equipament_id = None
+            equipament = None
+            try:
+                equipament_id = request.POST.get("id_equipament")
+                days = request.POST.get("days_alocated")
+
+                equipament = Equipaments.objects.get(id=equipament_id)
+
+                Ticket = SupportTicket(
+                    ticketRequester=ticketRequester,
+                    department=department,
+                    mail=mail,
+                    company=company,
+                    sector=sector,
+                    respective_area=respective_area,
+                    occurrence=occurrence,
+                    problemn=problemn,
+                    observation=observation,
+                    start_date=start_date,
+                    PID=pid,
+                    equipament=equipament,
+                    date_alocate=days,
+                )
+
+                Ticket.save()
+
+                # * Monta o ticket e salva no banco
+
+                return JsonResponse({"status": "ok"}, status=200, safe=True)
             except Exception as e:
                 print(e)
 

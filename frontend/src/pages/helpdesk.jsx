@@ -31,6 +31,7 @@ import {
   ListFiles,
 } from "../styles/Equipment_RegistrationStyle";
 import { DayPicker } from "react-day-picker";
+import "react-day-picker/dist/style.css";
 import { format } from "date-fns";
 import Loading from "../components/loading";
 import Message from "../components/message";
@@ -80,12 +81,22 @@ export default function Helpdesk() {
   const [filename, SetFileName] = useState("");
   const [fileimg, SetFileImg] = useState();
   const [uploadRuninng, SetUploadRunning] = useState();
+  const [dateequip, setDateEquip] = useState(false);
+  const [daysForAlocate, SetDaysForAlocate] = useState([]);
+  const [equipamentSelected, SetEquipamentSelected] = useState("");
 
   const footerDay = selectedDay ? (
     <p>Você selecionou {format(selectedDay, "PPP")}</p>
   ) : (
     <p>Selecione uma data</p>
   );
+
+  const footerAlocate =
+    daysForAlocate.length >= 1 ? (
+      <p>Você alocou por {daysForAlocate.length} dia(s).</p>
+    ) : (
+      <p>Selecione um ou mais dias.</p>
+    );
 
   useEffect(() => {
     fetch("", {
@@ -238,6 +249,7 @@ export default function Helpdesk() {
       SetSynch(false);
       SetEng(false);
       SetAlocate(false);
+      setDateEquip(false);
     } else if (option === "sistema") {
       SetSystem(true);
       setInfra(false);
@@ -258,6 +270,7 @@ export default function Helpdesk() {
       SetOffice(false);
       SetEng(false);
       SetAlocate(false);
+      setDateEquip(false);
     } else if (option === "none") {
       setInfra(false);
       SetSystem(false);
@@ -277,6 +290,7 @@ export default function Helpdesk() {
       SetOffice(false);
       SetEng(false);
       SetAlocate(false);
+      setDateEquip(false);
     }
   }
   function selectProblem() {
@@ -302,6 +316,7 @@ export default function Helpdesk() {
       SetOffice(false);
       SetEng(false);
       SetAlocate(false);
+      setDateEquip(false);
     } else if (option === "mail") {
       setMail(true);
       setBackup(false);
@@ -320,6 +335,7 @@ export default function Helpdesk() {
       SetOffice(false);
       SetEng(false);
       SetAlocate(false);
+      setDateEquip(false);
     } else if (option === "equip") {
       setEquip(true);
       setBackup(false);
@@ -339,6 +355,7 @@ export default function Helpdesk() {
       SetOffice(false);
       SetEng(false);
       SetAlocate(false);
+      setDateEquip(false);
     } else if (option === "user") {
       setUser(true);
       setBackup(false);
@@ -358,6 +375,7 @@ export default function Helpdesk() {
       SetOffice(false);
       SetEng(false);
       SetAlocate(false);
+      setDateEquip(false);
     } else if (option === "internet") {
       setInternet(true);
       setBackup(false);
@@ -370,6 +388,7 @@ export default function Helpdesk() {
       setFolder(false);
       setAlertVerify(false);
       SetAlocate(false);
+      setDateEquip(false);
       setOccurrence("Internet");
       SetSAP(false);
       SetMBI(false);
@@ -377,6 +396,7 @@ export default function Helpdesk() {
       SetOffice(false);
       SetEng(false);
       SetAlocate(false);
+      setDateEquip(false);
     } else if (option === "folder") {
       setFolder(true);
       setBackup(false);
@@ -389,6 +409,7 @@ export default function Helpdesk() {
       setInternet(false);
       setAlertVerify(false);
       SetAlocate(false);
+      setDateEquip(false);
       setOccurrence("Permissão");
       SetSAP(false);
       SetMBI(false);
@@ -396,6 +417,7 @@ export default function Helpdesk() {
       SetOffice(false);
       SetEng(false);
       SetAlocate(false);
+      setDateEquip(false);
     } else if (option === "none") {
       setBackup(false);
       setAlert(false);
@@ -412,6 +434,7 @@ export default function Helpdesk() {
       SetOffice(false);
       SetEng(false);
       SetAlocate(false);
+      setDateEquip(false);
     } else if (option === "sap") {
       SetSAP(true);
       SetMBI(false);
@@ -429,6 +452,7 @@ export default function Helpdesk() {
       setOccurrence("SAP");
       SetEng(false);
       SetAlocate(false);
+      setDateEquip(false);
     } else if (option === "mbi") {
       SetMBI(true);
       SetSAP(false);
@@ -446,6 +470,7 @@ export default function Helpdesk() {
       SetOffice(false);
       SetAlocate(false);
       SetEng(false);
+      setDateEquip(false);
     } else if (option === "synch") {
       SetSynch(true);
       SetMBI(false);
@@ -463,6 +488,7 @@ export default function Helpdesk() {
       SetOffice(false);
       SetAlocate(false);
       SetEng(false);
+      setDateEquip(false);
     } else if (option === "office") {
       SetOffice(true);
       SetSynch(false);
@@ -480,6 +506,7 @@ export default function Helpdesk() {
       setFolder(false);
       SetEng(false);
       setOccurrence("Office");
+      setDateEquip(false);
     } else if (option === "eng") {
       SetEng(true);
       SetOffice(false);
@@ -497,6 +524,7 @@ export default function Helpdesk() {
       setInternet(false);
       setFolder(false);
       setOccurrence("Softwares de Eng");
+      setDateEquip(false);
     }
   }
 
@@ -709,6 +737,18 @@ export default function Helpdesk() {
       setAlert(false);
     }
   }
+
+  function selectEquipament({ element, id }) {
+    SetEquipamentSelected(id);
+    const allElements = document.querySelectorAll(".equipsclass");
+    allElements.forEach((el) => {
+      el.style.border = "none";
+    });
+
+    element.style.border = "2px solid #5FDD9D";
+    setDateEquip(true);
+  }
+
   function selectEquip() {
     const selectEquip = document.getElementById("select-equip");
     const optionEquip = selectEquip.options[selectEquip.selectedIndex].value;
@@ -764,11 +804,20 @@ export default function Helpdesk() {
       );
       setAlertVerify(false);
       SetAlocate(true);
+      setProblemn("Alocação de Máquina");
 
       if (equipaments && Object.keys(equipaments).length > 0) {
         equipaments.forEach((equipament) => {
           const Div = (
-            <DivEquip>
+            <DivEquip
+              className="equipsclass"
+              onClick={(event) =>
+                selectEquipament({
+                  element: event.currentTarget,
+                  id: equipament.id,
+                })
+              }
+            >
               <ImageEquip
                 src={`data:image/jpeg;base64,${equipament.image}`}
                 alt=""
@@ -777,8 +826,6 @@ export default function Helpdesk() {
               <p>Empresa: {equipament.company}</p>
             </DivEquip>
           );
-
-          // Img.setAttribute("src", equipament.image);
 
           SetDashEquipaments((prvDiv) => [...prvDiv, Div]);
         });
@@ -950,6 +997,7 @@ export default function Helpdesk() {
     // Formatando para data BR
 
     let Status;
+    let NewDatesAlocate = [];
 
     const formData = new FormData();
 
@@ -967,6 +1015,29 @@ export default function Helpdesk() {
       formData.append("PID", Data.pid);
       formData.append("respective_area", respectiveArea);
       formData.append("image", fileimg);
+    } else if (daysForAlocate.length > 0) {
+      for (let dateObj of daysForAlocate) {
+        const day = dateObj.getDate().toString().padStart(2, "0");
+        const month = (dateObj.getMonth() + 1).toString().padStart(2, "0");
+        const year = dateObj.getFullYear();
+        const dateFormated = `${year}-${month}-${day}`;
+        NewDatesAlocate.push(dateFormated);
+      }
+
+      formData.append("ticketRequester", Data.name);
+      formData.append("department", Data.department);
+      formData.append("mail", Data.mail);
+      formData.append("company", Data.company);
+      formData.append("phone", Data.phone);
+      formData.append("sector", sector);
+      formData.append("occurrence", occurrence);
+      formData.append("problemn", problemn);
+      formData.append("observation", observation);
+      formData.append("start_date", dataFormatada);
+      formData.append("PID", Data.pid);
+      formData.append("respective_area", respectiveArea);
+      formData.append("id_equipament", equipamentSelected);
+      formData.append("days_alocated", NewDatesAlocate);
     } else {
       formData.append("ticketRequester", Data.name);
       formData.append("department", Data.department);
@@ -1009,6 +1080,14 @@ export default function Helpdesk() {
           SetMessage(true);
           setTypeError("Dados Inválidos");
           setMessageError("Arquivo Anexado Inválido");
+          return window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+          });
+        } else if (Status === 407) {
+          SetMessage(true);
+          setTypeError("Dados Inválidos");
+          setMessageError("Data de Alocação Indisponivel");
           return window.scrollTo({
             top: 0,
             behavior: "smooth",
@@ -1076,6 +1155,8 @@ export default function Helpdesk() {
   function inputDrop() {
     const input = document.getElementById("inputName");
     const p = document.getElementById("namefile");
+
+    console.log(input);
 
     const file = input.files[0];
 
@@ -1722,6 +1803,21 @@ export default function Helpdesk() {
               {dashequipaments}
             </div>
           )}
+          {dateequip && (
+            <div className="justify-content-center text-center">
+              <span className="mb-1 mt-2">
+                Data de alocagem do Equipamento:
+              </span>
+              <Calendar className="mt-3">
+                <DayPicker
+                  mode="multiple"
+                  selected={daysForAlocate}
+                  onSelect={SetDaysForAlocate}
+                  footer={footerAlocate}
+                />
+              </Calendar>
+            </div>
+          )}
           <div className="d-flex flex-column">
             <div className="form-floating mb-3 mx-auto">
               <Textarea
@@ -1741,7 +1837,11 @@ export default function Helpdesk() {
                     <Span2 className="load">load</Span2>
                   </PFiles>
                 </HeaderFiles>
-                <BodyFiles className="body" id="drop" onDrop={inputDrop}>
+                <BodyFiles
+                  className="body"
+                  id="drop"
+                  onDrop={() => inputDrop()}
+                >
                   <IMGFile src={File} alt="" />
                   <PFiles2 className="pointer-none">
                     <B1>Drag and drop</B1> files here to begin the upload

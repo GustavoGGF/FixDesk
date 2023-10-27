@@ -25,21 +25,24 @@ def CreateOrVerifyUser(user, password, request, helpdesk, name_create_user):
     group_user = None
     group_tech = None
     Valid = None
-    name = None
 
     try:
+        print(user)
+        print(name_create_user)
         userAuthentic = User.objects.get(username=user)
-        name = str(name_create_user)
 
     except User.DoesNotExist:
         if "ADM" in name_create_user:
-            name = name.replace("ADM", "").strip()
-            name = name.split()
+            name_create_user = name_create_user.replace("ADM", "").strip()
+            name_create_user = name_create_user.split()
         else:
-            name = name.split()
+            name_create_user = name_create_user.split()
 
         userAuthentic = User.objects.create_user(
-            username=user, password=password, first_name=name[0], last_name=name[1]
+            username=user,
+            password=password,
+            first_name=name_create_user[0],
+            last_name=name_create_user[1],
         )
         userAuthentic.save()
 
@@ -48,6 +51,7 @@ def CreateOrVerifyUser(user, password, request, helpdesk, name_create_user):
     Valid = True
 
     try:
+        print(Group.objects.all())
         group_user = Group.objects.get(name=Back_User)
         group_tech = Group.objects.get(name=Back_Tech)
         if helpdesk == "User":

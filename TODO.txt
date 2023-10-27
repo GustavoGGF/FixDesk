@@ -171,3 +171,7 @@ multiple files no upload
 anexar imagens no chat do chamado
 
 borda do ticket muda conforme status, aberto, em atendimento, fechado
+
+quando fechar chamado de alocação de maquina deletar a model Date
+
+arruma tela chamado quando tiver nada
