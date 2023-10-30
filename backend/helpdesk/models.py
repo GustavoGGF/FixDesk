@@ -1,5 +1,11 @@
 from django.db import models
 from dashboards.models import Equipaments
+from os.path import join
+
+
+def support_ticket_file_path(instance, filename):
+    # Gere o caminho de upload com base no ID do objeto
+    return join("uploads", str(instance.id), filename)
 
 
 # Create your models here.
@@ -20,7 +26,7 @@ class SupportTicket(models.Model):
     )
     id = models.AutoField(primary_key=True)
     PID = models.IntegerField(null=False, blank=False)
-    file = models.FileField(upload_to="uploads/", blank=True, null=True)
+    file = models.FileField(upload_to=support_ticket_file_path, blank=True, null=True)
     open = models.BooleanField(default=True)
     chat = models.TextField(max_length=10000, blank=True, null=True)
     equipament = models.ForeignKey(

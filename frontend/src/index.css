@@ -255,3 +255,7 @@
   display: flex;
   flex-wrap: wrap;
 }
+
+.AdjustWid {
+  --rdp-cell-size: 30px !important;
+}

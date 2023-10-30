@@ -17,6 +17,8 @@ from base64 import b64encode
 from PIL import Image
 from io import BytesIO
 from magic import Magic
+from os import getcwd, listdir
+from os.path import join, exists, isdir
 
 
 # Create your views here.
@@ -35,37 +37,37 @@ def firstView(request):
 
             csrf = get_token(request)
 
-            equipaments = Equipaments.objects.all()
+            if Equipaments.objects.count() > 0:
+                equipaments = Equipaments.objects.all()
 
-            for equipament in equipaments:
-                image = equipament.equipament
+                for equipament in equipaments:
+                    image = equipament.equipament
 
-                with image.open() as img:
-                    pil_image = Image.open(img)
+                    with image.open() as img:
+                        pil_image = Image.open(img)
 
-                    img_bytes = BytesIO()
+                        img_bytes = BytesIO()
 
-                    pil_image.save(img_bytes, format="PNG")
+                        pil_image.save(img_bytes, format="PNG")
 
-                    image_data = b64encode(img_bytes.getvalue()).decode("utf-8")
+                        image_data = b64encode(img_bytes.getvalue()).decode("utf-8")
 
-                equipaments = {
-                    "image": image_data,
-                    "model": equipament.model,
-                    "company": equipament.company,
-                    "id": equipament.id,
-                }
+                    equipaments = {
+                        "image": image_data,
+                        "model": equipament.model,
+                        "company": equipament.company,
+                        "id": equipament.id,
+                    }
 
-                equipament_list.append(equipaments)
+                    equipament_list.append(equipaments)
 
             return JsonResponse(
                 {"data": Data_User, "token": csrf, "equipaments": equipament_list},
                 status=200,
             )
         except Exception as e:
-            json_error = str(e)
-            print(json_error)
-            return JsonResponse({"status": json_error}, status=300)
+            print(e)
+
     if request.method == "GET":
         if request.user.is_authenticated:
             Back_User = None
@@ -465,14 +467,24 @@ def ticket(request, id):
             print(e)
 
         serialized_ticket = []
+        image = ""
+        pil_image = None
+        img_bytes = None
+        image_data = None
+        equipaments = ""
+        equipament_image = None
+        act_dir = None
+        dates_for_alocate = None
         try:
             for t in ticket:
                 try:
-                    image = ""
-                    pil_image = None
-                    img_bytes = None
-                    image_data = None
-                    if t.file:
+                    act_dir = getcwd()
+
+                    act_dir += f"/uploads/{id}"
+
+                    print(act_dir)
+
+                    if exists(act_dir) and isdir(act_dir):
                         image = t.file
 
                         with image.open() as img:
@@ -483,8 +495,32 @@ def ticket(request, id):
                             pil_image.save(img_bytes, format="PNG")
 
                             image_data = b64encode(img_bytes.getvalue()).decode("utf-8")
+
+                    if t.equipament:
+                        equipament_image = t.equipament.equipament
+
+                        with equipament_image.open() as img:
+                            pil_image = Image.open(img)
+
+                            img_bytes = BytesIO()
+
+                            pil_image.save(img_bytes, format="PNG")
+
+                            image_data = b64encode(img_bytes.getvalue()).decode("utf-8")
+
+                        equipaments = {
+                            "image": image_data,
+                            "model": t.equipament.model,
+                            "company": t.equipament.company,
+                        }
+
+                        dates_for_alocate = t.date_alocate.split(",")
+
+                        image_data = None
+
                 except Exception as e:
                     print(e)
+
                 serialized_ticket.append(
                     {
                         "ticketRequester": t.ticketRequester,
@@ -501,6 +537,8 @@ def ticket(request, id):
                         "id": t.id,
                         "chat": t.chat,
                         "file": image_data,
+                        "equipament": equipaments,
+                        "days_alocated": dates_for_alocate,
                     }
                 )
 

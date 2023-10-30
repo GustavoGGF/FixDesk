@@ -156,3 +156,25 @@ export const PQuantity = styled.p`
   font-size: 0.8em;
   margin: 0 auto;
 `;
+
+export const DivAlocate = styled.div`
+  margin: 10px;
+`;
+
+export const IMGFiles2 = styled.img`
+  width: 80px;
+  height: 80px;
+  border: 5px;
+  cursor: pointer;
+  transition: 0.7s;
+  &:hover {
+    transform: scale(1.5);
+  }
+`;
+
+export const Calendar = styled.div`
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+`;

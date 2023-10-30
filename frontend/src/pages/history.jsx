@@ -21,6 +21,9 @@ import {
   DivList,
   SpanList,
   PQuantity,
+  IMGFiles2,
+  DivAlocate,
+  Calendar,
 } from "../styles/historyStyle";
 import {
   DivFilter,
@@ -30,6 +33,8 @@ import {
   DivImages,
   IMGS1,
 } from "../styles/dashboardTIStyle";
+import { DayPicker } from "react-day-picker";
+import "react-day-picker/dist/style.css";
 import Message from "../components/message";
 import CloseIMG from "../images/components/close.png";
 import IMG1 from "../images/dashboard_TI/quantity_1.png";
@@ -78,9 +83,13 @@ export default function History() {
   const [countTicket, SetCountTicket] = useState(0);
   const [idquantity, SetIDQuantity] = useState("");
   const [orderby, SetOrderBy] = useState("");
+  const [imageEquipament, SetImageEquipament] = useState();
+  const [equipamentLocate, SetEquipamentLocate] = useState("");
+  const [daysLocated, SetDaysLocated] = useState();
 
   let count = 0;
   let timeoutId;
+  let daysLCT = [];
 
   function aumentarCount() {
     count++;
@@ -148,7 +157,6 @@ export default function History() {
         SetMessageChat(false);
         SetMountChat([]);
         const data = dataBack.data[0];
-        console.log(data);
         const start_date = new Date(data.start_date);
 
         var CurrentDate = new Date();
@@ -169,9 +177,35 @@ export default function History() {
         SetTicketResponsible_Technician(data.responsible_technician);
         SetTicketID(data.id);
 
+        if (data.equipament["image"] !== undefined) {
+          const Div = (
+            <DivAlocate className="d-flex flex-column w-100 align-items-center">
+              <p className="text-center">Modelo: {data.equipament["model"]}</p>
+              <IMGFiles2
+                src={`data:image/jpeg;base64,${data.equipament["image"]}`}
+                onClick={openImage}
+                alt=""
+              />
+            </DivAlocate>
+          );
+
+          SetImageEquipament(Div);
+          SetEquipamentLocate(data.equipament["company"]);
+
+          for (let NWdate of data.days_alocated) {
+            var date = new Date(NWdate);
+            daysLCT.push(date);
+          }
+
+          SetDaysLocated(daysLCT);
+
+          const calendar = document.getElementById("calendarALT");
+          calendar.classList.add("AdjustWid");
+        }
+
         SetImageUrl(`data:image/jpeg;base64,${data.file}`);
 
-        if (data.file.length > 1) {
+        if (data.file !== null) {
           const Div = (
             <IMGFiles
               src={`data:image/jpeg;base64,${data.file}`}
@@ -283,8 +317,12 @@ export default function History() {
   async function Close_ticket() {
     SetTicketWindow(false);
     SetFetchChat(false);
+    SetImageUrl("");
+    SetFileTicket("");
+    SetImageEquipament("");
     count = 0;
     clearTimeout(timeoutId);
+    daysLCT = [];
     return;
   }
 
@@ -875,6 +913,22 @@ export default function History() {
                 className="form-control"
                 disabled
               />
+              <div className="d-flex w-100 justify-content-center">
+                {imageEquipament}
+                <DivAlocate className="d-flex flex-column">
+                  <p className="text-center">Unidade: {equipamentLocate}</p>
+                </DivAlocate>
+                <Calendar className="d-flex flex-column">
+                  <p className="text-center">Data de alocação</p>
+                  <DayPicker
+                    id="calendarALT"
+                    fixedWeeks
+                    showOutsideDays
+                    selected={daysLocated}
+                    mode="multiple"
+                  />
+                </Calendar>
+              </div>
               <input
                 type="text"
                 value={
