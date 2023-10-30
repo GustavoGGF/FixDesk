@@ -191,9 +191,30 @@ def submitTicket(request):
         elif "id_equipament" in request.POST:
             equipament_id = None
             equipament = None
+            old_dates = None
             try:
                 equipament_id = request.POST.get("id_equipament")
+
                 days = request.POST.get("days_alocated")
+
+                exist_equipament = SupportTicket.objects.filter(
+                    equipament=equipament_id
+                )
+
+                for ee in exist_equipament:
+                    old_dates = ee.date_alocate.split(",")
+
+                new_dates = days.split(",")
+
+                if exist_equipament:
+                    for Odates in old_dates:
+                        for Ndates in new_dates:
+                            if Odates == Ndates:
+                                return JsonResponse(
+                                    {"status": "Invalid Date", "dates": old_dates},
+                                    status=310,
+                                    safe=True,
+                                )
 
                 equipament = Equipaments.objects.get(id=equipament_id)
 

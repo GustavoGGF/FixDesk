@@ -27,8 +27,6 @@ def CreateOrVerifyUser(user, password, request, helpdesk, name_create_user):
     Valid = None
 
     try:
-        print(user)
-        print(name_create_user)
         userAuthentic = User.objects.get(username=user)
 
     except User.DoesNotExist:
@@ -51,7 +49,6 @@ def CreateOrVerifyUser(user, password, request, helpdesk, name_create_user):
     Valid = True
 
     try:
-        print(Group.objects.all())
         group_user = Group.objects.get(name=Back_User)
         group_tech = Group.objects.get(name=Back_Tech)
         if helpdesk == "User":

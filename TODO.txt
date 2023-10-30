@@ -175,3 +175,5 @@ borda do ticket muda conforme status, aberto, em atendimento, fechado
 quando fechar chamado de alocação de maquina deletar a model Date
 
 arruma tela chamado quando tiver nada
+
+verificação se a alocação de maquina esta para o passado

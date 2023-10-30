@@ -1084,7 +1084,21 @@ export default function Helpdesk() {
             top: 0,
             behavior: "smooth",
           });
-        } else if (Status === 407) {
+        } else if (Status === 310) {
+          SetDaysForAlocate([]);
+          const dates = data.dates;
+          var btn = document.querySelectorAll(".rdp-day");
+          btn.forEach(function (b) {
+            for (var i = 0; i < dates.length; i++) {
+              var date = dates[i].slice(-2);
+              console.log(date);
+              if (b.textContent === date) {
+                b.classList.remove("rdp-day_selected");
+                b.disabled = true;
+              }
+            }
+          });
+
           SetMessage(true);
           setTypeError("Dados Inválidos");
           setMessageError("Data de Alocação Indisponivel");
