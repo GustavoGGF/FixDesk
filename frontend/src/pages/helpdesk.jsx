@@ -1180,6 +1180,162 @@ export default function Helpdesk() {
     return (p.innerText = input.files[0].name);
   }
 
+  function selectCompanyEquip() {
+    SetDashEquipaments("");
+    const select = document.getElementById("select-company-equip");
+    const option = select.options[select.selectedIndex].value;
+
+    if (option === "csc") {
+      equipaments.forEach((equipament) => {
+        if (equipament.company === "CSC") {
+          const Div = (
+            <DivEquip
+              className="equipsclass"
+              onClick={(event) =>
+                selectEquipament({
+                  element: event.currentTarget,
+                  id: equipament.id,
+                })
+              }
+            >
+              <ImageEquip
+                src={`data:image/jpeg;base64,${equipament.image}`}
+                alt=""
+              />
+              <p>Modelo: {equipament.model}</p>
+              <p>Empresa: {equipament.company}</p>
+            </DivEquip>
+          );
+
+          SetDashEquipaments((prvDiv) => [...prvDiv, Div]);
+        }
+      });
+    } else if (option === "fiber") {
+      equipaments.forEach((equipament) => {
+        if (equipament.company === "FIBER") {
+          const Div = (
+            <DivEquip
+              className="equipsclass"
+              onClick={(event) =>
+                selectEquipament({
+                  element: event.currentTarget,
+                  id: equipament.id,
+                })
+              }
+            >
+              <ImageEquip
+                src={`data:image/jpeg;base64,${equipament.image}`}
+                alt=""
+              />
+              <p>Modelo: {equipament.model}</p>
+              <p>Empresa: {equipament.company}</p>
+            </DivEquip>
+          );
+
+          SetDashEquipaments((prvDiv) => [...prvDiv, Div]);
+        }
+      });
+    } else if (option === "vera") {
+      equipaments.forEach((equipament) => {
+        if (equipament.company === "VERA") {
+          const Div = (
+            <DivEquip
+              className="equipsclass"
+              onClick={(event) =>
+                selectEquipament({
+                  element: event.currentTarget,
+                  id: equipament.id,
+                })
+              }
+            >
+              <ImageEquip
+                src={`data:image/jpeg;base64,${equipament.image}`}
+                alt=""
+              />
+              <p>Modelo: {equipament.model}</p>
+              <p>Empresa: {equipament.company}</p>
+            </DivEquip>
+          );
+
+          SetDashEquipaments((prvDiv) => [...prvDiv, Div]);
+        }
+      });
+    } else if (option === "ropes") {
+      equipaments.forEach((equipament) => {
+        if (equipament.company === "ROPES") {
+          const Div = (
+            <DivEquip
+              className="equipsclass"
+              onClick={(event) =>
+                selectEquipament({
+                  element: event.currentTarget,
+                  id: equipament.id,
+                })
+              }
+            >
+              <ImageEquip
+                src={`data:image/jpeg;base64,${equipament.image}`}
+                alt=""
+              />
+              <p>Modelo: {equipament.model}</p>
+              <p>Empresa: {equipament.company}</p>
+            </DivEquip>
+          );
+
+          SetDashEquipaments((prvDiv) => [...prvDiv, Div]);
+        }
+      });
+    } else if (option === "mna") {
+      equipaments.forEach((equipament) => {
+        if (equipament.company === "MNA") {
+          const Div = (
+            <DivEquip
+              className="equipsclass"
+              onClick={(event) =>
+                selectEquipament({
+                  element: event.currentTarget,
+                  id: equipament.id,
+                })
+              }
+            >
+              <ImageEquip
+                src={`data:image/jpeg;base64,${equipament.image}`}
+                alt=""
+              />
+              <p>Modelo: {equipament.model}</p>
+              <p>Empresa: {equipament.company}</p>
+            </DivEquip>
+          );
+
+          SetDashEquipaments((prvDiv) => [...prvDiv, Div]);
+        }
+      });
+    } else if (option === "all") {
+      equipaments.forEach((equipament) => {
+        const Div = (
+          <DivEquip
+            className="equipsclass"
+            onClick={(event) =>
+              selectEquipament({
+                element: event.currentTarget,
+                id: equipament.id,
+              })
+            }
+          >
+            <ImageEquip
+              src={`data:image/jpeg;base64,${equipament.image}`}
+              alt=""
+            />
+            <p>Modelo: {equipament.model}</p>
+            <p>Empresa: {equipament.company}</p>
+          </DivEquip>
+        );
+
+        SetDashEquipaments((prvDiv) => [...prvDiv, Div]);
+      });
+    }
+  }
+
   return (
     <Div>
       {navbar && (
@@ -1813,8 +1969,28 @@ export default function Helpdesk() {
             </div>
           )}
           {alocate && (
-            <div className="d-flex flex-wrap justify-content-center">
-              {dashequipaments}
+            <div className="w-100">
+              <div className="d-flex justify-content-center">
+                <Select
+                  className="form-select mb-3"
+                  aria-label="Default select example"
+                  id="select-company-equip"
+                  onChange={selectCompanyEquip}
+                >
+                  <option value="none" disabled selected>
+                    Selecione uma Unidade
+                  </option>
+                  <option value="csc">CSC</option>
+                  <option value="fiber">Fiber</option>
+                  <option value="vera">Vera</option>
+                  <option value="ropes">Ropes</option>
+                  <option value="mna">MNA</option>
+                  <option value="all">Todas Unidades</option>
+                </Select>
+              </div>
+              <div className="d-flex flex-wrap justify-content-center">
+                {dashequipaments}
+              </div>
             </div>
           )}
           {dateequip && (
