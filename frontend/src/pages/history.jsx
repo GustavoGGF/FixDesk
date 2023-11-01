@@ -96,6 +96,8 @@ export default function History() {
   const [jobtitlenewuser, SetJobTitleNewUser] = useState("");
   const [startworknewuser, SetStartWorkNewUser] = useState();
   const [copyprofilenewuser, SetCopyProfileNewUser] = useState("");
+  const [mailtranfer, SetMailTranfer] = useState("");
+  const [oldfile, SetOldFiles] = useState("");
 
   let count = 0;
   let timeoutId;
@@ -196,6 +198,8 @@ export default function History() {
         var nwdate = new Date(data.start_work_new_user);
         SetStartWorkNewUser(nwdate);
         SetCopyProfileNewUser(data.copy_profile_new_user);
+        SetMailTranfer(data.mail_tranfer);
+        SetOldFiles(data.old_files);
 
         if (data.equipament["image"] !== undefined) {
           const Div = (
@@ -340,6 +344,7 @@ export default function History() {
     SetImageUrl("");
     SetFileTicket("");
     SetImageEquipament();
+    jobtitlenewuser("");
     count = 0;
     clearTimeout(timeoutId);
     daysLCT = [];
@@ -941,28 +946,30 @@ export default function History() {
                 value={"Setor: " + sectornewuser}
                 className="form-control"
                 disabled
-                hidden={namenewuser.length > 1 ? false : true}
+                hidden={sectornewuser.length > 1 ? false : true}
               />
               <input
                 type="text"
                 value={"Remanejamento: " + wherefrom}
                 className="form-control"
                 disabled
-                hidden={namenewuser.length > 1 ? false : true}
+                hidden={wherefrom.length > 1 ? false : true}
               />
               <input
                 type="text"
                 value={!machinenewuser ? "Necessita-se de máquina" : ""}
                 className="form-control"
                 disabled
-                hidden={machinenewuser ? true : false}
+                hidden={
+                  machinenewuser && sectornewuser.length > 1 ? true : false
+                }
               />
               <input
                 type="text"
                 value={"Filial: " + companynewuser}
                 className="form-control"
                 disabled
-                hidden={namenewuser.length > 1 ? false : true}
+                hidden={companynewuser.length > 1 ? false : true}
               />
               <input
                 type="text"
@@ -976,22 +983,41 @@ export default function History() {
                 value={"Centro de custo: " + costcenter}
                 className="form-control"
                 disabled
-                hidden={namenewuser.length > 1 ? false : true}
+                hidden={costcenter.length > 1 ? false : true}
               />
               <input
                 type="text"
                 value={"Cargo: " + jobtitlenewuser}
                 className="form-control"
                 disabled
-                hidden={namenewuser.length > 1 ? false : true}
+                hidden={jobtitlenewuser.length > 1 ? false : true}
               />
               <input
                 type="text"
                 value={"Centro de custo: " + costcenter}
                 className="form-control"
                 disabled
-                hidden={namenewuser.length > 1 ? false : true}
+                hidden={costcenter.length > 1 ? false : true}
               />
+              <input
+                type="text"
+                value={"Transferir e-mails para: " + mailtranfer}
+                className="form-control"
+                disabled
+                hidden={mailtranfer.length > 1 ? false : true}
+              />
+              <input
+                type="text"
+                value={"Transferir dados para: " + oldfile}
+                className="form-control"
+                disabled
+                hidden={oldfile.length > 1 ? false : true}
+              />
+              <p>
+                {jobtitlenewuser.length > 1
+                  ? "Funcionario iniciara as atividades dia:"
+                  : "Bloquear acesso a partir de:"}
+              </p>
               <DayPicker
                 id="calendarALT"
                 fixedWeeks

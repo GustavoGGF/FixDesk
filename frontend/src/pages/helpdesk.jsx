@@ -94,6 +94,8 @@ export default function Helpdesk() {
   const [centralcost, SetCentralCost] = useState("");
   const [jobtitlenewuser, SetJobTitleNewUser] = useState("");
   const [copyUser, SetCopyUser] = useState("");
+  const [maildelegation, SetMailDelegation] = useState("");
+  const [dirsave, SetDirSave] = useState("");
 
   const footerDay = selectedDay ? (
     <p>Você selecionou {format(selectedDay, "PPP")}</p>
@@ -1060,42 +1062,49 @@ export default function Helpdesk() {
         SetMessage(true);
         setTypeError("Falta de dados");
         setMessageError("Nome Obrigatório!!!");
+        return;
       }
 
       if (sectornewuser.length < 2) {
         SetMessage(true);
         setTypeError("Falta de dados");
         setMessageError("Setor Obrigatório!!!");
+        return;
       }
 
       if (motivationContract.length < 2) {
         SetMessage(true);
         setTypeError("Falta de dados");
         setMessageError("Tipo da Contratação Obrigatória!!!");
+        return;
       }
 
       if (necessaryMachine === undefined) {
         SetMessage(true);
         setTypeError("Falta de dados");
         setMessageError("Obigatório informar a necessidade de Máquina!!!");
+        return;
       }
 
       if (companynewUser.length < 2) {
         SetMessage(true);
         setTypeError("Falta de dados");
         setMessageError("Obigatório informar a Unidade!!!");
+        return;
       }
 
       if (centralcost.length < 2) {
         SetMessage(true);
         setTypeError("Falta de dados");
         setMessageError("Obigatório Informar Centro de Custo!!!");
+        return;
       }
 
       if (jobtitlenewuser.length < 2) {
         SetMessage(true);
         setTypeError("Falta de dados");
         setMessageError("Obigatório Informar o cargo!!!");
+        return;
       }
 
       formData.append("ticketRequester", Data.name);
@@ -1120,6 +1129,43 @@ export default function Helpdesk() {
       formData.append("job_title_new_user", jobtitlenewuser);
       formData.append("start_work_new_user", selectedDay);
       formData.append("copy_profile_new_user", copyUser);
+    } else if (problemn === "Exclusao de usuario de rede") {
+      if (newname.length < 2) {
+        SetMessage(true);
+        setTypeError("Falta de dados");
+        setMessageError("Nome Obrigatório!!!");
+        return;
+      }
+      if (maildelegation.length < 2) {
+        SetMessage(true);
+        setTypeError("Falta de dados");
+        setMessageError("E-mail para transferencia Obrigatório!!!");
+        return;
+      }
+      if (dirsave.length < 2) {
+        SetMessage(true);
+        setTypeError("Falta de dados");
+        setMessageError(
+          "Obrigatório informar onde os dados devem ser salvos!!!"
+        );
+        return;
+      }
+      formData.append("ticketRequester", Data.name);
+      formData.append("department", Data.department);
+      formData.append("mail", Data.mail);
+      formData.append("company", Data.company);
+      formData.append("phone", Data.phone);
+      formData.append("sector", sector);
+      formData.append("occurrence", occurrence);
+      formData.append("problemn", problemn);
+      formData.append("observation", observation);
+      formData.append("start_date", dataFormatada);
+      formData.append("PID", Data.pid);
+      formData.append("respective_area", respectiveArea);
+      formData.append("new_user", newname);
+      formData.append("mail_tranfer", maildelegation);
+      formData.append("old_files", dirsave);
+      formData.append("start_work_new_user", selectedDay);
     } else {
       formData.append("ticketRequester", Data.name);
       formData.append("department", Data.department);
@@ -1419,12 +1465,22 @@ export default function Helpdesk() {
   }
 
   function nameNewUser(event) {
-    const nameUser = event.target.value;
+    var nameUser = event.target.value;
     SetNewName(nameUser);
   }
 
+  function emailDelegation(event) {
+    var mailDele = event.target.value;
+    SetMailDelegation(mailDele);
+  }
+
+  function saveU(event) {
+    var dir = event.target.value;
+    SetDirSave(dir);
+  }
+
   function SectorNewUser(event) {
-    const company = event.target.value;
+    var company = event.target.value;
     SetSectorNewUser(company);
   }
 
@@ -1953,6 +2009,7 @@ export default function Helpdesk() {
                   placeholder="NOME COMPLETO!!"
                   aria-label="delname"
                   aria-describedby="basic-addon1"
+                  onKeyDown={nameNewUser}
                 />
               </div>
               <span>
@@ -1968,6 +2025,7 @@ export default function Helpdesk() {
                   placeholder="NOME COMPLETO!!"
                   aria-label="delmail"
                   aria-describedby="basic-addon1"
+                  onKeyDown={emailDelegation}
                 />
               </div>
               <span className="mb-3">
@@ -1978,6 +2036,7 @@ export default function Helpdesk() {
                 type="text"
                 className="form-control mb-3"
                 placeholder="informar diretorio completo"
+                onKeyDown={saveU}
               />
               <span className="mb-3">
                 Informar a data que deverá ser feito o bloqueio do usuario

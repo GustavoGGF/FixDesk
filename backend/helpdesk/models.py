@@ -43,6 +43,8 @@ class SupportTicket(models.Model):
     job_title_new_user = models.TextField(max_length=50, blank=True, null=False)
     start_work_new_user = models.TextField(max_length=60, blank=True, null=False)
     copy_profile_new_user = models.TextField(max_length=50, blank=True, null=False)
+    mail_tranfer = models.TextField(max_length=30, blank=True, null=False)
+    old_files = models.TextField(max_length=400, blank=True, null=False)
 
     def __str__(self):
         return str(self.id)

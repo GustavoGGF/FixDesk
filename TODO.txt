@@ -191,3 +191,5 @@ imprimir os chamados
 arrumar o remanejamento
 
 localte={prBR} react daypicker
+
+ajusta calendario da tela de exclusão de usuario

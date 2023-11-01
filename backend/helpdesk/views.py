@@ -248,7 +248,7 @@ def submitTicket(request):
             except Exception as e:
                 print(e)
 
-        elif "new_user" in request.POST:
+        elif "company_new_user" in request.POST:
             name_new_user = None
             sector_new_user = None
             where_from = None
@@ -307,6 +307,43 @@ def submitTicket(request):
                 return JsonResponse({"status": "ok"}, status=200, safe=True)
             except Exception as e:
                 print(e)
+
+        elif "mail_tranfer" in request.POST:
+            name_new_user= None
+            mail_tranfer = None
+            old_files = None
+            start_work_new_user = None
+            try:
+                name_new_user = request.POST.get("new_user")
+                mail_tranfer = request.POST.get("mail_tranfer")
+                old_files = request.POST.get("old_files")
+                start_work_new_user = request.POST.get("start_work_new_user")
+
+                Ticket = SupportTicket(
+                    ticketRequester=ticketRequester,
+                    department=department,
+                    mail=mail,
+                    company=company,
+                    sector=sector,
+                    respective_area=respective_area,
+                    occurrence=occurrence,
+                    problemn=problemn,
+                    observation=observation,
+                    start_date=start_date,
+                    PID=pid,
+                    name_new_user=name_new_user,
+                    mail_tranfer=mail_tranfer,
+                    old_files=old_files,
+                    start_work_new_user=start_work_new_user,
+                )
+
+                Ticket.save()
+                # * Monta o ticket e salva no banco
+
+                return JsonResponse({"status": "ok"}, status=200, safe=True)
+            except Exception as e:
+                print(e)
+                return
 
         else:
             try:
@@ -603,16 +640,18 @@ def ticket(request, id):
                         "file": image_data,
                         "equipament": equipaments,
                         "days_alocated": dates_for_alocate,
-                        "name_new_user":t.name_new_user,
-                        "sector_new_user":t.sector_new_user,
-                        "where_from":t.where_from,
-                        "machine_new_user":t.machine_new_user,
-                        "company_new_user":t.company_new_user,
-                        "software_new_user":t.software_new_user,
-                        "cost_center":t.cost_center,
-                        "job_title_new_user":t.job_title_new_user,
-                        "start_work_new_user":t.start_work_new_user,
-                        "copy_profile_new_user":t.copy_profile_new_user,
+                        "name_new_user": t.name_new_user,
+                        "sector_new_user": t.sector_new_user,
+                        "where_from": t.where_from,
+                        "machine_new_user": t.machine_new_user,
+                        "company_new_user": t.company_new_user,
+                        "software_new_user": t.software_new_user,
+                        "cost_center": t.cost_center,
+                        "job_title_new_user": t.job_title_new_user,
+                        "start_work_new_user": t.start_work_new_user,
+                        "copy_profile_new_user": t.copy_profile_new_user,
+                        "mail_tranfer":t.mail_tranfer,
+                        "old_files":t.old_files
                     }
                 )
 
