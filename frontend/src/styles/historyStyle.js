@@ -10,11 +10,12 @@ export const Div = styled.div`
 `;
 
 export const TicketOpen = styled.div`
-  background: #f9f9f9;
+  background: rgb(249, 249, 249);
   width: 80%;
-  position: relative;
   border-radius: 20px;
+  overflow-y: auto;
   z-index: 10 !important;
+  max-height: 95%;
 `;
 
 export const CloseBTN = styled.button`
@@ -176,5 +177,11 @@ export const Calendar = styled.div`
   width: 100%;
   height: 100%;
   align-items: center;
+  justify-content: center;
+`;
+
+export const DivINp = styled.div`
+  display: flex;
+  width: 100%;
   justify-content: center;
 `;

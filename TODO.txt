@@ -181,3 +181,13 @@ return em todas as funções
 try e cath todo codigo
 
 verificar com RH unidades que podem contratar
+
+usar gpt para fazer os webkit
+
+por z-index nas imagens onde ficam os arquivos
+
+imprimir os chamados
+
+arrumar o remanejamento
+
+localte={prBR} react daypicker

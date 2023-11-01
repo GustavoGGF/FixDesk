@@ -24,6 +24,7 @@ import {
   IMGFiles2,
   DivAlocate,
   Calendar,
+  DivINp,
 } from "../styles/historyStyle";
 import {
   DivFilter,
@@ -81,11 +82,20 @@ export default function History() {
   const [problemInfra, SetProblemInfra] = useState(false);
   const [ticketsDash, SetTicketsDash] = useState([]);
   const [countTicket, SetCountTicket] = useState(0);
-  const [idquantity, SetIDQuantity] = useState("");
   const [orderby, SetOrderBy] = useState("");
   const [imageEquipament, SetImageEquipament] = useState();
   const [equipamentLocate, SetEquipamentLocate] = useState("");
   const [daysLocated, SetDaysLocated] = useState();
+  const [namenewuser, SetNameNewUser] = useState("");
+  const [sectornewuser, SetSectorNewUser] = useState("");
+  const [wherefrom, SetWhereFrom] = useState("");
+  const [machinenewuser, SetMachineNewUser] = useState();
+  const [companynewuser, SetCompanyNewUser] = useState("");
+  const [softwarenewuser, SetSoftwareNewUser] = useState("");
+  const [costcenter, SetCostCenter] = useState("");
+  const [jobtitlenewuser, SetJobTitleNewUser] = useState("");
+  const [startworknewuser, SetStartWorkNewUser] = useState();
+  const [copyprofilenewuser, SetCopyProfileNewUser] = useState("");
 
   let count = 0;
   let timeoutId;
@@ -119,7 +129,6 @@ export default function History() {
         SetData(data.data);
         SetTickets(data.tickets);
         SetCountTicket(10);
-        SetIDQuantity("thenView");
         SetOrderBy("-id");
         const btn = document.getElementById("thenView");
         btn.style.backgroundColor = "#00B4D8";
@@ -176,6 +185,17 @@ export default function History() {
         SetLifetime(lifetime);
         SetTicketResponsible_Technician(data.responsible_technician);
         SetTicketID(data.id);
+        SetNameNewUser(data.name_new_user);
+        SetSectorNewUser(data.sector_new_user);
+        SetWhereFrom(data.where_from);
+        SetMachineNewUser(data.machine_new_user);
+        SetCompanyNewUser(data.company_new_user);
+        SetSoftwareNewUser(data.software_new_user);
+        SetCostCenter(data.cost_center);
+        SetJobTitleNewUser(data.job_title_new_user);
+        var nwdate = new Date(data.start_work_new_user);
+        SetStartWorkNewUser(nwdate);
+        SetCopyProfileNewUser(data.copy_profile_new_user);
 
         if (data.equipament["image"] !== undefined) {
           const Div = (
@@ -319,7 +339,7 @@ export default function History() {
     SetFetchChat(false);
     SetImageUrl("");
     SetFileTicket("");
-    SetImageEquipament("");
+    SetImageEquipament();
     count = 0;
     clearTimeout(timeoutId);
     daysLCT = [];
@@ -327,7 +347,6 @@ export default function History() {
   }
 
   useEffect(() => {
-    console.log(idquantity);
     if (tickets && Object.keys(tickets).length > 0) {
       const selectView = localStorage.getItem("selectView");
       if (selectView === null) {
@@ -792,7 +811,6 @@ export default function History() {
             id="fiveView"
             onClick={() => {
               SetCountTicket(5);
-              SetIDQuantity("fiveView");
               getTicketFilter({ id: "fiveView", quantity: 5 });
             }}
           >
@@ -804,7 +822,6 @@ export default function History() {
             id="thenView"
             onClick={() => {
               SetCountTicket(10);
-              SetIDQuantity("thenView");
               getTicketFilter({ id: "thenView", quantity: 10 });
             }}
           >
@@ -816,7 +833,6 @@ export default function History() {
             id="fiftyView"
             onClick={() => {
               SetCountTicket(50);
-              SetIDQuantity("fiftyView");
               getTicketFilter({ id: "fiftyView", quantity: 50 });
             }}
           >
@@ -828,7 +844,6 @@ export default function History() {
             id="allView"
             onClick={() => {
               SetCountTicket(100000);
-              SetIDQuantity("allView");
               getTicketFilter({ id: "allView", quantity: 100000 });
             }}
           >
@@ -888,6 +903,7 @@ export default function History() {
                 value={"Email: " + ticketMAIL}
                 className="form-control"
                 disabled
+                hidden={ticketMAIL.length > 1 ? false : true}
               />
               <input
                 type="text"
@@ -913,22 +929,102 @@ export default function History() {
                 className="form-control"
                 disabled
               />
-              <div className="d-flex w-100 justify-content-center">
+              <input
+                type="text"
+                value={"Nome: " + namenewuser}
+                className="form-control"
+                disabled
+                hidden={namenewuser.length > 1 ? false : true}
+              />
+              <input
+                type="text"
+                value={"Setor: " + sectornewuser}
+                className="form-control"
+                disabled
+                hidden={namenewuser.length > 1 ? false : true}
+              />
+              <input
+                type="text"
+                value={"Remanejamento: " + wherefrom}
+                className="form-control"
+                disabled
+                hidden={namenewuser.length > 1 ? false : true}
+              />
+              <input
+                type="text"
+                value={!machinenewuser ? "Necessita-se de máquina" : ""}
+                className="form-control"
+                disabled
+                hidden={machinenewuser ? true : false}
+              />
+              <input
+                type="text"
+                value={"Filial: " + companynewuser}
+                className="form-control"
+                disabled
+                hidden={namenewuser.length > 1 ? false : true}
+              />
+              <input
+                type="text"
+                value={"Softwares Necessisarios: " + softwarenewuser}
+                className="form-control"
+                disabled
+                hidden={softwarenewuser.length > 1 ? false : true}
+              />
+              <input
+                type="text"
+                value={"Centro de custo: " + costcenter}
+                className="form-control"
+                disabled
+                hidden={namenewuser.length > 1 ? false : true}
+              />
+              <input
+                type="text"
+                value={"Cargo: " + jobtitlenewuser}
+                className="form-control"
+                disabled
+                hidden={namenewuser.length > 1 ? false : true}
+              />
+              <input
+                type="text"
+                value={"Centro de custo: " + costcenter}
+                className="form-control"
+                disabled
+                hidden={namenewuser.length > 1 ? false : true}
+              />
+              <DayPicker
+                id="calendarALT"
+                fixedWeeks
+                showOutsideDays
+                selected={startworknewuser}
+                className="cald"
+                mode="single"
+              />
+              <input
+                type="text"
+                value={"Copiar usuario de: " + copyprofilenewuser}
+                className="form-control"
+                disabled
+                hidden={copyprofilenewuser.length > 1 ? false : true}
+              />
+              <DivINp hidden={imageEquipament === undefined}>
                 {imageEquipament}
                 <DivAlocate className="d-flex flex-column">
                   <p className="text-center">Unidade: {equipamentLocate}</p>
                 </DivAlocate>
                 <Calendar className="d-flex flex-column">
                   <p className="text-center">Data de alocação</p>
-                  <DayPicker
-                    id="calendarALT"
-                    fixedWeeks
-                    showOutsideDays
-                    selected={daysLocated}
-                    mode="multiple"
-                  />
+                  <div>
+                    <DayPicker
+                      id="calendarALT"
+                      fixedWeeks
+                      showOutsideDays
+                      selected={daysLocated}
+                      mode="multiple"
+                    />
+                  </div>
                 </Calendar>
-              </div>
+              </DivINp>
               <input
                 type="text"
                 value={
@@ -938,6 +1034,7 @@ export default function History() {
                 }
                 className="form-control"
                 disabled
+                hidden={ticketOBSERVATION.length > 1 ? false : true}
               />
               <input
                 type="text"
@@ -945,14 +1042,6 @@ export default function History() {
                 className="form-control"
                 disabled
               />
-              <div>
-                <input
-                  type="text"
-                  value={"Arquivos"}
-                  className="form-control"
-                  disabled
-                />
-              </div>
               <div className="w-100 d-flex">{fileticket}</div>
               <input
                 type="text"

@@ -259,3 +259,7 @@
 .AdjustWid {
   --rdp-cell-size: 30px !important;
 }
+
+.cald .rdp-nav {
+  display: none;
+}

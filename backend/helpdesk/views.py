@@ -603,6 +603,16 @@ def ticket(request, id):
                         "file": image_data,
                         "equipament": equipaments,
                         "days_alocated": dates_for_alocate,
+                        "name_new_user":t.name_new_user,
+                        "sector_new_user":t.sector_new_user,
+                        "where_from":t.where_from,
+                        "machine_new_user":t.machine_new_user,
+                        "company_new_user":t.company_new_user,
+                        "software_new_user":t.software_new_user,
+                        "cost_center":t.cost_center,
+                        "job_title_new_user":t.job_title_new_user,
+                        "start_work_new_user":t.start_work_new_user,
+                        "copy_profile_new_user":t.copy_profile_new_user,
                     }
                 )
 
