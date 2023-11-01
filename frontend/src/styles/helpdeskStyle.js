@@ -72,3 +72,7 @@ export const DivEquip = styled.div`
     border: dashed 1px black;
   }
 `;
+
+export const InputRadio = styled.input`
+margin-right: 5px;
+`

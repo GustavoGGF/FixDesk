@@ -20,7 +20,7 @@ def CreateOrVerifyUser(user, password, request, helpdesk, name_create_user):
     userAuthentic = None
     Back_User = None
     Back_Tech = None
-    # Back_Leader = None
+    Back_Leader = None
     # Back_ADM = None
     group_user = None
     group_tech = None
@@ -46,22 +46,36 @@ def CreateOrVerifyUser(user, password, request, helpdesk, name_create_user):
 
     Back_User = getenv("DJANGO_GROUP_USER")
     Back_Tech = getenv("DJANGO_GROUP_TECH")
+    Back_Leader = getenv("DJANGO_GROUP_LEADER")
     Valid = True
 
     try:
         group_user = Group.objects.get(name=Back_User)
         group_tech = Group.objects.get(name=Back_Tech)
+        group_leader = Group.objects.get(name=Back_Leader)
         if helpdesk == "User":
             userAuthentic.groups.add(group_user)
+            userAuthentic.groups.remove(group_tech)
+            userAuthentic.groups.remove(group_leader)
             group_user.save()
             Valid = True
         elif helpdesk == "Tecnico TI":
             userAuthentic.groups.add(group_tech)
+            userAuthentic.groups.remove(group_user)
+            userAuthentic.groups.remove(group_leader)
+            group_user.save()
+            Valid = True
+        elif helpdesk == "Gestor":
+            userAuthentic.groups.add(group_leader)
+            userAuthentic.groups.remove(group_user)
+            userAuthentic.groups.remove(group_tech)
+            group_user = Group.objects.get(name=Back_User)
             group_user.save()
             Valid = True
         else:
             userAuthentic.groups.remove(group_user)
             userAuthentic.groups.remove(group_tech)
+            userAuthentic.groups.remove(group_leader)
             group_user.save()
             group_tech.save()
             Valid = False
@@ -189,7 +203,7 @@ def validation(request):
         task = None
         tech_user = None
         tech_ti = None
-        tech_admin = None
+        # tech_admin = None
         tech_leader = None
 
         try:
@@ -242,12 +256,11 @@ def validation(request):
 
             for item in groups:
                 if tech_user in item:
-                    if helpdesk == "Tecnico TI":
-                        pass
-                    else:
-                        helpdesk = "User"
+                    helpdesk = "User"
                 elif tech_ti in item:
                     helpdesk = "Tecnico TI"
+                elif tech_leader in item:
+                    helpdesk = "Gestor"
             if "displayName" in information:
                 name = information["displayName"]
             else:

@@ -179,3 +179,5 @@ implementar Kubernetes | Docker
 return em todas as funções
 
 try e cath todo codigo
+
+verificar com RH unidades que podem contratar

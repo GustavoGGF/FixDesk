@@ -12,6 +12,7 @@ import {
   Textarea,
   ImageEquip,
   DivEquip,
+  InputRadio,
 } from "../styles/helpdeskStyle";
 import {
   DivUpload,
@@ -84,6 +85,15 @@ export default function Helpdesk() {
   const [dateequip, setDateEquip] = useState(false);
   const [daysForAlocate, SetDaysForAlocate] = useState([]);
   const [equipamentSelected, SetEquipamentSelected] = useState("");
+  const [newname, SetNewName] = useState("");
+  const [sectornewuser, SetSectorNewUser] = useState("");
+  const [motivationContract, SetMotivationContract] = useState("");
+  const [necessaryMachine, SetNecessaryMachine] = useState();
+  const [companynewUser, SetCompanyNewUser] = useState("");
+  const [softwareNewUser, SetSoftwareNewUser] = useState([]);
+  const [centralcost, SetCentralCost] = useState("");
+  const [jobtitlenewuser, SetJobTitleNewUser] = useState("");
+  const [copyUser, SetCopyUser] = useState("");
 
   const footerDay = selectedDay ? (
     <p>Você selecionou {format(selectedDay, "PPP")}</p>
@@ -845,6 +855,9 @@ export default function Helpdesk() {
       setFormDelUser(false);
       setProblemn("Criacao de usuario de rede");
       setAlertVerify(false);
+      SetMotivationContract("");
+      SetSectorNewUser("");
+      SetNewName("");
     } else if (option === "deluser") {
       setFormDelUser(true);
       setFormNewUser(false);
@@ -924,6 +937,8 @@ export default function Helpdesk() {
         if (event.target.checked) {
           const selectedValue = event.target.value;
 
+          SetMotivationContract(selectedValue);
+
           if (selectedValue === "other") {
             setMotivation(false);
           } else {
@@ -942,6 +957,7 @@ export default function Helpdesk() {
           const selectedValue = event.target.value;
           if (selectedValue === "yes") {
             setMachine(false);
+            SetNecessaryMachine(true);
           } else if (selectedValue === "no") {
             setMachine(true);
             setMessagetitle("Caso de não haver maquina");
@@ -949,6 +965,7 @@ export default function Helpdesk() {
               "1. Deverá ser feita uma solicitação de equipamento"
             );
             setmessageinfo2("");
+            SetNecessaryMachine(false);
           }
         }
       });
@@ -1038,6 +1055,71 @@ export default function Helpdesk() {
       formData.append("respective_area", respectiveArea);
       formData.append("id_equipament", equipamentSelected);
       formData.append("days_alocated", NewDatesAlocate);
+    } else if (problemn === "Criacao de usuario de rede") {
+      if (newname.length < 2) {
+        SetMessage(true);
+        setTypeError("Falta de dados");
+        setMessageError("Nome Obrigatório!!!");
+      }
+
+      if (sectornewuser.length < 2) {
+        SetMessage(true);
+        setTypeError("Falta de dados");
+        setMessageError("Setor Obrigatório!!!");
+      }
+
+      if (motivationContract.length < 2) {
+        SetMessage(true);
+        setTypeError("Falta de dados");
+        setMessageError("Tipo da Contratação Obrigatória!!!");
+      }
+
+      if (necessaryMachine === undefined) {
+        SetMessage(true);
+        setTypeError("Falta de dados");
+        setMessageError("Obigatório informar a necessidade de Máquina!!!");
+      }
+
+      if (companynewUser.length < 2) {
+        SetMessage(true);
+        setTypeError("Falta de dados");
+        setMessageError("Obigatório informar a Unidade!!!");
+      }
+
+      if (centralcost.length < 2) {
+        SetMessage(true);
+        setTypeError("Falta de dados");
+        setMessageError("Obigatório Informar Centro de Custo!!!");
+      }
+
+      if (jobtitlenewuser.length < 2) {
+        SetMessage(true);
+        setTypeError("Falta de dados");
+        setMessageError("Obigatório Informar o cargo!!!");
+      }
+
+      formData.append("ticketRequester", Data.name);
+      formData.append("department", Data.department);
+      formData.append("mail", Data.mail);
+      formData.append("company", Data.company);
+      formData.append("phone", Data.phone);
+      formData.append("sector", sector);
+      formData.append("occurrence", occurrence);
+      formData.append("problemn", problemn);
+      formData.append("observation", observation);
+      formData.append("start_date", dataFormatada);
+      formData.append("PID", Data.pid);
+      formData.append("respective_area", respectiveArea);
+      formData.append("new_user", newname);
+      formData.append("sector_new_user", sectornewuser);
+      formData.append("where_from", motivationContract);
+      formData.append("machine_new_user", necessaryMachine);
+      formData.append("company_new_user", companynewUser);
+      formData.append("software_new_user", softwareNewUser);
+      formData.append("cost_center", centralcost);
+      formData.append("job_title_new_user", jobtitlenewuser);
+      formData.append("start_work_new_user", selectedDay);
+      formData.append("copy_profile_new_user", copyUser);
     } else {
       formData.append("ticketRequester", Data.name);
       formData.append("department", Data.department);
@@ -1336,6 +1418,70 @@ export default function Helpdesk() {
     }
   }
 
+  function nameNewUser(event) {
+    const nameUser = event.target.value;
+    SetNewName(nameUser);
+  }
+
+  function SectorNewUser(event) {
+    const company = event.target.value;
+    SetSectorNewUser(company);
+  }
+
+  function selectCompanyNW() {
+    const select = document.getElementById("select-company-new-user");
+    const option = select.options[select.selectedIndex].value;
+
+    if (option === "0") {
+      SetCompanyNewUser("CSC");
+    } else if (option === "1") {
+      SetCompanyNewUser("Fiberliners");
+    } else if (option === "2") {
+      SetCompanyNewUser("Valmicro");
+    } else if (option === "3") {
+      SetCompanyNewUser("Valmicro – Mipel Sul");
+    } else if (option === "4") {
+      SetCompanyNewUser("Ropes");
+    } else if (option === "5") {
+      SetCompanyNewUser("Escritorio Corporativo SP");
+    } else if (option === "6") {
+      SetCompanyNewUser("Valmicro SP");
+    } else if (option === "7") {
+      SetCompanyNewUser("Mipel Microfusão");
+    }
+  }
+
+  function softwaresNewUser() {
+    var Array = [];
+    var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+
+    checkboxes.forEach(function (checkbox) {
+      if (checkbox.checked) {
+        Array.push(checkbox.value);
+      }
+    });
+
+    return SetSoftwareNewUser(Array);
+  }
+
+  function centralCost(event) {
+    var cost = event.target.value;
+
+    SetCentralCost(cost);
+  }
+
+  function jobTitleFunct(event) {
+    var job = event.target.value;
+
+    SetJobTitleNewUser(job);
+  }
+
+  function nameCopyUser(event) {
+    var copy = event.target.value;
+
+    SetCopyUser(copy);
+  }
+
   return (
     <Div>
       {navbar && (
@@ -1544,6 +1690,7 @@ export default function Helpdesk() {
                   placeholder="NOME COMPLETO!!"
                   aria-label="newname"
                   aria-describedby="basic-addon1"
+                  onKeyDown={nameNewUser}
                 />
               </div>
               <div className="input-group mb-3">
@@ -1556,11 +1703,12 @@ export default function Helpdesk() {
                   placeholder="Setor/Departamento"
                   aria-label="newdepartamen"
                   aria-describedby="basic-addon1"
+                  onKeyDown={SectorNewUser}
                 />
               </div>
               <div className="d-flex flex-column justify-content-start">
                 <div className="d-flex mb-3">
-                  <input
+                  <InputRadio
                     type="radio"
                     className="form-check-input"
                     name="motivation"
@@ -1570,7 +1718,7 @@ export default function Helpdesk() {
                   <span>Nova contratação</span>
                 </div>
                 <div className="d-flex mb-3">
-                  <input
+                  <InputRadio
                     type="radio"
                     className="form-check-input"
                     name="motivation"
@@ -1580,7 +1728,7 @@ export default function Helpdesk() {
                   <span>Remanejamento para outro setor/departamento</span>
                 </div>
                 <div className="d-flex mb-3">
-                  <input
+                  <InputRadio
                     type="radio"
                     className="form-check-input"
                     name="motivation"
@@ -1601,7 +1749,7 @@ export default function Helpdesk() {
                   usuário?
                 </span>
                 <div className="d-flex">
-                  <input
+                  <InputRadio
                     type="radio"
                     className="form-check-input"
                     name="machine"
@@ -1611,7 +1759,7 @@ export default function Helpdesk() {
                   <span className="mb-3">SIM</span>
                 </div>
                 <div className="d-flex mb-3">
-                  <input
+                  <InputRadio
                     type="radio"
                     className="form-check-input"
                     name="machine"
@@ -1635,25 +1783,24 @@ export default function Helpdesk() {
                 <Select
                   className="form-select mb-3 mt-3 text-center mx-auto"
                   aria-label="Default select example"
-                  id="select-company"
+                  id="select-company-new-user"
+                  onChange={selectCompanyNW}
                 >
                   <option value="none" selected>
                     Selecione a unidade
                   </option>
-                  <option value="cidade">CSC</option>
-                  <option value="cidade">Escritório RJ</option>
-                  <option value="cidade">Escritório SP</option>
-                  <option value="cidade">Fiber Liners</option>
-                  <option value="cidade">Microfusão</option>
-                  <option value="cidade">MNA</option>
-                  <option value="cidade">Mipel</option>
-                  <option value="cidade">Oil&Gas</option>
-                  <option value="cidade">Ropes</option>
-                  <option value="cidade">Valmicro</option>
+                  <option value="0">CSC</option>
+                  <option value="1">Fiberliners</option>
+                  <option value="2">Valmicro</option>
+                  <option value="3">Valmicro – Mipel Sul</option>
+                  <option value="4">Ropes</option>
+                  <option value="5">Escritorio Corporativo SP</option>
+                  <option value="6">Valmicro SP</option>
+                  <option value="7">Mipel Microfusão</option>
                 </Select>
               </div>
               <div className="d-flex flex-column mb-3">
-                <span className="mb-3">
+                <span className="mb-1">
                   Informe o sistemas/softwares que requisitam usuario/licença
                 </span>
                 <div className="mx-auto">
@@ -1662,8 +1809,8 @@ export default function Helpdesk() {
                       <input
                         className="form-check-input me-1"
                         type="checkbox"
-                        value=""
-                        id="SAP"
+                        value="SAP"
+                        onChange={softwaresNewUser}
                       />
                       <label className="form-check-label" htmlFor="SAP">
                         SAP
@@ -1673,8 +1820,8 @@ export default function Helpdesk() {
                       <input
                         className="form-check-input me-1"
                         type="checkbox"
-                        value=""
-                        id="MBI"
+                        value="MBI"
+                        onChange={softwaresNewUser}
                       />
                       <label className="form-check-label" htmlFor="MBI">
                         MBI / NetTerm
@@ -1684,8 +1831,8 @@ export default function Helpdesk() {
                       <input
                         className="form-check-input me-1"
                         type="checkbox"
-                        value=""
-                        id="Solfis"
+                        value="Solfis"
+                        onChange={softwaresNewUser}
                       />
                       <label className="form-check-label" htmlFor="Solfis">
                         Synchro Fiscal (Solfis)
@@ -1695,19 +1842,8 @@ export default function Helpdesk() {
                       <input
                         className="form-check-input me-1"
                         type="checkbox"
-                        value=""
-                        id="Solfis"
-                      />
-                      <label className="form-check-label" htmlFor="Solfis">
-                        Synchro Fiscal (Solfis)
-                      </label>
-                    </li>
-                    <li className="list-group-item">
-                      <input
-                        className="form-check-input me-1"
-                        type="checkbox"
-                        value=""
-                        id="DFe"
+                        value="DFe Manager"
+                        onChange={softwaresNewUser}
                       />
                       <label className="form-check-label" htmlFor="DFe">
                         Synchro NFe (DFe Manager)
@@ -1717,8 +1853,8 @@ export default function Helpdesk() {
                       <input
                         className="form-check-input me-1"
                         type="checkbox"
-                        value=""
-                        id="Metadados"
+                        value="Metadados"
+                        onChange={softwaresNewUser}
                       />
                       <label className="form-check-label" htmlFor="Metadados">
                         Metadados
@@ -1728,8 +1864,8 @@ export default function Helpdesk() {
                       <input
                         className="form-check-input me-1"
                         type="checkbox"
-                        value=""
-                        id="AutoCad"
+                        value="AutoCad"
+                        onChange={softwaresNewUser}
                       />
                       <label className="form-check-label" htmlFor="AutoCad">
                         AutoCad
@@ -1739,8 +1875,8 @@ export default function Helpdesk() {
                       <input
                         className="form-check-input me-1"
                         type="checkbox"
-                        value=""
-                        id="SolidWorks"
+                        value="SolidWorks"
+                        onChange={softwaresNewUser}
                       />
                       <label className="form-check-label" htmlFor="SolidWorks">
                         SolidWorks
@@ -1750,8 +1886,8 @@ export default function Helpdesk() {
                       <input
                         className="form-check-input me-1"
                         type="checkbox"
-                        value=""
-                        id="Office"
+                        value="Office"
+                        onChange={softwaresNewUser}
                       />
                       <label className="form-check-label" htmlFor="Office">
                         Office
@@ -1762,15 +1898,23 @@ export default function Helpdesk() {
               </div>
               <div>
                 <span>Centro de custo:</span>
-                <input type="number" className="form-control" />
+                <input
+                  type="number"
+                  className="form-control"
+                  onKeyDown={centralCost}
+                />
               </div>
               <div className="mb-3">
                 <span>Cargo/Função:</span>
-                <input type="text" className="form-control" />
+                <input
+                  type="text"
+                  className="form-control"
+                  onKeyDown={jobTitleFunct}
+                />
               </div>
-              <div>
+              <div className="text-center">
                 <span className="mb-3">Data de inicio das atitividades:</span>
-                <Calendar className="mt-3">
+                <Calendar className="mt-3 d-flex">
                   <DayPicker
                     fixedWeeks
                     showOutsideDays
@@ -1782,7 +1926,7 @@ export default function Helpdesk() {
                 </Calendar>
               </div>
               <div>
-                <span>
+                <span className="mb-2">
                   Informe um usuário que tenha o perfil semelhante ao do
                   contratado. Inclua observações caso exista alguma restrição na
                   cópia deste, ou digite nenhum caso não exista semelhante.(terá
@@ -1790,8 +1934,9 @@ export default function Helpdesk() {
                 </span>
                 <input
                   type="text"
-                  className="form-control"
+                  className="form-control mt-3"
                   placeholder="NOME COMPLETO!!!"
+                  onKeyDown={nameCopyUser}
                 />
               </div>
             </div>

@@ -72,15 +72,19 @@ def firstView(request):
         if request.user.is_authenticated:
             Back_User = None
             Back_Tech = None
+            Back_Leader = None
             User = None
             data = None
             try:
                 Back_User = getenv("DJANGO_GROUP_USER")
                 Back_Tech = getenv("DJANGO_GROUP_TECH")
+                Back_Leader = getenv("DJANGO_GROUP_LEADER")
                 User = request.user
                 if User.groups.filter(name=Back_User):
                     return render(request, "index.html", {})
                 elif User.groups.filter(name=Back_Tech):
+                    return render(request, "index.html", {})
+                elif User.groups.filter(name=Back_Leader):
                     return render(request, "index.html", {})
                 else:
                     return redirect("/login")
@@ -238,6 +242,66 @@ def submitTicket(request):
 
                 Ticket.save()
 
+                # * Monta o ticket e salva no banco
+
+                return JsonResponse({"status": "ok"}, status=200, safe=True)
+            except Exception as e:
+                print(e)
+
+        elif "new_user" in request.POST:
+            name_new_user = None
+            sector_new_user = None
+            where_from = None
+            company_new_user = None
+            machine_new_user = None
+            software_new_user = None
+            cost_center = None
+            job_title_new_user = None
+            start_work_new_user = None
+            copy_profile_new_user = None
+            try:
+                name_new_user = request.POST.get("new_user")
+                sector_new_user = request.POST.get("sector_new_user")
+                where_from = request.POST.get("where_from")
+                machine_new_user = request.POST.get("machine_new_user")
+                company_new_user = request.POST.get("company_new_user")
+                software_new_user = request.POST.get("software_new_user")
+                cost_center = request.POST.get("cost_center")
+                job_title_new_user = request.POST.get("job_title_new_user")
+                start_work_new_user = request.POST.get("start_work_new_user")
+                copy_profile_new_user = request.POST.get("copy_profile_new_user")
+
+                if machine_new_user == "false":
+                    machine_new_user = False
+
+                elif machine_new_user == "true":
+                    machine_new_user = True
+
+                Ticket = SupportTicket(
+                    ticketRequester=ticketRequester,
+                    department=department,
+                    mail=mail,
+                    company=company,
+                    sector=sector,
+                    respective_area=respective_area,
+                    occurrence=occurrence,
+                    problemn=problemn,
+                    observation=observation,
+                    start_date=start_date,
+                    PID=pid,
+                    name_new_user=name_new_user,
+                    sector_new_user=sector_new_user,
+                    where_from=where_from,
+                    machine_new_user=machine_new_user,
+                    company_new_user=company_new_user,
+                    software_new_user=software_new_user,
+                    cost_center=cost_center,
+                    job_title_new_user=job_title_new_user,
+                    start_work_new_user=start_work_new_user,
+                    copy_profile_new_user=copy_profile_new_user,
+                )
+
+                Ticket.save()
                 # * Monta o ticket e salva no banco
 
                 return JsonResponse({"status": "ok"}, status=200, safe=True)
