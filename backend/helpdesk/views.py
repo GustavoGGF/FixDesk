@@ -309,7 +309,7 @@ def submitTicket(request):
                 print(e)
 
         elif "mail_tranfer" in request.POST:
-            name_new_user= None
+            name_new_user = None
             mail_tranfer = None
             old_files = None
             start_work_new_user = None
@@ -583,8 +583,6 @@ def ticket(request, id):
 
                     act_dir += f"/uploads/{id}"
 
-                    print(act_dir)
-
                     if exists(act_dir) and isdir(act_dir):
                         image = t.file
 
@@ -650,8 +648,8 @@ def ticket(request, id):
                         "job_title_new_user": t.job_title_new_user,
                         "start_work_new_user": t.start_work_new_user,
                         "copy_profile_new_user": t.copy_profile_new_user,
-                        "mail_tranfer":t.mail_tranfer,
-                        "old_files":t.old_files
+                        "mail_tranfer": t.mail_tranfer,
+                        "old_files": t.old_files,
                     }
                 )
 
@@ -739,13 +737,20 @@ def getTicketFilter(request):
         ticket_list = []
         ticket_json = None
         order = None
+        problemnFront = None
+        sectorFront = None
         try:
             username = request.META.get("HTTP_DATA_USER")
             Quantity_tickets = int(request.META.get("HTTP_QUANTITY_TICKETS"))
+            order = request.META.get("HTTP_ORDER_BY")
+            sectorFront = request.META.get("HTTP_SECTOR_TICKET")
+            problemnFront = request.META.get("HTTP_PROBLEMN_TICKET")
 
-            print(Quantity_tickets)
-
-            if "HTTP_ORDER_BY" in request.META:
+            if (
+                "HTTP_ORDER_BY" in request.META
+                and sectorFront == "null"
+                and problemnFront == "null"
+            ):
                 order = request.META.get("HTTP_ORDER_BY")
                 if order == "-id":
                     ticket_data = SupportTicket.objects.filter(
@@ -757,10 +762,69 @@ def getTicketFilter(request):
                         ticketRequester=username
                     )[:Quantity_tickets]
 
-            else:
-                ticket_data = SupportTicket.objects.filter(ticketRequester=username)[
-                    :Quantity_tickets
-                ]
+            elif "HTTP_SECTOR_TICKET" in request.META and sectorFront == "all":
+                if order == "-id":
+                    ticket_data = SupportTicket.objects.filter(
+                        ticketRequester=username,
+                    ).order_by("-id")[:Quantity_tickets]
+
+                else:
+                    ticket_data = SupportTicket.objects.filter(
+                        ticketRequester=username,
+                    )[:Quantity_tickets]
+
+            elif (
+                "HTTP_SECTOR_TICKET" in request.META
+                and sectorFront != "null"
+                and problemnFront == "all"
+            ):
+                if order == "-id":
+                    ticket_data = SupportTicket.objects.filter(
+                        ticketRequester=username,
+                        sector=sectorFront,
+                    ).order_by("-id")[:Quantity_tickets]
+
+                else:
+                    ticket_data = SupportTicket.objects.filter(
+                        ticketRequester=username,
+                        sector=sectorFront,
+                    )[:Quantity_tickets]
+
+            elif (
+                "HTTP_SECTOR_TICKET" in request.META
+                and sectorFront != "null"
+                and problemnFront == "null"
+            ):
+                order = request.META.get("HTTP_ORDER_BY")
+
+                if order == "-id":
+                    ticket_data = SupportTicket.objects.filter(
+                        ticketRequester=username, sector=sectorFront
+                    ).order_by("-id")[:Quantity_tickets]
+
+                else:
+                    ticket_data = SupportTicket.objects.filter(
+                        ticketRequester=username, sector=sectorFront
+                    )[:Quantity_tickets]
+
+            elif (
+                "HTTP_SECTOR_TICKET" in request.META
+                and sectorFront != "null"
+                and problemnFront != "null"
+            ):
+                if order == "-id":
+                    ticket_data = SupportTicket.objects.filter(
+                        ticketRequester=username,
+                        sector=sectorFront,
+                        occurrence=problemnFront,
+                    ).order_by("-id")[:Quantity_tickets]
+
+                else:
+                    ticket_data = SupportTicket.objects.filter(
+                        ticketRequester=username,
+                        sector=sectorFront,
+                        occurrence=problemnFront,
+                    )[:Quantity_tickets]
 
             for ticket in ticket_data:
                 ticket_json = serialize("json", [ticket])

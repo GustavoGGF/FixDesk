@@ -25,15 +25,13 @@ import {
   DivAlocate,
   Calendar,
   DivINp,
-} from "../styles/historyStyle";
-import {
   DivFilter,
   Input1,
   Select1,
   DivContainerImages,
   DivImages,
   IMGS1,
-} from "../styles/dashboardTIStyle";
+} from "../styles/historyStyle";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import Message from "../components/message";
@@ -82,7 +80,7 @@ export default function History() {
   const [problemInfra, SetProblemInfra] = useState(false);
   const [ticketsDash, SetTicketsDash] = useState([]);
   const [countTicket, SetCountTicket] = useState(0);
-  const [orderby, SetOrderBy] = useState("");
+  const [orderby, SetOrderBy] = useState(null);
   const [imageEquipament, SetImageEquipament] = useState();
   const [equipamentLocate, SetEquipamentLocate] = useState("");
   const [daysLocated, SetDaysLocated] = useState();
@@ -98,6 +96,9 @@ export default function History() {
   const [copyprofilenewuser, SetCopyProfileNewUser] = useState("");
   const [mailtranfer, SetMailTranfer] = useState("");
   const [oldfile, SetOldFiles] = useState("");
+  const [problemTicket, SetProblemTicket] = useState(null);
+  const [sectorTicket, SetSectorTicket] = useState(null);
+  const [problemSyst, SetProblemSyst] = useState(false);
 
   let count = 0;
   let timeoutId;
@@ -618,25 +619,80 @@ export default function History() {
     const select = document.getElementById("selectOcorrence");
     const option = select.options[select.selectedIndex].value;
 
-    console.log(option);
-
     if (option === "infra") {
       SetFakeSelect(false);
       SetProblemInfra(true);
-      return;
+      SetProblemSyst(false);
+      SetProblemTicket(null);
+      SetSectorTicket("Infraestrutura");
+      return getTicketFilterSector({ sector: "Infraestrutura" });
     } else if (option === "system") {
       SetFakeSelect(false);
       SetProblemInfra(false);
-      return;
+      SetProblemSyst(true);
+      SetProblemTicket(null);
+      SetSectorTicket("Sistema");
+      return getTicketFilterSector({ sector: "Sistema" });
     } else if (option === "null") {
       SetFakeSelect(true);
       SetProblemInfra(false);
+      SetProblemSyst(false);
+      SetProblemTicket(null);
       return;
+    } else if (option === "all") {
+      SetFakeSelect(true);
+      SetProblemInfra(false);
+      SetProblemSyst(false);
+      SetSectorTicket("all");
+      SetProblemTicket(null);
+      return getTicketFilterSector({ sector: "all" });
+    }
+  }
+
+  function changeProblemn() {
+    const select = document.getElementById("selectBo");
+    const option = select.options[select.selectedIndex].value;
+
+    if (option === "backup") {
+      SetProblemTicket("Backup");
+      return getTicketFilterProblemn({ problemn: "Backup" });
+    } else if (option === "mail") {
+      SetProblemTicket("E-mail");
+      return getTicketFilterProblemn({ problemn: "E-mail" });
+    } else if (option === "equipamento") {
+      SetProblemTicket("Equipamento");
+      return getTicketFilterProblemn({ problemn: "Equipamento" });
+    } else if (option === "user") {
+      SetProblemTicket("Gerenciamento de Usuario");
+      return getTicketFilterProblemn({ problemn: "Gerenciamento de Usuario" });
+    } else if (option === "internet") {
+      SetProblemTicket("Internet");
+      return getTicketFilterProblemn({ problemn: "Internet" });
+    } else if (option === "permissao") {
+      SetProblemTicket("Permissão");
+      return getTicketFilterProblemn({ problemn: "Permissão" });
+    } else if (option === "all") {
+      SetProblemTicket("all");
+      return getTicketFilterProblemn({ problemn: "all" });
+    } else if (option === "sap") {
+      SetProblemTicket("SAP");
+      return getTicketFilterProblemn({ problemn: "SAP" });
+    } else if (option === "mbi") {
+      SetProblemTicket("MBI");
+      return getTicketFilterProblemn({ problemn: "MBI" });
+    } else if (option === "synchro") {
+      SetProblemTicket("Synchro");
+      return getTicketFilterProblemn({ problemn: "Synchro" });
+    } else if (option === "office") {
+      SetProblemTicket("Office");
+      return getTicketFilterProblemn({ problemn: "Office" });
+    } else if (option === "eng") {
+      SetProblemTicket("Softwares de Eng");
+      return getTicketFilterProblemn({ problemn: "Softwares de Eng" });
     }
   }
 
   function moreTickets() {
-    console.log(countTicket);
     fetch("/helpdesk/moreTicket/", {
       method: "GET",
       headers: {
@@ -657,6 +713,60 @@ export default function History() {
       })
       .catch((err) => {
         console.log(err);
+      });
+  }
+
+  function getTicketFilterSector({ sector }) {
+    SetTickets([]);
+    SetLoadingDash(true);
+
+    fetch("/helpdesk/getTicketFilter/", {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Data-User": Data.name,
+        "Quantity-tickets": countTicket,
+        "Order-by": orderby,
+        "Problemn-Ticket": problemTicket,
+        "Sector-Ticket": sector,
+      },
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        SetLoadingDash(false);
+        return SetTickets(data.tickets);
+      })
+      .catch((err) => {
+        return console.log(err);
+      });
+  }
+
+  function getTicketFilterProblemn({ problemn }) {
+    SetTickets([]);
+    SetLoadingDash(true);
+
+    fetch("/helpdesk/getTicketFilter/", {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Data-User": Data.name,
+        "Quantity-tickets": countTicket,
+        "Order-by": orderby,
+        "Problemn-Ticket": problemn,
+        "Sector-Ticket": sectorTicket,
+      },
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        SetLoadingDash(false);
+        return SetTickets(data.tickets);
+      })
+      .catch((err) => {
+        return console.log(err);
       });
   }
 
@@ -686,6 +796,8 @@ export default function History() {
         "Data-User": Data.name,
         "Quantity-tickets": quantity,
         "Order-by": orderby,
+        "Problemn-Ticket": problemTicket,
+        "Sector-Ticket": sectorTicket,
       },
     })
       .then((response) => {
@@ -709,6 +821,8 @@ export default function History() {
         "Data-User": Data.name,
         "Quantity-tickets": countTicket,
         "Order-By": order,
+        "Problemn-Ticket": problemTicket,
+        "Sector-Ticket": sectorTicket,
       },
     })
       .then((response) => {
@@ -774,6 +888,7 @@ export default function History() {
           </option>
           <option value="infra">Infra</option>
           <option value="system">Sistema</option>
+          <option value="all">Todos</option>
         </Select1>
         {fakeSelect && (
           <Select1 className="form-select" disabled>
@@ -781,16 +896,42 @@ export default function History() {
           </Select1>
         )}
         {problemInfra && (
-          <Select1 id="" className="form-select">
+          <Select1
+            id="selectBo"
+            className="form-select"
+            onChange={() => {
+              changeProblemn();
+            }}
+          >
             <option value="" selected disabled>
               Problema
             </option>
-            <option value="">Backup/Restore</option>
-            <option value="">E-mail</option>
-            <option value="">Equipamento</option>
-            <option value="">Gerenciamento de Usuario</option>
-            <option value="">Internet</option>
-            <option value="">Pasta</option>
+            <option value="backup">Backup/Restore</option>
+            <option value="mail">E-mail</option>
+            <option value="equipamento">Equipamento</option>
+            <option value="user">Gerenciamento de Usuario</option>
+            <option value="internet">Internet</option>
+            <option value="permissao">Pasta</option>
+            <option value="all">Todos</option>
+          </Select1>
+        )}
+        {problemSyst && (
+          <Select1
+            id="selectBo"
+            className="form-select"
+            onChange={() => {
+              changeProblemn();
+            }}
+          >
+            <option value="" selected disabled>
+              Problema
+            </option>
+            <option value="sap">SAP</option>
+            <option value="mbi">MBI</option>
+            <option value="synchro">Synchro</option>
+            <option value="office">Office</option>
+            <option value="eng">Softwares de Eng</option>
+            <option value="all">Todos</option>
           </Select1>
         )}
         <Select1

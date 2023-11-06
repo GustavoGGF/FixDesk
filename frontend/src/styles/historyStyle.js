@@ -76,8 +76,83 @@ export const BtnOpen = styled.button`
   border: none;
 `;
 
-export const ImgSelectView = styled.img`
+export const DivAlocate = styled.div`
+  margin: 10px;
+`;
+
+export const IMGFiles2 = styled.img`
+  width: 80px;
+  height: 80px;
+  border: 5px;
+  cursor: pointer;
+  transition: 0.7s;
+  &:hover {
+    transform: scale(1.5);
+  }
+`;
+
+export const Calendar = styled.div`
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+`;
+
+export const DivINp = styled.div`
+  display: flex;
+  width: 100%;
+  justify-content: center;
+`;
+
+export const DivFilter = styled.div`
+  margin: 50px auto;
+  width: 90% !important;
+  display: flex;
+  background: #fff;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  border-radius: 20px;
+  padding: 20px;
+`;
+
+export const Input1 = styled.input`
+  min-width: 200px;
+  margin: 10px;
+`;
+
+export const Select1 = styled.select`
+  max-width: 200px;
+  margin: 10px;
+`;
+
+export const DivContainerImages = styled.div`
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border: 1px dashed #adb5bd;
+  position: relative;
+`;
+
+export const DivImages = styled.div`
+  min-height: 100%;
+  width: 100%;
+  margin: 10px;
+`;
+
+export const IMGS1 = styled.img`
+  height: 30px;
   width: 30px;
+  cursor: pointer;
+`;
+
+export const PSelectView = styled.p`
+  font-size: 0.6em;
+`;
+
+export const PQuantity = styled.p`
+  font-size: 0.8em;
+  margin: 0 auto;
 `;
 
 export const DivSelectView = styled.div`
@@ -86,10 +161,6 @@ export const DivSelectView = styled.div`
   height: 100%;
   padding: 5px;
   border-radius: 2px;
-`;
-
-export const PSelectView = styled.p`
-  font-size: 0.6em;
 `;
 
 export const DivCard = styled.div`
@@ -153,35 +224,6 @@ export const SpanList = styled.span`
   color: #caf0f8;
 `;
 
-export const PQuantity = styled.p`
-  font-size: 0.8em;
-  margin: 0 auto;
-`;
-
-export const DivAlocate = styled.div`
-  margin: 10px;
-`;
-
-export const IMGFiles2 = styled.img`
-  width: 80px;
-  height: 80px;
-  border: 5px;
-  cursor: pointer;
-  transition: 0.7s;
-  &:hover {
-    transform: scale(1.5);
-  }
-`;
-
-export const Calendar = styled.div`
-  width: 100%;
-  height: 100%;
-  align-items: center;
-  justify-content: center;
-`;
-
-export const DivINp = styled.div`
-  display: flex;
-  width: 100%;
-  justify-content: center;
+export const ImgSelectView = styled.img`
+  width: 30px;
 `;
