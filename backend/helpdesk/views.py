@@ -19,6 +19,7 @@ from io import BytesIO
 from magic import Magic
 from os import getcwd, listdir
 from os.path import join, exists, isdir
+from django.db.models import Q
 
 
 # Create your views here.
@@ -847,3 +848,52 @@ def getTicketFilter(request):
 
     if request.method == "POST":
         return
+
+
+def getTicketFilterWords(request):
+    if request.method == "GET":
+        username = None
+        magic_word = None
+        ticket_data = None
+        ticket_list = []
+        ticket_json = None
+        magic_word_int = None
+        try:
+            username = request.META.get("HTTP_DATA_USER")
+            magic_word = request.META.get("HTTP_WORD_FILTER")
+            magic_word_int = int(magic_word)
+
+            ticket_data = SupportTicket.objects.filter(
+                id=magic_word_int,
+                ticketRequester=username,
+            )
+
+        except ValueError:
+            ticket_data = SupportTicket.objects.filter(
+                Q(sector__icontains=magic_word)
+                | Q(occurrence__icontains=magic_word)
+                | Q(problemn__icontains=magic_word)
+                | Q(observation__icontains=magic_word)
+                | Q(respective_area__icontains=magic_word)
+                | Q(responsible_technician__icontains=magic_word),
+                ticketRequester=username,
+            )
+
+            for ticket in ticket_data:
+                ticket_json = serialize("json", [ticket])
+                ticket_list.append(ticket_json)
+
+        except Exception as e:
+            print(e)
+
+        ticket_objects = []
+        try:
+            for ticket in ticket_list:
+                ticket_data = loads(ticket)[0]["fields"]
+                ticket_data["id"] = loads(ticket)[0]["pk"]
+                ticket_objects.append(ticket_data)
+
+            return JsonResponse({"tickets": ticket_objects}, status=200, safe=True)
+
+        except Exception as e:
+            print(e)

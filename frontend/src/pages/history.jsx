@@ -718,6 +718,7 @@ export default function History() {
 
   function getTicketFilterSector({ sector }) {
     SetTickets([]);
+    SetTicketsDash([]);
     SetLoadingDash(true);
 
     fetch("/helpdesk/getTicketFilter/", {
@@ -745,6 +746,7 @@ export default function History() {
 
   function getTicketFilterProblemn({ problemn }) {
     SetTickets([]);
+    SetTicketsDash([]);
     SetLoadingDash(true);
 
     fetch("/helpdesk/getTicketFilter/", {
@@ -772,6 +774,7 @@ export default function History() {
 
   function getTicketFilter({ id, quantity }) {
     SetTickets([]);
+    SetTicketsDash([]);
     SetLoadingDash(true);
     const btn1 = document.getElementById("fiveView");
     btn1.style.backgroundColor = "transparent";
@@ -814,6 +817,7 @@ export default function History() {
 
   function getTicketFilterOrderTime({ order }) {
     SetTickets([]);
+    SetTicketsDash([]);
     fetch("/helpdesk/getTicketFilter/", {
       method: "GET",
       headers: {
@@ -838,6 +842,8 @@ export default function History() {
   }
 
   function selectOrder() {
+    SetTickets([]);
+    SetTicketsDash([]);
     const select = document.getElementById("select-order");
     const option = select.options[select.selectedIndex].value;
 
@@ -848,6 +854,31 @@ export default function History() {
       getTicketFilterOrderTime({ order: "id" });
       SetOrderBy("id");
     }
+  }
+
+  function getTicketKey(event) {
+    const newText = event.target.value;
+
+    fetch("/helpdesk/getTicketFilterWords/", {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Data-User": Data.name,
+        "Word-Filter": newText,
+      },
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        SetLoadingDash(false);
+        return SetTickets(data.tickets);
+      })
+      .catch((err) => {
+        return console.log(err);
+      });
+
+    return;
   }
 
   return (
@@ -875,7 +906,12 @@ export default function History() {
 
       <DivFilter>
         <div className="form-floating">
-          <Input1 type="text" className="form-control" id="floatingInput" />
+          <Input1
+            type="text"
+            className="form-control"
+            id="floatingInput"
+            onKeyDown={getTicketKey}
+          />
           <label htmlFor="floatingInput">Nome | Número | Problema...</label>
         </div>
         <Select1

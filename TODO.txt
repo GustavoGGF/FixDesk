@@ -195,3 +195,5 @@ localte={prBR} react daypicker
 ajusta calendario da tela de exclusão de usuario
 
 bloquear acessa fica aparecendo
+
+colocar no filtro tambem para mostrar os chamados abertos, atendisos e fechados

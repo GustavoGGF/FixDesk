@@ -12,4 +12,9 @@ urlpatterns = [
     path("update_chat/<int:id>", views.update_chat, name="central-update-chat"),
     path("moreTicket/", views.moreTicket, name="central-more-ticket"),
     path("getTicketFilter/", views.getTicketFilter, name="central-get-ticket-filter"),
+    path(
+        "getTicketFilterWords/",
+        views.getTicketFilterWords,
+        name="central-get-ticket-filter-words",
+    ),
 ]
