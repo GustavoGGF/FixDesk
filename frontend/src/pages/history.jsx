@@ -859,12 +859,21 @@ export default function History() {
   function getTicketKey(event) {
     const newText = event.target.value;
 
+    const select1 = document.getElementById("selectOcorrence");
+    select1.value = null;
+
+    SetProblemSyst(false);
+    SetProblemInfra(false);
+    SetFakeSelect(true);
+
     fetch("/helpdesk/getTicketFilterWords/", {
       method: "GET",
       headers: {
         Accept: "application/json",
         "Data-User": Data.name,
         "Word-Filter": newText,
+        "Order-By": orderby,
+        "Quantity-tickets": countTicket,
       },
     })
       .then((response) => {
@@ -912,7 +921,7 @@ export default function History() {
             id="floatingInput"
             onKeyDown={getTicketKey}
           />
-          <label htmlFor="floatingInput">Nome | Número | Problema...</label>
+          <label htmlFor="floatingInput">Ocorrência | Problema | Data...</label>
         </div>
         <Select1
           id="selectOcorrence"
