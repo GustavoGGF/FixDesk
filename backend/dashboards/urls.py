@@ -15,4 +15,10 @@ urlpatterns = [
         views.equipment_inventory,
         name="central-equipment-inventory",
     ),
+    path("getTicketFilter/", views.getTicketFilter, name="central-get-ticket-filter"),
+    path(
+        "getTicketFilterWords/",
+        views.getTicketFilterWords,
+        name="central-get-ticket-filter-words",
+    ),
 ]

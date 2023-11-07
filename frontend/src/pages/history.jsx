@@ -912,7 +912,6 @@ export default function History() {
           />
         </div>
       )}
-
       <DivFilter>
         <div className="form-floating">
           <Input1
@@ -1054,7 +1053,6 @@ export default function History() {
           </button>
         </DivSelectView>
       </DivFilter>
-
       <section id="dashboard">
         {loadingDash && (
           <div className="position-absolute top-50 start-50 translate-middle">

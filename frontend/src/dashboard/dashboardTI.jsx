@@ -9,12 +9,6 @@ import {
   DropdownButton,
   DivDrop,
   P1,
-  DivFilter,
-  Input1,
-  Select1,
-  DivContainerImages,
-  DivImages,
-  IMGS1,
 } from "../styles/dashboardTIStyle";
 import Loading from "../components/loading";
 import DashBoardPie from "../components/dashboardPie";
@@ -24,6 +18,21 @@ import {
   Close,
   DivChat,
   BtnChat,
+  PSelectView,
+  PQuantity,
+  DivSelectView,
+  DivCard,
+  H5Card,
+  SpanCard,
+  DivList,
+  SpanList,
+  ImgSelectView,
+  DivFilter,
+  Input1,
+  Select1,
+  DivContainerImages,
+  DivImages,
+  IMGS1,
 } from "../styles/historyStyle";
 import CloseIMG from "../images/components/close.png";
 import Message from "../components/message";
@@ -36,6 +45,8 @@ import IMG2 from "../images/dashboard_TI/quantity_2.png";
 import IMG3 from "../images/dashboard_TI/quantity_3.png";
 import IMG4 from "../images/dashboard_TI/quantity_4.png";
 import Registration from "../components/equipment_registration";
+import List from "../images/components/lista-de-itens.png";
+import Card from "../images/components/identificacao.png";
 
 export default function DashboardTI() {
   const [loading, SetLoading] = useState(true);
@@ -72,6 +83,13 @@ export default function DashboardTI() {
   const [fakeSelect, SetFakeSelect] = useState(true);
   const [problemInfra, SetProblemInfra] = useState(false);
   const [equipamentforuser, SetEquipamentForUser] = useState(false);
+  const [problemSyst, SetProblemSyst] = useState(false);
+  const [orderby, SetOrderBy] = useState(null);
+  const [countTicket, SetCountTicket] = useState(0);
+  const [loadingDash, SetLoadingDash] = useState(true);
+  const [problemTicket, SetProblemTicket] = useState(null);
+  const [ticketsDash, SetTicketsDash] = useState([]);
+  const [sectorTicket, SetSectorTicket] = useState(null);
 
   let count = 0;
   let timeoutId;
@@ -118,6 +136,10 @@ export default function DashboardTI() {
           return response.json();
         })
         .then((data) => {
+          SetCountTicket(10);
+          SetOrderBy("-id");
+          const btn = document.getElementById("thenView");
+          btn.style.backgroundColor = "#00B4D8";
           return SetTickets(data.tickets);
         })
         .catch((err) => {
@@ -130,48 +152,104 @@ export default function DashboardTI() {
 
   useEffect(() => {
     if (tickets && Object.keys(tickets).length > 0) {
-      const dashboard = document.getElementById("dashboard");
-      SetLoading(false);
-      SetNavbar(true);
-      tickets.forEach((ticket) => {
-        const div1 = document.createElement("div");
-        div1.classList.add("DIV1");
-        div1.addEventListener("click", () => {
-          helpdeskPage({ id: ticket["id"] });
-        });
-
-        const H5 = document.createElement("h5");
-        H5.classList.add("H5");
-        H5.innerText = "chamado " + ticket["id"];
-
-        const Span1 = document.createElement("span");
-        Span1.classList.add("SPAN1");
-        Span1.innerText = ticket["ticketRequester"];
-
-        const Span2 = document.createElement("span");
-        Span2.classList.add("SPAN1");
-        Span2.innerText = "Ocorrência: " + ticket["occurrence"];
-
-        const Span3 = document.createElement("span");
-        Span3.classList.add("SPAN1");
-        Span3.innerText = "Problema: " + ticket["problemn"];
-
-        const Span4 = document.createElement("span");
-        Span4.classList.add("SPAN1");
-        Span4.innerText = ticket["start_date"];
-
-        div1.appendChild(H5);
-        div1.appendChild(Span1);
-        div1.appendChild(Span2);
-        div1.appendChild(Span3);
-        div1.appendChild(Span4);
-        dashboard.appendChild(div1);
-
-        return SetLoading(false);
-      });
+      const selectView = localStorage.getItem("selectView");
+      if (selectView === null) {
+        localStorage.setItem("selectView", "card");
+        viewCard();
+      } else if (selectView === "card") {
+        viewCard();
+      } else if (selectView === "list") {
+        listCard();
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tickets]);
+
+  function viewCard() {
+    SetTicketsDash([]);
+    SetLoading(false);
+    SetNavbar(true);
+
+    localStorage.setItem("selectView", "card");
+
+    const btn = document.getElementById("selectView-Card");
+    btn.style.backgroundColor = "#00B4D8";
+
+    const btn2 = document.getElementById("selectView-List");
+    btn2.style.backgroundColor = "transparent";
+
+    tickets.forEach((ticket) => {
+      var date = new Date(ticket["start_date"]);
+
+      var day = date.getDate();
+      var month = date.getMonth() + 1;
+      var year = date.getFullYear();
+      var newDate = day + "-" + month + "-" + year;
+      const Div = (
+        <DivCard
+          onClick={() => {
+            helpdeskPage({ id: ticket["id"] });
+          }}
+        >
+          <H5Card>chamado {ticket["id"]}</H5Card>
+          <SpanCard>{ticket["ticketRequester"]}</SpanCard>
+          <SpanCard>Ocorrência: {ticket["occurrence"]}</SpanCard>
+          <SpanCard>Problema: {ticket["problemn"]}</SpanCard>
+          <SpanCard>{newDate}</SpanCard>
+        </DivCard>
+      );
+
+      SetTicketsDash((ticketsDash) => [...ticketsDash, Div]);
+      const dash = document.getElementById("dashboard");
+      dash.classList.add("dashCard");
+
+      SetLoadingDash(false);
+      return ticketsDash;
+    });
+  }
+
+  function listCard() {
+    SetTicketsDash([]);
+    SetNavbar(true);
+    SetLoading(false);
+
+    localStorage.setItem("selectView", "list");
+
+    const btn = document.getElementById("selectView-List");
+    btn.style.backgroundColor = "#00B4D8";
+
+    const btn2 = document.getElementById("selectView-Card");
+    btn2.style.backgroundColor = "transparent";
+
+    tickets.forEach((ticket) => {
+      var date = new Date(ticket["start_date"]);
+
+      var day = date.getDate();
+      var month = date.getMonth() + 1;
+      var year = date.getFullYear();
+      var newDate = day + "-" + month + "-" + year;
+      const Div = (
+        <DivList
+          onClick={() => {
+            helpdeskPage({ id: ticket["id"] });
+          }}
+        >
+          <H5Card>chamado {ticket["id"]}</H5Card>
+          <SpanList>{ticket["ticketRequester"]}</SpanList>
+          <SpanList>Ocorrência: {ticket["occurrence"]}</SpanList>
+          <SpanList>Problema: {ticket["problemn"]}</SpanList>
+          <SpanList>{newDate}</SpanList>
+        </DivList>
+      );
+
+      SetTicketsDash((ticketsDash) => [...ticketsDash, Div]);
+      const dash = document.getElementById("dashboard");
+      dash.classList.add("dashCard");
+
+      SetLoadingDash(false);
+      return ticketsDash;
+    });
+  }
 
   function helpdeskPage({ id }) {
     fetch("/helpdesk/ticket/" + id, {
@@ -482,21 +560,61 @@ export default function DashboardTI() {
     const select = document.getElementById("selectOcorrence");
     const option = select.options[select.selectedIndex].value;
 
-    console.log(option);
-
     if (option === "infra") {
       SetFakeSelect(false);
       SetProblemInfra(true);
-      return;
+      SetProblemSyst(false);
+      SetProblemTicket(null);
+      SetSectorTicket("Infraestrutura");
+      return getTicketFilterSector({ sector: "Infraestrutura" });
     } else if (option === "system") {
       SetFakeSelect(false);
       SetProblemInfra(false);
-      return;
+      SetProblemSyst(true);
+      SetProblemTicket(null);
+      SetSectorTicket("Sistema");
+      return getTicketFilterSector({ sector: "Sistema" });
     } else if (option === "null") {
       SetFakeSelect(true);
       SetProblemInfra(false);
+      SetProblemSyst(false);
+      SetProblemTicket(null);
       return;
+    } else if (option === "all") {
+      SetFakeSelect(true);
+      SetProblemInfra(false);
+      SetProblemSyst(false);
+      SetSectorTicket("all");
+      SetProblemTicket(null);
+      return getTicketFilterSector({ sector: "all" });
     }
+  }
+
+  function getTicketFilterSector({ sector }) {
+    SetTickets([]);
+    SetTicketsDash([]);
+    SetLoadingDash(true);
+
+    fetch("getTicketFilter/", {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Quantity-tickets": countTicket,
+        "Order-by": orderby,
+        "Problemn-Ticket": problemTicket,
+        "Sector-Ticket": sector,
+      },
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        SetLoadingDash(false);
+        return SetTickets(data.tickets);
+      })
+      .catch((err) => {
+        return console.log(err);
+      });
   }
 
   function equipamentForUser() {
@@ -505,6 +623,214 @@ export default function DashboardTI() {
 
   function closeUpload() {
     SetEquipamentForUser(false);
+  }
+
+  function getTicketKey(event) {
+    const newText = event.target.value;
+
+    const select1 = document.getElementById("selectOcorrence");
+    select1.value = null;
+
+    SetProblemSyst(false);
+    SetProblemInfra(false);
+    SetFakeSelect(true);
+
+    fetch("getTicketFilterWords/", {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Word-Filter": newText,
+        "Order-By": orderby,
+        "Quantity-tickets": countTicket,
+      },
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        SetLoadingDash(false);
+        return SetTickets(data.tickets);
+      })
+      .catch((err) => {
+        return console.log(err);
+      });
+
+    return;
+  }
+
+  function changeProblemn() {
+    const select = document.getElementById("selectBo");
+    const option = select.options[select.selectedIndex].value;
+
+    if (option === "backup") {
+      SetProblemTicket("Backup");
+      return getTicketFilterProblemn({ problemn: "Backup" });
+    } else if (option === "mail") {
+      SetProblemTicket("E-mail");
+      return getTicketFilterProblemn({ problemn: "E-mail" });
+    } else if (option === "equipamento") {
+      SetProblemTicket("Equipamento");
+      return getTicketFilterProblemn({ problemn: "Equipamento" });
+    } else if (option === "user") {
+      SetProblemTicket("Gerenciamento de Usuario");
+      return getTicketFilterProblemn({ problemn: "Gerenciamento de Usuario" });
+    } else if (option === "internet") {
+      SetProblemTicket("Internet");
+      return getTicketFilterProblemn({ problemn: "Internet" });
+    } else if (option === "permissao") {
+      SetProblemTicket("Permissão");
+      return getTicketFilterProblemn({ problemn: "Permissão" });
+    } else if (option === "all") {
+      SetProblemTicket("all");
+      return getTicketFilterProblemn({ problemn: "all" });
+    } else if (option === "sap") {
+      SetProblemTicket("SAP");
+      return getTicketFilterProblemn({ problemn: "SAP" });
+    } else if (option === "mbi") {
+      SetProblemTicket("MBI");
+      return getTicketFilterProblemn({ problemn: "MBI" });
+    } else if (option === "synchro") {
+      SetProblemTicket("Synchro");
+      return getTicketFilterProblemn({ problemn: "Synchro" });
+    } else if (option === "office") {
+      SetProblemTicket("Office");
+      return getTicketFilterProblemn({ problemn: "Office" });
+    } else if (option === "eng") {
+      SetProblemTicket("Softwares de Eng");
+      return getTicketFilterProblemn({ problemn: "Softwares de Eng" });
+    }
+  }
+
+  function getTicketFilterProblemn({ problemn }) {
+    SetTickets([]);
+    SetTicketsDash([]);
+    SetLoadingDash(true);
+
+    fetch("getTicketFilter/", {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Quantity-tickets": countTicket,
+        "Order-by": orderby,
+        "Problemn-Ticket": problemn,
+        "Sector-Ticket": sectorTicket,
+      },
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        SetLoadingDash(false);
+        return SetTickets(data.tickets);
+      })
+      .catch((err) => {
+        return console.log(err);
+      });
+  }
+
+  function selectOrder() {
+    SetTickets([]);
+    SetTicketsDash([]);
+    const select = document.getElementById("select-order");
+    const option = select.options[select.selectedIndex].value;
+
+    if (option === "recent") {
+      getTicketFilterOrderTime({ order: "-id" });
+      SetOrderBy("-id");
+    } else if (option === "ancient") {
+      getTicketFilterOrderTime({ order: "id" });
+      SetOrderBy("id");
+    }
+  }
+
+  function getTicketFilterOrderTime({ order }) {
+    SetTickets([]);
+    SetTicketsDash([]);
+    fetch("getTicketFilter/", {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Quantity-tickets": countTicket,
+        "Order-By": order,
+        "Problemn-Ticket": problemTicket,
+        "Sector-Ticket": sectorTicket,
+      },
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        SetLoadingDash(false);
+        return SetTickets(data.tickets);
+      })
+      .catch((err) => {
+        return console.log(err);
+      });
+  }
+
+  function getTicketFilter({ id, quantity }) {
+    SetTickets([]);
+    SetTicketsDash([]);
+    SetLoadingDash(true);
+    const btn1 = document.getElementById("fiveView");
+    btn1.style.backgroundColor = "transparent";
+
+    const btn2 = document.getElementById("thenView");
+    btn2.style.backgroundColor = "transparent";
+
+    const btn3 = document.getElementById("fiftyView");
+    btn3.style.backgroundColor = "transparent";
+
+    const btn4 = document.getElementById("allView");
+    btn4.style.backgroundColor = "transparent";
+    console.log(id);
+
+    const btn5 = document.getElementById(id);
+    btn5.style.backgroundColor = "#00B4D8";
+
+    fetch("getTicketFilter/", {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Quantity-tickets": quantity,
+        "Order-by": orderby,
+        "Problemn-Ticket": problemTicket,
+        "Sector-Ticket": sectorTicket,
+      },
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        SetLoadingDash(false);
+        return SetTickets(data.tickets);
+      })
+      .catch((err) => {
+        return console.log(err);
+      });
+  }
+
+    function moreTickets() {
+    fetch("moreTicket/", {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Ticket-Current": countTicket,
+        "ORDER-BY": orderby,
+      },
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        console.log(data.count);
+        SetCountTicket(data.count);
+        SetTickets(data.tickets);
+        return countTicket;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
   return (
@@ -539,8 +865,13 @@ export default function DashboardTI() {
       </DivDashPie>
       <DivFilter>
         <div className="form-floating">
-          <Input1 type="text" className="form-control" id="floatingInput" />
-          <label htmlFor="floatingInput">Nome | Número | Problema...</label>
+          <Input1
+            type="text"
+            className="form-control"
+            id="floatingInput"
+            onKeyDown={getTicketKey}
+          />
+          <label htmlFor="floatingInput">Ocorrência | Problema | Data...</label>
         </div>
         <Select1
           id="selectOcorrence"
@@ -552,6 +883,7 @@ export default function DashboardTI() {
           </option>
           <option value="infra">Infra</option>
           <option value="system">Sistema</option>
+          <option value="all">Todos</option>
         </Select1>
         {fakeSelect && (
           <Select1 className="form-select" disabled>
@@ -559,47 +891,127 @@ export default function DashboardTI() {
           </Select1>
         )}
         {problemInfra && (
-          <Select1 id="" className="form-select">
+          <Select1
+            id="selectBo"
+            className="form-select"
+            onChange={() => {
+              changeProblemn();
+            }}
+          >
             <option value="" selected disabled>
               Problema
             </option>
-            <option value="">Backup/Restore</option>
-            <option value="">E-mail</option>
-            <option value="">Equipamento</option>
-            <option value="">Gerenciamento de Usuario</option>
-            <option value="">Internet</option>
-            <option value="">Pasta</option>
+            <option value="backup">Backup/Restore</option>
+            <option value="mail">E-mail</option>
+            <option value="equipamento">Equipamento</option>
+            <option value="user">Gerenciamento de Usuario</option>
+            <option value="internet">Internet</option>
+            <option value="permissao">Pasta</option>
+            <option value="all">Todos</option>
           </Select1>
         )}
-        <Select1 name="" id="" className="form-select">
-          <option value="" selected disabled>
+        {problemSyst && (
+          <Select1
+            id="selectBo"
+            className="form-select"
+            onChange={() => {
+              changeProblemn();
+            }}
+          >
+            <option value="" selected disabled>
+              Problema
+            </option>
+            <option value="sap">SAP</option>
+            <option value="mbi">MBI</option>
+            <option value="synchro">Synchro</option>
+            <option value="office">Office</option>
+            <option value="eng">Softwares de Eng</option>
+            <option value="all">Todos</option>
+          </Select1>
+        )}
+        <Select1
+          name=""
+          id="select-order"
+          className="form-select"
+          onChange={selectOrder}
+        >
+          <option value="none" disabled>
             Ordernar
           </option>
-          <option value="">Data Recente</option>
-          <option value="">Data Antiga</option>
+          <option selected value="recent">
+            Data Recente
+          </option>
+          <option value="ancient">Data Antiga</option>
         </Select1>
         <DivContainerImages className="d-flex">
-          <DivImages className="btn">
+          <PSelectView className="position-absolute top-0 start-0 translate-middle">
+            Quantidade
+          </PSelectView>
+          <DivImages
+            className="btn"
+            id="fiveView"
+            onClick={() => {
+              SetCountTicket(5);
+              getTicketFilter({ id: "fiveView", quantity: 5 });
+            }}
+          >
             <IMGS1 src={IMG1} alt="" />
+            <PQuantity>5</PQuantity>
           </DivImages>
-          <DivImages className="btn">
+          <DivImages
+            className="btn"
+            id="thenView"
+            onClick={() => {
+              SetCountTicket(10);
+              getTicketFilter({ id: "thenView", quantity: 10 });
+            }}
+          >
             <IMGS1 src={IMG2} alt="" />
+            <PQuantity>10</PQuantity>
           </DivImages>
-          <DivImages className="btn">
+          <DivImages
+            className="btn"
+            id="fiftyView"
+            onClick={() => {
+              SetCountTicket(50);
+              getTicketFilter({ id: "fiftyView", quantity: 50 });
+            }}
+          >
             <IMGS1 src={IMG3} alt="" />
+            <PQuantity>50</PQuantity>
           </DivImages>
-          <DivImages className="btn">
+          <DivImages
+            className="btn"
+            id="allView"
+            onClick={() => {
+              SetCountTicket(100000);
+              getTicketFilter({ id: "allView", quantity: 100000 });
+            }}
+          >
             <IMGS1 src={IMG4} alt="" />
+            <PQuantity>todos</PQuantity>
           </DivImages>
         </DivContainerImages>
+        <DivSelectView>
+          <PSelectView className="position-absolute top-0 start-0 translate-middle">
+            Modo de Visualização
+          </PSelectView>
+          <button className="btn" id="selectView-List" onClick={listCard}>
+            <ImgSelectView src={List} className="img-fluid" alt="" />
+          </button>
+          <button className="btn" id="selectView-Card" onClick={viewCard}>
+            <ImgSelectView src={Card} clasName="img-fluid" alt="" />
+          </button>
+        </DivSelectView>
       </DivFilter>
-      <div className="w-100 d-flex justify-content-center mt-5">
-        {loading && <Loading />}
-      </div>
-      <div
-        id="dashboard"
-        className="container d-flex flex-wrap justify-content-around p-5 mt-3 w-100"
-      ></div>
+      <section id="dashboard">
+        {loadingDash && (
+          <div className="position-absolute top-50 start-50 translate-middle">
+            <Loading />
+          </div>
+        )}
+        {ticketsDash}
+      </section>
       {ticketWindow && (
         <TicketOpen className="position-fixed top-50 start-50 translate-middle">
           <CloseBTN
@@ -748,6 +1160,11 @@ export default function DashboardTI() {
           </div>
         </TicketOpen>
       )}
+      <div className="w-100 text-center">
+        <button className="btn btn-info mb-5" onClick={moreTickets}>
+          Carregar Mais
+        </button>
+      </div>
       {equipamentforuser && (
         <Registration
           token={token}

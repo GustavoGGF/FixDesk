@@ -197,3 +197,5 @@ ajusta calendario da tela de exclusão de usuario
 bloquear acessa fica aparecendo
 
 colocar no filtro tambem para mostrar os chamados abertos, atendisos e fechados
+
+verificação de token nos filtros e grupos

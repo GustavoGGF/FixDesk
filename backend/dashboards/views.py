@@ -10,6 +10,8 @@ from django.core.serializers import serialize
 from django.middleware.csrf import get_token
 from django.contrib.auth.models import Group, User
 from .models import Equipaments
+from datetime import date
+from django.db.models import Q
 
 
 # Create your views here.
@@ -168,3 +170,252 @@ def equipment_inventory(request):
 
     if request.method == "GET":
         return JsonResponse({"status": "ok"}, status=200, safe=True)
+
+
+def getTicketFilter(request):
+    if request.method == "GET":
+        Quantity_tickets = None
+        ticket_data = None
+        ticket_list = []
+        ticket_json = None
+        order = None
+        problemnFront = None
+        sectorFront = None
+        try:
+            Quantity_tickets = int(request.META.get("HTTP_QUANTITY_TICKETS"))
+            order = request.META.get("HTTP_ORDER_BY")
+            sectorFront = request.META.get("HTTP_SECTOR_TICKET")
+            problemnFront = request.META.get("HTTP_PROBLEMN_TICKET")
+
+            if (
+                "HTTP_ORDER_BY" in request.META
+                and sectorFront == "null"
+                and problemnFront == "null"
+            ):
+                order = request.META.get("HTTP_ORDER_BY")
+                if order == "-id":
+                    ticket_data = SupportTicket.objects.filter(
+                        respective_area="TI"
+                    ).order_by("-id")[:Quantity_tickets]
+
+                else:
+                    ticket_data = SupportTicket.objects.filter(respective_area="TI")[
+                        :Quantity_tickets
+                    ]
+
+            elif "HTTP_SECTOR_TICKET" in request.META and sectorFront == "all":
+                if order == "-id":
+                    ticket_data = SupportTicket.objects.filter(
+                        respective_area="TI"
+                    ).order_by("-id")[:Quantity_tickets]
+
+                else:
+                    ticket_data = SupportTicket.objects.filter(respective_area="TI")[
+                        :Quantity_tickets
+                    ]
+
+            elif (
+                "HTTP_SECTOR_TICKET" in request.META
+                and sectorFront != "null"
+                and problemnFront == "all"
+            ):
+                if order == "-id":
+                    ticket_data = SupportTicket.objects.filter(
+                        respective_area="TI",
+                        sector=sectorFront,
+                    ).order_by("-id")[:Quantity_tickets]
+
+                else:
+                    ticket_data = SupportTicket.objects.filter(
+                        sector=sectorFront, respective_area="TI"
+                    )[:Quantity_tickets]
+
+            elif (
+                "HTTP_SECTOR_TICKET" in request.META
+                and sectorFront != "null"
+                and problemnFront == "null"
+            ):
+                order = request.META.get("HTTP_ORDER_BY")
+
+                if order == "-id":
+                    ticket_data = SupportTicket.objects.filter(
+                        respective_area="TI", sector=sectorFront
+                    ).order_by("-id")[:Quantity_tickets]
+
+                else:
+                    ticket_data = SupportTicket.objects.filter(
+                        respective_area="TI", sector=sectorFront
+                    )[:Quantity_tickets]
+
+            elif (
+                "HTTP_SECTOR_TICKET" in request.META
+                and sectorFront != "null"
+                and problemnFront != "null"
+            ):
+                if order == "-id":
+                    ticket_data = SupportTicket.objects.filter(
+                        respective_area="TI",
+                        sector=sectorFront,
+                        occurrence=problemnFront,
+                    ).order_by("-id")[:Quantity_tickets]
+
+                else:
+                    ticket_data = SupportTicket.objects.filter(
+                        respective_area="TI",
+                        sector=sectorFront,
+                        occurrence=problemnFront,
+                    )[:Quantity_tickets]
+
+            for ticket in ticket_data:
+                ticket_json = serialize("json", [ticket])
+                ticket_list.append(ticket_json)
+
+        except Exception as e:
+            print(e)
+
+        ticket_objects = []
+        try:
+            for ticket in ticket_list:
+                ticket_data = loads(ticket)[0]["fields"]
+                ticket_data["id"] = loads(ticket)[0]["pk"]
+                ticket_objects.append(ticket_data)
+
+            return JsonResponse({"tickets": ticket_objects}, status=200, safe=True)
+
+        except Exception as e:
+            print(e)
+
+    if request.method == "POST":
+        return
+
+
+def getTicketFilterWords(request):
+    if request.method == "GET":
+        magic_word = None
+        ticket_data = None
+        ticket_list = []
+        ticket_json = None
+        magic_word_int = None
+        test_for_date = None
+        order = None
+        Quantity_tickets = None
+        try:
+            magic_word = request.META.get("HTTP_WORD_FILTER")
+            order = request.META.get("HTTP_ORDER_BY")
+            test_for_date = date.fromisoformat(magic_word)
+            Quantity_tickets = int(request.META.get("HTTP_QUANTITY_TICKETS"))
+        except ValueError:
+            test_for_date = None
+        try:
+            magic_word_int = int(magic_word)
+
+            if order == "-id":
+                ticket_data = SupportTicket.objects.filter(
+                    respective_area="TI",
+                    id=magic_word_int,
+                ).order_by("-id")[:Quantity_tickets]
+            else:
+                ticket_data = SupportTicket.objects.filter(
+                    respective_area="TI",
+                    id=magic_word_int,
+                )[:Quantity_tickets]
+
+            if test_for_date:
+                if order == "-id":
+                    ticket_data = SupportTicket.objects.filter().order_by("-id")[
+                        :Quantity_tickets
+                    ]
+                else:
+                    ticket_data = SupportTicket.objects.filter()[:Quantity_tickets]
+
+        except ValueError:
+            if order == "-id":
+                ticket_data = SupportTicket.objects.filter(
+                    Q(sector__icontains=magic_word)
+                    | Q(ticketRequester=magic_word)
+                    | Q(occurrence__icontains=magic_word)
+                    | Q(problemn__icontains=magic_word)
+                    | Q(observation__icontains=magic_word)
+                    | Q(respective_area__icontains=magic_word)
+                    | Q(responsible_technician__icontains=magic_word),
+                ).order_by("-id")[:Quantity_tickets]
+
+            else:
+                ticket_data = SupportTicket.objects.filter(
+                    Q(sector__icontains=magic_word)
+                    | Q(ticketRequester=magic_word)
+                    | Q(occurrence__icontains=magic_word)
+                    | Q(problemn__icontains=magic_word)
+                    | Q(observation__icontains=magic_word)
+                    | Q(respective_area__icontains=magic_word)
+                    | Q(responsible_technician__icontains=magic_word),
+                )[:Quantity_tickets]
+
+            for ticket in ticket_data:
+                ticket_json = serialize("json", [ticket])
+                ticket_list.append(ticket_json)
+
+        except Exception as e:
+            print(e)
+
+        ticket_objects = []
+        try:
+            for ticket in ticket_list:
+                ticket_data = loads(ticket)[0]["fields"]
+                ticket_data["id"] = loads(ticket)[0]["pk"]
+                ticket_objects.append(ticket_data)
+
+            return JsonResponse({"tickets": ticket_objects}, status=200, safe=True)
+
+        except Exception as e:
+            print(e)
+
+
+def moreTicket(request):
+    if request.method == "POST":
+        return
+    if request.method == "GET":
+        newCount = None
+        count = 10
+        ticket_list = []
+        ticket_data = None
+        ticket_json = None
+        try:
+            newCount = int(request.META.get("HTTP_TICKET_CURRENT"))
+            count = count + newCount
+
+            if "HTTP_ORDER_BY" in request.META:
+                order = request.META.get("HTTP_ORDER_BY")
+                if order == "-id":
+                    ticket_data = SupportTicket.objects.filter(
+                        respective_area="TI"
+                    ).order_by("-id")[:count]
+
+                else:
+                    ticket_data = SupportTicket.objects.filter(respective_area="TI")[
+                        :count
+                    ]
+
+            else:
+                ticket_data = SupportTicket.objects.get[:count]
+
+            for ticket in ticket_data:
+                ticket_json = serialize("json", [ticket])
+                ticket_list.append(ticket_json)
+
+        except Exception as e:
+            print(e)
+
+        ticket_objects = []
+        try:
+            for ticket in ticket_list:
+                ticket_data = loads(ticket)[0]["fields"]
+                ticket_data["id"] = loads(ticket)[0]["pk"]
+                ticket_objects.append(ticket_data)
+
+            return JsonResponse(
+                {"tickets": ticket_objects, "count": count}, status=200, safe=True
+            )
+
+        except Exception as e:
+            print(e)
