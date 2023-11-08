@@ -10,8 +10,9 @@ from django.core.serializers import serialize
 from django.middleware.csrf import get_token
 from django.contrib.auth.models import Group, User
 from .models import Equipaments
-from datetime import date
+from datetime import date, datetime
 from django.db.models import Q
+import calendar
 
 
 # Create your views here.
@@ -480,3 +481,174 @@ def getDashBoardBar(request):
 
     if request.method == "POST":
         return
+
+
+def getDashBoardBarMonth(request):
+    if request.method == "POST":
+        return
+
+    if request.method == "GET":
+        tickets_data = None
+        current_month = None
+        current_year = None
+        days_in_month = None
+        values = None
+        try:
+            tickets_data = SupportTicket.objects.all()
+
+            current_month = datetime.now().month
+
+            current_year = datetime.now().year
+
+            days_in_month = calendar.monthrange(current_year, current_month)[1]
+
+            values = [0] * days_in_month
+
+        except Exception as e:
+            print(e)
+
+        today = None
+        month_days = None
+        ticket_get_date = None
+        ticket_day = None
+        tickets_area = None
+        try:
+            today = date.today()
+            month_days = list(range(1, days_in_month + 1))
+
+            for tickets in tickets_data:
+                ticket_get_date = tickets.start_date
+
+                ticket_day = ticket_get_date.date()
+
+                tickets_area = tickets.respective_area
+
+                if tickets_area == "TI":
+                    if ticket_day.strftime("%m%Y") == today.strftime("%m%Y"):
+                        day = None
+                        histogram_data = None
+                        try:
+                            day = ticket_day.day
+
+                            values[day - 1] += 1
+
+                            histogram_data = {"days": month_days, "values": values}
+
+                        except Exception as e:
+                            print(e)
+
+            return JsonResponse(histogram_data, status=200)
+
+        except Exception as e:
+            print(e)
+
+
+def getDashBoardBarYear(request):
+    if request.method == "POST":
+        return
+
+    if request.method == "GET":
+        tickets_data = None
+        values = None
+        try:
+            tickets_data = SupportTicket.objects.all()
+
+            values = [0] * 12
+
+        except Exception as e:
+            print(e)
+
+        today = None
+        months = None
+        ticket_day = None
+        tickets_area = None
+        try:
+            today = date.today()
+            months = [
+                "Janeiro",
+                "Fevereiro",
+                "Março",
+                "Abril",
+                "Maio",
+                "Junho",
+                "Julho",
+                "Agosto",
+                "Setembro",
+                "Outubro",
+                "Novembro",
+                "Dezembro",
+            ]
+
+            for tickets in tickets_data:
+                ticket_get_date = tickets.start_date
+
+                ticket_day = ticket_get_date.date()
+
+                tickets_area = tickets.respective_area
+
+                if tickets_area == "TI":
+                    if ticket_day.strftime("%Y") == today.strftime("%Y"):
+                        day = None
+                        histogram_data = None
+                        try:
+                            day = ticket_day.month
+
+                            values[day - 1] += 1
+
+                            histogram_data = {"days": months, "values": values}
+
+                        except Exception as e:
+                            print(e)
+
+            return JsonResponse(histogram_data, status=200)
+
+        except Exception as e:
+            print(e)
+
+
+def getDashBoardBarAll(request):
+    if request.method == "POST":
+        return
+
+    if request.method == "GET":
+        tickets_data = None
+        tickets_year = None
+        try:
+            tickets_data = SupportTicket.objects.all()
+
+            years = []
+            values = []
+
+            for tickets in tickets_data:
+                tickets_date = tickets.start_date
+
+                tickets_year = tickets_date.strftime("%Y")
+
+                if tickets_year not in years:
+                    years.append(tickets_year)
+
+        except Exception as e:
+            print(e)
+
+        cont = None
+        try:
+            cont = len(years)
+            values = [0] * cont
+            for tickets in tickets_data:
+                tickets_date = tickets.start_date
+
+                tickets_year = tickets_date.strftime("%Y")
+
+                if tickets_year in years:
+                    index = years.index(tickets_year)
+                    values[index] = values[index] + 1
+
+            if not years or not values:
+                return JsonResponse({"data": None}, status=210)
+            else:
+                histogram_data = {"days": years, "values": values}
+
+                return JsonResponse(histogram_data, status=200)
+
+        except Exception as e:
+            print(e)

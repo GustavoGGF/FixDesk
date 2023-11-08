@@ -72,6 +72,131 @@ export default function DashboardBar() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [histogramData]);
 
+  function changePeriod() {
+    const select = document.getElementById("select");
+    const period = select.options[select.selectedIndex].value;
+
+    if (period === "1") {
+      return periodweek();
+    } else if (period === "2") {
+      return periodMonth();
+    } else if (period === "3") {
+      return periodYear();
+    } else if (period === "4") {
+      return periodAll();
+    } else {
+      return;
+    }
+  }
+
+  function periodMonth() {
+    fetch("getDashBoardBar/updateMonth/", {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+      },
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        Setlabeldash("Chamados do Mês");
+        SetHistogramData(data);
+        SetHistogram(true);
+        return histogram;
+      })
+      .catch((err) => {
+        return console.log(err);
+      });
+  }
+
+  function periodweek() {
+    fetch("getDashBoardBar/week/", {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+      },
+    })
+      .then((response) => {
+        if (response.status === 210) {
+          const select = document.getElementById("select");
+
+          select.value = "2";
+          SetHistogram(false);
+
+          return window.addEventListener("load", periodMonth());
+        }
+        return response.json();
+      })
+      .then((data) => {
+        Setlabeldash("Chamados da Semana");
+        SetHistogramData(data);
+        SetHistogram(true);
+        return histogram;
+      })
+      .catch((err) => {
+        return console.log(err);
+      });
+  }
+
+  function periodYear() {
+    fetch("getDashBoardBar/updateYear/", {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+      },
+    })
+      .then((response) => {
+        if (response.status === 210) {
+          const select = document.getElementById("select");
+
+          select.value = "4";
+          SetHistogram(false);
+
+          // return window.addEventListener("load", periodAll());
+        }
+        return response.json();
+      })
+      .then((data) => {
+        Setlabeldash("Chamados deste Ano");
+        SetHistogramData(data);
+        SetHistogram(true);
+        return histogram;
+      })
+      .catch((err) => {
+        return console.log(err);
+      });
+  }
+
+  function periodAll() {
+    fetch("getDashBoardBar/updateAll/", {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+      },
+    })
+      .then((response) => {
+        if (response.status === 210) {
+          const select = document.getElementById("select");
+
+          select.value = "4";
+          SetHistogram(false);
+
+          return;
+        }
+        return response.json();
+      })
+      .then((data) => {
+        Setlabeldash("Todos os Chamados");
+        SetHistogramData(data);
+        SetHistogram(true);
+        return histogram;
+      })
+      .catch((err) => {
+        return console.log(err);
+      });
+  }
+
   return (
     <Div1 className="mt-5 mb-5 position-relative">
       <div className="position-relative">
@@ -79,7 +204,7 @@ export default function DashboardBar() {
           {loadingHistogram && <Loading />}
         </div>
         <Div2 className="d-flex flex-column">
-          <select className="form-select" id="select" onChange={"changePeriod"}>
+          <select className="form-select" id="select" onChange={changePeriod}>
             <option value="1" selected>
               Está Semana
             </option>

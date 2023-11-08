@@ -22,4 +22,24 @@ urlpatterns = [
         name="central-get-ticket-filter-words",
     ),
     path("getDashBoardBar/", views.getDashBoardBar, name="central-get-dashboard-bar"),
+    path(
+        "getDashBoardBar/updateMonth/",
+        views.getDashBoardBarMonth,
+        name="central-get-dashboard-bar",
+    ),
+    path(
+        "getDashBoardBar/week/",
+        views.getDashBoardBar,
+        name="central-get-dashboard-bar",
+    ),
+    path(
+        "getDashBoardBar/updateYear/",
+        views.getDashBoardBarYear,
+        name="central-get-dashboard-bar",
+    ),
+    path(
+        "getDashBoardBar/updateAll/",
+        views.getDashBoardBarAll,
+        name="central-get-dashboard-bar",
+    ),
 ]
