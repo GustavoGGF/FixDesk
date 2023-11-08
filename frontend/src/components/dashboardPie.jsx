@@ -45,7 +45,7 @@ export default function DashBoardPie({ sector }) {
           "Chamados",
           "Chamados em Aberto",
           "Chamados Finalizados",
-          "Chamados Urgentes",
+          "Chamados Urgentes(mais de 7 dias aberto)",
         ],
         datasets: [
           {

@@ -1,28 +1,10 @@
 tema dark light
 
-dashboard bar na TI
-
 trocar o sql
-
-neon nas dashboard
-
-nas telas de dashboard, quando for pega os tickets, fazer ali varios filtros
-
-arruma botao feio da desgraça do component message
-
-sempre mostra os ultimos 10 tickets
-
-botao para mostrar em lista ou em card que fica salvo no navegador (location storage)
 
 tratamento de cada url que tentam acessar indevidamente
 
-fazer um código para gerar esse new_token
-
 validar que helpdesk está tentando acessar dashboard TI
-
-mais problemas para abrir ticket
-
-coloca os dados na navbar do dashboardTI
 
 mudar chamados urgentes para abertos a mais de uma semana
 

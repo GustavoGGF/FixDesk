@@ -10,9 +10,11 @@ from django.core.serializers import serialize
 from django.middleware.csrf import get_token
 from django.contrib.auth.models import Group, User
 from .models import Equipaments
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from django.db.models import Q
 import calendar
+import pytz
+from dateutil import parser
 
 
 # Create your views here.
@@ -93,6 +95,9 @@ def getDashBoardPie(request, sector):
             count = None
             openTicket = None
             opens = None
+            date_verify = None
+            date_current = None
+            diference = None
 
             try:
                 boardpie = [0, 0, 0, 0]
@@ -100,6 +105,9 @@ def getDashBoardPie(request, sector):
 
                 count = 0
                 openTicket = 0
+                count_urgent = 0
+                closeTicket = 0
+                date_verify = None
 
                 for tickets in tickets_data:
                     count += 1
@@ -108,9 +116,22 @@ def getDashBoardPie(request, sector):
 
                     if opens:
                         openTicket += 1
+                    else:
+                        closeTicket += 1
+
+                    date_verify = tickets.start_date
+
+                    date_current = datetime.now(date_verify.tzinfo)
+
+                    diference = date_current - date_verify
+
+                    if diference > timedelta(days=7):
+                        count_urgent += 1
 
                 boardpie[0] = count
                 boardpie[1] = openTicket
+                boardpie[2] = closeTicket
+                boardpie[3] = count_urgent
 
                 return JsonResponse({"data": boardpie}, status=200, safe=True)
 
