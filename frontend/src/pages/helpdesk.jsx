@@ -215,9 +215,6 @@ export default function Helpdesk() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [uploadRuninng]);
 
-  function HelpdeskPage() {
-    window.location.reload();
-  }
   function selectARes() {
     const select = document.getElementById("selectAR");
 
@@ -1245,55 +1242,6 @@ export default function Helpdesk() {
     SetMessage(false);
   }
 
-  function HistoryPage() {
-    return (window.location.href = "/helpdesk/history/");
-  }
-
-  function DashboardPage() {
-    fetch("toDashboard", {
-      method: "GET",
-      headers: {
-        Accept: "application/json,",
-      },
-    })
-      .then((response) => {
-        if (response.status === 403) {
-          SetMessage(true);
-          setTypeError("Permissões Insuficientes");
-          setMessageError(
-            "Seu Usuário não possui permissão para acessar este modulo"
-          );
-        } else if (response.status === 203) {
-          return (window.location.href = "/dashboard_TI");
-        }
-      })
-      .then((data) => {
-        return data;
-      })
-      .catch((err) => {
-        return console.log(err);
-      });
-  }
-
-  function FAQPage() {
-    return (window.location.href = "/helpdesk/FAQ/");
-  }
-
-  function ExitFixDesk() {
-    fetch("exit/", {
-      method: "GET",
-      headers: {
-        Accept: "text/html",
-      },
-    })
-      .then((response) => {
-        return response.text() && window.location.reload();
-      })
-      .catch((err) => {
-        return console.log(err);
-      });
-  }
-
   function inputDrop() {
     const input = document.getElementById("inputName");
     const p = document.getElementById("namefile");
@@ -1540,17 +1488,7 @@ export default function Helpdesk() {
 
   return (
     <Div>
-      {navbar && (
-        <NavBar
-          Name={Data.name}
-          JobTitle={Data.job_title}
-          Func2={HelpdeskPage}
-          Func={HistoryPage}
-          Func3={DashboardPage}
-          Func5={FAQPage}
-          Func4={ExitFixDesk}
-        />
-      )}
+      {navbar && <NavBar Name={Data.name} JobTitle={Data.job_title} />}
       {loading && (
         <div className="position-absolute top-50 start-50 translate-middle">
           <Loading />
@@ -2041,7 +1979,7 @@ export default function Helpdesk() {
               <span className="mb-3">
                 Informar a data que deverá ser feito o bloqueio do usuario
               </span>
-              <div className="t-3">
+              <div className="t-3 d-flex justify-content-center">
                 <DayPicker
                   fixedWeeks
                   showOutsideDays

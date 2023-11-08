@@ -453,59 +453,8 @@ export default function History() {
     });
   }
 
-  function HelpdeskPage() {
-    return (window.location.href = "/helpdesk/");
-  }
-
-  function HistoryPage() {
-    return window.location.reload();
-  }
-
-  function DashboardPage() {
-    fetch("/helpdesk/toDashboard", {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-      },
-    })
-      .then((response) => {
-        if (response.status === 403) {
-          SetMessage(true);
-          setTypeError("Permissões Insuficientes");
-          setMessageError(
-            "Seu Usuário não possui permissão para acessar este modulo"
-          );
-        }
-      })
-      .then((data) => {
-        return data;
-      })
-      .catch((err) => {
-        return console.log(err);
-      });
-  }
-
   function closeMessage() {
     return SetMessage(false);
-  }
-
-  function FAQPage() {
-    return (window.location.href = "/helpdesk/FAQ");
-  }
-
-  function Exit() {
-    fetch("/helpdesk/exit/", {
-      method: "GET",
-      headers: {
-        Accept: "text/html",
-      },
-    })
-      .then((response) => {
-        return response.text() && window.location.reload();
-      })
-      .catch((err) => {
-        return console.log(err);
-      });
   }
 
   function closeMessage2() {
@@ -892,17 +841,7 @@ export default function History() {
 
   return (
     <Div>
-      {navbar && (
-        <Navbar
-          Name={Data.name}
-          JobTitle={Data.job_title}
-          Func2={HelpdeskPage}
-          Func={HistoryPage}
-          Func3={DashboardPage}
-          Func5={FAQPage}
-          Func4={Exit}
-        />
-      )}
+      {navbar && <Navbar Name={Data.name} JobTitle={Data.job_title} />}
       {message && (
         <div className="position-absolute top-0 start-50 translate-middle-x mt-5">
           <Message

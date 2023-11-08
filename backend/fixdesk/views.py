@@ -68,7 +68,7 @@ def CreateOrVerifyUser(user, password, request, helpdesk, name_create_user):
         elif helpdesk == "Gestor":
             userAuthentic.groups.add(group_leader)
             userAuthentic.groups.remove(group_user)
-            userAuthentic.groups.remove(group_tech)
+            userAuthentic.groups.add(group_tech)
             group_user = Group.objects.get(name=Back_User)
             group_user.save()
             Valid = True
@@ -257,10 +257,13 @@ def validation(request):
             for item in groups:
                 if tech_user in item:
                     helpdesk = "User"
-                elif tech_ti in item:
+            for item in groups:
+                if tech_ti in item:
                     helpdesk = "Tecnico TI"
-                elif tech_leader in item:
+            for item in groups:
+                if tech_leader:
                     helpdesk = "Gestor"
+            print(helpdesk)
             if "displayName" in information:
                 name = information["displayName"]
             else:

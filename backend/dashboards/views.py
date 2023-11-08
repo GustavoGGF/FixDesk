@@ -67,13 +67,14 @@ def dashboard_TI(request):
         try:
             UserFront = request.user
             group1 = getenv("DJANGO_GROUP_TECH")
+            group2 = getenv("DJANGO_GROUP_LEADER")
 
             user = User.objects.get(username=UserFront)
 
             groups = user.groups.all()
 
             for group in groups:
-                if group.name != group1:
+                if group.name != group1 and group.name != group2:
                     return redirect("/helpdesk")
 
             return render(request, "index.html", {})
@@ -419,3 +420,63 @@ def moreTicket(request):
 
         except Exception as e:
             print(e)
+
+
+def getDashBoardBar(request):
+    if request.method == "GET":
+        histogram_data = None
+        tickets_data = None
+        today = None
+        ticket_get_date = None
+        ticket_day = None
+        day = None
+        try:
+            tickets_data = SupportTicket.objects.all()
+            values = [0, 0, 0, 0, 0, 0, 0]
+
+            for tickets in tickets_data:
+                tickets_area = tickets.respective_area
+
+                today = date.today()
+
+                ticket_get_date = tickets.start_date
+
+                ticket_day = ticket_get_date.date()
+
+                if tickets_area == "TI":
+                    if ticket_day.strftime("%U%Y") == today.strftime("%U%Y"):
+                        try:
+                            weekeds = [
+                                "Segunda-feira",
+                                "Terça-feira",
+                                "Quarta-feira",
+                                "Quinta-feira",
+                                "Sexta-feira",
+                                "Sábado",
+                                "Domingo",
+                            ]
+                            day = ticket_day.weekday()
+
+                            values[day] += 1
+
+                            histogram_data = {"days": weekeds, "values": values}
+
+                        except Exception as e:
+                            print(e)
+
+                else:
+                    return JsonResponse({"data": None}, status=210)
+
+            if histogram_data == None:
+                return JsonResponse({"data": None}, status=210)
+
+            return JsonResponse(histogram_data, status=200)
+
+        except Exception as e:
+            print(e)
+
+    else:
+        return
+
+    if request.method == "POST":
+        return

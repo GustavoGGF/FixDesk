@@ -21,4 +21,5 @@ urlpatterns = [
         views.getTicketFilterWords,
         name="central-get-ticket-filter-words",
     ),
+    path("getDashBoardBar/", views.getDashBoardBar, name="central-get-dashboard-bar"),
 ]

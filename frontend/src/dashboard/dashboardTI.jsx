@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import Navbar from "../components/navbar";
 import {
   Div,
-  DivDashPie,
   DropdownConten,
   Dropdown,
   DropdownButton,
@@ -47,6 +46,7 @@ import IMG4 from "../images/dashboard_TI/quantity_4.png";
 import Registration from "../components/equipment_registration";
 import List from "../images/components/lista-de-itens.png";
 import Card from "../images/components/identificacao.png";
+import DashboardBar from "../components/dashboardBar.jsx";
 
 export default function DashboardTI() {
   const [loading, SetLoading] = useState(true);
@@ -810,7 +810,7 @@ export default function DashboardTI() {
       });
   }
 
-    function moreTickets() {
+  function moreTickets() {
     fetch("moreTicket/", {
       method: "GET",
       headers: {
@@ -860,9 +860,12 @@ export default function DashboardTI() {
           </Dropdown>
         </DivDrop>
       )}
-      <DivDashPie>
+      <div className="d-flex justify-content-center w-100">
         <DashBoardPie sector={"TI"} />
-      </DivDashPie>
+      </div>
+      <div className="d-flex justify-content-center">
+        <DashboardBar />
+      </div>
       <DivFilter>
         <div className="form-floating">
           <Input1
@@ -938,10 +941,10 @@ export default function DashboardTI() {
           <option value="none" disabled>
             Ordernar
           </option>
-          <option selected value="recent">
-            Data Recente
+          <option value="recent">Data Recente</option>
+          <option selected value="ancient">
+            Data Antiga
           </option>
-          <option value="ancient">Data Antiga</option>
         </Select1>
         <DivContainerImages className="d-flex">
           <PSelectView className="position-absolute top-0 start-0 translate-middle">

@@ -105,7 +105,7 @@ export const DivINp = styled.div`
 `;
 
 export const DivFilter = styled.div`
-  margin: 50px auto;
+  margin: 100px auto;
   width: 90% !important;
   display: flex;
   background: #fff;

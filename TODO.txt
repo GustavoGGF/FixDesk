@@ -1,30 +1,6 @@
 tema dark light
 
-tickets card e lista salvando em cache no navegador sendo verificado antes de mostrar a tela
-
-mais tipos de ocorrencia e problemas
-
-arrumar calendario na criação de usuario
-
-conexão de ldap no login verificar tempo de resposta do domain controler mais proximo
-
-3 pontinhos na tela antes de entrar no dashboard em movimento
-
-passar função dashboard na tela do navbar mesmo
-
-dashboard na tela de history
-
-nvabar functions no dashboard admin
-
-revisar abas navbar
-
-na tela de dashboard invez de puxar todos os tickets faz um filtro para cada um -
-- um para TI com a data etc
-
-
-tmepo aberto
-quantos tem
-quantos a responder
+dashboard bar na TI
 
 trocar o sql
 
@@ -199,3 +175,7 @@ bloquear acessa fica aparecendo
 colocar no filtro tambem para mostrar os chamados abertos, atendisos e fechados
 
 verificação de token nos filtros e grupos
+
+melhorar botões navbar
+
+deixar cinza dashboard se for user

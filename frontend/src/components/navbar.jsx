@@ -4,15 +4,38 @@ import "../styles/bootstrap-5.3.0-dist/css/bootstrap.css";
 import "../styles/bootstrap-5.3.0-dist/js/bootstrap";
 import Logo from "../images/logos/fixdesk.png";
 
-export default function NavBar({
-  Name,
-  JobTitle,
-  Func,
-  Func2,
-  Func3,
-  Func4,
-  Func5,
-}) {
+export default function NavBar({ Name, JobTitle }) {
+  function helpdeskPage() {
+    window.location.href = "/helpdesk/";
+  }
+
+  function historyPage() {
+    window.location.href = "/helpdesk/history/";
+  }
+
+  function DashboardPage() {
+    window.location.href = "/dashboard_TI/";
+  }
+
+  function FAQPage() {
+    return (window.location.href = "/helpdesk/FAQ");
+  }
+
+  function Exit() {
+    fetch("/helpdesk/exit/", {
+      method: "GET",
+      headers: {
+        Accept: "text/html",
+      },
+    })
+      .then((response) => {
+        return response.text() && window.location.reload();
+      })
+      .catch((err) => {
+        return console.log(err);
+      });
+  }
+
   return (
     <>
       <nav className="navbar bg-primary">
@@ -62,22 +85,34 @@ export default function NavBar({
             <div className="offcanvas-body bg-primary">
               <ul className="navbar-nav justify-content-start flex-grow-1 pe-3 h-100 position-relative">
                 <li className="nav-item">
-                  <A className="nav-link" aria-current="page" onClick={Func2}>
+                  <A
+                    className="nav-link"
+                    aria-current="page"
+                    onClick={helpdeskPage}
+                  >
                     Criar Chamado
                   </A>
                 </li>
                 <li className="nav-item">
-                  <A className="nav-link" aria-current="page" onClick={Func}>
+                  <A
+                    className="nav-link"
+                    aria-current="page"
+                    onClick={historyPage}
+                  >
                     Meus Chamados
                   </A>
                 </li>
                 <li className="nav-item">
-                  <A className="nav-link" aria-current="page" onClick={Func3}>
+                  <A
+                    className="nav-link"
+                    aria-current="page"
+                    onClick={DashboardPage}
+                  >
                     Dashboard
                   </A>
                 </li>
                 <li className="nav-item">
-                  <A className="nav-link" aria-current="page" onClick={Func5}>
+                  <A className="nav-link" aria-current="page" onClick={FAQPage}>
                     FAQ
                   </A>
                 </li>
@@ -85,7 +120,7 @@ export default function NavBar({
                   <Logout
                     className="nav-link btn btn-danger"
                     aria-current="page"
-                    onClick={Func4}
+                    onClick={Exit}
                   >
                     Sair
                   </Logout>
