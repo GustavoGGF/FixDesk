@@ -105,7 +105,7 @@ export const DivINp = styled.div`
 `;
 
 export const DivFilter = styled.div`
-  margin: 100px auto;
+  margin: 0 auto;
   width: 90% !important;
   display: flex;
   background: #fff;
@@ -113,6 +113,7 @@ export const DivFilter = styled.div`
   flex-wrap: wrap;
   border-radius: 20px;
   padding: 20px;
+  margin-top: 50px;
 `;
 
 export const Input1 = styled.input`
@@ -226,4 +227,12 @@ export const SpanList = styled.span`
 
 export const ImgSelectView = styled.img`
   width: 30px;
+`;
+
+export const Button1 = styled.button`
+  margin-right: 10px;
+`;
+
+export const Button2 = styled.button`
+  margin-left: 10px;
 `;

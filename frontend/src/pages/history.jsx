@@ -31,6 +31,8 @@ import {
   DivContainerImages,
   DivImages,
   IMGS1,
+  Button1,
+  Button2,
 } from "../styles/historyStyle";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
@@ -85,7 +87,7 @@ export default function History() {
   const [equipamentLocate, SetEquipamentLocate] = useState("");
   const [daysLocated, SetDaysLocated] = useState();
   const [namenewuser, SetNameNewUser] = useState("");
-  const [sectornewuser, SetSectorNewUser] = useState("");
+  const [sectornewuser, SetSectorNewUser] = useState("undefined");
   const [wherefrom, SetWhereFrom] = useState("");
   const [machinenewuser, SetMachineNewUser] = useState();
   const [companynewuser, SetCompanyNewUser] = useState("");
@@ -99,6 +101,8 @@ export default function History() {
   const [problemTicket, SetProblemTicket] = useState(null);
   const [sectorTicket, SetSectorTicket] = useState(null);
   const [problemSyst, SetProblemSyst] = useState(false);
+  const [status, SetStatus] = useState("open");
+  const [btnmore, SetBtnMore] = useState(true);
 
   let count = 0;
   let timeoutId;
@@ -189,7 +193,11 @@ export default function History() {
         SetTicketResponsible_Technician(data.responsible_technician);
         SetTicketID(data.id);
         SetNameNewUser(data.name_new_user);
-        SetSectorNewUser(data.sector_new_user);
+        if (data.sector_new_user.length > 1) {
+          SetSectorNewUser(data.sector_new_user);
+        } else {
+          SetSectorNewUser("undefined");
+        }
         SetWhereFrom(data.where_from);
         SetMachineNewUser(data.machine_new_user);
         SetCompanyNewUser(data.company_new_user);
@@ -201,7 +209,6 @@ export default function History() {
         SetCopyProfileNewUser(data.copy_profile_new_user);
         SetMailTranfer(data.mail_tranfer);
         SetOldFiles(data.old_files);
-
         if (data.equipament["image"] !== undefined) {
           const Div = (
             <DivAlocate className="d-flex flex-column w-100 align-items-center">
@@ -405,6 +412,8 @@ export default function History() {
       const dash = document.getElementById("dashboard");
       dash.classList.add("dashCard");
 
+      SetBtnMore(true);
+
       SetLoadingDash(false);
       return ticketsDash;
     });
@@ -447,6 +456,8 @@ export default function History() {
       SetTicketsDash((ticketsDash) => [...ticketsDash, Div]);
       const dash = document.getElementById("dashboard");
       dash.classList.add("dashCard");
+
+      SetBtnMore(true);
 
       SetLoadingDash(false);
       return ticketsDash;
@@ -545,6 +556,8 @@ export default function History() {
           SetMountChat((mountChat) => [...mountChat, newItem]);
         }
         SetChat(true);
+
+        SetBtnMore(true);
 
         return mountChat;
       });
@@ -679,6 +692,7 @@ export default function History() {
         "Order-by": orderby,
         "Problemn-Ticket": problemTicket,
         "Sector-Ticket": sector,
+        "Status-Ticket": status,
       },
     })
       .then((response) => {
@@ -686,7 +700,16 @@ export default function History() {
       })
       .then((data) => {
         SetLoadingDash(false);
-        return SetTickets(data.tickets);
+        if (data.tickets.length === 0) {
+          SetMessage(true);
+          setTypeError("Falta de dados");
+          setMessageError("Nenhum ticket com esses Filtros");
+          SetBtnMore(false);
+          return;
+        } else {
+          SetBtnMore(true);
+          return SetTickets(data.tickets);
+        }
       })
       .catch((err) => {
         return console.log(err);
@@ -707,14 +730,24 @@ export default function History() {
         "Order-by": orderby,
         "Problemn-Ticket": problemn,
         "Sector-Ticket": sectorTicket,
+        "Status-Ticket": status,
       },
     })
       .then((response) => {
         return response.json();
       })
       .then((data) => {
-        SetLoadingDash(false);
-        return SetTickets(data.tickets);
+        if (data.tickets.length === 0) {
+          SetMessage(true);
+          setTypeError("Falta de dados");
+          setMessageError("Nenhum ticket com esses Filtros");
+          SetBtnMore(false);
+          return;
+        } else {
+          SetBtnMore(true);
+          SetLoadingDash(false);
+          return SetTickets(data.tickets);
+        }
       })
       .catch((err) => {
         return console.log(err);
@@ -750,14 +783,24 @@ export default function History() {
         "Order-by": orderby,
         "Problemn-Ticket": problemTicket,
         "Sector-Ticket": sectorTicket,
+        "Status-Ticket": status,
       },
     })
       .then((response) => {
         return response.json();
       })
       .then((data) => {
-        SetLoadingDash(false);
-        return SetTickets(data.tickets);
+        if (data.tickets.length === 0) {
+          SetMessage(true);
+          setTypeError("Falta de dados");
+          setMessageError("Nenhum ticket com esses Filtros");
+          SetBtnMore(false);
+          return;
+        } else {
+          SetBtnMore(true);
+          SetLoadingDash(false);
+          return SetTickets(data.tickets);
+        }
       })
       .catch((err) => {
         return console.log(err);
@@ -776,14 +819,24 @@ export default function History() {
         "Order-By": order,
         "Problemn-Ticket": problemTicket,
         "Sector-Ticket": sectorTicket,
+        "Status-Ticket": status,
       },
     })
       .then((response) => {
         return response.json();
       })
       .then((data) => {
-        SetLoadingDash(false);
-        return SetTickets(data.tickets);
+        if (data.tickets.length === 0) {
+          SetMessage(true);
+          setTypeError("Falta de dados");
+          setMessageError("Nenhum ticket com esses Filtros");
+          SetBtnMore(false);
+          return;
+        } else {
+          SetBtnMore(true);
+          SetLoadingDash(false);
+          return SetTickets(data.tickets);
+        }
       })
       .catch((err) => {
         return console.log(err);
@@ -791,7 +844,7 @@ export default function History() {
   }
 
   function selectOrder() {
-    SetTickets([]);
+    SetTickets();
     SetTicketsDash([]);
     const select = document.getElementById("select-order");
     const option = select.options[select.selectedIndex].value;
@@ -829,8 +882,152 @@ export default function History() {
         return response.json();
       })
       .then((data) => {
-        SetLoadingDash(false);
-        return SetTickets(data.tickets);
+        if (data.tickets.length === 0) {
+          SetMessage(true);
+          setTypeError("Falta de dados");
+          setMessageError("Nenhum ticket com esses Filtros");
+          SetBtnMore(false);
+          return;
+        } else {
+          SetBtnMore(true);
+          SetLoadingDash(false);
+          return SetTickets(data.tickets);
+        }
+      })
+      .catch((err) => {
+        return console.log(err);
+      });
+
+    return;
+  }
+
+  function ticketOpen() {
+    SetTickets();
+    const btn = document.getElementById("btnopen");
+    btn.classList.add("btn-success");
+    const btn2 = document.getElementById("btnclose");
+    btn2.classList.remove("btn-warning");
+    const btn3 = document.getElementById("btnall");
+    btn3.classList.remove("btn-info");
+
+    fetch("/helpdesk/getTicketFilterStatus/", {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Data-User": Data.name,
+        "Order-By": orderby,
+        "Quantity-tickets": countTicket,
+        "Problemn-Ticket": problemTicket,
+        "Sector-Ticket": sectorTicket,
+        "Status-Request": "open",
+      },
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        if (data.tickets.length === 0) {
+          SetMessage(true);
+          setTypeError("Falta de dados");
+          setMessageError("Nenhum ticket com esses Filtros");
+          SetBtnMore(false);
+          return;
+        } else {
+          SetBtnMore(true);
+          SetLoadingDash(false);
+          SetStatus("open");
+          return SetTickets(data.tickets);
+        }
+      })
+      .catch((err) => {
+        return console.log(err);
+      });
+
+    return;
+  }
+
+  function ticketClose() {
+    SetTickets([]);
+    const btn = document.getElementById("btnopen");
+    btn.classList.remove("btn-success");
+    const btn2 = document.getElementById("btnclose");
+    btn2.classList.add("btn-warning");
+    const btn3 = document.getElementById("btnall");
+    btn3.classList.remove("btn-info");
+
+    fetch("/helpdesk/getTicketFilterStatus/", {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Data-User": Data.name,
+        "Order-By": orderby,
+        "Quantity-tickets": countTicket,
+        "Problemn-Ticket": problemTicket,
+        "Sector-Ticket": sectorTicket,
+        "Status-Request": "close",
+      },
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        if (data.tickets.length === 0) {
+          SetMessage(true);
+          setTypeError("Falta de dados");
+          setMessageError("Nenhum ticket com esses Filtros");
+          SetBtnMore(false);
+          return;
+        } else {
+          SetBtnMore(true);
+          SetLoadingDash(false);
+          SetStatus("close");
+          return SetTickets(data.tickets);
+        }
+      })
+      .catch((err) => {
+        return console.log(err);
+      });
+
+    return;
+  }
+
+  function statusTicketAll() {
+    SetTickets([]);
+    const btn = document.getElementById("btnopen");
+    btn.classList.remove("btn-success");
+    const btn2 = document.getElementById("btnclose");
+    btn2.classList.remove("btn-warning");
+    const btn3 = document.getElementById("btnall");
+    btn3.classList.add("btn-info");
+
+    fetch("/helpdesk/getTicketFilterStatus/", {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Data-User": Data.name,
+        "Order-By": orderby,
+        "Quantity-tickets": countTicket,
+        "Problemn-Ticket": problemTicket,
+        "Sector-Ticket": sectorTicket,
+        "Status-Request": "all",
+      },
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        if (data.tickets.length === 0) {
+          SetMessage(true);
+          setTypeError("Falta de dados");
+          setMessageError("Nenhum ticket com esses Filtros");
+          SetBtnMore(false);
+          return;
+        } else {
+          SetBtnMore(true);
+          SetLoadingDash(false);
+          SetStatus("all");
+          return SetTickets(data.tickets);
+        }
       })
       .catch((err) => {
         return console.log(err);
@@ -843,7 +1040,7 @@ export default function History() {
     <Div>
       {navbar && <Navbar Name={Data.name} JobTitle={Data.job_title} />}
       {message && (
-        <div className="position-absolute top-0 start-50 translate-middle-x mt-5">
+        <div className="position-absolute top-0 start-50 translate-middle-x mt-5 z-3">
           <Message
             TypeError={typeError}
             MessageError={messageError}
@@ -991,6 +1188,40 @@ export default function History() {
             <ImgSelectView src={Card} clasName="img-fluid" alt="" />
           </button>
         </DivSelectView>
+        <DivSelectView className="mt-3">
+          <PSelectView className="position-absolute top-0 start-0 translate-middle">
+            Status
+          </PSelectView>
+          <Button1
+            className="btn btn-success"
+            id="btnopen"
+            onClick={() => {
+              ticketOpen();
+            }}
+          >
+            Aberto
+          </Button1>
+          <button
+            className="btn"
+            value="close"
+            id="btnclose"
+            onClick={() => {
+              ticketClose();
+            }}
+          >
+            Fechado
+          </button>
+          <Button2
+            className="btn"
+            value="all"
+            id="btnall"
+            onClick={() => {
+              statusTicketAll();
+            }}
+          >
+            Todos
+          </Button2>
+        </DivSelectView>
       </DivFilter>
       <section id="dashboard">
         {loadingDash && (
@@ -1069,7 +1300,7 @@ export default function History() {
                 value={"Setor: " + sectornewuser}
                 className="form-control"
                 disabled
-                hidden={sectornewuser.length > 1 ? false : true}
+                hidden={sectornewuser === "undefined" ? true : false}
               />
               <input
                 type="text"
@@ -1083,9 +1314,7 @@ export default function History() {
                 value={!machinenewuser ? "Necessita-se de máquina" : ""}
                 className="form-control"
                 disabled
-                hidden={
-                  machinenewuser && sectornewuser.length > 1 ? true : false
-                }
+                hidden={machinenewuser !== null ? true : false}
               />
               <input
                 type="text"
@@ -1136,19 +1365,33 @@ export default function History() {
                 disabled
                 hidden={oldfile.length > 1 ? false : true}
               />
-              <p>
+              <p
+                hidden={
+                  jobtitlenewuser.length > 1 || mailtranfer.length > 1
+                    ? false
+                    : true
+                }
+              >
                 {jobtitlenewuser.length > 1
                   ? "Funcionario iniciara as atividades dia:"
                   : "Bloquear acesso a partir de:"}
               </p>
-              <DayPicker
-                id="calendarALT"
-                fixedWeeks
-                showOutsideDays
-                selected={startworknewuser}
-                className="cald"
-                mode="single"
-              />
+              <div
+                hidden={
+                  jobtitlenewuser.length > 1 || mailtranfer.length > 1
+                    ? false
+                    : true
+                }
+              >
+                <DayPicker
+                  id="calendarALT"
+                  fixedWeeks
+                  showOutsideDays
+                  selected={startworknewuser}
+                  className="cald"
+                  mode="single"
+                />
+              </div>
               <input
                 type="text"
                 value={"Copiar usuario de: " + copyprofilenewuser}
@@ -1244,11 +1487,13 @@ export default function History() {
           </div>
         </TicketOpen>
       )}
-      <div className="w-100 text-center">
-        <button className="btn btn-info mb-5" onClick={moreTickets}>
-          Carregar Mais
-        </button>
-      </div>
+      {btnmore && (
+        <div className="w-100 text-center">
+          <button className="btn btn-info mb-5" onClick={moreTickets}>
+            Carregar Mais
+          </button>
+        </div>
+      )}
       {imageopen && (
         <DivImageOpen className="position-fixed top-50 start-50 translate-middle">
           <div className="w-100 text-sm-end">

@@ -1,39 +1,3 @@
-tema dark light
-
-trocar o sql
-
-tratamento de cada url que tentam acessar indevidamente
-
-validar que helpdesk está tentando acessar dashboard TI
-
-mudar chamados urgentes para abertos a mais de uma semana
-
-filtros de chamador por localidade
-
-fazer settimefunction para tirar messages
-
-dar uma olhada na documentação do chart.js
-
-na pie colocar chamados abertos a menos de uma semana (laranja) e mais de uma semana(bermelho)
-
-na busca do backend do dashboard TI fazer filtro para pegar os da TI
-
-botão para mostrar mais chamados, mostrando 10 em 10
-
-cards serem criados por classes somente
-
-ajustar message (cores)
-
-tela de loading para todos
-
-dar zindex quando abre a tela de cahamdo
-
-implementar o Redis e deixar alocado os tecnicos
-
-a aplicação ta esperando carregar os tecicos, não pode
-
-por id no chamado na tela do chamado aberto no historico
-
 colocar mais um filtro de aberto finalizado
 
 finalizar filtros tela dashboard TI
@@ -53,8 +17,8 @@ validação sobre quem pode acessar cada chamado por tipo de tecnhico
 qualquer grupo acessa o fixdex
 
 grupo user abre chamado
-grupo tecnico responde chamado
-gestor ve o grafico
+grupo tecnico abre e responde chamado
+gestor abre e responde chamado
 
 admin ve tudo
 
@@ -161,3 +125,19 @@ verificação de token nos filtros e grupos
 melhorar botões navbar
 
 deixar cinza dashboard se for user
+
+tema dark light
+
+trocar o sql
+
+tratamento de cada url que tentam acessar indevidamente
+
+validar que helpdesk está tentando acessar dashboard TI
+
+tela de loading para todos
+
+deixar tecnico fazer mudanças do chamado
+
+ajusta dashboard se n tiver na semana pega mes
+
+dashboards fazer busca por chamados a cada 20 segundos

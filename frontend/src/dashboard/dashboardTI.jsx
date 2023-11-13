@@ -90,6 +90,7 @@ export default function DashboardTI() {
   const [problemTicket, SetProblemTicket] = useState(null);
   const [ticketsDash, SetTicketsDash] = useState([]);
   const [sectorTicket, SetSectorTicket] = useState(null);
+  const [ticketOpen, SetTicketOpen] = useState();
 
   let count = 0;
   let timeoutId;
@@ -286,6 +287,7 @@ export default function DashboardTI() {
         SetLifetime(lifetime);
         SetTicketResponsible_Technician(data.responsible_technician);
         SetTicketID(data.id);
+        SetTicketOpen(data.open);
 
         var name_verify = userData.name;
 
@@ -294,6 +296,17 @@ export default function DashboardTI() {
         }
 
         if (data.responsible_technician === name_verify) {
+          if (!data.open) {
+            const chatDiv = document.getElementById("chatDiv");
+            chatDiv.style.background = "#e9ecef";
+            SetChat(false);
+            SetTypeError("Permissão Negada");
+            SetMessageError(
+              "Reabra o Chamado para poder ver com mais detalhes"
+            );
+            SetMessageChat(true);
+            return;
+          }
           if (
             data.chat !== null &&
             data.chat !== undefined &&
@@ -833,6 +846,62 @@ export default function DashboardTI() {
       });
   }
 
+  function closeTicket() {
+    fetch("/helpdesk/ticket/" + ticketID, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      body: JSON.stringify({
+        technician: userData.name,
+        status: "close",
+      }),
+    })
+      .then((response) => {
+        if (response.status === 304) {
+          SetMessage(true);
+          SetMessageError("Ticket não percetence a você");
+          SetTypeError("Permissão Negada");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        return window.location.reload();
+      })
+      .catch((err) => {
+        return console.log(err);
+      });
+  }
+
+  function reopenTicket() {
+    fetch("/helpdesk/ticket/" + ticketID, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      body: JSON.stringify({
+        technician: userData.name,
+        status: "open",
+      }),
+    })
+      .then((response) => {
+        if (response.status === 304) {
+          SetMessage(true);
+          SetMessageError("Ticket não percetence a você");
+          SetTypeError("Permissão Negada");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        return window.location.reload();
+      })
+      .catch((err) => {
+        return console.log(err);
+      });
+  }
+
   return (
     <Div className="position-relative">
       {navbar && <Navbar Name={userData.name} JobTitle={userData.job_title} />}
@@ -1112,6 +1181,7 @@ export default function DashboardTI() {
                 className="form-select"
                 onChange={ChangeTechnician}
                 value={selectedTech}
+                hidden={ticketOpen === true ? false : true}
               >
                 <option key={0} value="" disabled>
                   Tranferir
@@ -1123,6 +1193,24 @@ export default function DashboardTI() {
                 ))}
               </select>
             </div>
+            <button
+              className="btn btn-success w-100"
+              onClick={() => {
+                closeTicket();
+              }}
+              hidden={ticketOpen === true ? false : true}
+            >
+              Finalizar
+            </button>
+            <button
+              className="btn btn-info w-100"
+              onClick={() => {
+                reopenTicket();
+              }}
+              hidden={ticketOpen}
+            >
+              Reabrir
+            </button>
             <DivChat
               id="chatDiv"
               onMouseEnter={() => {

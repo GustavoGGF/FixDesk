@@ -180,8 +180,6 @@ def equipment_inventory(request):
             company = request.POST.get("company")
             model = request.POST.get("model")
 
-            print(model)
-
             Equipament = Equipaments(equipament=image, company=company, model=model)
 
             Equipament.save()
