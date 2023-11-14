@@ -202,7 +202,16 @@ def getTicketFilter(request):
         order = None
         problemnFront = None
         sectorFront = None
+        status = ""
         try:
+            status = request.META.get("HTTP_STATUS_TICKET")
+            if status == "open":
+                status = True
+            elif status == "close":
+                status = False
+            elif status == "all":
+                status = ""
+
             Quantity_tickets = int(request.META.get("HTTP_QUANTITY_TICKETS"))
             order = request.META.get("HTTP_ORDER_BY")
             sectorFront = request.META.get("HTTP_SECTOR_TICKET")
@@ -215,9 +224,14 @@ def getTicketFilter(request):
             ):
                 order = request.META.get("HTTP_ORDER_BY")
                 if order == "-id":
-                    ticket_data = SupportTicket.objects.filter(
-                        respective_area="TI"
-                    ).order_by("-id")[:Quantity_tickets]
+                    if status != "":
+                        ticket_data = SupportTicket.objects.filter(
+                            respective_area="TI", open=status
+                        ).order_by("-id")[:Quantity_tickets]
+                    else:
+                        ticket_data = SupportTicket.objects.filter(
+                            respective_area="TI"
+                        ).order_by("-id")[:Quantity_tickets]
 
                 else:
                     ticket_data = SupportTicket.objects.filter(respective_area="TI")[
@@ -226,9 +240,14 @@ def getTicketFilter(request):
 
             elif "HTTP_SECTOR_TICKET" in request.META and sectorFront == "all":
                 if order == "-id":
-                    ticket_data = SupportTicket.objects.filter(
-                        respective_area="TI"
-                    ).order_by("-id")[:Quantity_tickets]
+                    if status != "":
+                        ticket_data = SupportTicket.objects.filter(
+                            respective_area="TI", open=status
+                        ).order_by("-id")[:Quantity_tickets]
+                    else:
+                        ticket_data = SupportTicket.objects.filter(
+                            respective_area="TI"
+                        ).order_by("-id")[:Quantity_tickets]
 
                 else:
                     ticket_data = SupportTicket.objects.filter(respective_area="TI")[
@@ -241,10 +260,15 @@ def getTicketFilter(request):
                 and problemnFront == "all"
             ):
                 if order == "-id":
-                    ticket_data = SupportTicket.objects.filter(
-                        respective_area="TI",
-                        sector=sectorFront,
-                    ).order_by("-id")[:Quantity_tickets]
+                    if status != "":
+                        ticket_data = SupportTicket.objects.filter(
+                            respective_area="TI", sector=sectorFront, open=status
+                        ).order_by("-id")[:Quantity_tickets]
+                    else:
+                        ticket_data = SupportTicket.objects.filter(
+                            respective_area="TI",
+                            sector=sectorFront,
+                        ).order_by("-id")[:Quantity_tickets]
 
                 else:
                     ticket_data = SupportTicket.objects.filter(
@@ -259,9 +283,14 @@ def getTicketFilter(request):
                 order = request.META.get("HTTP_ORDER_BY")
 
                 if order == "-id":
-                    ticket_data = SupportTicket.objects.filter(
-                        respective_area="TI", sector=sectorFront
-                    ).order_by("-id")[:Quantity_tickets]
+                    if status != "":
+                        ticket_data = SupportTicket.objects.filter(
+                            respective_area="TI", sector=sectorFront, open=status
+                        ).order_by("-id")[:Quantity_tickets]
+                    else:
+                        ticket_data = SupportTicket.objects.filter(
+                            respective_area="TI", sector=sectorFront
+                        ).order_by("-id")[:Quantity_tickets]
 
                 else:
                     ticket_data = SupportTicket.objects.filter(
@@ -274,11 +303,19 @@ def getTicketFilter(request):
                 and problemnFront != "null"
             ):
                 if order == "-id":
-                    ticket_data = SupportTicket.objects.filter(
-                        respective_area="TI",
-                        sector=sectorFront,
-                        occurrence=problemnFront,
-                    ).order_by("-id")[:Quantity_tickets]
+                    if status != "":
+                        ticket_data = SupportTicket.objects.filter(
+                            respective_area="TI",
+                            sector=sectorFront,
+                            occurrence=problemnFront,
+                            open=status,
+                        ).order_by("-id")[:Quantity_tickets]
+                    else:
+                        ticket_data = SupportTicket.objects.filter(
+                            respective_area="TI",
+                            sector=sectorFront,
+                            occurrence=problemnFront,
+                        ).order_by("-id")[:Quantity_tickets]
 
                 else:
                     ticket_data = SupportTicket.objects.filter(
@@ -671,3 +708,65 @@ def getDashBoardBarAll(request):
 
         except Exception as e:
             print(e)
+
+
+def getTicketFilterStatus(request):
+    if request.method == "GET":
+        order = None
+        Quantity_tickets = None
+        Status = None
+        ticket_data = None
+        try:
+            order = request.META.get("HTTP_ORDER_BY")
+            Quantity_tickets = int(request.META.get("HTTP_QUANTITY_TICKETS"))
+            Status = request.META.get("HTTP_STATUS_REQUEST")
+
+            if order == "-id":
+                if Status == "open":
+                    ticket_data = SupportTicket.objects.filter(open=True).order_by(
+                        "-id"
+                    )[:Quantity_tickets]
+                elif Status == "close":
+                    ticket_data = SupportTicket.objects.filter(open=False).order_by(
+                        "-id"
+                    )[:Quantity_tickets]
+                elif Status == "all":
+                    ticket_data = SupportTicket.objects.filter().order_by("-id")[
+                        :Quantity_tickets
+                    ]
+            else:
+                if Status == "open":
+                    ticket_data = SupportTicket.objects.filter(open=True)[
+                        :Quantity_tickets
+                    ]
+                elif Status == "close":
+                    ticket_data = SupportTicket.objects.filter(open=False)[
+                        :Quantity_tickets
+                    ]
+                elif Status == "all":
+                    ticket_data = SupportTicket.objects.filter()[:Quantity_tickets]
+
+        except Exception as e:
+            print(e)
+
+        ticket_list = []
+        ticket_json = None
+        try:
+            for ticket in ticket_data:
+                ticket_json = serialize("json", [ticket])
+                ticket_list.append(ticket_json)
+
+            ticket_objects = []
+            for ticket in ticket_list:
+                ticket_data = loads(ticket)[0]["fields"]
+                ticket_data["id"] = loads(ticket)[0]["pk"]
+                ticket_objects.append(ticket_data)
+
+            return JsonResponse({"tickets": ticket_objects}, status=200, safe=True)
+
+        except Exception as e:
+            print(e)
+
+        return
+    if request.method == "POST":
+        return

@@ -32,6 +32,8 @@ import {
   DivContainerImages,
   DivImages,
   IMGS1,
+  Button1,
+  Button2,
 } from "../styles/historyStyle";
 import CloseIMG from "../images/components/close.png";
 import Message from "../components/message";
@@ -91,6 +93,8 @@ export default function DashboardTI() {
   const [ticketsDash, SetTicketsDash] = useState([]);
   const [sectorTicket, SetSectorTicket] = useState(null);
   const [ticketOpen, SetTicketOpen] = useState();
+  const [status, SetStatus] = useState("open");
+  const [btnmore, SetBtnMore] = useState(true);
 
   let count = 0;
   let timeoutId;
@@ -616,6 +620,7 @@ export default function DashboardTI() {
         "Order-by": orderby,
         "Problemn-Ticket": problemTicket,
         "Sector-Ticket": sector,
+        "Status-Ticket": status,
       },
     })
       .then((response) => {
@@ -663,6 +668,138 @@ export default function DashboardTI() {
       .then((data) => {
         SetLoadingDash(false);
         return SetTickets(data.tickets);
+      })
+      .catch((err) => {
+        return console.log(err);
+      });
+
+    return;
+  }
+
+  function ticketOpenStatus() {
+    SetTickets();
+    const btn = document.getElementById("btnopen");
+    btn.classList.add("btn-success");
+    const btn2 = document.getElementById("btnclose");
+    btn2.classList.remove("btn-warning");
+    const btn3 = document.getElementById("btnall");
+    btn3.classList.remove("btn-info");
+
+    fetch("getTicketFilterStatus/", {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Order-By": orderby,
+        "Quantity-tickets": countTicket,
+        "Problemn-Ticket": problemTicket,
+        "Sector-Ticket": sectorTicket,
+        "Status-Request": "open",
+      },
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        if (data.tickets.length === 0) {
+          SetMessage(true);
+          SetTypeError("Falta de dados");
+          SetMessageError("Nenhum ticket com esses Filtros");
+          SetBtnMore(false);
+          return;
+        } else {
+          SetBtnMore(true);
+          SetLoadingDash(false);
+          SetStatus("open");
+          return SetTickets(data.tickets);
+        }
+      })
+      .catch((err) => {
+        return console.log(err);
+      });
+
+    return;
+  }
+
+  function ticketClose() {
+    SetTickets([]);
+    const btn = document.getElementById("btnopen");
+    btn.classList.remove("btn-success");
+    const btn2 = document.getElementById("btnclose");
+    btn2.classList.add("btn-warning");
+    const btn3 = document.getElementById("btnall");
+    btn3.classList.remove("btn-info");
+
+    fetch("getTicketFilterStatus/", {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Order-By": orderby,
+        "Quantity-tickets": countTicket,
+        "Problemn-Ticket": problemTicket,
+        "Sector-Ticket": sectorTicket,
+        "Status-Request": "close",
+      },
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        if (data.tickets.length === 0) {
+          SetMessage(true);
+          SetTypeError("Falta de dados");
+          SetMessageError("Nenhum ticket com esses Filtros");
+          SetBtnMore(false);
+          return;
+        } else {
+          SetBtnMore(true);
+          SetLoadingDash(false);
+          SetStatus("close");
+          return SetTickets(data.tickets);
+        }
+      })
+      .catch((err) => {
+        return console.log(err);
+      });
+
+    return;
+  }
+
+  function statusTicketAll() {
+    SetTickets([]);
+    const btn = document.getElementById("btnopen");
+    btn.classList.remove("btn-success");
+    const btn2 = document.getElementById("btnclose");
+    btn2.classList.remove("btn-warning");
+    const btn3 = document.getElementById("btnall");
+    btn3.classList.add("btn-info");
+
+    fetch("getTicketFilterStatus/", {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Order-By": orderby,
+        "Quantity-tickets": countTicket,
+        "Problemn-Ticket": problemTicket,
+        "Sector-Ticket": sectorTicket,
+        "Status-Request": "all",
+      },
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        if (data.tickets.length === 0) {
+          SetMessage(true);
+          SetTypeError("Falta de dados");
+          SetMessageError("Nenhum ticket com esses Filtros");
+          SetBtnMore(false);
+          return;
+        } else {
+          SetBtnMore(true);
+          SetLoadingDash(false);
+          SetStatus("all");
+          return SetTickets(data.tickets);
+        }
       })
       .catch((err) => {
         return console.log(err);
@@ -727,6 +864,7 @@ export default function DashboardTI() {
         "Order-by": orderby,
         "Problemn-Ticket": problemn,
         "Sector-Ticket": sectorTicket,
+        "Status-Ticket": status,
       },
     })
       .then((response) => {
@@ -767,6 +905,7 @@ export default function DashboardTI() {
         "Order-By": order,
         "Problemn-Ticket": problemTicket,
         "Sector-Ticket": sectorTicket,
+        "Status-Ticket": status,
       },
     })
       .then((response) => {
@@ -809,6 +948,7 @@ export default function DashboardTI() {
         "Order-by": orderby,
         "Problemn-Ticket": problemTicket,
         "Sector-Ticket": sectorTicket,
+        "Status-Ticket": status,
       },
     })
       .then((response) => {
@@ -1075,6 +1215,40 @@ export default function DashboardTI() {
             <ImgSelectView src={Card} clasName="img-fluid" alt="" />
           </button>
         </DivSelectView>
+        <DivSelectView className="mt-3">
+          <PSelectView className="position-absolute top-0 start-0 translate-middle">
+            Status
+          </PSelectView>
+          <Button1
+            className="btn btn-success"
+            id="btnopen"
+            onClick={() => {
+              ticketOpenStatus();
+            }}
+          >
+            Aberto
+          </Button1>
+          <button
+            className="btn"
+            value="close"
+            id="btnclose"
+            onClick={() => {
+              ticketClose();
+            }}
+          >
+            Fechado
+          </button>
+          <Button2
+            className="btn"
+            value="all"
+            id="btnall"
+            onClick={() => {
+              statusTicketAll();
+            }}
+          >
+            Todos
+          </Button2>
+        </DivSelectView>
       </DivFilter>
       <section id="dashboard">
         {loadingDash && (
@@ -1251,11 +1425,13 @@ export default function DashboardTI() {
           </div>
         </TicketOpen>
       )}
-      <div className="w-100 text-center">
-        <button className="btn btn-info mb-5" onClick={moreTickets}>
-          Carregar Mais
-        </button>
-      </div>
+      {btnmore && (
+        <div className="w-100 text-center">
+          <button className="btn btn-info mb-5" onClick={moreTickets}>
+            Carregar Mais
+          </button>
+        </div>
+      )}
       {equipamentforuser && (
         <Registration
           token={token}

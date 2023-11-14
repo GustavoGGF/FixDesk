@@ -42,4 +42,9 @@ urlpatterns = [
         views.getDashBoardBarAll,
         name="central-get-dashboard-bar",
     ),
+    path(
+        "getTicketFilterStatus/",
+        views.getTicketFilterStatus,
+        name="central-get-ticket-filter-status",
+    ),
 ]
