@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import Loading from "./loading";
-import { Div1, DivContainer, Div2 } from "../styles/dashboardBar";
+import { Div1, Div2 } from "../styles/dashboardBar";
 import { Chart } from "chart.js/auto";
 
 export default function DashboardBar() {
   const [loadingHistogram, setLoadingHistogram] = useState(true);
-  const [histogram, SetHistogram] = useState(false);
   const [histogramData, SetHistogramData] = useState([]);
   const [labeldash, Setlabeldash] = useState("");
 
@@ -26,7 +25,6 @@ export default function DashboardBar() {
         const data = await response.json();
         Setlabeldash("Chamados da Semana");
         SetHistogramData(data);
-        SetHistogram(true);
       } catch (err) {
         console.error(err);
       }
@@ -36,39 +34,49 @@ export default function DashboardBar() {
   }, []);
 
   useEffect(() => {
-    const dashbar = document.getElementById("histogramRC");
-    let myChart = null;
+    const initFunct = () => {
+      try {
+        const dashbar = document.getElementById("dashbar");
+        let myChart;
 
-    if (histogramData && histogramData.days) {
-      if (myChart) {
-        myChart.destroy();
-      }
+        if (histogramData && histogramData.days && histogramData.values) {
+          if (myChart) {
+            myChart.destroy();
+          }
 
-      myChart = new Chart(dashbar, {
-        type: "bar",
-        data: {
-          labels: histogramData.days,
-          datasets: [
-            {
-              label: [labeldash],
-              data: histogramData.values,
+          myChart = new Chart(dashbar, {
+            type: "bar",
+            data: {
+              labels: histogramData.days,
+              datasets: [
+                {
+                  label: [labeldash],
+                  data: histogramData.values,
+                },
+              ],
             },
-          ],
-        },
-      });
-    } else {
-      return;
-    }
+          });
+          dashbar.style.display = "block";
 
-    dashbar.style.display = "block";
+          setLoadingHistogram(false);
+        } else {
+          dashbar.style.display = "block";
 
-    setLoadingHistogram(false);
+          setLoadingHistogram(false);
+        }
 
-    return () => {
-      if (myChart) {
-        myChart.destroy();
+        return () => {
+          if (myChart) {
+            myChart.destroy();
+          }
+        };
+      } catch (err) {
+        console.log(err);
       }
     };
+
+    initFunct();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [histogramData]);
 
@@ -102,8 +110,6 @@ export default function DashboardBar() {
       .then((data) => {
         Setlabeldash("Chamados do Mês");
         SetHistogramData(data);
-        SetHistogram(true);
-        return histogram;
       })
       .catch((err) => {
         return console.log(err);
@@ -122,7 +128,6 @@ export default function DashboardBar() {
           const select = document.getElementById("select");
 
           select.value = "2";
-          SetHistogram(false);
 
           return window.addEventListener("load", periodMonth());
         }
@@ -131,8 +136,6 @@ export default function DashboardBar() {
       .then((data) => {
         Setlabeldash("Chamados da Semana");
         SetHistogramData(data);
-        SetHistogram(true);
-        return histogram;
       })
       .catch((err) => {
         return console.log(err);
@@ -151,7 +154,6 @@ export default function DashboardBar() {
           const select = document.getElementById("select");
 
           select.value = "4";
-          SetHistogram(false);
 
           // return window.addEventListener("load", periodAll());
         }
@@ -160,8 +162,6 @@ export default function DashboardBar() {
       .then((data) => {
         Setlabeldash("Chamados deste Ano");
         SetHistogramData(data);
-        SetHistogram(true);
-        return histogram;
       })
       .catch((err) => {
         return console.log(err);
@@ -180,7 +180,6 @@ export default function DashboardBar() {
           const select = document.getElementById("select");
 
           select.value = "4";
-          SetHistogram(false);
 
           return;
         }
@@ -189,8 +188,6 @@ export default function DashboardBar() {
       .then((data) => {
         Setlabeldash("Todos os Chamados");
         SetHistogramData(data);
-        SetHistogram(true);
-        return histogram;
       })
       .catch((err) => {
         return console.log(err);
@@ -212,12 +209,9 @@ export default function DashboardBar() {
             <option value="3">Este Ano</option>
             <option value="4">Todo Período</option>
           </select>
-          {histogram && <canvas id="histogramRC" className="hidden"></canvas>}
+          <canvas id="dashbar"></canvas>
         </Div2>
       </div>
-      <DivContainer>
-        <canvas id="pie"></canvas>
-      </DivContainer>
     </Div1>
   );
 }

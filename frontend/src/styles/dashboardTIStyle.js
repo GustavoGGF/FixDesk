@@ -90,3 +90,15 @@ export const ImportBTN = styled.button`
   visibility: hidden;
   margin-left: calc(50% - 40px);
 `;
+
+export const DivFilter = styled.div`
+  margin: 0 auto;
+  width: 90% !important;
+  display: flex;
+  background: #fff;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  border-radius: 20px;
+  padding: 20px;
+  margin-top: 150px;
+`;

@@ -8,6 +8,7 @@ import {
   DropdownButton,
   DivDrop,
   P1,
+  DivFilter,
 } from "../styles/dashboardTIStyle";
 import Loading from "../components/loading";
 import DashBoardPie from "../components/dashboardPie";
@@ -26,7 +27,6 @@ import {
   DivList,
   SpanList,
   ImgSelectView,
-  DivFilter,
   Input1,
   Select1,
   DivContainerImages,
@@ -1069,11 +1069,13 @@ export default function DashboardTI() {
           </Dropdown>
         </DivDrop>
       )}
-      <div className="d-flex justify-content-center w-100">
-        <DashBoardPie sector={"TI"} />
-      </div>
-      <div className="d-flex justify-content-center">
-        <DashboardBar />
+      <div className="d-flex flex-column justify-content-center w-100">
+        <div className="d-flex justify-content-center w-100">
+          <DashBoardPie sector={"TI"} />
+        </div>
+        <div className="d-flex justify-content-center">
+          <DashboardBar />
+        </div>
       </div>
       <DivFilter>
         <div className="form-floating">
