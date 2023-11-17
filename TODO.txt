@@ -1,11 +1,3 @@
-colocar mais um filtro de aberto finalizado
-
-finalizar filtros tela dashboard TI
-
-dashboard: para gestores
-
-chamados: dados faltando quando se abre os chamados (history, dashboard_TI)
-
 atribuir PDF'S ao FAQ
 
 chat deve ficar bloqueado ate o tecnico mandar menssagem

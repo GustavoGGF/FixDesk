@@ -18,7 +18,7 @@ export default function NavBar({ Name, JobTitle }) {
   }
 
   function FAQPage() {
-    return (window.location.href = "/helpdesk/FAQ");
+    return;
   }
 
   function Exit() {

@@ -453,16 +453,6 @@ def toDashboard(request):
         except Exception as e:
             print(e)
 
-
-@login_required(login_url="/login")
-@requires_csrf_token
-def faq(request):
-    if request.method == "POST":
-        return
-    if request.method == "GET":
-        return render(request, "index.html", {})
-
-
 @csrf_exempt
 def exit(request):
     if request.method == "POST":
