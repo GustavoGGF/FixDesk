@@ -5,7 +5,6 @@ urlpatterns = [
     path("", views.firstView, name="central-de-chamados"),
     path("submitTicket/", views.submitTicket, name="central-tickets"),
     path("history/", views.history, name="central-history"),
-    path("FAQ/", views.faq, name="central-faq"),
     path("exit/", views.exit, name="central-exit"),
     path("ticket/<int:id>", views.ticket, name="central-ticket"),
     path("update_chat/<int:id>", views.update_chat, name="central-update-chat"),

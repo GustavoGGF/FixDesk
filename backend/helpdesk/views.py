@@ -20,6 +20,10 @@ from magic import Magic
 from os import getcwd, listdir
 from os.path import join, exists, isdir
 from django.db.models import Q
+import mimetypes
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+from django.core.files.storage import FileSystemStorage
 
 
 # Create your views here.
@@ -148,7 +152,8 @@ def submitTicket(request):
         types = None
         valid = None
         types_str = None
-        find_text = None
+        image_str = None
+        othe_image = None
         if "image" in request.FILES:
             try:
                 image = request.FILES.get("image")
@@ -167,6 +172,18 @@ def submitTicket(request):
 
                 for typeUn in types:
                     if typeUn.replace('"', "").lower() in file_type.lower():
+                        valid = True
+                        break
+
+                image_str = str(image)
+
+                othe_image = mimetypes.guess_type(image_str)
+
+                for typeUn in types:
+                    if (
+                        typeUn.replace('"', "").lower()
+                        in othe_image[0].replace('"', "").lower()
+                    ):
                         valid = True
                         break
 
@@ -452,6 +469,7 @@ def toDashboard(request):
                     return JsonResponse({"status": "Credentials Invalid"}, status=203)
         except Exception as e:
             print(e)
+
 
 @csrf_exempt
 def exit(request):

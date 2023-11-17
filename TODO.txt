@@ -1,7 +1,3 @@
-atribuir PDF'S ao FAQ
-
-chat deve ficar bloqueado ate o tecnico mandar menssagem
-
 ajustar enviar arquivos
 
 validação sobre quem pode acessar cada chamado por tipo de tecnhico
