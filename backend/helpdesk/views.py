@@ -612,6 +612,7 @@ def ticket(request, id):
         equipament_image = None
         act_dir = None
         dates_for_alocate = None
+        name_file = ""
         try:
             for t in ticket:
                 try:
@@ -630,6 +631,9 @@ def ticket(request, id):
                             pil_image.save(img_bytes, format="PNG")
 
                             image_data = b64encode(img_bytes.getvalue()).decode("utf-8")
+
+                        name_file = "/".join(str(image).split("/")[2:])
+                        print(name_file)
 
                     if t.equipament:
                         equipament_image = t.equipament.equipament
@@ -687,6 +691,7 @@ def ticket(request, id):
                         "mail_tranfer": t.mail_tranfer,
                         "old_files": t.old_files,
                         "open": t.open,
+                        "name_file": name_file,
                     }
                 )
 

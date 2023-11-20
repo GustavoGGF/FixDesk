@@ -236,3 +236,15 @@ export const Button1 = styled.button`
 export const Button2 = styled.button`
   margin-left: 10px;
 `;
+
+export const DivFile = styled.div`
+  padding-left: 15px;
+  padding-right: 15px;
+  padding-top: 7px;
+  padding-bottom: 7px;
+`;
+
+export const ImageFile = styled.img`
+  width: 25px;
+  cursor: pointer;
+`;

@@ -33,6 +33,8 @@ import {
   IMGS1,
   Button1,
   Button2,
+  DivFile,
+  ImageFile,
 } from "../styles/historyStyle";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
@@ -44,6 +46,7 @@ import IMG3 from "../images/dashboard_TI/quantity_3.png";
 import IMG4 from "../images/dashboard_TI/quantity_4.png";
 import List from "../images/components/lista-de-itens.png";
 import Card from "../images/components/identificacao.png";
+import Download from "../images/components/download.png";
 
 export default function History() {
   const [navbar, SetNavbar] = useState(false);
@@ -103,6 +106,7 @@ export default function History() {
   const [problemSyst, SetProblemSyst] = useState(false);
   const [status, SetStatus] = useState("open");
   const [btnmore, SetBtnMore] = useState(true);
+  const [namefile, SetNameFile] = useState("");
 
   let count = 0;
   let timeoutId;
@@ -209,6 +213,7 @@ export default function History() {
         SetCopyProfileNewUser(data.copy_profile_new_user);
         SetMailTranfer(data.mail_tranfer);
         SetOldFiles(data.old_files);
+        SetNameFile(data.name_file);
         if (data.equipament["image"] !== undefined) {
           const Div = (
             <DivAlocate className="d-flex flex-column w-100 align-items-center">
@@ -239,11 +244,22 @@ export default function History() {
 
         if (data.file !== null) {
           const Div = (
-            <IMGFiles
-              src={`data:image/jpeg;base64,${data.file}`}
-              onClick={openImage}
-              alt=""
-            />
+            <div className="position-relative">
+              <IMGFiles
+                src={`data:image/jpeg;base64,${data.file}`}
+                onClick={openImage}
+                alt=""
+              />
+              <ImageFile
+                className="position-absolute bottom-0 start-50 translate-middle-x"
+                src={Download}
+                alt=""
+                id="downloadBTN"
+                onClick={() => {
+                  donwloadFile({ file: data.file });
+                }}
+              />
+            </div>
           );
 
           SetFileTicket(Div);
@@ -318,6 +334,13 @@ export default function History() {
       });
 
     return SetTicketWindow(true);
+  }
+
+  function donwloadFile({ file }) {
+    const downloadLink = document.createElement("a");
+    downloadLink.href = `data:image/jpeg;base64,${file}`;
+    downloadLink.download = namefile;
+    downloadLink.click();
   }
 
   useEffect(() => {
@@ -1434,7 +1457,7 @@ export default function History() {
                 className="form-control"
                 disabled
               />
-              <div className="w-100 d-flex">{fileticket}</div>
+              <DivFile className="w-100 d-flex">{fileticket}</DivFile>
               <input
                 type="text"
                 value={

@@ -4,16 +4,6 @@ validação sobre quem pode acessar cada chamado por tipo de tecnhico
 
 qualquer grupo acessa o fixdex
 
-grupo user abre chamado
-grupo tecnico abre e responde chamado
-gestor abre e responde chamado
-
-admin ve tudo
-
-funcções da navbar ficar na navbar
-
-filtros para dashboardpie
-
 mensagens caso não tenha chamados
 
 arruamr conversa dos chamados
@@ -129,3 +119,7 @@ deixar tecnico fazer mudanças do chamado
 ajusta dashboard se n tiver na semana pega mes
 
 dashboards fazer busca por chamados a cada 20 segundos
+
+arrumar dashbar
+
+tela de chamado por gerenciamento de usuario
