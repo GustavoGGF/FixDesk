@@ -48,6 +48,11 @@ import List from "../images/components/lista-de-itens.png";
 import Card from "../images/components/identificacao.png";
 import Download from "../images/components/download.png";
 import Mail from "../images/components/mail.png";
+import XLS from "../images/components/xlsx.png";
+import ZIP from "../images/components/zip.jpg";
+import TXT from "../images/components/arquivo-txt.png";
+import WORD from "../images/components/palavra.png";
+import PDF from "../images/components/pdf.png";
 
 export default function History() {
   const [navbar, SetNavbar] = useState(false);
@@ -270,9 +275,136 @@ export default function History() {
                 />
               </div>
             );
-
-            console.log(data.name_file);
-
+            SetFileTicket(Div);
+          } else if (data.file === "excel") {
+            const Div = (
+              <div className="position-relative">
+                <IMGFiles src={XLS} alt="" />
+                <ImageFile
+                  className="position-absolute bottom-0 start-50 translate-middle-x"
+                  src={Download}
+                  alt=""
+                  id="downloadBTN"
+                  onClick={() => {
+                    const blob = downloadMail({
+                      data: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                      content: data.content_file,
+                    });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = data.name_file;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                  }}
+                />
+              </div>
+            );
+            SetFileTicket(Div);
+          } else if (data.file === "zip") {
+            const Div = (
+              <div className="position-relative">
+                <IMGFiles src={ZIP} alt="" />
+                <ImageFile
+                  className="position-absolute bottom-0 start-50 translate-middle-x"
+                  src={Download}
+                  alt=""
+                  id="downloadBTN"
+                  onClick={() => {
+                    const blob = downloadMail({
+                      data: "application/zip",
+                      content: data.content_file,
+                    });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = data.name_file;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                  }}
+                />
+              </div>
+            );
+            SetFileTicket(Div);
+          } else if (data.file === "txt") {
+            const Div = (
+              <div className="position-relative">
+                <IMGFiles src={TXT} alt="" />
+                <ImageFile
+                  className="position-absolute bottom-0 start-50 translate-middle-x"
+                  src={Download}
+                  alt=""
+                  id="downloadBTN"
+                  onClick={() => {
+                    const blob = downloadMail({
+                      data: "text/plain",
+                      content: data.content_file,
+                    });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = data.name_file;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                  }}
+                />
+              </div>
+            );
+            SetFileTicket(Div);
+          } else if (data.file === "word") {
+            const Div = (
+              <div className="position-relative">
+                <IMGFiles src={WORD} alt="" />
+                <ImageFile
+                  className="position-absolute bottom-0 start-50 translate-middle-x"
+                  src={Download}
+                  alt=""
+                  id="downloadBTN"
+                  onClick={() => {
+                    const blob = downloadMail({
+                      data: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                      content: data.content_file,
+                    });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = data.name_file;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                  }}
+                />
+              </div>
+            );
+            SetFileTicket(Div);
+          } else if (data.file === "pdf") {
+            const Div = (
+              <div className="position-relative">
+                <IMGFiles src={PDF} alt="" />
+                <ImageFile
+                  className="position-absolute bottom-0 start-50 translate-middle-x"
+                  src={Download}
+                  alt=""
+                  id="downloadBTN"
+                  onClick={() => {
+                    const blob = downloadMail({
+                      data: "application/pdf",
+                      content: data.content_file,
+                    });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = data.name_file;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                  }}
+                />
+              </div>
+            );
             SetFileTicket(Div);
           } else {
             const Div = (
@@ -438,7 +570,7 @@ export default function History() {
     SetImageUrl("");
     SetFileTicket("");
     SetImageEquipament();
-    jobtitlenewuser("");
+    SetJobTitleNewUser("");
     count = 0;
     clearTimeout(timeoutId);
     daysLCT = [];

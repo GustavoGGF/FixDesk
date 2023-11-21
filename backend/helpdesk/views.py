@@ -25,6 +25,7 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.core.files.storage import FileSystemStorage
 from base64 import b64encode
+import zipfile
 
 
 # Create your views here.
@@ -643,23 +644,73 @@ def ticket(request, id):
                                 image.close()
 
                         except UnidentifiedImageError:
-                            image.open()
-                            image_bytes = image.read()
+                            try:
+                                image.open()
+                                image_bytes = image.read()
 
-                            mime = Magic()
+                                mime = Magic()
 
-                            file_type = mime.from_buffer(image_bytes)
+                                file_type = mime.from_buffer(image_bytes)
 
-                            if "mail" in file_type.lower():
-                                image_data = "mail"
-                                with open(str(image), "rb") as eml_file:
-                                    content_file = b64encode(eml_file.read()).decode(
-                                        "utf-8"
-                                    )
+                                if "mail" in file_type.lower():
+                                    image_data = "mail"
+                                    with open(str(image), "rb") as eml_file:
+                                        content_file = b64encode(
+                                            eml_file.read()
+                                        ).decode("utf-8")
 
-                            image.close()
+                                elif "excel" in file_type.lower():
+                                    image_data = "excel"
+                                    with open(str(image), "rb") as exc_file:
+                                        content_file = b64encode(
+                                            exc_file.read()
+                                        ).decode("utf-8")
 
-                            name_file = "/".join(str(image).split("/")[2:])
+                                elif "zip" in file_type.lower():
+                                    image_data = "zip"
+                                    with open(str(image), "rb") as zip_file:
+                                        content_file = b64encode(
+                                            zip_file.read()
+                                        ).decode("utf-8")
+
+                                elif (
+                                    "utf-8" in file_type.lower()
+                                    and "text" in file_type.lower()
+                                ):
+                                    image_data = "txt"
+                                    with open(str(image), "rb") as txt_file:
+                                        content_file = b64encode(
+                                            txt_file.read()
+                                        ).decode("utf-8")
+
+                                elif (
+                                    "microsoft" in file_type.lower()
+                                    and "word" in file_type.lower()
+                                ):
+                                    image_data = "word"
+                                    with open(str(image), "rb") as word_file:
+                                        content_file = b64encode(
+                                            word_file.read()
+                                        ).decode("utf-8")
+                                        
+                                elif (
+                                    "pdf" in file_type.lower()
+                                    and "document" in file_type.lower()
+                                ):
+                                    image_data = "pdf"
+                                    with open(str(image), "rb") as word_file:
+                                        content_file = b64encode(
+                                            word_file.read()
+                                        ).decode("utf-8")
+
+                                image.close()
+
+                                name_file = "/".join(str(image).split("/")[2:])
+
+                            except Exception as e:
+                                print(e)
+
+                            print(file_type)
 
                         except Exception as e:
                             print(e)
