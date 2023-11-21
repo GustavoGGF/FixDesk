@@ -123,3 +123,5 @@ dashboards fazer busca por chamados a cada 20 segundos
 arrumar dashbar
 
 tela de chamado por gerenciamento de usuario
+
+liberar dominio de e-mail

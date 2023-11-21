@@ -14,7 +14,7 @@ from django.core.serializers import serialize
 from django.contrib.auth import logout
 from dashboards.models import Equipaments
 from base64 import b64encode
-from PIL import Image
+from PIL import Image, UnidentifiedImageError
 from io import BytesIO
 from magic import Magic
 from os import getcwd, listdir
@@ -24,6 +24,7 @@ import mimetypes
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.core.files.storage import FileSystemStorage
+from base64 import b64encode
 
 
 # Create your views here.
@@ -613,6 +614,8 @@ def ticket(request, id):
         act_dir = None
         dates_for_alocate = None
         name_file = ""
+        file_type = None
+        content_file = ""
         try:
             for t in ticket:
                 try:
@@ -621,19 +624,45 @@ def ticket(request, id):
                     act_dir += f"/uploads/{id}"
 
                     if exists(act_dir) and isdir(act_dir):
-                        image = t.file
+                        try:
+                            image = t.file
 
-                        with image.open() as img:
-                            pil_image = Image.open(img)
+                            with image.open() as img:
+                                pil_image = Image.open(img)
 
-                            img_bytes = BytesIO()
+                                img_bytes = BytesIO()
 
-                            pil_image.save(img_bytes, format="PNG")
+                                pil_image.save(img_bytes, format="PNG")
 
-                            image_data = b64encode(img_bytes.getvalue()).decode("utf-8")
+                                image_data = b64encode(img_bytes.getvalue()).decode(
+                                    "utf-8"
+                                )
 
-                        name_file = "/".join(str(image).split("/")[2:])
-                        print(name_file)
+                                name_file = "/".join(str(image).split("/")[2:])
+
+                                image.close()
+
+                        except UnidentifiedImageError:
+                            image.open()
+                            image_bytes = image.read()
+
+                            mime = Magic()
+
+                            file_type = mime.from_buffer(image_bytes)
+
+                            if "mail" in file_type.lower():
+                                image_data = "mail"
+                                with open(str(image), "rb") as eml_file:
+                                    content_file = b64encode(eml_file.read()).decode(
+                                        "utf-8"
+                                    )
+
+                            image.close()
+
+                            name_file = "/".join(str(image).split("/")[2:])
+
+                        except Exception as e:
+                            print(e)
 
                     if t.equipament:
                         equipament_image = t.equipament.equipament
@@ -692,6 +721,7 @@ def ticket(request, id):
                         "old_files": t.old_files,
                         "open": t.open,
                         "name_file": name_file,
+                        "content_file": content_file,
                     }
                 )
 

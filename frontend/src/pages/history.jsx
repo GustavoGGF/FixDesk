@@ -47,6 +47,7 @@ import IMG4 from "../images/dashboard_TI/quantity_4.png";
 import List from "../images/components/lista-de-itens.png";
 import Card from "../images/components/identificacao.png";
 import Download from "../images/components/download.png";
+import Mail from "../images/components/mail.png";
 
 export default function History() {
   const [navbar, SetNavbar] = useState(false);
@@ -163,6 +164,7 @@ export default function History() {
   }
 
   function helpdeskPage({ id }) {
+    SetNameFile("");
     fetch("/helpdesk/ticket/" + id, {
       method: "GET",
       headers: {
@@ -243,26 +245,56 @@ export default function History() {
         SetImageUrl(`data:image/jpeg;base64,${data.file}`);
 
         if (data.file !== null) {
-          const Div = (
-            <div className="position-relative">
-              <IMGFiles
-                src={`data:image/jpeg;base64,${data.file}`}
-                onClick={openImage}
-                alt=""
-              />
-              <ImageFile
-                className="position-absolute bottom-0 start-50 translate-middle-x"
-                src={Download}
-                alt=""
-                id="downloadBTN"
-                onClick={() => {
-                  donwloadFile({ file: data.file });
-                }}
-              />
-            </div>
-          );
+          if (data.file === "mail") {
+            const Div = (
+              <div className="position-relative">
+                <IMGFiles src={Mail} alt="" />
+                <ImageFile
+                  className="position-absolute bottom-0 start-50 translate-middle-x"
+                  src={Download}
+                  alt=""
+                  id="downloadBTN"
+                  onClick={() => {
+                    const blob = downloadMail({
+                      data: "message/rfc822",
+                      content: data.content_file,
+                    });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = data.name_file;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                  }}
+                />
+              </div>
+            );
 
-          SetFileTicket(Div);
+            console.log(data.name_file);
+
+            SetFileTicket(Div);
+          } else {
+            const Div = (
+              <div className="position-relative">
+                <IMGFiles
+                  src={`data:image/jpeg;base64,${data.file}`}
+                  onClick={openImage}
+                  alt=""
+                />
+                <ImageFile
+                  className="position-absolute bottom-0 start-50 translate-middle-x"
+                  src={Download}
+                  alt=""
+                  id="downloadBTN"
+                  onClick={() => {
+                    downloadFile({ file: data.file });
+                  }}
+                />
+              </div>
+            );
+            SetFileTicket(Div);
+          }
         }
 
         if (
@@ -336,11 +368,42 @@ export default function History() {
     return SetTicketWindow(true);
   }
 
-  function donwloadFile({ file }) {
+  function downloadFile({ file }) {
     const downloadLink = document.createElement("a");
-    downloadLink.href = `data:image/jpeg;base64,${file}`;
+    downloadLink.href = `data:message/rfc822;base64;base64,${file}`;
     downloadLink.download = namefile;
     downloadLink.click();
+  }
+
+  function downloadMail({ content, data, sliceSize = 512 }) {
+    const cleanBase64 = content.replace(/[^A-Za-z0-9+/]/g, ""); // Remove caracteres inválidos
+
+    try {
+      const byteCharacters = atob(cleanBase64);
+      const byteArrays = [];
+
+      for (
+        let offset = 0;
+        offset < byteCharacters.length;
+        offset += sliceSize
+      ) {
+        const slice = byteCharacters.slice(offset, offset + sliceSize);
+
+        const byteNumbers = new Array(slice.length);
+        for (let i = 0; i < slice.length; i++) {
+          byteNumbers[i] = slice.charCodeAt(i);
+        }
+
+        const byteArray = new Uint8Array(byteNumbers);
+        byteArrays.push(byteArray);
+      }
+
+      const blob = new Blob(byteArrays, { type: data });
+      return blob;
+    } catch (error) {
+      console.error("Erro ao converter para Blob:", error);
+      return null;
+    }
   }
 
   useEffect(() => {
