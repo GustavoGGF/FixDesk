@@ -13,6 +13,10 @@ import {
   ImageEquip,
   DivEquip,
   InputRadio,
+  PNameFile,
+  DivNameFile,
+  ImgFile,
+  BtnFile,
 } from "../styles/helpdeskStyle";
 import {
   DivUpload,
@@ -37,6 +41,7 @@ import { format } from "date-fns";
 import Loading from "../components/loading";
 import Message from "../components/message";
 import Cloud from "../images/components/cloud-uploading.png";
+import Exclude from "../images/components/close.png";
 
 export default function Helpdesk() {
   const [csrf, SetCSRFToken] = useState("");
@@ -1024,9 +1029,6 @@ export default function Helpdesk() {
     const formData = new FormData();
 
     if (filename.length > 0) {
-      console.log("================================");
-      console.log("Vai mandar Image");
-      console.log("================================");
       formData.append("ticketRequester", Data.name);
       formData.append("department", Data.department);
       formData.append("mail", Data.mail);
@@ -1188,9 +1190,6 @@ export default function Helpdesk() {
       formData.append("PID", Data.pid);
       formData.append("respective_area", respectiveArea);
     }
-    console.log("================================");
-    console.log(fileimg);
-    console.log("================================");
     fetch("submitTicket/", {
       method: "POST",
       headers: {
@@ -1229,7 +1228,6 @@ export default function Helpdesk() {
           btn.forEach(function (b) {
             for (var i = 0; i < dates.length; i++) {
               var date = dates[i].slice(-2);
-              console.log(date);
               if (b.textContent === date) {
                 b.classList.remove("rdp-day_selected");
                 b.disabled = true;
@@ -1261,10 +1259,23 @@ export default function Helpdesk() {
     SetFileName(file_name);
 
     const paragraphs = file_name.map((fileName, index) => (
-      <p key={index}>{fileName}</p>
+      <DivNameFile>
+        <PNameFile key={index} className="text-break">
+          {fileName}
+        </PNameFile>
+        <BtnFile
+          type="button"
+          onClick={() => {
+            fileimg.splice(index, 1);
+            inputDrop();
+          }}
+        >
+          <ImgFile src={Exclude} alt="Excluir arquivo" />
+        </BtnFile>
+      </DivNameFile>
     ));
 
-    const Div = <div>{paragraphs}</div>;
+    const Div = <div className="w-100">{paragraphs}</div>;
 
     SetNameOnDropFiles(Div);
 

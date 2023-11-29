@@ -74,5 +74,24 @@ export const DivEquip = styled.div`
 `;
 
 export const InputRadio = styled.input`
-margin-right: 5px;
-`
+  margin-right: 5px;
+`;
+
+export const DivNameFile = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+export const PNameFile = styled.div`
+  margin-right: 5px;
+`;
+
+export const BtnFile = styled.button`
+  border: none;
+  background: transparent;
+`;
+
+export const ImgFile = styled.img`
+  width: 25px;
+`;
