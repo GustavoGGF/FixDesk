@@ -79,9 +79,8 @@ def CreateOrVerifyUser(user, password, request, helpdesk, name_create_user):
             group_tech.save()
             Valid = False
     except Exception as e:
-        json_error = str(e)
-        print(json_error)
-        return JsonResponse({"status": json_error}, status=400)
+        print(e)
+        return JsonResponse({"status": "error"}, status=400)
 
     try:
         if not group_user:
@@ -90,9 +89,8 @@ def CreateOrVerifyUser(user, password, request, helpdesk, name_create_user):
             return login(request, userAuthentic)
 
     except Exception as e:
-        json_error = str(e)
-        print(json_error)
-        return JsonResponse({"status": json_error}, status=400)
+        print(e)
+        return JsonResponse({"status": "error"}, status=400)
 
 
 @csrf_exempt
@@ -160,8 +158,7 @@ def validation(request):
 
         except Exception as e:
             print(e)
-            json_error = {"error": str(e)}
-            return JsonResponse(json_error, status=400)
+            return JsonResponse({"status": "error"}, status=400)
 
         server = None
         conn = None
@@ -262,7 +259,6 @@ def validation(request):
             for item in groups:
                 if tech_leader in item:
                     helpdesk = "Gestor"
-            print(helpdesk)
             if "displayName" in information:
                 name = information["displayName"]
             else:

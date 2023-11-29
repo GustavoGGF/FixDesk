@@ -308,8 +308,6 @@ export default function History() {
             } else if (file === "zip") {
               const ContentFileZip = data.content_file[i];
               const NameFileZip = data.name_file[i];
-              console.log(ContentFileZip);
-              console.log(NameFileZip);
               const Div = (
                 <DivOnBoardFile className="position-relative">
                   <IMGFiles src={ZIP} alt="" />
@@ -900,7 +898,6 @@ export default function History() {
         return response.json();
       })
       .then((data) => {
-        console.log(data.count);
         SetCountTicket(data.count);
         SetTickets(data.tickets);
         return countTicket;
@@ -1001,7 +998,6 @@ export default function History() {
 
     const btn4 = document.getElementById("allView");
     btn4.style.backgroundColor = "transparent";
-    console.log(id);
 
     const btn5 = document.getElementById(id);
     btn5.style.backgroundColor = "#00B4D8";
