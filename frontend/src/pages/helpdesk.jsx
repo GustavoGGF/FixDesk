@@ -79,8 +79,8 @@ export default function Helpdesk() {
   const [alocate, SetAlocate] = useState(false);
   const [equipaments, SetEquipaments] = useState();
   const [dashequipaments, SetDashEquipaments] = useState("");
-  const [filename, SetFileName] = useState("");
-  const [fileimg, SetFileImg] = useState();
+  const [filename, SetFileName] = useState([]);
+  const [fileimg, SetFileImg] = useState([]);
   const [uploadRuninng, SetUploadRunning] = useState();
   const [dateequip, setDateEquip] = useState(false);
   const [daysForAlocate, SetDaysForAlocate] = useState([]);
@@ -96,6 +96,7 @@ export default function Helpdesk() {
   const [copyUser, SetCopyUser] = useState("");
   const [maildelegation, SetMailDelegation] = useState("");
   const [dirsave, SetDirSave] = useState("");
+  const [nameOnDropFiles, SetNameOnDropFiles] = useState("");
 
   const footerDay = selectedDay ? (
     <p>Você selecionou {format(selectedDay, "PPP")}</p>
@@ -109,6 +110,8 @@ export default function Helpdesk() {
     ) : (
       <p>Selecione um ou mais dias.</p>
     );
+
+  let file_name = [];
 
   useEffect(() => {
     fetch("", {
@@ -188,7 +191,10 @@ export default function Helpdesk() {
           evt.preventDefault();
         };
         $("#drop").ondrop = (evt) => {
-          $("input[type=file]").files = evt.dataTransfer.files;
+          for (let i = 0; i < evt.dataTransfer.files.length; i++) {
+            SetFileImg((itens) => [...itens, evt.dataTransfer.files[i]]);
+          }
+
           $("footer").classList.add("hasFiles");
           $("#divider").classList.remove("overflow-hidden");
           $("#divider").classList.add("lineTop");
@@ -1018,6 +1024,9 @@ export default function Helpdesk() {
     const formData = new FormData();
 
     if (filename.length > 0) {
+      console.log("================================");
+      console.log("Vai mandar Image");
+      console.log("================================");
       formData.append("ticketRequester", Data.name);
       formData.append("department", Data.department);
       formData.append("mail", Data.mail);
@@ -1030,7 +1039,10 @@ export default function Helpdesk() {
       formData.append("start_date", dataFormatada);
       formData.append("PID", Data.pid);
       formData.append("respective_area", respectiveArea);
-      formData.append("image", fileimg);
+      for (let i = 0; i < fileimg.length; i++) {
+        const file = fileimg[i];
+        formData.append("image", file);
+      }
     } else if (daysForAlocate.length > 0) {
       for (let dateObj of daysForAlocate) {
         const day = dateObj.getDate().toString().padStart(2, "0");
@@ -1039,7 +1051,6 @@ export default function Helpdesk() {
         const dateFormated = `${year}-${month}-${day}`;
         NewDatesAlocate.push(dateFormated);
       }
-
       formData.append("ticketRequester", Data.name);
       formData.append("department", Data.department);
       formData.append("mail", Data.mail);
@@ -1177,7 +1188,9 @@ export default function Helpdesk() {
       formData.append("PID", Data.pid);
       formData.append("respective_area", respectiveArea);
     }
-
+    console.log("================================");
+    console.log(fileimg);
+    console.log("================================");
     fetch("submitTicket/", {
       method: "POST",
       headers: {
@@ -1243,17 +1256,19 @@ export default function Helpdesk() {
   }
 
   function inputDrop() {
-    const input = document.getElementById("inputName");
-    const p = document.getElementById("namefile");
+    file_name = fileimg.map((fileItem) => fileItem.name);
 
-    console.log(input);
+    SetFileName(file_name);
 
-    const file = input.files[0];
+    const paragraphs = file_name.map((fileName, index) => (
+      <p key={index}>{fileName}</p>
+    ));
 
-    SetFileImg(file);
-    SetFileName(file.name);
+    const Div = <div>{paragraphs}</div>;
 
-    return (p.innerText = input.files[0].name);
+    SetNameOnDropFiles(Div);
+
+    return nameOnDropFiles;
   }
 
   function selectCompanyEquip() {
@@ -2178,14 +2193,14 @@ export default function Helpdesk() {
                   <PFiles2 className="pointer-none">
                     <B1>Drag and drop</B1> files here to begin the upload
                   </PFiles2>
-                  <InputFiles type="file" id="inputName" />
+                  <InputFiles type="file" id="inputName" multiple />
                 </BodyFiles>
                 <FooterFiles id="footerFiles">
                   <Divider className="divider overflow-hidden" id="divider">
                     <Span3 className="mb-3">FILE</Span3>
                   </Divider>
                   <ListFiles className="list-files" id="list-files">
-                    <p id="namefile"></p>
+                    {nameOnDropFiles}
                   </ListFiles>
                 </FooterFiles>
               </div>

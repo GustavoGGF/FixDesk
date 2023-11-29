@@ -35,6 +35,7 @@ import {
   Button2,
   DivFile,
   ImageFile,
+  DivOnBoardFile,
 } from "../styles/historyStyle";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
@@ -84,7 +85,7 @@ export default function History() {
   const [fetchchat, SetFetchChat] = useState(false);
   const [countchat, SetCountChat] = useState();
   const [initUpdateChat, SetInitUpdateChat] = useState();
-  const [fileticket, SetFileTicket] = useState();
+  const [fileticket, SetFileTicket] = useState([]);
   const [imageurl, SetImageUrl] = useState();
   const [imageopen, SetImageOpen] = useState(false);
   const [fakeSelect, SetFakeSelect] = useState(true);
@@ -112,7 +113,6 @@ export default function History() {
   const [problemSyst, SetProblemSyst] = useState(false);
   const [status, SetStatus] = useState("open");
   const [btnmore, SetBtnMore] = useState(true);
-  const [namefile, SetNameFile] = useState("");
 
   let count = 0;
   let timeoutId;
@@ -169,7 +169,6 @@ export default function History() {
   }
 
   function helpdeskPage({ id }) {
-    SetNameFile("");
     fetch("/helpdesk/ticket/" + id, {
       method: "GET",
       headers: {
@@ -220,7 +219,6 @@ export default function History() {
         SetCopyProfileNewUser(data.copy_profile_new_user);
         SetMailTranfer(data.mail_tranfer);
         SetOldFiles(data.old_files);
-        SetNameFile(data.name_file);
         if (data.equipament["image"] !== undefined) {
           const Div = (
             <DivAlocate className="d-flex flex-column w-100 align-items-center">
@@ -247,185 +245,208 @@ export default function History() {
           calendar.classList.add("AdjustWid");
         }
 
-        SetImageUrl(`data:image/jpeg;base64,${data.file}`);
+        if (data.file.length >= 1) {
+          const files = data.file;
+          for (let i = 0; i < files.length; i++) {
+            var file = files[i];
+            if (file === "mail") {
+              const contentFileMail = data.content_file[i];
+              const nameFileMail = data.name_file[i];
+              const Div = (
+                <DivOnBoardFile className="position-relative">
+                  <IMGFiles src={Mail} alt="" />
+                  <ImageFile
+                    className="position-absolute bottom-0 start-50 translate-middle-x"
+                    src={Download}
+                    alt=""
+                    onClick={() => {
+                      const blob = downloadMail({
+                        data: "message/rfc822",
+                        content: contentFileMail,
+                      });
 
-        if (data.file !== null) {
-          if (data.file === "mail") {
-            const Div = (
-              <div className="position-relative">
-                <IMGFiles src={Mail} alt="" />
-                <ImageFile
-                  className="position-absolute bottom-0 start-50 translate-middle-x"
-                  src={Download}
-                  alt=""
-                  id="downloadBTN"
-                  onClick={() => {
-                    const blob = downloadMail({
-                      data: "message/rfc822",
-                      content: data.content_file,
-                    });
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement("a");
-                    a.href = url;
-                    a.download = data.name_file;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                  }}
-                />
-              </div>
-            );
-            SetFileTicket(Div);
-          } else if (data.file === "excel") {
-            const Div = (
-              <div className="position-relative">
-                <IMGFiles src={XLS} alt="" />
-                <ImageFile
-                  className="position-absolute bottom-0 start-50 translate-middle-x"
-                  src={Download}
-                  alt=""
-                  id="downloadBTN"
-                  onClick={() => {
-                    const blob = downloadMail({
-                      data: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                      content: data.content_file,
-                    });
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement("a");
-                    a.href = url;
-                    a.download = data.name_file;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                  }}
-                />
-              </div>
-            );
-            SetFileTicket(Div);
-          } else if (data.file === "zip") {
-            const Div = (
-              <div className="position-relative">
-                <IMGFiles src={ZIP} alt="" />
-                <ImageFile
-                  className="position-absolute bottom-0 start-50 translate-middle-x"
-                  src={Download}
-                  alt=""
-                  id="downloadBTN"
-                  onClick={() => {
-                    const blob = downloadMail({
-                      data: "application/zip",
-                      content: data.content_file,
-                    });
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement("a");
-                    a.href = url;
-                    a.download = data.name_file;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                  }}
-                />
-              </div>
-            );
-            SetFileTicket(Div);
-          } else if (data.file === "txt") {
-            const Div = (
-              <div className="position-relative">
-                <IMGFiles src={TXT} alt="" />
-                <ImageFile
-                  className="position-absolute bottom-0 start-50 translate-middle-x"
-                  src={Download}
-                  alt=""
-                  id="downloadBTN"
-                  onClick={() => {
-                    const blob = downloadMail({
-                      data: "text/plain",
-                      content: data.content_file,
-                    });
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement("a");
-                    a.href = url;
-                    a.download = data.name_file;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                  }}
-                />
-              </div>
-            );
-            SetFileTicket(Div);
-          } else if (data.file === "word") {
-            const Div = (
-              <div className="position-relative">
-                <IMGFiles src={WORD} alt="" />
-                <ImageFile
-                  className="position-absolute bottom-0 start-50 translate-middle-x"
-                  src={Download}
-                  alt=""
-                  id="downloadBTN"
-                  onClick={() => {
-                    const blob = downloadMail({
-                      data: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                      content: data.content_file,
-                    });
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement("a");
-                    a.href = url;
-                    a.download = data.name_file;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                  }}
-                />
-              </div>
-            );
-            SetFileTicket(Div);
-          } else if (data.file === "pdf") {
-            const Div = (
-              <div className="position-relative">
-                <IMGFiles src={PDF} alt="" />
-                <ImageFile
-                  className="position-absolute bottom-0 start-50 translate-middle-x"
-                  src={Download}
-                  alt=""
-                  id="downloadBTN"
-                  onClick={() => {
-                    const blob = downloadMail({
-                      data: "application/pdf",
-                      content: data.content_file,
-                    });
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement("a");
-                    a.href = url;
-                    a.download = data.name_file;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                  }}
-                />
-              </div>
-            );
-            SetFileTicket(Div);
-          } else {
-            const Div = (
-              <div className="position-relative">
-                <IMGFiles
-                  src={`data:image/jpeg;base64,${data.file}`}
-                  onClick={openImage}
-                  alt=""
-                />
-                <ImageFile
-                  className="position-absolute bottom-0 start-50 translate-middle-x"
-                  src={Download}
-                  alt=""
-                  id="downloadBTN"
-                  onClick={() => {
-                    downloadFile({ file: data.file });
-                  }}
-                />
-              </div>
-            );
-            SetFileTicket(Div);
+                      const url = window.URL.createObjectURL(blob);
+                      const a = document.createElement("a");
+                      a.href = url;
+                      a.download = nameFileMail;
+                      document.body.appendChild(a);
+                      a.click();
+                      document.body.removeChild(a);
+                    }}
+                  />
+                </DivOnBoardFile>
+              );
+              SetFileTicket((fileticket) => [...fileticket, Div]);
+            } else if (file === "excel") {
+              const ContentFileExcel = data.content_file[i];
+              const NameFileExcel = data.name_file[i];
+              const Div = (
+                <DivOnBoardFile className="position-relative">
+                  <IMGFiles src={XLS} alt="" />
+                  <ImageFile
+                    className="position-absolute bottom-0 start-50 translate-middle-x"
+                    src={Download}
+                    alt=""
+                    onClick={() => {
+                      const blob = downloadMail({
+                        data: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                        content: ContentFileExcel,
+                      });
+
+                      const url = window.URL.createObjectURL(blob);
+                      const a = document.createElement("a");
+                      a.href = url;
+                      a.download = NameFileExcel;
+                      document.body.appendChild(a);
+                      a.click();
+                      document.body.removeChild(a);
+                    }}
+                  />
+                </DivOnBoardFile>
+              );
+              SetFileTicket((fileticket) => [...fileticket, Div]);
+            } else if (file === "zip") {
+              const ContentFileZip = data.content_file[i];
+              const NameFileZip = data.name_file[i];
+              console.log(ContentFileZip);
+              console.log(NameFileZip);
+              const Div = (
+                <DivOnBoardFile className="position-relative">
+                  <IMGFiles src={ZIP} alt="" />
+                  <ImageFile
+                    className="position-absolute bottom-0 start-50 translate-middle-x"
+                    src={Download}
+                    alt=""
+                    onClick={() => {
+                      const blob = downloadMail({
+                        data: "application/zip",
+                        content: ContentFileZip,
+                      });
+
+                      const url = window.URL.createObjectURL(blob);
+                      const a = document.createElement("a");
+                      a.href = url;
+                      a.download = NameFileZip;
+                      document.body.appendChild(a);
+                      a.click();
+                      document.body.removeChild(a);
+                    }}
+                  />
+                </DivOnBoardFile>
+              );
+              SetFileTicket((fileticket) => [...fileticket, Div]);
+            } else if (file === "txt") {
+              const ContentFileTXT = data.content_file[i];
+              const NameFileTXT = data.name_file[i];
+              const Div = (
+                <DivOnBoardFile className="position-relative">
+                  <IMGFiles src={TXT} alt="" />
+                  <ImageFile
+                    className="position-absolute bottom-0 start-50 translate-middle-x"
+                    src={Download}
+                    alt=""
+                    onClick={() => {
+                      const blob = downloadMail({
+                        data: "text/plain",
+                        content: ContentFileTXT,
+                      });
+
+                      const url = window.URL.createObjectURL(blob);
+                      const a = document.createElement("a");
+                      a.href = url;
+                      a.download = NameFileTXT;
+                      document.body.appendChild(a);
+                      a.click();
+                      document.body.removeChild(a);
+                    }}
+                  />
+                </DivOnBoardFile>
+              );
+              SetFileTicket((fileticket) => [...fileticket, Div]);
+            } else if (file === "word") {
+              const ContentFileWord = data.content_file[i];
+              const NameFileWord = data.name_file[i];
+              const Div = (
+                <DivOnBoardFile className="position-relative">
+                  <IMGFiles src={WORD} alt="" />
+                  <ImageFile
+                    className="position-absolute bottom-0 start-50 translate-middle-x"
+                    src={Download}
+                    alt=""
+                    onClick={() => {
+                      const blob = downloadMail({
+                        data: "application/pdf",
+                        content: ContentFileWord,
+                      });
+
+                      const url = window.URL.createObjectURL(blob);
+                      const a = document.createElement("a");
+                      a.href = url;
+                      a.download = NameFileWord;
+                      document.body.appendChild(a);
+                      a.click();
+                      document.body.removeChild(a);
+                    }}
+                  />
+                </DivOnBoardFile>
+              );
+              SetFileTicket((fileticket) => [...fileticket, Div]);
+            } else if (file === "pdf") {
+              const ContentFilePDF = data.content_file[i];
+              const NameFilePDF = data.name_file[i];
+              const Div = (
+                <DivOnBoardFile className="position-relative">
+                  <IMGFiles src={PDF} alt="" />
+                  <ImageFile
+                    className="position-absolute bottom-0 start-50 translate-middle-x"
+                    src={Download}
+                    alt=""
+                    onClick={() => {
+                      const blob = downloadMail({
+                        data: "application/pdf",
+                        content: ContentFilePDF,
+                      });
+
+                      const url = window.URL.createObjectURL(blob);
+                      const a = document.createElement("a");
+                      a.href = url;
+                      a.download = NameFilePDF;
+                      document.body.appendChild(a);
+                      a.click();
+                      document.body.removeChild(a);
+                    }}
+                  />
+                </DivOnBoardFile>
+              );
+              SetFileTicket((fileticket) => [...fileticket, Div]);
+            } else if (typeof file === "object") {
+              const image = file.image;
+              const Div = (
+                <DivOnBoardFile className="position-relative">
+                  <IMGFiles
+                    src={`data:image/jpeg;base64,${file.image}`}
+                    onClick={() => {
+                      SetImageUrl(`data:image/jpeg;base64,${image}`);
+                      openImage();
+                    }}
+                    alt=""
+                  />
+                  <ImageFile
+                    className="position-absolute bottom-0 start-50 translate-middle-x"
+                    src={Download}
+                    alt=""
+                    onClick={() => {
+                      const link = document.createElement("a");
+                      link.href = `data:image/jpeg;base64,${image}`;
+                      link.download = "nome-do-arquivo.jpg";
+                      link.click();
+                      link.remove();
+                    }}
+                  />
+                </DivOnBoardFile>
+              );
+              SetFileTicket((fileticket) => [...fileticket, Div]);
+            }
           }
         }
 
@@ -498,13 +519,6 @@ export default function History() {
       });
 
     return SetTicketWindow(true);
-  }
-
-  function downloadFile({ file }) {
-    const downloadLink = document.createElement("a");
-    downloadLink.href = `data:message/rfc822;base64;base64,${file}`;
-    downloadLink.download = namefile;
-    downloadLink.click();
   }
 
   function downloadMail({ content, data, sliceSize = 512 }) {
@@ -1652,7 +1666,12 @@ export default function History() {
                 className="form-control"
                 disabled
               />
-              <DivFile className="w-100 d-flex">{fileticket}</DivFile>
+              <DivFile
+                hidden={fileticket.length >= 1 ? false : true}
+                className="w-100"
+              >
+                {fileticket}
+              </DivFile>
               <input
                 type="text"
                 value={

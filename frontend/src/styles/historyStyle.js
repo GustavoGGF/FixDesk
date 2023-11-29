@@ -65,6 +65,7 @@ export const IMGFiles = styled.img`
 export const DivImageOpen = styled.div`
   width: 100vh;
   z-index: 10000 !important;
+  background-color: #f9f9f9;
 `;
 
 export const ImageOpen = styled.img`
@@ -242,9 +243,15 @@ export const DivFile = styled.div`
   padding-right: 15px;
   padding-top: 7px;
   padding-bottom: 7px;
+  display: flex;
 `;
 
 export const ImageFile = styled.img`
   width: 25px;
   cursor: pointer;
+`;
+
+export const DivOnBoardFile = styled.div`
+  margin-left: 10px;
+  margin-right: 10px;
 `;

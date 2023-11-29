@@ -7,7 +7,7 @@ from json import dumps, loads
 from django.middleware.csrf import get_token
 from datetime import datetime, date
 import pytz
-from .models import SupportTicket
+from .models import SupportTicket, TicketFile
 from django.contrib.auth.models import User
 from .models import SupportTicket
 from django.core.serializers import serialize
@@ -17,15 +17,15 @@ from base64 import b64encode
 from PIL import Image, UnidentifiedImageError
 from io import BytesIO
 from magic import Magic
-from os import getcwd, listdir
+from os import getcwd, listdir, path
 from os.path import join, exists, isdir
 from django.db.models import Q
 import mimetypes
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.core.files.storage import FileSystemStorage
-from base64 import b64encode
 import zipfile
+from django.core.files.base import ContentFile
 
 
 # Create your views here.
@@ -147,7 +147,6 @@ def submitTicket(request):
             return
 
         Ticket = None
-        image = None
         image_bytes = None
         mime = None
         file_type = None
@@ -155,64 +154,75 @@ def submitTicket(request):
         valid = None
         types_str = None
         image_str = None
-        othe_image = None
+        other_image = None
+        ticket_file = None
+
         if "image" in request.FILES:
-            try:
-                image = request.FILES.get("image")
+            Ticket = SupportTicket(
+                ticketRequester=ticketRequester,
+                department=department,
+                mail=mail,
+                company=company,
+                sector=sector,
+                respective_area=respective_area,
+                occurrence=occurrence,
+                problemn=problemn,
+                observation=observation,
+                start_date=start_date,
+                PID=pid,
+            )
 
-                image_bytes = image.read()
+            images = request.FILES.getlist("image")
 
-                mime = Magic()
+            for file in images:
+                try:
+                    image_bytes = file.read()
 
-                file_type = mime.from_buffer(image_bytes)
+                    mime = Magic()
 
-                types_str = getenv("VALID_TYPES")
+                    file_type = mime.from_buffer(image_bytes)
 
-                types_str = types_str.strip("[]")
+                    types_str = getenv("VALID_TYPES")
 
-                types = [type.strip() for type in types_str.split(",")]
+                    types_str = types_str.strip("[]")
 
-                for typeUn in types:
-                    if typeUn.replace('"', "").lower() in file_type.lower():
-                        valid = True
-                        break
+                    types = [type.strip() for type in types_str.split(",")]
 
-                image_str = str(image)
+                    valid = False
 
-                othe_image = mimetypes.guess_type(image_str)
+                    for typeUn in types:
+                        if typeUn.replace('"', "").lower() in file_type.lower():
+                            valid = True
+                            break
 
-                for typeUn in types:
-                    if (
-                        typeUn.replace('"', "").lower()
-                        in othe_image[0].replace('"', "").lower()
-                    ):
-                        valid = True
-                        break
+                    if not valid:
+                        image_str = str(file)
 
-                if valid:
-                    Ticket = SupportTicket(
-                        ticketRequester=ticketRequester,
-                        department=department,
-                        mail=mail,
-                        company=company,
-                        sector=sector,
-                        respective_area=respective_area,
-                        occurrence=occurrence,
-                        problemn=problemn,
-                        observation=observation,
-                        start_date=start_date,
-                        PID=pid,
-                        file=image,
-                    )
+                        other_image = mimetypes.guess_type(image_str)
 
-                    Ticket.save()
-                    # * Monta o ticket e salva no banco
-                    return JsonResponse({"status": "ok"}, status=200, safe=True)
+                        for typeUn in types:
+                            if (
+                                typeUn.replace('"', "").lower()
+                                in other_image[0].replace('"', "").lower()
+                            ):
+                                valid = True
+                                break
 
-                else:
-                    return JsonResponse({"status": "Invalid"}, status=320, safe=True)
-            except Exception as e:
-                print(e)
+                    if valid:
+                        Ticket.save()
+
+                        ticket_file = TicketFile(ticket=Ticket)
+                        ticket_file.file.save(str(file), ContentFile(image_bytes))
+
+                    else:
+                        return JsonResponse(
+                            {"status": "Invalid"}, status=320, safe=True
+                        )
+
+                except Exception as e:
+                    print(e)
+
+            return JsonResponse({"status": "ok"}, status=200, safe=True)
 
         elif "id_equipament" in request.POST:
             equipament_id = None
@@ -609,136 +619,160 @@ def ticket(request, id):
         image = ""
         pil_image = None
         img_bytes = None
-        image_data = None
+        image_data = []
         equipaments = ""
         equipament_image = None
         act_dir = None
         dates_for_alocate = None
-        name_file = ""
+        name_file = []
         file_type = None
-        content_file = ""
+        content_file = []
+        nw_id = None
         try:
-            for t in ticket:
-                try:
-                    act_dir = getcwd()
+            act_dir = getcwd()
 
-                    act_dir += f"/uploads/{id}"
+            act_dir += f"/uploads/{id}"
 
-                    if exists(act_dir) and isdir(act_dir):
+            if exists(act_dir) and isdir(act_dir):
+                ticket = SupportTicket.objects.filter(id=id)
+                for t in ticket:
+                    nw_id = t.id
+                image = TicketFile.objects.filter(ticket_id=nw_id)
+
+                for file in image:
+                    try:
+                        with file.file.open() as img:
+                            pil_image = Image.open(img)
+
+                            img_bytes = BytesIO()
+                            pil_image.save(img_bytes, format="PNG")
+
+                            image_data.append(
+                                {
+                                    "image": b64encode(img_bytes.getvalue()).decode(
+                                        "utf-8"
+                                    )
+                                }
+                            )
+                            content_file.append("img")
+                            name_file.append("/".join(str(file.file).split("/")[2:]))
+                        file.file.close()
+
+                    except UnidentifiedImageError:
                         try:
-                            image = t.file
+                            file.file.open()
+                            image_bytes = file.file.read()
 
-                            with image.open() as img:
-                                pil_image = Image.open(img)
+                            mime = Magic()
 
-                                img_bytes = BytesIO()
+                            file_type = mime.from_buffer(image_bytes)
 
-                                pil_image.save(img_bytes, format="PNG")
+                            if "mail" in file_type.lower():
+                                image_data.append("mail")
+                                with open(str(file.file), "rb") as eml_file:
+                                    content_file.append(
+                                        b64encode(eml_file.read()).decode("utf-8")
+                                    )
+                                    name_file.append(
+                                        "/".join(str(file.file).split("/")[2:])
+                                    )
+                                file.file.close()
 
-                                image_data = b64encode(img_bytes.getvalue()).decode(
-                                    "utf-8"
-                                )
+                            elif "excel" in file_type.lower():
+                                image_data.append("excel")
+                                with open(str(file.file), "rb") as exc_file:
+                                    content_file.append(
+                                        b64encode(exc_file.read()).decode("utf-8")
+                                    )
+                                    name_file.append(
+                                        "/".join(str(file.file).split("/")[2:])
+                                    )
+                                file.file.close()
 
-                                name_file = "/".join(str(image).split("/")[2:])
+                            elif "zip" in file_type.lower():
+                                image_data.append("zip")
+                                with open(str(file.file), "rb") as zip_file:
+                                    content_file.append(
+                                        b64encode(zip_file.read()).decode("utf-8")
+                                    )
+                                    name_file.append(
+                                        "/".join(str(file.file).split("/")[2:])
+                                    )
+                                file.file.close()
 
-                                image.close()
+                            elif (
+                                "utf-8" in file_type.lower()
+                                and "text" in file_type.lower()
+                            ):
+                                image_data.append("txt")
+                                with open(str(file.file), "rb") as txt_file:
+                                    content_file.append(
+                                        b64encode(txt_file.read()).decode("utf-8")
+                                    )
+                                    name_file.append(
+                                        "/".join(str(file.file).split("/")[2:])
+                                    )
+                                file.file.close()
 
-                        except UnidentifiedImageError:
-                            try:
-                                image.open()
-                                image_bytes = image.read()
+                            elif (
+                                "microsoft" in file_type.lower()
+                                and "word" in file_type.lower()
+                            ):
+                                image_data.append("word")
+                                with open(str(file.file), "rb") as word_file:
+                                    content_file.append(
+                                        b64encode(word_file.read()).decode("utf-8")
+                                    )
+                                    name_file.append(
+                                        "/".join(str(file.file).split("/")[2:])
+                                    )
+                                file.file.close()
 
-                                mime = Magic()
+                                print(name_file)
 
-                                file_type = mime.from_buffer(image_bytes)
+                            elif (
+                                "pdf" in file_type.lower()
+                                and "document" in file_type.lower()
+                            ):
+                                image_data.append("pdf")
+                                with open(str(file.file), "rb") as pdf_file:
+                                    content_file.append(
+                                        b64encode(pdf_file.read()).decode("utf-8")
+                                    )
+                                    name_file.append(
+                                        "/".join(str(file.file).split("/")[2:])
+                                    )
+                                file.file.close()
 
-                                if "mail" in file_type.lower():
-                                    image_data = "mail"
-                                    with open(str(image), "rb") as eml_file:
-                                        content_file = b64encode(
-                                            eml_file.read()
-                                        ).decode("utf-8")
-
-                                elif "excel" in file_type.lower():
-                                    image_data = "excel"
-                                    with open(str(image), "rb") as exc_file:
-                                        content_file = b64encode(
-                                            exc_file.read()
-                                        ).decode("utf-8")
-
-                                elif "zip" in file_type.lower():
-                                    image_data = "zip"
-                                    with open(str(image), "rb") as zip_file:
-                                        content_file = b64encode(
-                                            zip_file.read()
-                                        ).decode("utf-8")
-
-                                elif (
-                                    "utf-8" in file_type.lower()
-                                    and "text" in file_type.lower()
-                                ):
-                                    image_data = "txt"
-                                    with open(str(image), "rb") as txt_file:
-                                        content_file = b64encode(
-                                            txt_file.read()
-                                        ).decode("utf-8")
-
-                                elif (
-                                    "microsoft" in file_type.lower()
-                                    and "word" in file_type.lower()
-                                ):
-                                    image_data = "word"
-                                    with open(str(image), "rb") as word_file:
-                                        content_file = b64encode(
-                                            word_file.read()
-                                        ).decode("utf-8")
-                                        
-                                elif (
-                                    "pdf" in file_type.lower()
-                                    and "document" in file_type.lower()
-                                ):
-                                    image_data = "pdf"
-                                    with open(str(image), "rb") as word_file:
-                                        content_file = b64encode(
-                                            word_file.read()
-                                        ).decode("utf-8")
-
-                                image.close()
-
-                                name_file = "/".join(str(image).split("/")[2:])
-
-                            except Exception as e:
-                                print(e)
-
-                            print(file_type)
+                                print(name_file)
 
                         except Exception as e:
                             print(e)
 
-                    if t.equipament:
-                        equipament_image = t.equipament.equipament
+                    except Exception as e:
+                        print(e)
 
-                        with equipament_image.open() as img:
-                            pil_image = Image.open(img)
+                if t.equipament:
+                    equipament_image = t.equipament.equipament
 
-                            img_bytes = BytesIO()
+                    with equipament_image.open() as img:
+                        pil_image = Image.open(img)
 
-                            pil_image.save(img_bytes, format="PNG")
+                        img_bytes = BytesIO()
 
-                            image_data = b64encode(img_bytes.getvalue()).decode("utf-8")
+                        pil_image.save(img_bytes, format="PNG")
 
-                        equipaments = {
-                            "image": image_data,
-                            "model": t.equipament.model,
-                            "company": t.equipament.company,
-                        }
+                        image_data = b64encode(img_bytes.getvalue()).decode("utf-8")
 
-                        dates_for_alocate = t.date_alocate.split(",")
+                    equipaments = {
+                        "image": image_data,
+                        "model": t.equipament.model,
+                        "company": t.equipament.company,
+                    }
 
-                        image_data = None
+                    dates_for_alocate = t.date_alocate.split(",")
 
-                except Exception as e:
-                    print(e)
+                    image_data = None
 
                 serialized_ticket.append(
                     {
