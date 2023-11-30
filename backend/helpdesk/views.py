@@ -97,7 +97,6 @@ def firstView(request):
                     return redirect("/login")
             except Exception as e:
                 json_error = str(e)
-                print(json_error)
                 return JsonResponse({"status": json_error}, status=300)
         else:
             redirect("/login")
@@ -567,8 +566,6 @@ def ticket(request, id):
                     ticket.chat += f"[System:{technician} Reabriu o Chamado]"
                     ticket.responsible_technician = technician
 
-                    print(technician)
-
                     ticket.save()
 
             return JsonResponse({"status": "ok"}, status=200, safe=True)
@@ -728,8 +725,6 @@ def ticket(request, id):
                                     )
                                 file.file.close()
 
-                                print(name_file)
-
                             elif (
                                 "pdf" in file_type.lower()
                                 and "document" in file_type.lower()
@@ -743,8 +738,6 @@ def ticket(request, id):
                                         "/".join(str(file.file).split("/")[2:])
                                     )
                                 file.file.close()
-
-                                print(name_file)
 
                         except Exception as e:
                             print(e)

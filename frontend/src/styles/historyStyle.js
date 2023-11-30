@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import SubmitIMG from "../images/components/enviar.png";
+import SubmitFile from "../images/components/clipe-de-papel.png";
 
 export const Div = styled.div`
   height: 100vh !important;
@@ -16,6 +17,7 @@ export const TicketOpen = styled.div`
   overflow-y: auto;
   z-index: 10 !important;
   max-height: 95%;
+  position: relative;
 `;
 
 export const CloseBTN = styled.button`
@@ -44,11 +46,20 @@ export const DivChat = styled.div`
 `;
 
 export const BtnChat = styled.button`
-  height: 60px;
-  width: 60px;
+  height: 40px;
+  width: 40px;
   background-image: url(${SubmitIMG});
   background-position: center;
   background-size: cover;
+`;
+
+export const BtnChat2 = styled.div`
+  height: 40px;
+  width: 40px;
+  background-image: url(${SubmitFile});
+  background-position: center;
+  background-size: cover;
+  position: relative;
 `;
 
 export const IMGFiles = styled.img`
@@ -60,6 +71,10 @@ export const IMGFiles = styled.img`
   &:hover {
     transform: scale(1.5);
   }
+`;
+
+export const InputFile = styled.input`
+  opacity: 0;
 `;
 
 export const DivImageOpen = styled.div`
@@ -254,4 +269,8 @@ export const ImageFile = styled.img`
 export const DivOnBoardFile = styled.div`
   margin-left: 10px;
   margin-right: 10px;
+`;
+
+export const DivNewFiles = styled.div`
+  z-index: 10;
 `;

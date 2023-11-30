@@ -41,6 +41,9 @@ import {
   DivImageOpen,
   BtnOpen,
   ImageOpen,
+  BtnChat2,
+  InputFile,
+  DivNewFiles,
 } from "../styles/historyStyle";
 import CloseIMG from "../images/components/close.png";
 import Message from "../components/message";
@@ -112,9 +115,12 @@ export default function DashboardTI() {
   const [fileticket, SetFileTicket] = useState([]);
   const [imageurl, SetImageUrl] = useState();
   const [imageopen, SetImageOpen] = useState(false);
+  const [uploadNewFiles, SetUploadNewFiles] = useState([]);
+  const [newFiles, SetNewFiles] = useState(false);
 
   let count = 0;
   let timeoutId;
+  const UpNwfile = [];
 
   function aumentarCount() {
     count++;
@@ -1234,7 +1240,6 @@ export default function DashboardTI() {
         return response.json();
       })
       .then((data) => {
-        console.log(data.count);
         SetCountTicket(data.count);
         SetTickets(data.tickets);
         return countTicket;
@@ -1299,6 +1304,20 @@ export default function DashboardTI() {
         return console.log(err);
       });
   }
+
+  function UploadNewFiles(evt) {
+    UpNwfile.push(evt.target.files);
+    for (let i = 0; i < UpNwfile.length; i++) {
+      SetUploadNewFiles((uploadNewFiles) => [...uploadNewFiles, UpNwfile[i]]);
+    }
+  }
+
+  useEffect(() => {
+    if (uploadNewFiles.length >= 1) {
+      SetNewFiles(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [uploadNewFiles]);
 
   return (
     <Div className="position-relative">
@@ -1671,6 +1690,14 @@ export default function DashboardTI() {
                     id="input-chat"
                   />
                 </div>
+                <BtnChat2>
+                  <InputFile
+                    className="w-100"
+                    type="file"
+                    multiple
+                    onInput={UploadNewFiles}
+                  />
+                </BtnChat2>
                 <div>
                   <BtnChat
                     className="btn"
@@ -1681,14 +1708,20 @@ export default function DashboardTI() {
               </div>
             )}
           </div>
+          {newFiles && (
+            <div className="position-absolute top-50 start-50 translate-middle">
+              <h1>NOVOS ITEMS</h1>
+              {/* <h1>{uploadNewFiles}</h1> */}
+            </div>
+          )}
         </TicketOpen>
       )}
       {btnmore && (
-        <div className="w-100 text-center">
+        <DivNewFiles className="w-100 text-center">
           <button className="btn btn-info mb-5" onClick={moreTickets}>
             Carregar Mais
           </button>
-        </div>
+        </DivNewFiles>
       )}
       {equipamentforuser && (
         <Registration

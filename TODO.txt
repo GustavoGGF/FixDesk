@@ -1,5 +1,9 @@
 ajustar enviar arquivos
 
+ajustar chat chamado, dashboard, apagar o chat antigo
+
+expandir o tempo de buscar novas msg para 10s
+
 validação sobre quem pode acessar cada chamado por tipo de tecnhico
 
 qualquer grupo acessa o fixdex
@@ -129,3 +133,4 @@ liberar dominio de e-mail
 tela de carregamento abrindo ticket
 
 zerar os tickets ao selecionar um filtro
+

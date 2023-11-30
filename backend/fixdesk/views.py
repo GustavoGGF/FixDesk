@@ -21,7 +21,6 @@ def CreateOrVerifyUser(user, password, request, helpdesk, name_create_user):
     Back_User = None
     Back_Tech = None
     Back_Leader = None
-    # Back_ADM = None
     group_user = None
     group_tech = None
     Valid = None
@@ -68,7 +67,7 @@ def CreateOrVerifyUser(user, password, request, helpdesk, name_create_user):
         elif helpdesk == "Gestor":
             userAuthentic.groups.add(group_leader)
             userAuthentic.groups.remove(group_user)
-            userAuthentic.groups.remove(group_tech)
+            userAuthentic.groups.add(group_tech)
             group_user.save()
             Valid = True
         else:
