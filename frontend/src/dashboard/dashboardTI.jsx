@@ -44,7 +44,12 @@ import {
   BtnChat2,
   InputFile,
   DivNewFiles,
+  DivHR,
+  PNWFile,
+  AdjustListFiles,
+  ImgBTNCls,BtnNF
 } from "../styles/historyStyle";
+import { DivNameFile, BtnFile, ImgFile } from "../styles/helpdeskStyle.js";
 import CloseIMG from "../images/components/close.png";
 import Message from "../components/message";
 import "../styles/bootstrap-5.3.0-dist/css/bootstrap.css";
@@ -66,6 +71,7 @@ import TXT from "../images/components/arquivo-txt.png";
 import WORD from "../images/components/palavra.png";
 import PDF from "../images/components/pdf.png";
 import Download from "../images/components/download.png";
+import Exclude from "../images/components/close.png";
 
 export default function DashboardTI() {
   const [loading, SetLoading] = useState(true);
@@ -117,6 +123,7 @@ export default function DashboardTI() {
   const [imageopen, SetImageOpen] = useState(false);
   const [uploadNewFiles, SetUploadNewFiles] = useState([]);
   const [newFiles, SetNewFiles] = useState(false);
+  const [nameNWFiles, SetNameNWFiles] = useState();
 
   let count = 0;
   let timeoutId;
@@ -1313,11 +1320,55 @@ export default function DashboardTI() {
   }
 
   useEffect(() => {
+    let paragraphs = [];
     if (uploadNewFiles.length >= 1) {
+      const fileNM = uploadNewFiles[0];
+
+      for (let i = 0; i < fileNM.length; i++) {
+        const file = fileNM[i];
+
+        paragraphs.push(
+          <div className="d-flex w-100 justify-content-center">
+            <DivNameFile key={i}>
+              <PNWFile>{file.name}</PNWFile>
+            </DivNameFile>
+            <div>
+              <BtnFile
+                type="button"
+                onClick={() => {
+                  const newArray = Array.from(fileNM);
+                  newArray.splice(i, 1);
+
+                  const dataTransfer = new DataTransfer();
+
+                  newArray.forEach((file) => {
+                    dataTransfer.items.add(file);
+                  });
+
+                  const newFileList = dataTransfer.files;
+
+                  SetUploadNewFiles([newFileList]);
+                }}
+              >
+                <ImgFile src={Exclude} alt="Excluir arquivo" />
+              </BtnFile>
+            </div>
+          </div>
+        );
+      }
+
+      SetNameNWFiles(paragraphs);
+
       SetNewFiles(true);
+      return;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [uploadNewFiles]);
+
+  function closeNWFiles() {
+    SetUploadNewFiles("");
+    SetNewFiles(false);
+  }
 
   return (
     <Div className="position-relative">
@@ -1709,19 +1760,30 @@ export default function DashboardTI() {
             )}
           </div>
           {newFiles && (
-            <div className="position-absolute top-50 start-50 translate-middle">
-              <h1>NOVOS ITEMS</h1>
-              {/* <h1>{uploadNewFiles}</h1> */}
-            </div>
+            <DivNewFiles className="position-absolute top-50 start-50 translate-middle d-flex flex-column">
+              <div className="h-100 align-items-start justify-content-end d-flex">
+                <BtnNF
+                  className="bg-transparent pe-auto"
+                  onClick={closeNWFiles}
+                >
+                  <ImgBTNCls src={Exclude} alt="Fechar" />
+                </Btn>
+              </div>
+              <AdjustListFiles>{nameNWFiles}</AdjustListFiles>
+              <div className="d-flex justify-content-end align-items-center flex-column">
+                <DivHR></DivHR>
+                <button className="btn btn-success w-50 mt-2">Enviar</button>
+              </div>
+            </DivNewFiles>
           )}
         </TicketOpen>
       )}
       {btnmore && (
-        <DivNewFiles className="w-100 text-center">
+        <div className="w-100 text-center">
           <button className="btn btn-info mb-5" onClick={moreTickets}>
             Carregar Mais
           </button>
-        </DivNewFiles>
+        </div>
       )}
       {equipamentforuser && (
         <Registration

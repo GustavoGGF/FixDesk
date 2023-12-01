@@ -134,3 +134,6 @@ tela de carregamento abrindo ticket
 
 zerar os tickets ao selecionar um filtro
 
+contrato comodato para os equipamentos
+
+trocar icone de X por lixeira nos novos arquivos dashboard

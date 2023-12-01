@@ -273,4 +273,40 @@ export const DivOnBoardFile = styled.div`
 
 export const DivNewFiles = styled.div`
   z-index: 10;
+  height: 300px;
+  width: 300px;
+  background: rgba(52, 58, 64, 0.7);
+  padding: 10px;
+  border-radius: 20px;
+`;
+
+export const DivHR = styled.div`
+  height: 3px;
+  width: 90%;
+  background-color: #495057;
+`;
+
+export const PNWFile = styled.p`
+  font-size: 1.4em;
+  color: #f8f9fa;
+`;
+
+export const AdjustListFiles = styled.div`
+  justify-content: start;
+  min-height: 70%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-y: auto;
+`;
+
+export const ImgBTNCls = styled.img`
+  width: 30px;
+  height: 30px;
+`;
+
+export const BtnNF = styled.button`
+  background-color: transparent;
+  cursor: pointer;
+  border: none;
 `;
