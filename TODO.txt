@@ -1,9 +1,3 @@
-expandir o tempo de buscar novas msg para 10s
-
-validação sobre quem pode acessar cada chamado por tipo de tecnhico
-
-qualquer grupo acessa o fixdex
-
 mensagens caso não tenha chamados
 
 arruamr conversa dos chamados

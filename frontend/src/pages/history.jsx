@@ -184,7 +184,7 @@ export default function History() {
     if (timeoutId) {
       clearTimeout(timeoutId);
     }
-    timeoutId = setTimeout(aumentarCount, 5000); // Chama a função novamente após 5 segundos
+    timeoutId = setTimeout(aumentarCount, 10000); // Chama a função novamente após 5 segundos
   }
 
   useEffect(() => {
