@@ -778,6 +778,9 @@ export default function History() {
   function SendChat() {
     const input = document.getElementById("input-chat");
     input.value = "";
+    if (textChat.length === 0) {
+      return;
+    }
     fetch("/helpdesk/ticket/" + ticketID, {
       method: "POST",
       headers: {

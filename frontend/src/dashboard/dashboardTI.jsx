@@ -749,6 +749,9 @@ export default function DashboardTI() {
   function SendChat() {
     const input = document.getElementById("input-chat");
     input.value = "";
+    if (textChat.length === 0) {
+      return;
+    }
     fetch("/helpdesk/ticket/" + ticketID, {
       method: "POST",
       headers: {
@@ -777,6 +780,7 @@ export default function DashboardTI() {
       data.chat !== undefined &&
       data.chat !== "undefined"
     ) {
+      SetMountChat([]);
       var arrayChat = data.chat.match(/\[.*?\]/g);
 
       const chatDiv = document.getElementById("chatDiv");

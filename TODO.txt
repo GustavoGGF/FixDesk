@@ -1,7 +1,3 @@
-ajustar enviar arquivos
-
-ajustar chat chamado, dashboard, apagar o chat antigo
-
 expandir o tempo de buscar novas msg para 10s
 
 validação sobre quem pode acessar cada chamado por tipo de tecnhico
@@ -143,3 +139,5 @@ fechar o chamado fecha a tela de enviar arquivos e limpa os arquivos
 ao incluir novos arquivos atualiza o chamado
 
 ao adicionar novos arquivos mostrar no chat
+
+ajustar loadings das paginas, esconder o que não é necessario como bot~çao de mostar mais ticket
