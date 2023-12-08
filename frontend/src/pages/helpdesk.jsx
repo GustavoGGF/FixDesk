@@ -853,6 +853,13 @@ export default function Helpdesk() {
         setTypeError("Falta de Dados");
         setMessageError("Nenhum equipamento Cadastrado");
       }
+    } else if (optionEquip === "change") {
+      setAlert(true);
+      setMessagetitle("Caso de Troca de Equipamento");
+      setmessageinfo1("1. Informar o Equipamento");
+      setmessageinfo2("2. Justificar o motivo da troca");
+      setProblemn("Trocar Equipamento");
+      setAlertVerify(false);
     }
   }
   function selectUser() {
@@ -1668,6 +1675,7 @@ export default function Helpdesk() {
               <option value="roaming">Mudança de local de trabalho</option>
               <option value="usb">Liberação/Bloqueio de USB</option>
               <option value="alocate">Alocar equipamento</option>
+              <option value="change">Trocar Equipamento</option>
             </Select>
           )}
           {user && (

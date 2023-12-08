@@ -1,35 +1,3 @@
-mensagens caso não tenha chamados
-
-arruamr conversa dos chamados
-
-fazer validação a casa 1s enquanto chamado aberto para ver messangesn entrando
-
-fazer tela do FAQ com os PDF'S e automatizar para fazer upload
-
-no chat de conver usar um button submit para o enter tambem funcionar
-
-mostrar em listas os chamados tambem e filtros que ficam salvos no localhost
-
-resetar variaveis front end
-
-arumar data front nos tickets
-
-verificar como fica para criação de usuario
-
-tela helpodesk é um component
-
-upload tbm é componente
-
-botao de fechar o cadastro de Equipamentos
-
-abertura de ticket de alocação de equipamento com data
-
-verificar se notebook ja esta sendo usado
-
-alocagem ter filtro por filial por localidade
-
-filtro de pesquisa de chamado
-
 Adicionar item para chamado: troca de equipamento, tipo de equipamento e motivo da troca
 
 capacidade maxima de anexar arquivo de 5 MB
@@ -135,3 +103,15 @@ ao incluir novos arquivos atualiza o chamado
 ao adicionar novos arquivos mostrar no chat
 
 ajustar loadings das paginas, esconder o que não é necessario como bot~çao de mostar mais ticket
+
+ajustar dashboard por data de chamado, mensal, diario, etc...
+
+resetar variaveis front end
+
+fazer mais componentes no react
+
+aoenviar locagem de equipamento, se estiver alocado já, retornar com alocado cinza e pedir para ajustar data
+
+ticket de alocagem de equipamento, clicar para ver o modelo
+
+ver os logs de cada acesso
