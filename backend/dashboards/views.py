@@ -4,7 +4,7 @@ from os import getenv
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from helpdesk.models import SupportTicket
+from helpdesk.models import SupportTicket, TicketFile
 from json import loads
 from django.core.serializers import serialize
 from django.middleware.csrf import get_token
@@ -15,6 +15,9 @@ from django.db.models import Q
 import calendar
 import pytz
 from dateutil import parser
+from magic import Magic
+import mimetypes
+from django.core.files.base import ContentFile
 
 
 # Create your views here.
@@ -770,3 +773,69 @@ def getTicketFilterStatus(request):
         return
     if request.method == "POST":
         return
+
+
+@requires_csrf_token
+def upload_new_files(request, id):
+    if request.method == "GET":
+        return
+    if request.method == "POST":
+        other_files = None
+        image_bytes = None
+        mime = None
+        file_type = None
+        types_str = None
+        types = None
+        valid = None
+        image_str = None
+        other_image = None
+        try:
+            print(request.FILES)
+            other_files = request.FILES.getlist("files")
+
+            for unit_file in other_files:
+                image_bytes = unit_file.read()
+
+                mime = Magic()
+
+                file_type = mime.from_buffer(image_bytes)
+
+                types_str = getenv("VALID_TYPES")
+
+                types_str = types_str.strip("[]")
+
+                types = [type.strip() for type in types_str.split(",")]
+
+                valid = False
+
+                for typeUn in types:
+                    if typeUn.replace('"', "").lower() in file_type.lower():
+                        valid = True
+                        break
+
+                if not valid:
+                    image_str = str(unit_file)
+
+                    other_image = mimetypes.guess_type(image_str)
+
+                    for typeUn in types:
+                        if (
+                            typeUn.replace('"', "").lower()
+                            in other_image[0].replace('"', "").lower()
+                        ):
+                            valid = True
+                            break
+
+                if valid:
+                    Ticket = SupportTicket.objects.get(id=id)
+                    print(id)
+                    ticket_file = TicketFile(ticket=Ticket)
+                    print(unit_file)
+
+                    ticket_file.file.save(str(unit_file), ContentFile(image_bytes))
+
+            ticket_file.save()
+
+            return JsonResponse({"status": "ok"}, status=200, safe=True)
+        except Exception as e:
+            print(e)

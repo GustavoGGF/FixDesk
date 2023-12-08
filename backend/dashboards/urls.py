@@ -47,4 +47,9 @@ urlpatterns = [
         views.getTicketFilterStatus,
         name="central-get-ticket-filter-status",
     ),
+    path(
+        "upload-new-files/<int:id>",
+        views.upload_new_files,
+        name="central-upload-new-files",
+    ),
 ]

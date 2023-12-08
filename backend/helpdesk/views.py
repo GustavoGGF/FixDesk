@@ -25,7 +25,6 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.core.files.storage import FileSystemStorage
 import zipfile
-from django.core.files.base import ContentFile
 
 
 # Create your views here.
@@ -209,6 +208,8 @@ def submitTicket(request):
 
                     if valid:
                         Ticket.save()
+
+                        print(file)
 
                         ticket_file = TicketFile(ticket=Ticket)
                         ticket_file.file.save(str(file), ContentFile(image_bytes))
@@ -568,7 +569,8 @@ def ticket(request, id):
 
                     ticket.save()
 
-            return JsonResponse({"status": "ok"}, status=200, safe=True)
+                return JsonResponse({"status": "ok"}, status=200, safe=True)
+
         except Exception as e:
             print(e)
             return
@@ -700,6 +702,8 @@ def ticket(request, id):
                             elif (
                                 "utf-8" in file_type.lower()
                                 and "text" in file_type.lower()
+                                or "ascii" in file_type.lower()
+                                and "text" in file_type.lower()
                             ):
                                 image_data.append("txt")
                                 with open(str(file.file), "rb") as txt_file:
@@ -745,63 +749,65 @@ def ticket(request, id):
                     except Exception as e:
                         print(e)
 
-                if t.equipament:
-                    equipament_image = t.equipament.equipament
+            if t.equipament:
+                equipament_image = t.equipament.equipament
 
-                    with equipament_image.open() as img:
-                        pil_image = Image.open(img)
+                with equipament_image.open() as img:
+                    pil_image = Image.open(img)
 
-                        img_bytes = BytesIO()
+                    img_bytes = BytesIO()
 
-                        pil_image.save(img_bytes, format="PNG")
+                    pil_image.save(img_bytes, format="PNG")
 
-                        image_data = b64encode(img_bytes.getvalue()).decode("utf-8")
+                    image_data = b64encode(img_bytes.getvalue()).decode("utf-8")
 
-                    equipaments = {
-                        "image": image_data,
-                        "model": t.equipament.model,
-                        "company": t.equipament.company,
-                    }
+                equipaments = {
+                    "image": image_data,
+                    "model": t.equipament.model,
+                    "company": t.equipament.company,
+                }
 
-                    dates_for_alocate = t.date_alocate.split(",")
+                dates_for_alocate = t.date_alocate.split(",")
 
-                    image_data = None
+                image_data = None
 
-                serialized_ticket.append(
-                    {
-                        "ticketRequester": t.ticketRequester,
-                        "department": t.department,
-                        "mail": t.mail,
-                        "company": t.company,
-                        "sector": t.sector,
-                        "occurrence": t.occurrence,
-                        "problemn": t.problemn,
-                        "observation": t.observation,
-                        "start_date": t.start_date,
-                        "PID": pid,
-                        "responsible_technician": t.responsible_technician,
-                        "id": t.id,
-                        "chat": t.chat,
-                        "file": image_data,
-                        "equipament": equipaments,
-                        "days_alocated": dates_for_alocate,
-                        "name_new_user": t.name_new_user,
-                        "sector_new_user": t.sector_new_user,
-                        "where_from": t.where_from,
-                        "machine_new_user": t.machine_new_user,
-                        "company_new_user": t.company_new_user,
-                        "software_new_user": t.software_new_user,
-                        "cost_center": t.cost_center,
-                        "job_title_new_user": t.job_title_new_user,
-                        "start_work_new_user": t.start_work_new_user,
-                        "copy_profile_new_user": t.copy_profile_new_user,
-                        "mail_tranfer": t.mail_tranfer,
-                        "old_files": t.old_files,
-                        "open": t.open,
-                        "name_file": name_file,
-                        "content_file": content_file,
-                    }
-                )
+            print(name_file)
+
+            serialized_ticket.append(
+                {
+                    "ticketRequester": t.ticketRequester,
+                    "department": t.department,
+                    "mail": t.mail,
+                    "company": t.company,
+                    "sector": t.sector,
+                    "occurrence": t.occurrence,
+                    "problemn": t.problemn,
+                    "observation": t.observation,
+                    "start_date": t.start_date,
+                    "PID": pid,
+                    "responsible_technician": t.responsible_technician,
+                    "id": t.id,
+                    "chat": t.chat,
+                    "file": image_data,
+                    "equipament": equipaments,
+                    "days_alocated": dates_for_alocate,
+                    "name_new_user": t.name_new_user,
+                    "sector_new_user": t.sector_new_user,
+                    "where_from": t.where_from,
+                    "machine_new_user": t.machine_new_user,
+                    "company_new_user": t.company_new_user,
+                    "software_new_user": t.software_new_user,
+                    "cost_center": t.cost_center,
+                    "job_title_new_user": t.job_title_new_user,
+                    "start_work_new_user": t.start_work_new_user,
+                    "copy_profile_new_user": t.copy_profile_new_user,
+                    "mail_tranfer": t.mail_tranfer,
+                    "old_files": t.old_files,
+                    "open": t.open,
+                    "name_file": name_file,
+                    "content_file": content_file,
+                }
+            )
 
             return JsonResponse({"data": serialized_ticket}, status=200, safe=True)
 

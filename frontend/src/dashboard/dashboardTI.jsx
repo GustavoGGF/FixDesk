@@ -47,7 +47,8 @@ import {
   DivHR,
   PNWFile,
   AdjustListFiles,
-  ImgBTNCls,BtnNF
+  ImgBTNCls,
+  BtnNF,
 } from "../styles/historyStyle";
 import { DivNameFile, BtnFile, ImgFile } from "../styles/helpdeskStyle.js";
 import CloseIMG from "../images/components/close.png";
@@ -1370,6 +1371,31 @@ export default function DashboardTI() {
     SetNewFiles(false);
   }
 
+  function submitNewFiles() {
+    const formData = new FormData();
+    for (let i = 0; i < uploadNewFiles[0].length; i++) {
+      const file = uploadNewFiles[0][i];
+      formData.append("files", file);
+    }
+    console.log(uploadNewFiles);
+    fetch("upload-new-files/" + ticketID, {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": token,
+      },
+      body: formData,
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        return window.location.reload();
+      })
+      .catch((err) => {
+        return console.log(err);
+      });
+  }
+
   return (
     <Div className="position-relative">
       {navbar && <Navbar Name={userData.name} JobTitle={userData.job_title} />}
@@ -1761,18 +1787,28 @@ export default function DashboardTI() {
           </div>
           {newFiles && (
             <DivNewFiles className="position-absolute top-50 start-50 translate-middle d-flex flex-column">
-              <div className="h-100 align-items-start justify-content-end d-flex">
-                <BtnNF
-                  className="bg-transparent pe-auto"
-                  onClick={closeNWFiles}
-                >
-                  <ImgBTNCls src={Exclude} alt="Fechar" />
-                </Btn>
+              <div className="w-100 d-flex">
+                <div className="w-100 text-center mb-2">
+                  <h3 className="text-light fw-bold">Arquivos</h3>
+                </div>
+                <div className="h-100 align-items-start justify-content-end d-flex">
+                  <BtnNF
+                    className="bg-transparent pe-auto"
+                    onClick={closeNWFiles}
+                  >
+                    <ImgBTNCls src={Exclude} alt="Fechar" />
+                  </BtnNF>
+                </div>
               </div>
               <AdjustListFiles>{nameNWFiles}</AdjustListFiles>
               <div className="d-flex justify-content-end align-items-center flex-column">
                 <DivHR></DivHR>
-                <button className="btn btn-success w-50 mt-2">Enviar</button>
+                <button
+                  className="btn btn-success w-50 mt-2"
+                  onClick={submitNewFiles}
+                >
+                  Enviar
+                </button>
               </div>
             </DivNewFiles>
           )}

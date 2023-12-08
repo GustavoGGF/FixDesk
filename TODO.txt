@@ -137,3 +137,9 @@ zerar os tickets ao selecionar um filtro
 contrato comodato para os equipamentos
 
 trocar icone de X por lixeira nos novos arquivos dashboard
+
+fechar o chamado fecha a tela de enviar arquivos e limpa os arquivos
+
+ao incluir novos arquivos atualiza o chamado
+
+ao adicionar novos arquivos mostrar no chat

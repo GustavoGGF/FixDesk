@@ -36,7 +36,16 @@ import {
   DivFile,
   ImageFile,
   DivOnBoardFile,
+  BtnChat2,
+  InputFile,
+  PNWFile,
+  DivNewFiles,
+  BtnNF,
+  ImgBTNCls,
+  AdjustListFiles,
+  DivHR,
 } from "../styles/historyStyle";
+import { DivNameFile, BtnFile, ImgFile } from "../styles/helpdeskStyle";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import Message from "../components/message";
@@ -113,10 +122,60 @@ export default function History() {
   const [problemSyst, SetProblemSyst] = useState(false);
   const [status, SetStatus] = useState("open");
   const [btnmore, SetBtnMore] = useState(true);
+  const [uploadNewFiles, SetUploadNewFiles] = useState([]);
+  const [nameNWFiles, SetNameNWFiles] = useState();
+  const [newFiles, SetNewFiles] = useState(false);
 
   let count = 0;
   let timeoutId;
   let daysLCT = [];
+  const UpNwfile = [];
+
+  useEffect(() => {
+    let paragraphs = [];
+    if (uploadNewFiles.length >= 1) {
+      const fileNM = uploadNewFiles[0];
+
+      for (let i = 0; i < fileNM.length; i++) {
+        const file = fileNM[i];
+
+        paragraphs.push(
+          <div className="d-flex w-100 justify-content-center">
+            <DivNameFile key={i}>
+              <PNWFile>{file.name}</PNWFile>
+            </DivNameFile>
+            <div>
+              <BtnFile
+                type="button"
+                onClick={() => {
+                  const newArray = Array.from(fileNM);
+                  newArray.splice(i, 1);
+
+                  const dataTransfer = new DataTransfer();
+
+                  newArray.forEach((file) => {
+                    dataTransfer.items.add(file);
+                  });
+
+                  const newFileList = dataTransfer.files;
+
+                  SetUploadNewFiles([newFileList]);
+                }}
+              >
+                <ImgFile src={CloseIMG} alt="Excluir arquivo" />
+              </BtnFile>
+            </div>
+          </div>
+        );
+      }
+
+      SetNameNWFiles(paragraphs);
+
+      SetNewFiles(true);
+      return;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [uploadNewFiles]);
 
   function aumentarCount() {
     count++;
@@ -1264,6 +1323,43 @@ export default function History() {
     return;
   }
 
+  function UploadNewFiles(evt) {
+    UpNwfile.push(evt.target.files);
+    for (let i = 0; i < UpNwfile.length; i++) {
+      SetUploadNewFiles((uploadNewFiles) => [...uploadNewFiles, UpNwfile[i]]);
+    }
+  }
+
+  function closeNWFiles() {
+    SetUploadNewFiles("");
+    SetNewFiles(false);
+  }
+
+  function submitNewFiles() {
+    const formData = new FormData();
+    for (let i = 0; i < uploadNewFiles[0].length; i++) {
+      const file = uploadNewFiles[0][i];
+      formData.append("files", file);
+    }
+    console.log(uploadNewFiles);
+    fetch("/dashboard_TI/upload-new-files/" + ticketID, {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": token,
+      },
+      body: formData,
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        return window.location.reload();
+      })
+      .catch((err) => {
+        return console.log(err);
+      });
+  }
+
   return (
     <Div>
       {navbar && <Navbar Name={Data.name} JobTitle={Data.job_title} />}
@@ -1708,6 +1804,14 @@ export default function History() {
                     id="input-chat"
                   />
                 </div>
+                <BtnChat2>
+                  <InputFile
+                    className="w-100"
+                    type="file"
+                    multiple
+                    onInput={UploadNewFiles}
+                  />
+                </BtnChat2>
                 <div>
                   <BtnChat
                     className="btn"
@@ -1718,6 +1822,33 @@ export default function History() {
               </div>
             )}
           </div>
+          {newFiles && (
+            <DivNewFiles className="position-absolute top-50 start-50 translate-middle d-flex flex-column">
+              <div className="w-100 d-flex">
+                <div className="w-100 text-center mb-2">
+                  <h3 className="text-light fw-bold">Arquivos</h3>
+                </div>
+                <div className="h-100 align-items-start justify-content-end d-flex">
+                  <BtnNF
+                    className="bg-transparent pe-auto"
+                    onClick={closeNWFiles}
+                  >
+                    <ImgBTNCls src={CloseIMG} alt="Fechar" />
+                  </BtnNF>
+                </div>
+              </div>
+              <AdjustListFiles>{nameNWFiles}</AdjustListFiles>
+              <div className="d-flex justify-content-end align-items-center flex-column">
+                <DivHR></DivHR>
+                <button
+                  className="btn btn-success w-50 mt-2"
+                  onClick={submitNewFiles}
+                >
+                  Enviar
+                </button>
+              </div>
+            </DivNewFiles>
+          )}
         </TicketOpen>
       )}
       {btnmore && (
