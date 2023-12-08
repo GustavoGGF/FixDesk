@@ -1035,6 +1035,8 @@ export default function Helpdesk() {
 
     const formData = new FormData();
 
+    var total_size = 0
+
     if (filename.length > 0) {
       formData.append("ticketRequester", Data.name);
       formData.append("department", Data.department);
@@ -1050,6 +1052,7 @@ export default function Helpdesk() {
       formData.append("respective_area", respectiveArea);
       for (let i = 0; i < fileimg.length; i++) {
         const file = fileimg[i];
+        total_size += file.size
         formData.append("image", file);
       }
     } else if (daysForAlocate.length > 0) {
@@ -1196,6 +1199,12 @@ export default function Helpdesk() {
       formData.append("start_date", dataFormatada);
       formData.append("PID", Data.pid);
       formData.append("respective_area", respectiveArea);
+    }
+    if (total_size > 10 * 1024 * 1024) {
+      SetMessage(true)
+      setTypeError("Capacidade Máxima Ultrapassada")
+      setMessageError("Capacidade Máxima de Arquivos Anexado é de 10MB")
+      return
     }
     fetch("submitTicket/", {
       method: "POST",

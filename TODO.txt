@@ -1,5 +1,3 @@
-Adicionar item para chamado: troca de equipamento, tipo de equipamento e motivo da troca
-
 capacidade maxima de anexar arquivo de 5 MB
 
 ajustar quando criar chamado de criação de user/del
