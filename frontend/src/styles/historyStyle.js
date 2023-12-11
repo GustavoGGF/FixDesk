@@ -189,11 +189,9 @@ export const DivCard = styled.div`
   justify-content: space-around;
   width: 250px;
   height: 300px;
-  border: 5px solid #ffc300;
   margin-bottom: 30px;
   border-radius: 10px;
   padding: 5px;
-  background-color: transparent;
   margin: 10px;
   transition: 0.7s;
   &:hover {
@@ -204,7 +202,7 @@ export const DivCard = styled.div`
 export const H5Card = styled.h5`
   text-align: center;
   text-transform: uppercase;
-  color: #caf0f8;
+  color: black;
 `;
 
 export const SpanCard = styled.span`
@@ -212,7 +210,7 @@ export const SpanCard = styled.span`
   text-align: center;
   text-transform: uppercase;
   font-weight: bold;
-  color: #caf0f8;
+  color: black;
 `;
 
 export const DivList = styled.div`
@@ -221,12 +219,7 @@ export const DivList = styled.div`
   transition: 1s;
   justify-content: space-between;
   width: 100%;
-  border-top: 5px solid #ffc300;
-  border-bottom: 5px solid #ffc300;
-  border-left: 3px solid #ffc300;
-  border-right: 3px solid #ffc300;
   padding: 20px;
-  background-color: transparent;
   transition: 0.7s;
   margin-bottom: 10px;
   &:hover {
@@ -238,7 +231,7 @@ export const SpanList = styled.span`
   text-align: center;
   text-transform: uppercase;
   font-weight: bold;
-  color: #caf0f8;
+  color: black;
 `;
 
 export const ImgSelectView = styled.img`

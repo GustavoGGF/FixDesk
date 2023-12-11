@@ -1,11 +1,3 @@
-animação nos buttons
-
-multiple files no upload
-
-anexar imagens no chat do chamado
-
-borda do ticket muda conforme status, aberto, em atendimento, fechado
-
 quando fechar chamado de alocação de maquina deletar a model Date
 
 arruma tela chamado quando tiver nada
@@ -103,3 +95,7 @@ aoenviar locagem de equipamento, se estiver alocado já, retornar com alocado ci
 ticket de alocagem de equipamento, clicar para ver o modelo
 
 ver os logs de cada acesso
+
+ajustar botão de mostrar mais tickets, mostrar quanto tiver no minimo 5 tickets e ter animação
+
+ajustar os boões pre selecionados no filtro

@@ -131,6 +131,7 @@ export default function History() {
   let timeoutId;
   let daysLCT = [];
   const UpNwfile = [];
+  let colorBorder = "";
 
   useEffect(() => {
     let paragraphs = [];
@@ -689,10 +690,35 @@ export default function History() {
       var day = date.getDate();
       var month = date.getMonth() + 1;
       var year = date.getFullYear();
-      var newDate = day + "-" + month + "-" + year;
+      var newDate = day + "/" + month + "/" + year;
+
+      if (ticket["open"] === false) {
+        colorBorder = "ticektClose";
+      } else if (
+        ticket["open"] === true &&
+        ticket["responsible_technician"] === null
+      ) {
+        const currentDate = new Date();
+
+        const diferenceMilisecond = currentDate - date;
+
+        const diferenceDays = diferenceMilisecond / (1000 * 60 * 60 * 24);
+
+        if (diferenceDays >= 7) {
+          colorBorder = "ticketUrgent";
+        } else {
+          colorBorder = "ticektOpenNotView";
+        }
+      } else if (
+        ticket["open"] === true &&
+        ticket["responsible_technician"] !== null
+      ) {
+        colorBorder = "ticektOpenInView";
+      }
+
       const Div = (
         <DivCard
-          className="animate__animated animate__zoomInDown"
+          className={`animate__animated animate__zoomInDown ${colorBorder}`}
           onClick={() => {
             helpdeskPage({ id: ticket["id"] });
           }}
@@ -735,10 +761,35 @@ export default function History() {
       var day = date.getDate();
       var month = date.getMonth() + 1;
       var year = date.getFullYear();
-      var newDate = day + "-" + month + "-" + year;
+      var newDate = day + "/" + month + "/" + year;
+
+      if (ticket["open"] === false) {
+        colorBorder = "ticektCloseList";
+      } else if (
+        ticket["open"] === true &&
+        ticket["responsible_technician"] === null
+      ) {
+        const currentDate = new Date();
+
+        const diferenceMilisecond = currentDate - date;
+
+        const diferenceDays = diferenceMilisecond / (1000 * 60 * 60 * 24);
+
+        if (diferenceDays >= 7) {
+          colorBorder = "ticketUrgentList";
+        } else {
+          colorBorder = "ticektOpenNotViewList";
+        }
+      } else if (
+        ticket["open"] === true &&
+        ticket["responsible_technician"] !== null
+      ) {
+        colorBorder = "ticektOpenInViewList";
+      }
+
       const Div = (
         <DivList
-          className="animate__animated animate__backInUp"
+          className={`animate__animated animate__backInUp ${colorBorder}`}
           onClick={() => {
             helpdeskPage({ id: ticket["id"] });
           }}

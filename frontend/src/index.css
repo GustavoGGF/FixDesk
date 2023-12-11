@@ -267,3 +267,59 @@
 .addBlur {
   filter: blur(3px);
 }
+
+.ticektClose {
+  border: 5px solid #10451d;
+  background-color: forestgreen;
+}
+
+.ticektOpenNotView {
+  background: #00b4d8;
+  border: 6px solid #0077b6;
+}
+
+.ticektOpenNotViewList {
+  background-color: #00b4d8;
+  border-top: 5px solid #0077b6;
+  border-bottom: 5px solid #0077b6;
+  border-left: 3px solid #0077b6;
+  border-right: 3px solid #0077b6;
+}
+
+.fontBlack {
+  color: black;
+}
+
+.ticektOpenInView {
+  background-color: #ddce15;
+  border: 6px solid #fff700;
+}
+
+.ticektOpenInViewList {
+  background-color: #ddce15;
+  border-top: 5px solid #fff700;
+  border-bottom: 5px solid #fff700;
+  border-left: 3px solid #fff700;
+  border-right: 3px solid #fff700;
+}
+
+.ticektCloseList {
+  border-top: 5px solid #10451d;
+  border-bottom: 5px solid #10451d;
+  border-left: 3px solid #10451d;
+  border-right: 3px solid #10451d;
+  background-color: forestgreen;
+}
+
+.ticketUrgent {
+  background-color: crimson;
+  border: 6px solid red;
+}
+
+.ticketUrgentList {
+  border-top: 5px solid red;
+  border-bottom: 5px solid red;
+  border-left: 3px solid red;
+  border-right: 3px solid red;
+  background-color: crimson;
+}
