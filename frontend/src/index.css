@@ -263,3 +263,7 @@
 .cald .rdp-nav {
   display: none;
 }
+
+.addBlur {
+  filter: blur(3px);
+}

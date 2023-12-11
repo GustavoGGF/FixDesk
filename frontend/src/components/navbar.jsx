@@ -4,7 +4,7 @@ import "../styles/bootstrap-5.3.0-dist/css/bootstrap.css";
 import "../styles/bootstrap-5.3.0-dist/js/bootstrap";
 import Logo from "../images/logos/fixdesk.png";
 
-export default function NavBar({ Name, JobTitle }) {
+export default function NavBar({ Name, JobTitle, Set_Blur }) {
   function helpdeskPage() {
     window.location.href = "/helpdesk/";
   }

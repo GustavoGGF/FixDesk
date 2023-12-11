@@ -1,11 +1,3 @@
-capacidade maxima de anexar arquivo de 5 MB
-
-ajustar quando criar chamado de criação de user/del
-
-por nos cabeçalhos fetch Content Security Policy (CSP, X-Content-Type-Options,X-Frame-Options
-Strict-Transport-Security, X-XSS-Protection,Referrer-Policy,Feature-Policy,X-Content-Security-Policy
-Cross-Origin Resource Sharing (CORS) 
-
 titckets e imagens dos ticker ter um fundo com blur
 
 animação nos buttons

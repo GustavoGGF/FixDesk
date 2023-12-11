@@ -125,6 +125,7 @@ export default function History() {
   const [uploadNewFiles, SetUploadNewFiles] = useState([]);
   const [nameNWFiles, SetNameNWFiles] = useState();
   const [newFiles, SetNewFiles] = useState(false);
+  const [blurNav, SetBlurNav] = useState("");
 
   let count = 0;
   let timeoutId;
@@ -239,6 +240,9 @@ export default function History() {
         return response.json();
       })
       .then((dataBack) => {
+        SetBlurNav("addBlur");
+        const dash = document.getElementById("dashboard");
+        dash.style.filter = "blur(3px)";
         SetMessageChat(false);
         SetMountChat([]);
         const data = dataBack.data[0];
@@ -636,6 +640,9 @@ export default function History() {
   }, [initUpdateChat]);
 
   async function Close_ticket() {
+    const dash = document.getElementById("dashboard");
+    dash.style.filter = "blur(0)";
+    SetBlurNav("");
     SetTicketWindow(false);
     SetFetchChat(false);
     SetImageUrl("");
@@ -1365,7 +1372,11 @@ export default function History() {
 
   return (
     <Div>
-      {navbar && <Navbar Name={Data.name} JobTitle={Data.job_title} />}
+      {navbar && (
+        <div className={blurNav}>
+          <Navbar Name={Data.name} JobTitle={Data.job_title} />
+        </div>
+      )}
       {message && (
         <div className="position-absolute top-0 start-50 translate-middle-x mt-5 z-3">
           <Message
@@ -1375,7 +1386,7 @@ export default function History() {
           />
         </div>
       )}
-      <DivFilter>
+      <DivFilter className={blurNav}>
         <div className="form-floating">
           <Input1
             type="text"
@@ -1855,7 +1866,7 @@ export default function History() {
         </TicketOpen>
       )}
       {btnmore && (
-        <div className="w-100 text-center">
+        <div className={`w-100 text-center ${blurNav}`}>
           <button className="btn btn-info mb-5" onClick={moreTickets}>
             Carregar Mais
           </button>

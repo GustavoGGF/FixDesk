@@ -125,6 +125,7 @@ export default function DashboardTI() {
   const [uploadNewFiles, SetUploadNewFiles] = useState([]);
   const [newFiles, SetNewFiles] = useState(false);
   const [nameNWFiles, SetNameNWFiles] = useState();
+  const [classBlur, SetClassBlur] = useState("");
 
   let count = 0;
   let timeoutId;
@@ -303,6 +304,9 @@ export default function DashboardTI() {
         return response.json();
       })
       .then((dataBack) => {
+        SetClassBlur("addBlur");
+        const dash = document.getElementById("dashboard");
+        dash.style.filter = "blur(3px)";
         const data = dataBack.data[0];
         setSelectedTech("");
         SetMessageChat(false);
@@ -682,6 +686,9 @@ export default function DashboardTI() {
   }, [initUpdateChat]);
 
   function Close_ticket() {
+    SetClassBlur("");
+    const dash = document.getElementById("dashboard");
+    dash.style.filter = "blur(0)";
     SetTicketWindow(false);
     SetFetchChat(false);
     count = 0;
@@ -1402,7 +1409,11 @@ export default function DashboardTI() {
 
   return (
     <Div className="position-relative">
-      {navbar && <Navbar Name={userData.name} JobTitle={userData.job_title} />}
+      {navbar && (
+        <div className={classBlur}>
+          <Navbar Name={userData.name} JobTitle={userData.job_title} />
+        </div>
+      )}
       {message && (
         <div className="position-absolute top-0 start-50 translate-middle-x mt-5 z-3">
           <Message
@@ -1413,7 +1424,7 @@ export default function DashboardTI() {
         </div>
       )}
       {dropdownBTN && (
-        <DivDrop className="position-absolute top-0 start-0">
+        <DivDrop className={`position-absolute top-0 start-0 ${classBlur}`}>
           <Dropdown>
             <DropdownButton
               onClick={dropdown}
@@ -1427,7 +1438,9 @@ export default function DashboardTI() {
           </Dropdown>
         </DivDrop>
       )}
-      <div className="d-flex flex-column justify-content-center w-100">
+      <div
+        className={`d-flex flex-column justify-content-center w-100 ${classBlur}`}
+      >
         <div className="d-flex justify-content-center w-100">
           <DashBoardPie sector={"TI"} />
         </div>
@@ -1435,7 +1448,7 @@ export default function DashboardTI() {
           <DashboardBar />
         </div>
       </div>
-      <DivFilter>
+      <DivFilter className={classBlur}>
         <div className="form-floating">
           <Input1
             type="text"
@@ -1819,7 +1832,7 @@ export default function DashboardTI() {
         </TicketOpen>
       )}
       {btnmore && (
-        <div className="w-100 text-center">
+        <div className={`w-100 text-center ${classBlur}`}>
           <button className="btn btn-info mb-5" onClick={moreTickets}>
             Carregar Mais
           </button>
