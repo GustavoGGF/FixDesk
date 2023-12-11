@@ -224,6 +224,7 @@ export default function DashboardTI() {
       var newDate = day + "-" + month + "-" + year;
       const Div = (
         <DivCard
+          className="animate__animated animate__zoomInDown"
           onClick={() => {
             helpdeskPage({ id: ticket["id"] });
           }}
@@ -267,6 +268,7 @@ export default function DashboardTI() {
       var newDate = day + "-" + month + "-" + year;
       const Div = (
         <DivList
+          className="animate__animated animate__backInUp"
           onClick={() => {
             helpdeskPage({ id: ticket["id"] });
           }}

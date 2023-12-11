@@ -1,5 +1,3 @@
-titckets e imagens dos ticker ter um fundo com blur
-
 animação nos buttons
 
 multiple files no upload

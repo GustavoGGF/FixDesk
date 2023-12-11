@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../styles/bootstrap-5.3.0-dist/css/bootstrap.css";
 import Logo from "../images/logos/lupalogo.png";
 import { Div, IMG, Span } from "../styles/loginStyle";
 import Message from "../components/message";
 import Loading from "../components/loading";
+import "animate.css";
 
 export default function Login() {
   const [loginPage, SetLoginPage] = useState(true);
@@ -12,6 +13,7 @@ export default function Login() {
   const [message, SetMessage] = useState(false);
   const [typemessage, SetTypeMessage] = useState("");
   const [messageerror, SetMessageError] = useState("");
+  const [animate, SetAnimate] = useState("");
 
   function verifylogin(event) {
     SetLoginPage(false);
@@ -39,7 +41,8 @@ export default function Login() {
           SetTypeMessage("Credencial Inválida");
           SetMessageError("Usuário e/ou Senha Inválido(s)");
           SetLoginPage(true);
-          SetPassLimit(true);
+          SetPassLimit(false);
+          SetAnimate("");
           SAwaitValidation(false);
         } else if (response.status === 425) {
           SetMessage(true);
@@ -62,14 +65,27 @@ export default function Login() {
 
     if (pass.length > 10) {
       SetPassLimit(true);
+      if (animate === "animate__bounceIn") {
+        return;
+      } else {
+        return SetAnimate("animate__bounceIn");
+      }
     } else {
-      SetPassLimit(false);
+      return SetAnimate("animate__bounceOut");
     }
   }
 
   function closeMessage() {
     SetMessage(false);
   }
+
+  useEffect(() => {
+    if (animate === "animate__bounceOut") {
+      setTimeout(() => {
+        SetPassLimit(false);
+      }, 500);
+    }
+  }, [animate]);
 
   return (
     <Div>
@@ -87,10 +103,10 @@ export default function Login() {
         id="logo"
         src={Logo}
         alt="Logo da lupatech"
-        className="position-absolute top-0 start-20 none"
+        className="position-absolute top-0 start-20 none animate__animated animate__slideInDown"
       />
       {loginPage && (
-        <div className="position-absolute top-50 start-50 translate-middle d-flex flex-column none">
+        <div className="position-absolute top-50 start-50 translate-middle d-flex flex-column none animate__animated">
           <form action="" method="POST">
             <Span>Usuário</Span>
             <input id="user" type="text" className="form-control" name="user" />
@@ -105,7 +121,10 @@ export default function Login() {
             />
 
             {passlimit && (
-              <button className="btn btn-success w-100" onClick={verifylogin}>
+              <button
+                className={`btn btn-success w-100 ${animate}`}
+                onClick={verifylogin}
+              >
                 Logar
               </button>
             )}
