@@ -1,7 +1,7 @@
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from dotenv import load_dotenv
-from django.shortcuts import render
+from django.shortcuts import redirect
 from json import loads, dumps
 from os import getenv, environ
 from ping3 import ping
@@ -9,9 +9,6 @@ from ldap3 import Connection, SAFE_SYNC, ALL_ATTRIBUTES
 from threading import Thread
 from django.contrib.auth.models import User, Group
 from django.contrib.auth import login
-from re import search as re_sh
-from requests import post
-from django.contrib.auth import logout
 
 
 def CreateOrVerifyUser(user, password, request, helpdesk, name_create_user):
@@ -95,7 +92,7 @@ def CreateOrVerifyUser(user, password, request, helpdesk, name_create_user):
 @csrf_exempt
 def validation(request):
     if request.method == "GET":
-        return render(request, "index.html", {})
+        return redirect("/login")
     if request.method == "POST":
         load_dotenv()
 

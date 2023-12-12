@@ -1,7 +1,5 @@
 responsividade
 
-tentar acessar qualquer outra url, direcionar para login
-
 colocar safe nos JsonResponse
 
 Usar HTTPS para criptografar a comunicação entre o navegador do usuário e o servidor.

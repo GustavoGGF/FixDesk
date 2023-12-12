@@ -579,11 +579,20 @@ def ticket(request, id):
     if request.method == "GET":
         ticket = None
         pid = None
+        validation = None
         try:
             ticket = SupportTicket.objects.filter(id=id)
 
             for t in ticket:
                 pid = t.PID
+
+        except Exception as e:
+            print(e)
+
+        try:
+            validation = str(pid)
+            if len(validation) < 1:
+                redirect("/login")
 
         except Exception as e:
             print(e)
@@ -604,14 +613,20 @@ def ticket(request, id):
 
             for group in groups:
                 if group.name == group1:
-                    pidViwer = int(request.META.get("HTTP_PID"))
-                    if pid == pidViwer:
-                        pass
-                    else:
-                        return JsonResponse(
-                            {"status": "Credentials Invalid"}, status=402
-                        )
+                    try:
+                        pidViwer = int(request.META.get("HTTP_PID"))
 
+                    except TypeError as e:
+                        if "NoneType" in str(e):
+                            return redirect("/helpdesk")
+
+                        if pid == pidViwer:
+                            pass
+                        else:
+                            return redirect("/helpdesk")
+
+                    except Exception as e:
+                        print(e)
         except Exception as e:
             print(e)
 
@@ -816,6 +831,7 @@ def ticket(request, id):
             print(e)
 
 
+@login_required(login_url="/login")
 def update_chat(request, id):
     if request.method == "GET":
         ticket = None
@@ -832,6 +848,7 @@ def update_chat(request, id):
         return
 
 
+@login_required(login_url="/login")
 def moreTicket(request):
     if request.method == "POST":
         return
@@ -886,6 +903,7 @@ def moreTicket(request):
             print(e)
 
 
+@login_required(login_url="/login")
 def getTicketFilter(request):
     if request.method == "GET":
         username = None
@@ -1064,6 +1082,7 @@ def getTicketFilter(request):
         return
 
 
+@login_required(login_url="/login")
 def getTicketFilterWords(request):
     if request.method == "GET":
         username = None
@@ -1150,6 +1169,7 @@ def getTicketFilterWords(request):
             print(e)
 
 
+@login_required(login_url="/login")
 def getTicketFilterStatus(request):
     if request.method == "GET":
         username = None

@@ -88,6 +88,7 @@ def dashboard_TI(request):
             print(e)
 
 
+@login_required(login_url="/login")
 def getDashBoardPie(request, sector):
     if request.method == "POST":
         return JsonResponse({"status": "ok"}, status=200, safe=True)
@@ -142,6 +143,7 @@ def getDashBoardPie(request, sector):
                 print(e)
 
 
+@login_required(login_url="/login")
 def get_ticket_TI(request):
     if request.method == "POST":
         return JsonResponse({"status": "ok"}, status=200, safe=True)
@@ -172,6 +174,7 @@ def get_ticket_TI(request):
             print(e)
 
 
+@login_required(login_url="/login")
 def equipment_inventory(request):
     if request.method == "POST":
         image = None
@@ -196,6 +199,7 @@ def equipment_inventory(request):
         return JsonResponse({"status": "ok"}, status=200, safe=True)
 
 
+@login_required(login_url="/login")
 def getTicketFilter(request):
     if request.method == "GET":
         Quantity_tickets = None
@@ -350,6 +354,7 @@ def getTicketFilter(request):
         return
 
 
+@login_required(login_url="/login")
 def getTicketFilterWords(request):
     if request.method == "GET":
         magic_word = None
@@ -432,6 +437,7 @@ def getTicketFilterWords(request):
             print(e)
 
 
+@login_required(login_url="/login")
 def moreTicket(request):
     if request.method == "POST":
         return
@@ -482,6 +488,7 @@ def moreTicket(request):
             print(e)
 
 
+@login_required(login_url="/login")
 def getDashBoardBar(request):
     if request.method == "GET":
         histogram_data = None
@@ -542,6 +549,7 @@ def getDashBoardBar(request):
         return
 
 
+@login_required(login_url="/login")
 def getDashBoardBarMonth(request):
     if request.method == "POST":
         return
@@ -602,6 +610,7 @@ def getDashBoardBarMonth(request):
             print(e)
 
 
+@login_required(login_url="/login")
 def getDashBoardBarYear(request):
     if request.method == "POST":
         return
@@ -665,6 +674,7 @@ def getDashBoardBarYear(request):
             print(e)
 
 
+@login_required(login_url="/login")
 def getDashBoardBarAll(request):
     if request.method == "POST":
         return
@@ -713,6 +723,7 @@ def getDashBoardBarAll(request):
             print(e)
 
 
+@login_required(login_url="/login")
 def getTicketFilterStatus(request):
     if request.method == "GET":
         order = None
@@ -775,6 +786,7 @@ def getTicketFilterStatus(request):
         return
 
 
+@login_required(login_url="/login")
 @requires_csrf_token
 def upload_new_files(request, id):
     if request.method == "GET":
