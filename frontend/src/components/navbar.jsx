@@ -4,17 +4,17 @@ import "../styles/bootstrap-5.3.0-dist/css/bootstrap.css";
 import "../styles/bootstrap-5.3.0-dist/js/bootstrap";
 import Logo from "../images/logos/fixdesk.png";
 
-export default function NavBar({ Name, JobTitle, Set_Blur }) {
+export default function NavBar({ Name, JobTitle }) {
   function helpdeskPage() {
-    window.location.href = "/helpdesk/";
+    return (window.location.href = "/helpdesk/");
   }
 
   function historyPage() {
-    window.location.href = "/helpdesk/history/";
+    return (window.location.href = "/helpdesk/history/");
   }
 
   function DashboardPage() {
-    window.location.href = "/dashboard_TI/";
+    return (window.location.href = "/dashboard_TI/");
   }
 
   function FAQPage() {

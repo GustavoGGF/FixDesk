@@ -186,7 +186,7 @@ export default function History() {
     if (timeoutId) {
       clearTimeout(timeoutId);
     }
-    timeoutId = setTimeout(aumentarCount, 10000); // Chama a função novamente após 5 segundos
+    return (timeoutId = setTimeout(aumentarCount, 10000)); // Chama a função novamente após 5 segundos
   }
 
   useEffect(() => {
@@ -226,7 +226,7 @@ export default function History() {
   }, []);
 
   function openImage() {
-    SetImageOpen(true);
+    return SetImageOpen(true);
   }
 
   function helpdeskPage({ id }) {
@@ -512,7 +512,6 @@ export default function History() {
             }
           }
         }
-
         if (
           data.chat !== null &&
           data.chat !== undefined &&
@@ -632,7 +631,7 @@ export default function History() {
           }
         })
         .catch((err) => {
-          console.log(err);
+          return console.log(err);
         });
       return;
     } else if (fetchchat === false) {
@@ -662,11 +661,11 @@ export default function History() {
       const selectView = localStorage.getItem("selectView");
       if (selectView === null) {
         localStorage.setItem("selectView", "card");
-        viewCard();
+        return viewCard();
       } else if (selectView === "card") {
-        viewCard();
+        return viewCard();
       } else if (selectView === "list") {
-        listCard();
+        return listCard();
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -927,7 +926,7 @@ export default function History() {
   }
 
   function imageclose() {
-    SetImageOpen(false);
+    return SetImageOpen(false);
   }
 
   function enableProblem() {
@@ -1026,7 +1025,7 @@ export default function History() {
         return countTicket;
       })
       .catch((err) => {
-        console.log(err);
+        return console.log(err);
       });
   }
 
@@ -1203,9 +1202,11 @@ export default function History() {
     if (option === "recent") {
       getTicketFilterOrderTime({ order: "-id" });
       SetOrderBy("-id");
+      return;
     } else if (option === "ancient") {
       getTicketFilterOrderTime({ order: "id" });
       SetOrderBy("id");
+      return;
     }
   }
 
@@ -1392,11 +1393,13 @@ export default function History() {
     for (let i = 0; i < UpNwfile.length; i++) {
       SetUploadNewFiles((uploadNewFiles) => [...uploadNewFiles, UpNwfile[i]]);
     }
+    return;
   }
 
   function closeNWFiles() {
     SetUploadNewFiles("");
     SetNewFiles(false);
+    return;
   }
 
   function submitNewFiles() {
@@ -1405,7 +1408,6 @@ export default function History() {
       const file = uploadNewFiles[0][i];
       formData.append("files", file);
     }
-    console.log(uploadNewFiles);
     fetch("/dashboard_TI/upload-new-files/" + ticketID, {
       method: "POST",
       headers: {

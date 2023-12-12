@@ -135,7 +135,7 @@ export default function Helpdesk() {
         return SetData(data.data);
       })
       .catch((err) => {
-        console.error("Erro na solicitação:", err);
+        return console.error("Erro na solicitação:", err);
       });
 
     return;
@@ -270,6 +270,7 @@ export default function Helpdesk() {
       SetEng(false);
       SetAlocate(false);
       setDateEquip(false);
+      return;
     } else if (option === "sistema") {
       SetSystem(true);
       setInfra(false);
@@ -291,6 +292,7 @@ export default function Helpdesk() {
       SetEng(false);
       SetAlocate(false);
       setDateEquip(false);
+      return;
     } else if (option === "none") {
       setInfra(false);
       SetSystem(false);
@@ -311,8 +313,10 @@ export default function Helpdesk() {
       SetEng(false);
       SetAlocate(false);
       setDateEquip(false);
+      return;
     }
   }
+
   function selectProblem() {
     const select = document.getElementById("select-error");
 
@@ -337,6 +341,7 @@ export default function Helpdesk() {
       SetEng(false);
       SetAlocate(false);
       setDateEquip(false);
+      return;
     } else if (option === "mail") {
       setMail(true);
       setBackup(false);
@@ -356,6 +361,7 @@ export default function Helpdesk() {
       SetEng(false);
       SetAlocate(false);
       setDateEquip(false);
+      return;
     } else if (option === "equip") {
       setEquip(true);
       setBackup(false);
@@ -376,6 +382,7 @@ export default function Helpdesk() {
       SetEng(false);
       SetAlocate(false);
       setDateEquip(false);
+      return;
     } else if (option === "user") {
       setUser(true);
       setBackup(false);
@@ -396,6 +403,7 @@ export default function Helpdesk() {
       SetEng(false);
       SetAlocate(false);
       setDateEquip(false);
+      return;
     } else if (option === "internet") {
       setInternet(true);
       setBackup(false);
@@ -417,6 +425,7 @@ export default function Helpdesk() {
       SetEng(false);
       SetAlocate(false);
       setDateEquip(false);
+      return;
     } else if (option === "folder") {
       setFolder(true);
       setBackup(false);
@@ -438,6 +447,7 @@ export default function Helpdesk() {
       SetEng(false);
       SetAlocate(false);
       setDateEquip(false);
+      return;
     } else if (option === "none") {
       setBackup(false);
       setAlert(false);
@@ -455,6 +465,7 @@ export default function Helpdesk() {
       SetEng(false);
       SetAlocate(false);
       setDateEquip(false);
+      return;
     } else if (option === "sap") {
       SetSAP(true);
       SetMBI(false);
@@ -473,6 +484,7 @@ export default function Helpdesk() {
       SetEng(false);
       SetAlocate(false);
       setDateEquip(false);
+      return;
     } else if (option === "mbi") {
       SetMBI(true);
       SetSAP(false);
@@ -491,6 +503,7 @@ export default function Helpdesk() {
       SetAlocate(false);
       SetEng(false);
       setDateEquip(false);
+      return;
     } else if (option === "synch") {
       SetSynch(true);
       SetMBI(false);
@@ -509,6 +522,7 @@ export default function Helpdesk() {
       SetAlocate(false);
       SetEng(false);
       setDateEquip(false);
+      return;
     } else if (option === "office") {
       SetOffice(true);
       SetSynch(false);
@@ -527,6 +541,7 @@ export default function Helpdesk() {
       SetEng(false);
       setOccurrence("Office");
       setDateEquip(false);
+      return;
     } else if (option === "eng") {
       SetEng(true);
       SetOffice(false);
@@ -545,6 +560,7 @@ export default function Helpdesk() {
       setFolder(false);
       setOccurrence("Softwares de Eng");
       setDateEquip(false);
+      return;
     }
   }
 
@@ -561,6 +577,7 @@ export default function Helpdesk() {
       setmessageinfo2("2. Informar os acessos que o mesmo poderá utilizar");
       setProblemn("Criação/exclusão usuário");
       setAlertVerify(false);
+      return;
     } else if (optionSynch === "access") {
       setAlert(true);
       setMessagetitle("Caso de Liberação/bloqueio de acessos");
@@ -568,6 +585,7 @@ export default function Helpdesk() {
       setmessageinfo2("");
       setProblemn("Liberação/bloqueio de acessos");
       setAlertVerify(false);
+      return;
     } else if (optionSynch === "quest") {
       setAlert(true);
       setMessagetitle("Caso de Dúvidas operacionais");
@@ -575,6 +593,7 @@ export default function Helpdesk() {
       setmessageinfo2("");
       setProblemn("Dúvidas operacionais");
       setAlertVerify(false);
+      return;
     } else if (optionSynch === "error") {
       setAlert(true);
       setMessagetitle("Caso de Correção de falhas");
@@ -584,6 +603,7 @@ export default function Helpdesk() {
       setAlertVerify(false);
     } else if (optionSynch === "none") {
       setAlert(false);
+      return;
     }
   }
 
@@ -600,6 +620,7 @@ export default function Helpdesk() {
       setmessageinfo2("2. Informar os acessos que o mesmo poderá utilizar");
       setProblemn("Criação/exclusão usuário");
       setAlertVerify(false);
+      return;
     } else if (optionMBI === "access") {
       setAlert(true);
       setMessagetitle("Caso de Liberação/bloqueio de acessos");
@@ -607,6 +628,7 @@ export default function Helpdesk() {
       setmessageinfo2("");
       setProblemn("Liberação/bloqueio de acessos");
       setAlertVerify(false);
+      return;
     } else if (optionMBI === "quest") {
       setAlert(true);
       setMessagetitle("Caso de Dúvidas operacionais");
@@ -614,6 +636,7 @@ export default function Helpdesk() {
       setmessageinfo2("");
       setProblemn("Dúvidas operacionais");
       setAlertVerify(false);
+      return;
     } else if (optionMBI === "error") {
       setAlert(true);
       setMessagetitle("Caso de Correção de falhas");
@@ -621,10 +644,13 @@ export default function Helpdesk() {
       setmessageinfo2("");
       setProblemn("Correção de falhas");
       setAlertVerify(false);
+      return;
     } else if (optionMBI === "none") {
       setAlert(false);
+      return;
     }
   }
+
   function selectSAP() {
     const selectSAP = document.getElementById("select-sap");
     const optionSAP = selectSAP.options[selectSAP.selectedIndex].value;
@@ -638,6 +664,7 @@ export default function Helpdesk() {
       setmessageinfo2("2. Informar os acessos que o mesmo poderá utilizar");
       setProblemn("Criação/exclusão usuário");
       setAlertVerify(false);
+      return;
     } else if (optionSAP === "access") {
       setAlert(true);
       setMessagetitle("Caso de Liberação/bloqueio de acessos");
@@ -645,6 +672,7 @@ export default function Helpdesk() {
       setmessageinfo2("");
       setProblemn("Liberação/bloqueio de acessos");
       setAlertVerify(false);
+      return;
     } else if (optionSAP === "quest") {
       setAlert(true);
       setMessagetitle("Caso de Dúvidas operacionais");
@@ -652,6 +680,7 @@ export default function Helpdesk() {
       setmessageinfo2("");
       setProblemn("Dúvidas operacionais");
       setAlertVerify(false);
+      return;
     } else if (optionSAP === "error") {
       setAlert(true);
       setMessagetitle("Caso de Correção de falhas");
@@ -659,10 +688,13 @@ export default function Helpdesk() {
       setmessageinfo2("");
       setProblemn("Correção de falhas");
       setAlertVerify(false);
+      return;
     } else if (optionSAP === "none") {
       setAlert(false);
+      return;
     }
   }
+
   function selectOffice() {
     const selectOffice = document.getElementById("select-office");
     const optionOffice = selectOffice.options[selectOffice.selectedIndex].value;
@@ -674,6 +706,7 @@ export default function Helpdesk() {
       setmessageinfo2("");
       setProblemn("Aquisição de software/licenciamento");
       setAlertVerify(false);
+      return;
     } else if (optionOffice === "error") {
       setAlert(true);
       setMessagetitle("Caso de Correção de falhas");
@@ -681,10 +714,13 @@ export default function Helpdesk() {
       setmessageinfo2("");
       setProblemn("Correção de falhas");
       setAlertVerify(false);
+      return;
     } else if (optionOffice === "none") {
       setAlert(false);
+      return;
     }
   }
+
   function getObservation() {
     const textArea = document.getElementById("floatingTextarea2");
 
@@ -704,6 +740,7 @@ export default function Helpdesk() {
       setmessageinfo2("");
       setProblemn("Aquisição de software/licenciamento");
       setAlertVerify(false);
+      return;
     } else if (optionEng === "error") {
       setAlert(true);
       setMessagetitle("Caso de Correção de falhas");
@@ -711,8 +748,10 @@ export default function Helpdesk() {
       setmessageinfo2("");
       setProblemn("Correção de falhas");
       setAlertVerify(false);
+      return;
     } else if (optionEng === "none") {
       setAlert(false);
+      return;
     }
   }
 
@@ -727,6 +766,7 @@ export default function Helpdesk() {
       setmessageinfo2("2. Informar a data de criação e exclusão do arquivo");
       setProblemn("Restaurar pasta");
       setAlertVerify(false);
+      return;
     } else if (optionBackup === "mail") {
       setAlert(true);
       setMessagetitle("Caso de e-mail");
@@ -734,10 +774,13 @@ export default function Helpdesk() {
       setmessageinfo2("");
       setProblemn("Restaurar e-mail");
       setAlertVerify(false);
+      return;
     } else if (optionBackup === "none") {
       setAlert(false);
+      return;
     }
   }
+
   function selectMail() {
     const selectMail = document.getElementById("select-mail");
     const optionMail = selectMail.options[selectMail.selectedIndex].value;
@@ -746,6 +789,7 @@ export default function Helpdesk() {
       setAlert(false);
       setProblemn("Aumentar capacidade de e-mail");
       setAlertVerify(false);
+      return;
     } else if (optionMail === "conect") {
       setAlert(true);
       setMessagetitle("Caso de email não conecta na internet");
@@ -753,8 +797,10 @@ export default function Helpdesk() {
       setmessageinfo2("");
       setProblemn("Problema com conexão");
       setAlertVerify(false);
+      return;
     } else if (optionMail === "none") {
       setAlert(false);
+      return;
     }
   }
 
@@ -767,6 +813,7 @@ export default function Helpdesk() {
 
     element.style.border = "2px solid #5FDD9D";
     setDateEquip(true);
+    return;
   }
 
   function selectEquip() {
@@ -783,6 +830,7 @@ export default function Helpdesk() {
       setmessageinfo2("");
       setProblemn("Equipamento não liga");
       setAlertVerify(false);
+      return;
     } else if (optionEquip === "printer") {
       SetAlocate(false);
       setAlert(true);
@@ -791,6 +839,7 @@ export default function Helpdesk() {
       setmessageinfo2("2. Informar menssagem de erro que aparece");
       setProblemn("Problema com a impressora");
       setAlertVerify(false);
+      return;
     } else if (optionEquip === "roaming") {
       SetAlocate(false);
       setAlert(true);
@@ -801,6 +850,7 @@ export default function Helpdesk() {
       setmessageinfo2("");
       setProblemn("Mudanca de local de trabalho");
       setAlertVerify(false);
+      return;
     } else if (optionEquip === "usb") {
       SetAlocate(false);
       setAlert(true);
@@ -811,9 +861,11 @@ export default function Helpdesk() {
       );
       setProblemn("USB");
       setAlertVerify(false);
+      return;
     } else if (optionEquip === "none") {
       setAlert(false);
       SetAlocate(false);
+      return;
     } else if (optionEquip === "alocate") {
       SetDashEquipaments("");
       setAlert(true);
@@ -849,9 +901,11 @@ export default function Helpdesk() {
 
           SetDashEquipaments((prvDiv) => [...prvDiv, Div]);
         });
+        return;
       } else {
         setTypeError("Falta de Dados");
         setMessageError("Nenhum equipamento Cadastrado");
+        return;
       }
     } else if (optionEquip === "change") {
       setAlert(true);
@@ -860,8 +914,10 @@ export default function Helpdesk() {
       setmessageinfo2("2. Justificar o motivo da troca");
       setProblemn("Trocar Equipamento");
       setAlertVerify(false);
+      return;
     }
   }
+
   function selectUser() {
     const select = document.getElementById("select-user");
     const option = select.options[select.selectedIndex].value;
@@ -875,19 +931,23 @@ export default function Helpdesk() {
       SetMotivationContract("");
       SetSectorNewUser("");
       SetNewName("");
+      return;
     } else if (option === "deluser") {
       setFormDelUser(true);
       setFormNewUser(false);
       setAlert(false);
       setProblemn("Exclusao de usuario de rede");
       setAlertVerify(false);
+      return;
     } else if (option === "none") {
       setAlert(false);
       setFormNewUser(false);
       setFormDelUser(false);
       setAlertVerify(false);
+      return;
     }
   }
+
   function selectFolder() {
     const select = document.getElementById("select-folder");
     const option = select.options[select.selectedIndex].value;
@@ -901,6 +961,7 @@ export default function Helpdesk() {
       );
       setProblemn("Liberar pasta");
       setAlertVerify(false);
+      return;
     } else if (option === "block") {
       setAlert(true);
       setMessagetitle("Caso de bloqueio de pasta");
@@ -910,13 +971,16 @@ export default function Helpdesk() {
       );
       setProblemn("Bloquear pasta");
       setAlertVerify(false);
+      return;
     } else if (option === "none") {
       setAlert(false);
       setMessagetitle("");
       setmessageinfo1("");
       setmessageinfo2("");
+      return;
     }
   }
+
   function selectInternet() {
     const select = document.getElementById("select-internet");
     const option = select.options[select.selectedIndex].value;
@@ -930,6 +994,7 @@ export default function Helpdesk() {
       );
       setProblemn("Liberacao de site");
       setAlertVerify(false);
+      return;
     } else if (option === "block") {
       setAlert(true);
       setMessagetitle("Caso de bloqueio de site");
@@ -939,13 +1004,16 @@ export default function Helpdesk() {
       );
       setProblemn("Bloqueio de site");
       setAlertVerify(false);
+      return;
     } else if (option === "none") {
       setAlert(false);
       setMessagetitle("");
       setmessageinfo1("");
       setmessageinfo2("");
+      return;
     }
   }
+
   function selectMotivation() {
     const option = document.querySelectorAll("input[name='motivation']");
 
@@ -964,7 +1032,9 @@ export default function Helpdesk() {
         }
       });
     });
+    return;
   }
+
   function selectMachine() {
     const option = document.querySelectorAll("input[name='machine']");
 
@@ -975,6 +1045,7 @@ export default function Helpdesk() {
           if (selectedValue === "yes") {
             setMachine(false);
             SetNecessaryMachine(true);
+            return;
           } else if (selectedValue === "no") {
             setMachine(true);
             setMessagetitle("Caso de não haver maquina");
@@ -983,11 +1054,13 @@ export default function Helpdesk() {
             );
             setmessageinfo2("");
             SetNecessaryMachine(false);
+            return;
           }
         }
       });
     });
   }
+
   function submitTicket(event) {
     event.preventDefault();
 
@@ -1035,7 +1108,7 @@ export default function Helpdesk() {
 
     const formData = new FormData();
 
-    var total_size = 0
+    var total_size = 0;
 
     if (filename.length > 0) {
       formData.append("ticketRequester", Data.name);
@@ -1052,7 +1125,7 @@ export default function Helpdesk() {
       formData.append("respective_area", respectiveArea);
       for (let i = 0; i < fileimg.length; i++) {
         const file = fileimg[i];
-        total_size += file.size
+        total_size += file.size;
         formData.append("image", file);
       }
     } else if (daysForAlocate.length > 0) {
@@ -1201,10 +1274,10 @@ export default function Helpdesk() {
       formData.append("respective_area", respectiveArea);
     }
     if (total_size > 10 * 1024 * 1024) {
-      SetMessage(true)
-      setTypeError("Capacidade Máxima Ultrapassada")
-      setMessageError("Capacidade Máxima de Arquivos Anexado é de 10MB")
-      return
+      SetMessage(true);
+      setTypeError("Capacidade Máxima Ultrapassada");
+      setMessageError("Capacidade Máxima de Arquivos Anexado é de 10MB");
+      return;
     }
     fetch("submitTicket/", {
       method: "POST",
@@ -1228,7 +1301,7 @@ export default function Helpdesk() {
           });
         } else if (Status === 200) {
           SetMessage(false);
-          window.location.reload();
+          return window.location.reload();
         } else if (Status === 320) {
           SetMessage(true);
           setTypeError("Dados Inválidos");
@@ -1261,12 +1334,12 @@ export default function Helpdesk() {
         }
       })
       .catch((err) => {
-        console.log(err);
+        return console.log(err);
       });
   }
 
   function closeMessage() {
-    SetMessage(false);
+    return SetMessage(false);
   }
 
   function inputDrop() {
@@ -1452,26 +1525,31 @@ export default function Helpdesk() {
         SetDashEquipaments((prvDiv) => [...prvDiv, Div]);
       });
     }
+    return;
   }
 
   function nameNewUser(event) {
     var nameUser = event.target.value;
     SetNewName(nameUser);
+    return;
   }
 
   function emailDelegation(event) {
     var mailDele = event.target.value;
     SetMailDelegation(mailDele);
+    return;
   }
 
   function saveU(event) {
     var dir = event.target.value;
     SetDirSave(dir);
+    return;
   }
 
   function SectorNewUser(event) {
     var company = event.target.value;
     SetSectorNewUser(company);
+    return;
   }
 
   function selectCompanyNW() {
@@ -1480,20 +1558,28 @@ export default function Helpdesk() {
 
     if (option === "0") {
       SetCompanyNewUser("CSC");
+      return;
     } else if (option === "1") {
       SetCompanyNewUser("Fiberliners");
+      return;
     } else if (option === "2") {
       SetCompanyNewUser("Valmicro");
+      return;
     } else if (option === "3") {
       SetCompanyNewUser("Valmicro – Mipel Sul");
+      return;
     } else if (option === "4") {
       SetCompanyNewUser("Ropes");
+      return;
     } else if (option === "5") {
       SetCompanyNewUser("Escritorio Corporativo SP");
+      return;
     } else if (option === "6") {
       SetCompanyNewUser("Valmicro SP");
+      return;
     } else if (option === "7") {
       SetCompanyNewUser("Mipel Microfusão");
+      return;
     }
   }
 
@@ -1513,19 +1599,19 @@ export default function Helpdesk() {
   function centralCost(event) {
     var cost = event.target.value;
 
-    SetCentralCost(cost);
+    return SetCentralCost(cost);
   }
 
   function jobTitleFunct(event) {
     var job = event.target.value;
 
-    SetJobTitleNewUser(job);
+    return SetJobTitleNewUser(job);
   }
 
   function nameCopyUser(event) {
     var copy = event.target.value;
 
-    SetCopyUser(copy);
+    return SetCopyUser(copy);
   }
 
   return (

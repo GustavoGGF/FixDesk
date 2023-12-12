@@ -76,7 +76,7 @@ export default function Login() {
   }
 
   function closeMessage() {
-    SetMessage(false);
+    return SetMessage(false);
   }
 
   useEffect(() => {

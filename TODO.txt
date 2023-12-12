@@ -4,21 +4,11 @@ Usar HTTPS para criptografar a comunicação entre o navegador do usuário e o s
 
 diagrama de como funciona
 
-implementar Kubernetes | Docker
-
-return em todas as funções
-
-try e cath todo codigo
-
-verificar com RH unidades que podem contratar
+implementar Docker
 
 usar gpt para fazer os webkit
 
-por z-index nas imagens onde ficam os arquivos
-
 imprimir os chamados
-
-arrumar o remanejamento
 
 localte={prBR} react daypicker
 

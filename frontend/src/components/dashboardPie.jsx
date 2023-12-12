@@ -24,12 +24,13 @@ export default function DashBoardPie({ sector }) {
         const data = await response.json();
         SetDataPie(data);
         SetLoading(false);
+        return;
       } catch (err) {
-        console.error(err);
+        return console.error(err);
       }
     };
 
-    fetchData();
+    return fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

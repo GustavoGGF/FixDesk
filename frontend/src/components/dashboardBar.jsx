@@ -19,17 +19,17 @@ export default function DashboardBar() {
         });
 
         if (response.status === 210) {
-          // Faça algo aqui se a resposta for 210
+          return; // Faça algo aqui se a resposta for 210
         }
 
         const data = await response.json();
         Setlabeldash("Chamados da Semana");
         SetHistogramData(data);
+        return;
       } catch (err) {
-        console.error(err);
+        return console.error(err);
       }
     };
-
     fetchData();
   }, []);
 
@@ -110,6 +110,7 @@ export default function DashboardBar() {
       .then((data) => {
         Setlabeldash("Chamados do Mês");
         SetHistogramData(data);
+        return;
       })
       .catch((err) => {
         return console.log(err);
@@ -136,6 +137,7 @@ export default function DashboardBar() {
       .then((data) => {
         Setlabeldash("Chamados da Semana");
         SetHistogramData(data);
+        return;
       })
       .catch((err) => {
         return console.log(err);
@@ -162,6 +164,7 @@ export default function DashboardBar() {
       .then((data) => {
         Setlabeldash("Chamados deste Ano");
         SetHistogramData(data);
+        return;
       })
       .catch((err) => {
         return console.log(err);
@@ -188,6 +191,7 @@ export default function DashboardBar() {
       .then((data) => {
         Setlabeldash("Todos os Chamados");
         SetHistogramData(data);
+        return;
       })
       .catch((err) => {
         return console.log(err);

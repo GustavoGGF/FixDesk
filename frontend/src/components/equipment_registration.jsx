@@ -166,8 +166,6 @@ export default function Equipment_Registration({
     formData.append("company", companyname);
     formData.append("model", modelequipament);
 
-    console.log(modelequipament);
-
     fetch("equipment_inventory/", {
       method: "POST",
 
@@ -188,7 +186,7 @@ export default function Equipment_Registration({
   }
 
   function closeMessage() {
-    SetMessage(false);
+    return SetMessage(false);
   }
 
   return (
