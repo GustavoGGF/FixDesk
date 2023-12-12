@@ -1,11 +1,3 @@
-quando fechar chamado de alocação de maquina deletar a model Date
-
-arruma tela chamado quando tiver nada
-
-verificação se a alocação de maquina esta para o passado
-
-por overflow-y: scroll !important; no dashboard e ajustar
-
 responsividade
 
 tentar acessar qualquer outra url, direcionar para login
@@ -99,3 +91,5 @@ ver os logs de cada acesso
 ajustar botão de mostrar mais tickets, mostrar quanto tiver no minimo 5 tickets e ter animação
 
 ajustar os boões pre selecionados no filtro
+
+ajustar ticket de alocação de equipamento

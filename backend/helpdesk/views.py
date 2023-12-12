@@ -239,13 +239,14 @@ def submitTicket(request):
 
                 for ee in exist_equipament:
                     old_dates = ee.date_alocate.split(",")
+                    status = ee.open
 
                 new_dates = days.split(",")
 
                 if exist_equipament:
                     for Odates in old_dates:
                         for Ndates in new_dates:
-                            if Odates == Ndates:
+                            if Odates == Ndates and status == True:
                                 return JsonResponse(
                                     {"status": "Invalid Date", "dates": old_dates},
                                     status=310,
