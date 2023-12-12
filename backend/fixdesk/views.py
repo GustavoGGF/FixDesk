@@ -76,7 +76,7 @@ def CreateOrVerifyUser(user, password, request, helpdesk, name_create_user):
             Valid = False
     except Exception as e:
         print(e)
-        return JsonResponse({"status": "error"}, status=400)
+        return JsonResponse({"status": "error"}, status=400, safe=True)
 
     try:
         if not group_user:
@@ -86,7 +86,7 @@ def CreateOrVerifyUser(user, password, request, helpdesk, name_create_user):
 
     except Exception as e:
         print(e)
-        return JsonResponse({"status": "error"}, status=400)
+        return JsonResponse({"status": "error"}, status=400, safe=True)
 
 
 @csrf_exempt
@@ -107,7 +107,7 @@ def validation(request):
 
         except Exception as e:
             print(e)
-            return JsonResponse({"status": e}, status=400)
+            return JsonResponse({"status": e}, status=400, safe=True)
 
         dominio = None
         server1 = None
@@ -188,7 +188,7 @@ def validation(request):
         except Exception as e:
             error_message = str(e)
             print(error_message)
-            return JsonResponse({"status": error_message}, status=401)
+            return JsonResponse({"status": error_message}, status=401, safe=True)
 
         extractor = None
         information = None
@@ -290,7 +290,7 @@ def validation(request):
             task.join()
 
             if not Valid:
-                return JsonResponse({"status": "Error"}, status=425)
+                return JsonResponse({"status": "Error"}, status=425, safe=True)
 
         except Exception as e:
             print(e)
@@ -308,7 +308,7 @@ def validation(request):
 
             environ["REACT_DATA"] = data_json
 
-            return JsonResponse({"status": "valid"}, status=200)
+            return JsonResponse({"status": "valid"}, status=200, safe=True)
 
         except Exception as e:
             error_message = str(e)

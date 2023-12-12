@@ -14,7 +14,6 @@ from datetime import date, datetime, timedelta
 from django.db.models import Q
 import calendar
 import pytz
-from dateutil import parser
 from magic import Magic
 import mimetypes
 from django.core.files.base import ContentFile
@@ -532,12 +531,12 @@ def getDashBoardBar(request):
                             print(e)
 
                 else:
-                    return JsonResponse({"data": None}, status=210)
+                    return JsonResponse({"data": None}, status=210, safe=True)
 
             if histogram_data == None:
-                return JsonResponse({"data": None}, status=210)
+                return JsonResponse({"data": None}, status=210, safe=True)
 
-            return JsonResponse(histogram_data, status=200)
+            return JsonResponse(histogram_data, status=200, safe=True)
 
         except Exception as e:
             print(e)
@@ -604,7 +603,7 @@ def getDashBoardBarMonth(request):
                         except Exception as e:
                             print(e)
 
-            return JsonResponse(histogram_data, status=200)
+            return JsonResponse(histogram_data, status=200, safe=True)
 
         except Exception as e:
             print(e)
@@ -668,7 +667,7 @@ def getDashBoardBarYear(request):
                         except Exception as e:
                             print(e)
 
-            return JsonResponse(histogram_data, status=200)
+            return JsonResponse(histogram_data, status=200, safe=True)
 
         except Exception as e:
             print(e)
@@ -713,11 +712,11 @@ def getDashBoardBarAll(request):
                     values[index] = values[index] + 1
 
             if not years or not values:
-                return JsonResponse({"data": None}, status=210)
+                return JsonResponse({"data": None}, status=210, safe=True)
             else:
                 histogram_data = {"days": years, "values": values}
 
-                return JsonResponse(histogram_data, status=200)
+                return JsonResponse(histogram_data, status=200, safe=True)
 
         except Exception as e:
             print(e)

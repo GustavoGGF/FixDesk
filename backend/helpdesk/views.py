@@ -17,14 +17,11 @@ from base64 import b64encode
 from PIL import Image, UnidentifiedImageError
 from io import BytesIO
 from magic import Magic
-from os import getcwd, listdir, path
-from os.path import join, exists, isdir
+from os import getcwd
+from os.path import exists, isdir
 from django.db.models import Q
 import mimetypes
-from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
-from django.core.files.storage import FileSystemStorage
-import zipfile
 
 
 # Create your views here.
@@ -70,6 +67,7 @@ def firstView(request):
             return JsonResponse(
                 {"data": Data_User, "token": csrf, "equipaments": equipament_list},
                 status=200,
+                safe=True,
             )
         except Exception as e:
             print(e)
@@ -96,7 +94,7 @@ def firstView(request):
                     return redirect("/login")
             except Exception as e:
                 json_error = str(e)
-                return JsonResponse({"status": json_error}, status=300)
+                return JsonResponse({"status": json_error}, status=300, safe=True)
         else:
             redirect("/login")
     else:
@@ -420,7 +418,9 @@ def history(request):
 
         except Exception as e:
             print(e)
-            return JsonResponse({"status": "Invalid Credentials"}, status=402)
+            return JsonResponse(
+                {"status": "Invalid Credentials"}, status=402, safe=True
+            )
 
         ticket_list = []
         ticket_data = None
@@ -445,7 +445,9 @@ def history(request):
                 ticket_objects.append(ticket_data)
 
             return JsonResponse(
-                {"data": Data_User, "token": csrf, "tickets": ticket_objects}
+                {"data": Data_User, "token": csrf, "tickets": ticket_objects},
+                status=200,
+                safe=True,
             )
 
         except Exception as e:
@@ -477,9 +479,13 @@ def toDashboard(request):
 
             for group in groups:
                 if group.name == group1:
-                    return JsonResponse({"status": "Credentials Invalid"}, status=403)
+                    return JsonResponse(
+                        {"status": "Credentials Invalid"}, status=403, safe=True
+                    )
                 elif group.name == group2:
-                    return JsonResponse({"status": "Credentials Invalid"}, status=203)
+                    return JsonResponse(
+                        {"status": "Credentials Invalid"}, status=203, safe=True
+                    )
         except Exception as e:
             print(e)
 
@@ -786,8 +792,6 @@ def ticket(request, id):
                 dates_for_alocate = t.date_alocate.split(",")
 
                 image_data = None
-
-            print(name_file)
 
             serialized_ticket.append(
                 {
