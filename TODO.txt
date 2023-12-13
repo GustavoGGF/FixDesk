@@ -6,8 +6,6 @@ diagrama de como funciona
 
 implementar Docker
 
-usar gpt para fazer os webkit
-
 imprimir os chamados
 
 localte={prBR} react daypicker

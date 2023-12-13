@@ -17,6 +17,7 @@ export const DivUpload = styled.div`
   box-shadow: 0 2px 5px rgba(black, 0.2);
   padding-bottom: 20px;
   background: #fff;
+  -webkit-animation: fadeup 0.5s 0.5s ease both;
   animation: fadeup 0.5s 0.5s ease both;
   transform: translateY(20px);
   opacity: 0;

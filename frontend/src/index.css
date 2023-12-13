@@ -10,11 +10,24 @@
   }
 }
 
+@-webkit-keyframes file {
+  50% {
+    box-shadow: -8px 8px 0 -3px #fff, -8px 8px 0 lightgray, -8px 8px 0 -3px #fff,
+      -8px 8px 0 lightgray;
+  }
+  75%,
+  100% {
+    box-shadow: -8px 8px 0 -3px #fff, -8px 8px 0 lightgray,
+      -16px 16px 0 -3px #fff, -16px 16px 0 lightgray;
+  }
+}
+
 #root {
   position: absolute;
 }
 
 .DIV1:hover {
+  -webkit-transform: scale(1.1);
   transform: scale(1.1);
 }
 
@@ -76,13 +89,16 @@
 }
 
 .upload {
+  -webkit-animation: fadeup 0.5s 0.5s ease both;
   animation: fadeup 0.5s 0.5s ease both;
 }
 
 .up {
+  -webkit-animation: faderight 0.5s 1.5s ease both;
   animation: faderight 0.5s 1.5s ease both;
 }
 .load {
+  -webkit-animation: faderight 1s 1.5s ease both;
   animation: faderight 1s 1.5s ease both;
 }
 
@@ -124,6 +140,7 @@
       justify-content: space-between;
       align-items: center;
       opacity: 0;
+      -webkit-animation: fade 0.35s ease both;
       animation: fade 0.35s ease both;
       .name {
         font-size: 12px;
@@ -143,6 +160,7 @@
         background-size: 100% 100%;
         &.active {
           animation: progress 30s linear;
+          -webkit-animation: progress 30s linear;
         }
       }
 
@@ -170,8 +188,10 @@
         }
         &.anim {
           animation: done1 0.5s ease forwards;
+          -webkit-animation: 0.5s ease forwards;
           #path {
             animation: done2 2.5s 0.5s ease forwards;
+            -webkit-animation: done2 2.5s 0.5s ease forwards;
           }
         }
         #path {
@@ -204,6 +224,14 @@
     opacity: 1;
   }
 }
+
+@-webkit-keyframes fadeup {
+  to {
+    -webkit-transform: translateY(0);
+    opacity: 1;
+  }
+}
+
 @keyframes faderight {
   to {
     transform: translateX(0);
