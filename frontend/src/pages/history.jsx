@@ -63,6 +63,7 @@ import ZIP from "../images/components/zip.jpg";
 import TXT from "../images/components/arquivo-txt.png";
 import WORD from "../images/components/palavra.png";
 import PDF from "../images/components/pdf.png";
+import DownTick from "../images/components/attachment.png";
 
 export default function History() {
   const [navbar, SetNavbar] = useState(false);
@@ -1426,6 +1427,37 @@ export default function History() {
       });
   }
 
+  function downloadTicket() {
+    fetch("/helpdesk/ticket/" + ticketID, {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": token,
+        "Download-Ticket": "download Ticket",
+      },
+      body: JSON.stringify({ download: "download" }),
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        const blob = downloadMail({
+          data: "application/pdf",
+          content: data.pdf,
+        });
+
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "NameFilePDF";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      })
+      .catch((err) => {
+        return console.log(err);
+      });
+  }
+
   return (
     <Div>
       {navbar && (
@@ -1627,17 +1659,25 @@ export default function History() {
       </section>
       {ticketWindow && (
         <TicketOpen className="position-fixed top-50 start-50 translate-middle">
-          <CloseBTN
-            onClick={Close_ticket}
-            className="position-absolute top-0 end-0"
-          >
-            <Close src={CloseIMG} alt="" />
-          </CloseBTN>
           {loading && <Loading />}
           <div>
-            <h3 className="text-center text-uppercase fw-bold text-danger mt-3">
-              chamado {ticketID}
-            </h3>
+            <div className="w-100 d-flex">
+              <div className="d-flex justify-content-start w-100">
+                <BtnNF onClick={downloadTicket}>
+                  <img src={DownTick} alt="download Ticket" />
+                </BtnNF>
+              </div>
+              <div className="w-100 justify-content-center d-flex">
+                <h3 className="text-center text-uppercase fw-bold text-danger mt-3">
+                  chamado {ticketID}
+                </h3>
+              </div>
+              <div className="w-100 justify-content-end d-flex">
+                <CloseBTN onClick={Close_ticket}>
+                  <Close src={CloseIMG} alt="" />
+                </CloseBTN>
+              </div>
+            </div>
             <div className="d-flex flex-column">
               <input
                 type="text"
@@ -1705,10 +1745,10 @@ export default function History() {
               />
               <input
                 type="text"
-                value={!machinenewuser ? "Necessita-se de máquina" : ""}
+                value="Necessita-se de máquina"
                 className="form-control"
                 disabled
-                hidden={machinenewuser !== null ? true : false}
+                hidden={machinenewuser === true ? false : true}
               />
               <input
                 type="text"

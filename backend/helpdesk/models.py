@@ -35,7 +35,7 @@ class SupportTicket(models.Model):
     name_new_user = models.TextField(max_length=15, blank=True, null=False)
     sector_new_user = models.TextField(max_length=30, blank=True, null=False)
     where_from = models.TextField(max_length=30, blank=True, null=False)
-    machine_new_user = models.BooleanField(default=False)
+    machine_new_user = models.BooleanField(blank=True, null=True)
     company_new_user = models.TextField(max_length=15, blank=True, null=False)
     software_new_user = models.TextField(max_length=300, blank=True, null=False)
     cost_center = models.IntegerField(null=False, blank=False, default=False)

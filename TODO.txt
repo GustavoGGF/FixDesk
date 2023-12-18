@@ -1,3 +1,7 @@
+transferencia de chamado
+
+chat come ultima letra
+
 responsividade
 
 Usar HTTPS para criptografar a comunicação entre o navegador do usuário e o servidor.
@@ -77,3 +81,7 @@ ajustar botão de mostrar mais tickets, mostrar quanto tiver no minimo 5 tickets
 ajustar os boões pre selecionados no filtro
 
 ajustar ticket de alocação de equipamento
+
+customizar o scrool
+
+tela para reportar bug

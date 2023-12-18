@@ -1044,7 +1044,7 @@ export default function Helpdesk() {
           const selectedValue = event.target.value;
           if (selectedValue === "yes") {
             setMachine(false);
-            SetNecessaryMachine(true);
+            SetNecessaryMachine(false);
             return;
           } else if (selectedValue === "no") {
             setMachine(true);
@@ -1053,7 +1053,7 @@ export default function Helpdesk() {
               "1. Deverá ser feita uma solicitação de equipamento"
             );
             setmessageinfo2("");
-            SetNecessaryMachine(false);
+            SetNecessaryMachine(true);
             return;
           }
         }
@@ -1158,7 +1158,7 @@ export default function Helpdesk() {
         return;
       }
 
-      if (sectornewuser.length < 2) {
+      if (sectornewuser.length < 1) {
         SetMessage(true);
         setTypeError("Falta de dados");
         setMessageError("Setor Obrigatório!!!");

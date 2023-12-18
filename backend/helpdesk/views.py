@@ -22,6 +22,8 @@ from os.path import exists, isdir
 from django.db.models import Q
 import mimetypes
 from django.core.files.base import ContentFile
+from fpdf import FPDF
+import re
 
 
 # Create your views here.
@@ -577,6 +579,427 @@ def ticket(request, id):
                     ticket.save()
 
                 return JsonResponse({"status": "ok"}, status=200, safe=True)
+
+            if "HTTP_DOWNLOAD_TICKET" in request.META:
+                ticket = None
+                pdf = None
+                data_object = None
+                data_format = None
+                directory = None
+                company = None
+                try:
+                    ticket = SupportTicket.objects.get(id=id)
+                    pdf = FPDF()
+                    pdf.add_page()
+                    directory = getcwd()
+                    pdf.add_font("Arial", "", f"{directory}/arial.ttf")
+                    pdf.set_font("Arial", size=12)
+                    pdf.cell(180, 5, txt=f"CHAMADO {ticket.id}", ln=False, align="C")
+                    x_position = pdf.get_x()
+                    y_position = pdf.get_y()
+                    pdf.set_xy(x_position, y_position)
+                    data_object = ticket.start_date.date()
+                    data_format = data_object.strftime("%d/%m/%Y")
+                    pdf.cell(
+                        20,
+                        5,
+                        txt=f"Data de Abertura: {data_format}",
+                        ln=False,
+                        align="R",
+                    )
+                    pdf.cell(
+                        200,
+                        10,
+                        txt=f"Usuário {ticket.ticketRequester}",
+                        ln=True,
+                        align="L",
+                    )
+                    pdf.cell(
+                        200,
+                        10,
+                        txt=f"Departamento: {ticket.department}",
+                        ln=True,
+                        align="L",
+                    )
+                    pdf.cell(
+                        200, 10, txt=f"Unidade: {ticket.company}", ln=True, align="L"
+                    )
+                    pdf.cell(200, 10, txt=f"Setor: {ticket.sector}", ln=True, align="L")
+                    pdf.cell(
+                        200,
+                        10,
+                        txt=f"Ocorrência: {ticket.occurrence}",
+                        ln=True,
+                        align="L",
+                    )
+                    pdf.cell(
+                        200, 10, txt=f"Problema: {ticket.problemn}", ln=True, align="L"
+                    )
+                    pdf.cell(
+                        200,
+                        10,
+                        txt=f"Setor Responsável pelo Chamado: {ticket.respective_area}",
+                        ln=True,
+                        align="L",
+                    )
+                    if ticket.responsible_technician != None:
+                        pdf.cell(
+                            200,
+                            10,
+                            txt=f"Tecnico Resposável pelo Chamado: {ticket.responsible_technician}",
+                            ln=True,
+                            align="L",
+                        )
+                    else:
+                        pdf.cell(
+                            200,
+                            10,
+                            txt="Tecnico Resposável pelo Chamado: Tecnico não Atribuido",
+                            ln=True,
+                            align="L",
+                        )
+                    if ticket.observation != "":
+                        pdf.cell(
+                            200,
+                            10,
+                            txt=f"Observação: {ticket.observation}",
+                            ln=True,
+                            align="L",
+                        )
+                    else:
+                        pdf.cell(
+                            200,
+                            10,
+                            txt="Observação: Informação não fornecida",
+                            ln=True,
+                            align="L",
+                        )
+                    if ticket.open == True:
+                        pdf.cell(
+                            200,
+                            10,
+                            txt="Status: Em Aberto",
+                            ln=True,
+                            align="L",
+                        )
+                    else:
+                        pdf.cell(
+                            200,
+                            10,
+                            txt="Status: Finalizado",
+                            ln=True,
+                            align="L",
+                        )
+                    if ticket.problemn == "Alocação de Máquina":
+                        pdf.cell(200, 10, txt="Maquina Alocada:", ln=True, align="L")
+                        pdf.image(
+                            f"{ticket.equipament.equipament}", w=100, h=100, x=10, y=120
+                        )
+                        pdf.set_xy(10, 220)
+                        pdf.cell(
+                            200,
+                            10,
+                            txt=f"Modelo: {ticket.equipament.model}",
+                            ln=True,
+                            align="L",
+                        )
+                        pdf.cell(
+                            200,
+                            10,
+                            txt=f"Unidade da Maquina: {ticket.equipament.company}",
+                            ln=True,
+                            align="L",
+                        )
+                        pdf.cell(
+                            200,
+                            10,
+                            txt=f"Data de alocação: {ticket.date_alocate}",
+                            ln=True,
+                            align="L",
+                        )
+                    if ticket.problemn == "Criacao de usuario de rede":
+                        pdf.cell(
+                            200,
+                            10,
+                            txt=f"Nome do Novo(a) Colaborador(a): {ticket.name_new_user}",
+                            ln=True,
+                            align="L",
+                        )
+                        pdf.cell(
+                            200,
+                            10,
+                            txt=f"Setor do Novo(a) Colaborador(a): {ticket.sector_new_user}",
+                            ln=True,
+                            align="L",
+                        )
+                        if ticket.where_from == "new":
+                            pdf.cell(
+                                200,
+                                10,
+                                txt="Tipo de Remanejamento: Nova Contratação",
+                                ln=True,
+                                align="L",
+                            )
+                        if ticket.machine_new_user == True:
+                            pdf.cell(
+                                200,
+                                10,
+                                txt="Necessidade de nova máquina: Sim",
+                                ln=True,
+                                align="L",
+                            )
+                        else:
+                            pdf.cell(
+                                200,
+                                10,
+                                txt="Necessidade de nova máquina: Não",
+                                ln=True,
+                                align="L",
+                            )
+                        company = ticket.company_new_user.replace("-", "\u2013")
+                        pdf.cell(
+                            200,
+                            10,
+                            txt=f"Unidade: {company}",
+                            ln=True,
+                            align="L",
+                        )
+                        if len(ticket.software_new_user) > 1:
+                            pdf.cell(
+                                200,
+                                10,
+                                txt=f"Softwares Necessários: {ticket.software_new_user}",
+                                ln=True,
+                                align="L",
+                            )
+                        pdf.cell(
+                            200,
+                            10,
+                            txt=f"Centro de Custo: {ticket.cost_center}",
+                            ln=True,
+                            align="L",
+                        )
+                        pdf.cell(
+                            200,
+                            10,
+                            txt=f"Cargo: {ticket.job_title_new_user}",
+                            ln=True,
+                            align="L",
+                        )
+
+                        mounths = []
+                        date = None
+                        number_into_mouth = None
+                        result = None
+                        year = None
+                        new_date = None
+
+                        try:
+                            mounths = [
+                                "Jan",
+                                "Feb",
+                                "Mar",
+                                "Apr",
+                                "May",
+                                "Jun",
+                                "Jul",
+                                "Aug",
+                                "Sep",
+                                "Oct",
+                                "Nov",
+                                "Dec",
+                            ]
+
+                            date = ticket.start_work_new_user
+
+                            number_into_mouth = None
+
+                            for i, sig in enumerate(mounths, start=1):
+                                if sig in date:
+                                    number_into_mouth = i
+                                    recort = date.find(sig)
+
+                                    result = date[
+                                        recort : recort + date[recort:].find(":") + 3
+                                    ]
+
+                                    result = result[:-6]
+
+                                    date = result[4:6]
+
+                                    year = result[-4:]
+
+                                    new_date = f"{date}/{number_into_mouth}/{year}"
+
+                        except Exception as e:
+                            return print(e)
+
+                        pdf.cell(
+                            200,
+                            10,
+                            txt=f"Data de Início das Atividade: {new_date}",
+                            ln=True,
+                            align="L",
+                        )
+
+                        if len(ticket.copy_profile_new_user) > 1:
+                            pdf.cell(
+                                200,
+                                10,
+                                txt=f"Copiar perfil de: {ticket.copy_profile_new_user}",
+                                ln=True,
+                                align="L",
+                            )
+
+                    if ticket.problemn == "Exclusao de usuario de rede":
+                        if len(ticket.mail_tranfer) > 1:
+                            pdf.cell(
+                                200,
+                                10,
+                                txt=f"Redirecionar e-mails para: {ticket.mail_tranfer}",
+                                ln=True,
+                                align="L",
+                            )
+                        if len(ticket.old_files) > 1:
+                            pdf.cell(
+                                200,
+                                10,
+                                txt=f"Enviar arquivos para: {ticket.old_files}",
+                                ln=True,
+                                align="L",
+                            )
+
+                        mounths = []
+                        date = None
+                        number_into_mouth = None
+                        result = None
+                        year = None
+                        new_date = None
+
+                        try:
+                            mounths = [
+                                "Jan",
+                                "Feb",
+                                "Mar",
+                                "Apr",
+                                "May",
+                                "Jun",
+                                "Jul",
+                                "Aug",
+                                "Sep",
+                                "Oct",
+                                "Nov",
+                                "Dec",
+                            ]
+
+                            date = ticket.start_work_new_user
+
+                            number_into_mouth = None
+
+                            for i, sig in enumerate(mounths, start=1):
+                                if sig in date:
+                                    number_into_mouth = i
+                                    recort = date.find(sig)
+
+                                    result = date[
+                                        recort : recort + date[recort:].find(":") + 3
+                                    ]
+
+                                    result = result[:-6]
+
+                                    date = result[4:6]
+
+                                    year = result[-4:]
+
+                                    new_date = f"{date}/{number_into_mouth}/{year}"
+
+                        except Exception as e:
+                            return print(e)
+
+                        pdf.cell(
+                            200,
+                            10,
+                            txt=f"Data de Início das Atividade: {new_date}",
+                            ln=True,
+                            align="L",
+                        )
+
+                    chats = None
+                    chat_format = None
+                    if len(ticket.chat) >= 1:
+                        try:
+                            chats = ticket.chat
+                            chat_format = r"\[([^]]*)\]"
+
+                            matchs = re.findall(chat_format, chats)
+
+                            pdf.add_page()
+
+                            pdf.cell(
+                                200,
+                                10,
+                                txt=f"CHAT",
+                                ln=True,
+                                align="C",
+                            )
+
+                            for chat in matchs:
+                                if "System" in chat:
+                                    chat = (
+                                        chat.replace("System:", "")
+                                        .replace("[", "")
+                                        .replace("]", "")
+                                    )
+
+                                    pdf.cell(
+                                        200,
+                                        10,
+                                        txt=chat,
+                                        ln=True,
+                                        align="C",
+                                    )
+
+                                if "Technician" in chat:
+                                    chat = (
+                                        chat.replace("Technician:", "")
+                                        .replace("[", "")
+                                        .replace("]", "")
+                                    )
+
+                                    pdf.cell(
+                                        200,
+                                        10,
+                                        txt=chat,
+                                        ln=True,
+                                        align="L",
+                                    )
+
+                                if "User" in chat:
+                                    chat = (
+                                        chat.replace("User:", "")
+                                        .replace("[", "")
+                                        .replace("]", "")
+                                    )
+
+                                    pdf.cell(
+                                        200,
+                                        10,
+                                        txt=chat,
+                                        ln=True,
+                                        align="R",
+                                    )
+
+                        except Exception as e:
+                            print(e)
+
+                    pdf_output = pdf.output(dest="S")
+                    pdf_base64 = b64encode(pdf_output).decode("utf-8")
+                    return JsonResponse(
+                        {"status": "ok", "pdf": pdf_base64}, status=200, safe=True
+                    )
+                except Exception as e:
+                    print(e)
+                    return
 
         except Exception as e:
             print(e)

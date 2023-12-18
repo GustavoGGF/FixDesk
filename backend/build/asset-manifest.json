@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.75d29f13.css",
-    "main.js": "/static/js/main.b1497680.js",
+    "main.js": "/static/js/main.0197bf54.js",
     "static/media/lupalogo.png": "/static/media/lupalogo.0a08762f90fe37fe47db.png",
     "static/media/definicoes.png": "/static/media/definicoes.25f9223de2d58f6bf587.png",
     "static/media/close.png": "/static/media/close.92eb52856aeed7bf88fc.png",
@@ -9,10 +9,10 @@
     "static/media/identificacao.png": "/static/media/identificacao.ef008ff7999bbf4d6a1f.png",
     "index.html": "/index.html",
     "main.75d29f13.css.map": "/static/css/main.75d29f13.css.map",
-    "main.b1497680.js.map": "/static/js/main.b1497680.js.map"
+    "main.0197bf54.js.map": "/static/js/main.0197bf54.js.map"
   },
   "entrypoints": [
     "static/css/main.75d29f13.css",
-    "static/js/main.b1497680.js"
+    "static/js/main.0197bf54.js"
   ]
 }
