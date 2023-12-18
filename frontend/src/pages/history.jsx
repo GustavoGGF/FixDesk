@@ -1448,7 +1448,7 @@ export default function History() {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = "NameFilePDF";
+        a.download = "Chamado: " + ticketID;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
