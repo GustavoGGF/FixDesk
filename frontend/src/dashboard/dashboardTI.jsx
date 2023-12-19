@@ -1881,7 +1881,7 @@ export default function DashboardTI() {
                   <input
                     className="form-control h-100 fs-5"
                     type="text"
-                    onKeyDown={NewChat}
+                    onKeyUp={NewChat}
                     id="input-chat"
                   />
                 </div>

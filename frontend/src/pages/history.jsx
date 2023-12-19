@@ -824,6 +824,7 @@ export default function History() {
 
   function NewChat(event) {
     const newText = event.target.value;
+    console.log(newText);
     if (event.key === "Enter") {
       SetTextChat(newText);
       SendChat();
@@ -1910,7 +1911,7 @@ export default function History() {
                   <input
                     className="form-control h-100 fs-5"
                     type="text"
-                    onKeyDown={NewChat}
+                    onKeyUp={NewChat}
                     id="input-chat"
                   />
                 </div>

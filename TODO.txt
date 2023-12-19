@@ -1,5 +1,3 @@
-chat come ultima letra
-
 responsividade
 
 Usar HTTPS para criptografar a comunicação entre o navegador do usuário e o servidor.
