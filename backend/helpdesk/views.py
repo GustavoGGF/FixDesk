@@ -536,6 +536,8 @@ def ticket(request, id):
                         chat=f"[System:{technician} atendeu ao Chamado]",
                     )
 
+                    return JsonResponse({}, status=200, safe=True)
+
                 except Exception as e:
                     print(e)
 
