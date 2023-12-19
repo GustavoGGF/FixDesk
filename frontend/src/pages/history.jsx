@@ -44,6 +44,8 @@ import {
   ImgBTNCls,
   AdjustListFiles,
   DivHR,
+  PBloq,
+  DivCal,
 } from "../styles/historyStyle";
 import { DivNameFile, BtnFile, ImgFile } from "../styles/helpdeskStyle";
 import { DayPicker } from "react-day-picker";
@@ -1801,7 +1803,7 @@ export default function History() {
                 disabled
                 hidden={oldfile.length > 1 ? false : true}
               />
-              <p
+              <PBloq
                 hidden={
                   jobtitlenewuser.length > 1 || mailtranfer.length > 1
                     ? false
@@ -1811,8 +1813,8 @@ export default function History() {
                 {jobtitlenewuser.length > 1
                   ? "Funcionario iniciara as atividades dia:"
                   : "Bloquear acesso a partir de:"}
-              </p>
-              <div
+              </PBloq>
+              <DivCal
                 hidden={
                   jobtitlenewuser.length > 1 || mailtranfer.length > 1
                     ? false
@@ -1826,8 +1828,9 @@ export default function History() {
                   selected={startworknewuser}
                   className="cald"
                   mode="single"
+                  locale={ptBR}
                 />
-              </div>
+              </DivCal>
               <input
                 type="text"
                 value={"Copiar usuario de: " + copyprofilenewuser}

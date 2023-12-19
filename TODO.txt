@@ -6,14 +6,6 @@ diagrama de como funciona
 
 implementar Docker
 
-ajusta calendario da tela de exclusão de usuario
-
-bloquear acessa fica aparecendo
-
-colocar no filtro tambem para mostrar os chamados abertos, atendisos e fechados
-
-verificação de token nos filtros e grupos
-
 melhorar botões navbar
 
 deixar cinza dashboard se for user

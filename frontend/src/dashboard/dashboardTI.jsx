@@ -49,6 +49,12 @@ import {
   AdjustListFiles,
   ImgBTNCls,
   BtnNF,
+  PBloq,
+  DivINp,
+  DivAlocate,
+  IMGFiles2,
+  Calendar,
+  DivCal,
 } from "../styles/historyStyle";
 import { DivNameFile, BtnFile, ImgFile } from "../styles/helpdeskStyle.js";
 import CloseIMG from "../images/components/close.png";
@@ -74,6 +80,9 @@ import PDF from "../images/components/pdf.png";
 import Download from "../images/components/download.png";
 import Exclude from "../images/components/close.png";
 import DownTick from "../images/components/attachment.png";
+import { DayPicker } from "react-day-picker";
+import "react-day-picker/dist/style.css";
+import ptBR from "date-fns/locale/pt";
 
 export default function DashboardTI() {
   const [loading, SetLoading] = useState(true);
@@ -127,11 +136,27 @@ export default function DashboardTI() {
   const [newFiles, SetNewFiles] = useState(false);
   const [nameNWFiles, SetNameNWFiles] = useState();
   const [classBlur, SetClassBlur] = useState("");
+  const [namenewuser, SetNameNewUser] = useState("");
+  const [sectornewuser, SetSectorNewUser] = useState("undefined");
+  const [wherefrom, SetWhereFrom] = useState("");
+  const [machinenewuser, SetMachineNewUser] = useState();
+  const [companynewuser, SetCompanyNewUser] = useState("");
+  const [softwarenewuser, SetSoftwareNewUser] = useState("");
+  const [costcenter, SetCostCenter] = useState("");
+  const [jobtitlenewuser, SetJobTitleNewUser] = useState("");
+  const [startworknewuser, SetStartWorkNewUser] = useState();
+  const [copyprofilenewuser, SetCopyProfileNewUser] = useState("");
+  const [mailtranfer, SetMailTranfer] = useState("");
+  const [oldfile, SetOldFiles] = useState("");
+  const [imageEquipament, SetImageEquipament] = useState();
+  const [equipamentLocate, SetEquipamentLocate] = useState("");
+  const [daysLocated, SetDaysLocated] = useState();
 
   let count = 0;
   let timeoutId;
   const UpNwfile = [];
   let colorBorder = "";
+  let daysLCT = [];
 
   function aumentarCount() {
     count++;
@@ -385,6 +410,49 @@ export default function DashboardTI() {
         SetTicketResponsible_Technician(data.responsible_technician);
         SetTicketID(data.id);
         SetTicketOpen(data.open);
+        SetNameNewUser(data.name_new_user);
+        if (data.sector_new_user.length > 1) {
+          SetSectorNewUser(data.sector_new_user);
+        } else {
+          SetSectorNewUser("undefined");
+        }
+        SetWhereFrom(data.where_from);
+        SetMachineNewUser(data.machine_new_user);
+        SetCompanyNewUser(data.company_new_user);
+        SetSoftwareNewUser(data.software_new_user);
+        SetCostCenter(data.cost_center);
+        SetJobTitleNewUser(data.job_title_new_user);
+        var nwdate = new Date(data.start_work_new_user);
+        SetStartWorkNewUser(nwdate);
+        SetCopyProfileNewUser(data.copy_profile_new_user);
+        SetMailTranfer(data.mail_tranfer);
+        SetOldFiles(data.old_files);
+
+        if (data.equipament["image"] !== undefined) {
+          const Div = (
+            <DivAlocate className="d-flex flex-column w-100 align-items-center">
+              <p className="text-center">Modelo: {data.equipament["model"]}</p>
+              <IMGFiles2
+                src={`data:image/jpeg;base64,${data.equipament["image"]}`}
+                onClick={openImage}
+                alt=""
+              />
+            </DivAlocate>
+          );
+
+          SetImageEquipament(Div);
+          SetEquipamentLocate(data.equipament["company"]);
+
+          for (let NWdate of data.days_alocated) {
+            var date = new Date(NWdate);
+            daysLCT.push(date);
+          }
+
+          SetDaysLocated(daysLCT);
+
+          const calendar = document.getElementById("calendarALT");
+          calendar.classList.add("AdjustWid");
+        }
 
         var name_verify = userData.name;
 
@@ -1788,6 +1856,136 @@ export default function DashboardTI() {
                 className="form-control"
                 disabled
               />
+              <input
+                type="text"
+                value={"Nome: " + namenewuser}
+                className="form-control"
+                disabled
+                hidden={namenewuser.length > 1 ? false : true}
+              />
+              <input
+                type="text"
+                value={"Setor: " + sectornewuser}
+                className="form-control"
+                disabled
+                hidden={sectornewuser === "undefined" ? true : false}
+              />
+              <input
+                type="text"
+                value={"Remanejamento: " + wherefrom}
+                className="form-control"
+                disabled
+                hidden={wherefrom.length > 1 ? false : true}
+              />
+              <input
+                type="text"
+                value="Necessita-se de máquina"
+                className="form-control"
+                disabled
+                hidden={machinenewuser === true ? false : true}
+              />
+              <input
+                type="text"
+                value={"Filial: " + companynewuser}
+                className="form-control"
+                disabled
+                hidden={companynewuser.length > 1 ? false : true}
+              />
+              <input
+                type="text"
+                value={"Softwares Necessisarios: " + softwarenewuser}
+                className="form-control"
+                disabled
+                hidden={softwarenewuser.length > 1 ? false : true}
+              />
+              <input
+                type="text"
+                value={"Centro de custo: " + costcenter}
+                className="form-control"
+                disabled
+                hidden={costcenter.length > 1 ? false : true}
+              />
+              <input
+                type="text"
+                value={"Cargo: " + jobtitlenewuser}
+                className="form-control"
+                disabled
+                hidden={jobtitlenewuser.length > 1 ? false : true}
+              />
+              <input
+                type="text"
+                value={"Centro de custo: " + costcenter}
+                className="form-control"
+                disabled
+                hidden={costcenter.length > 1 ? false : true}
+              />
+              <input
+                type="text"
+                value={"Transferir e-mails para: " + mailtranfer}
+                className="form-control"
+                disabled
+                hidden={mailtranfer.length > 1 ? false : true}
+              />
+              <input
+                type="text"
+                value={"Transferir dados para: " + oldfile}
+                className="form-control"
+                disabled
+                hidden={oldfile.length > 1 ? false : true}
+              />
+              <PBloq
+                hidden={
+                  jobtitlenewuser.length > 1 || mailtranfer.length > 1
+                    ? false
+                    : true
+                }
+              >
+                {jobtitlenewuser.length > 1
+                  ? "Funcionario iniciara as atividades dia:"
+                  : "Bloquear acesso a partir de:"}
+              </PBloq>
+              <DivCal
+                hidden={
+                  jobtitlenewuser.length > 1 || mailtranfer.length > 1
+                    ? false
+                    : true
+                }
+              >
+                <DayPicker
+                  id="calendarALT"
+                  fixedWeeks
+                  showOutsideDays
+                  selected={startworknewuser}
+                  className="cald"
+                  mode="single"
+                />
+              </DivCal>
+              <input
+                type="text"
+                value={"Copiar usuario de: " + copyprofilenewuser}
+                className="form-control"
+                disabled
+                hidden={copyprofilenewuser.length > 1 ? false : true}
+              />
+              <DivINp hidden={imageEquipament === undefined}>
+                {imageEquipament}
+                <DivAlocate className="d-flex flex-column">
+                  <p className="text-center">Unidade: {equipamentLocate}</p>
+                </DivAlocate>
+                <Calendar className="d-flex flex-column">
+                  <p className="text-center">Data de alocação</p>
+                  <div>
+                    <DayPicker
+                      id="calendarALT"
+                      fixedWeeks
+                      showOutsideDays
+                      selected={daysLocated}
+                      mode="multiple"
+                      localte={ptBR}
+                    />
+                  </div>
+                </Calendar>
+              </DivINp>
               <input
                 type="text"
                 value={

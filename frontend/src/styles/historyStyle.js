@@ -303,3 +303,12 @@ export const BtnNF = styled.button`
   cursor: pointer;
   border: none;
 `;
+
+export const PBloq = styled.p`
+  margin: 10px;
+`;
+
+export const DivCal = styled.div`
+  display: flex;
+  justify-content: center;
+`;
