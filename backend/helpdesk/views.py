@@ -518,32 +518,41 @@ def ticket(request, id):
             body = loads(request.body)
 
             if "responsible_technician" in body:
-                responsible_technician = body["responsible_technician"]
-                technician = body["technician"]
+                try:
+                    responsible_technician = body["responsible_technician"]
+                    technician = body["technician"]
 
-                ticket = SupportTicket.objects.get(id=id)
+                    ticket = SupportTicket.objects.get(id=id)
 
-                current_responsible_technician = ticket.responsible_technician
+                    current_responsible_technician = ticket.responsible_technician
 
-                if current_responsible_technician == responsible_technician:
-                    return JsonResponse(
-                        {"status": "invalid modify"}, status=304, safe=True
+                    if current_responsible_technician == responsible_technician:
+                        return JsonResponse(
+                            {"status": "invalid modify"}, status=304, safe=True
+                        )
+
+                    SupportTicket.objects.filter(id=id).update(
+                        responsible_technician=responsible_technician,
+                        chat=f"[System:{technician} atendeu ao Chamado]",
                     )
 
-                SupportTicket.objects.filter(id=id).update(
-                    responsible_technician=responsible_technician,
-                    chat=f"[System:{technician} atendeu ao Chamado]",
-                )
+                except Exception as e:
+                    print(e)
 
             if "chat" in body:
                 if "technician" in body:
-                    chat = body["chat"]
-                    ticket = SupportTicket.objects.get(id=id)
-                    ticket.chat += f"[Technician: {chat}]"
+                    try:
+                        chat = body["chat"]
+                        ticket = SupportTicket.objects.get(id=id)
+                        ticket.chat += f"[Technician: {chat}]"
 
-                    ticket.save()
+                        ticket.save()
 
-                    return JsonResponse({"chat": ticket.chat}, status=200, safe=True)
+                        return JsonResponse(
+                            {"chat": ticket.chat}, status=200, safe=True
+                        )
+                    except Exception as e:
+                        print(e)
 
                 if "User" in body:
                     chat = body["chat"]
@@ -587,6 +596,7 @@ def ticket(request, id):
                 data_format = None
                 directory = None
                 company = None
+                pdf_base64 = None
                 try:
                     ticket = SupportTicket.objects.get(id=id)
                     pdf = FPDF()
@@ -1000,7 +1010,6 @@ def ticket(request, id):
                 except Exception as e:
                     print(e)
                     return
-
         except Exception as e:
             print(e)
             return
