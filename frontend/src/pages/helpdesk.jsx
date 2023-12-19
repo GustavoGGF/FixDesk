@@ -36,6 +36,7 @@ import {
   ListFiles,
 } from "../styles/Equipment_RegistrationStyle";
 import { DayPicker } from "react-day-picker";
+import ptBR from "date-fns/locale/pt";
 import "react-day-picker/dist/style.css";
 import { format } from "date-fns";
 import Loading from "../components/loading";
@@ -2045,6 +2046,7 @@ export default function Helpdesk() {
                     onSelect={setSelectedDay}
                     mode="single"
                     footer={footerDay}
+                    locale={ptBR}
                   />
                 </Calendar>
               </div>
@@ -2116,6 +2118,7 @@ export default function Helpdesk() {
                   onSelect={setSelectedDay}
                   mode="single"
                   footer={footerDay}
+                  locale={ptBR}
                 />
               </div>
             </div>
@@ -2275,6 +2278,7 @@ export default function Helpdesk() {
                   selected={daysForAlocate}
                   onSelect={SetDaysForAlocate}
                   footer={footerAlocate}
+                  locale={ptBR}
                 />
               </Calendar>
             </div>

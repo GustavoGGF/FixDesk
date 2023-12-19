@@ -64,6 +64,7 @@ import TXT from "../images/components/arquivo-txt.png";
 import WORD from "../images/components/palavra.png";
 import PDF from "../images/components/pdf.png";
 import DownTick from "../images/components/attachment.png";
+import ptBR from "date-fns/locale/pt";
 
 export default function History() {
   const [navbar, SetNavbar] = useState(false);
@@ -1848,6 +1849,7 @@ export default function History() {
                       showOutsideDays
                       selected={daysLocated}
                       mode="multiple"
+                      localte={ptBR}
                     />
                   </div>
                 </Calendar>
