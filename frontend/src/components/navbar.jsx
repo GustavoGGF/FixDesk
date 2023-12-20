@@ -1,8 +1,19 @@
 import React from "react";
-import { Div1, A, Logout, Img } from "../styles/navbarStyle";
+import {
+  Div1,
+  A,
+  Logout,
+  Img,
+  ALink,
+  SpanUser,
+  CLose,
+  BtnClose,
+  H5,
+} from "../styles/navbarStyle";
 import "../styles/bootstrap-5.3.0-dist/css/bootstrap.css";
 import "../styles/bootstrap-5.3.0-dist/js/bootstrap";
 import Logo from "../images/logos/fixdesk.png";
+import ImgClose from "../images/components/close.png";
 
 export default function NavBar({ Name, JobTitle }) {
   function helpdeskPage() {
@@ -42,15 +53,22 @@ export default function NavBar({ Name, JobTitle }) {
         <div className="container-fluid no-wrap">
           <div className="d-flex justify-content-between w-100">
             <div>
-              <Img src={Logo} className="img-fluid" alt="" />{" "}
-              <a className="navbar-brand" href="/helpdesk">
+              <Img
+                src={Logo}
+                className="img-fluid"
+                alt=""
+                onClick={() => {
+                  return (window.location.href = "/hepdesk");
+                }}
+              />
+              <ALink className="navbar-brand" href="/helpdesk">
                 FixDesk
-              </a>
+              </ALink>
             </div>
             <divc className="d-flex">
               <Div1 className="d-flex flex-column">
-                <span>{Name}</span>
-                <span>{JobTitle}</span>
+                <SpanUser>{Name}</SpanUser>
+                <SpanUser>{JobTitle}</SpanUser>
               </Div1>
               <button
                 className="navbar-toggler"
@@ -72,21 +90,28 @@ export default function NavBar({ Name, JobTitle }) {
             aria-labelledby="offcanvasNavbarLabel"
           >
             <div className="offcanvas-header bg-primary">
-              <h5 className="offcanvas-title" id="offcanvasNavbarLabel">
-                FixDesk
-              </h5>
-              <button
+              <div>
+                <Img src={Logo} alt="" />
+                <H5
+                  className="offcanvas-title fw-bold"
+                  id="offcanvasNavbarLabel"
+                >
+                  FixDesk
+                </H5>
+              </div>
+              <BtnClose
                 type="button"
-                className="btn-close"
                 data-bs-dismiss="offcanvas"
                 aria-label="Close"
-              ></button>
+              >
+                <CLose src={ImgClose} alt="" />
+              </BtnClose>
             </div>
             <div className="offcanvas-body bg-primary">
               <ul className="navbar-nav justify-content-start flex-grow-1 pe-3 h-100 position-relative">
                 <li className="nav-item">
                   <A
-                    className="nav-link"
+                    className="nav-link btn btn-light"
                     aria-current="page"
                     onClick={helpdeskPage}
                   >
@@ -95,7 +120,7 @@ export default function NavBar({ Name, JobTitle }) {
                 </li>
                 <li className="nav-item">
                   <A
-                    className="nav-link"
+                    className="nav-link btn btn-light"
                     aria-current="page"
                     onClick={historyPage}
                   >
@@ -104,7 +129,7 @@ export default function NavBar({ Name, JobTitle }) {
                 </li>
                 <li className="nav-item">
                   <A
-                    className="nav-link"
+                    className="nav-link btn btn-light"
                     aria-current="page"
                     onClick={DashboardPage}
                   >
@@ -112,7 +137,11 @@ export default function NavBar({ Name, JobTitle }) {
                   </A>
                 </li>
                 <li className="nav-item">
-                  <A className="nav-link" aria-current="page" onClick={FAQPage}>
+                  <A
+                    className="nav-link btn btn-light"
+                    aria-current="page"
+                    onClick={FAQPage}
+                  >
                     FAQ
                   </A>
                 </li>
