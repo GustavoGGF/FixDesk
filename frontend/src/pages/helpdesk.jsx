@@ -45,6 +45,19 @@ import Cloud from "../images/components/cloud-uploading.png";
 import Exclude from "../images/components/close.png";
 
 export default function Helpdesk() {
+  useEffect(() => {
+    const Theme = localStorage.getItem("Theme");
+    if (Theme === null) {
+      localStorage.setItem("Theme", "black");
+      return ThemeBlack();
+    } else if (Theme === "black") {
+      return ThemeBlack();
+    } else if (Theme === "light") {
+      return ThemeLight();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const [csrf, SetCSRFToken] = useState("");
   const [messagetitle, setMessagetitle] = useState("");
   const [messageinfo1, setmessageinfo1] = useState("");
@@ -103,6 +116,18 @@ export default function Helpdesk() {
   const [maildelegation, SetMailDelegation] = useState("");
   const [dirsave, SetDirSave] = useState("");
   const [nameOnDropFiles, SetNameOnDropFiles] = useState("");
+  const [theme, SetTheme] = useState("");
+  const [themeTicket, SetThemeTicket] = useState("");
+
+  function ThemeBlack() {
+    SetThemeTicket("");
+    return SetTheme("themeBlack");
+  }
+
+  function ThemeLight() {
+    SetThemeTicket("themeLightTicket");
+    return SetTheme("themeLight");
+  }
 
   const footerDay = selectedDay ? (
     <p>Você selecionou {format(selectedDay, "PPP")}</p>
@@ -1616,7 +1641,7 @@ export default function Helpdesk() {
   }
 
   return (
-    <Div>
+    <Div classList={theme}>
       {navbar && <NavBar Name={Data.name} JobTitle={Data.job_title} />}
       {loading && (
         <div className="position-absolute top-50 start-50 translate-middle">
@@ -1633,7 +1658,9 @@ export default function Helpdesk() {
         </div>
       )}
       {dashboard && (
-        <Form className="mx-auto d-flex flex-column align-items-center justify-content-around">
+        <Form
+          className={`mx-auto d-flex flex-column align-items-center justify-content-around ${themeTicket}`}
+        >
           <div className="mb-3">
             <input type="hidden" name="_csrf" value={csrf} />
             <label htmlFor="nameInput" className="form-label">

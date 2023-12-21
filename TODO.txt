@@ -61,3 +61,7 @@ ajustar ticket de alocação de equipamento
 customizar o scrool
 
 tela para reportar bug
+
+alocagem de equipamento quando não tem equipamento em X unidade
+
+setinha para baixo do tema

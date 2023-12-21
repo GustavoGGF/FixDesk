@@ -21,7 +21,6 @@ import "../styles/bootstrap/js/bootstrap.js";
 import Logo from "../images/logos/fixdesk.png";
 import ImgClose from "../images/components/close.png";
 import ArrowDown from "../images/components/caret-down-square.svg";
-
 export default function NavBar({ Name, JobTitle }) {
   document.getElementById("root").addEventListener("click", function (event) {
     if (
@@ -129,6 +128,12 @@ export default function NavBar({ Name, JobTitle }) {
     }
 
     return;
+  }
+
+  function ThemeLight() {
+    localStorage.setItem("Theme", "light");
+
+    return window.location.reload();
   }
 
   return (
@@ -252,7 +257,11 @@ export default function NavBar({ Name, JobTitle }) {
                           id="dropcontent2"
                           className="visually-hidden"
                         >
-                          <DropBTN className="btn btn-light" id="btn2">
+                          <DropBTN
+                            className="btn btn-light"
+                            id="btn2"
+                            onClick={ThemeLight}
+                          >
                             Claro
                           </DropBTN>
                           <DropBTN className="btn btn-light" id="btn3">

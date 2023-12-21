@@ -7,6 +7,18 @@ import Loading from "../components/loading";
 import "animate.css";
 
 export default function Login() {
+  useEffect(() => {
+    const Theme = localStorage.getItem("Theme");
+    if (Theme === null) {
+      localStorage.setItem("Theme", "black");
+      return ThemeBlack();
+    } else if (Theme === "black") {
+      return ThemeBlack();
+    } else if (Theme === "light") {
+      return ThemeLight();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const [loginPage, SetLoginPage] = useState(true);
   const [passlimit, SetPassLimit] = useState(false);
   const [awaitValidation, SAwaitValidation] = useState(false);
@@ -14,6 +26,15 @@ export default function Login() {
   const [typemessage, SetTypeMessage] = useState("");
   const [messageerror, SetMessageError] = useState("");
   const [animate, SetAnimate] = useState("");
+  const [theme, SetTheme] = useState("");
+
+  function ThemeBlack() {
+    return SetTheme("themeBlack");
+  }
+
+  function ThemeLight() {
+    return SetTheme("themeLight");
+  }
 
   function verifylogin(event) {
     SetLoginPage(false);
@@ -88,7 +109,7 @@ export default function Login() {
   }, [animate]);
 
   return (
-    <Div>
+    <Div className={theme}>
       {message && (
         <div className="mt-5 position-relative">
           <Message
