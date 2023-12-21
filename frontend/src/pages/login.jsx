@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import "../styles/bootstrap-5.3.0-dist/css/bootstrap.css";
+import "../styles/bootstrap/css/bootstrap.css";
 import Logo from "../images/logos/lupalogo.png";
 import { Div, IMG, Span } from "../styles/loginStyle";
 import Message from "../components/message";

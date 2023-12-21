@@ -59,10 +59,8 @@ import {
 import { DivNameFile, BtnFile, ImgFile } from "../styles/helpdeskStyle.js";
 import CloseIMG from "../images/components/close.png";
 import Message from "../components/message";
-import "../styles/bootstrap-5.3.0-dist/css/bootstrap.css";
-import "../styles/bootstrap-5.3.0-dist/js/bootstrap.js";
-import "../styles/bootstrap-5.3.0-dist/js/bootstrap.bundle";
-import "../styles/bootstrap-5.3.0-dist/js/bootstrap.esm";
+import "../styles/bootstrap/css/bootstrap.css";
+import "../styles/bootstrap/js/bootstrap";
 import IMG1 from "../images/dashboard_TI/quantity_1.png";
 import IMG2 from "../images/dashboard_TI/quantity_2.png";
 import IMG3 from "../images/dashboard_TI/quantity_3.png";

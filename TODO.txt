@@ -6,17 +6,9 @@ diagrama de como funciona
 
 implementar Docker
 
-melhorar botões navbar
-
-deixar cinza dashboard se for user
-
 tema dark light
 
 trocar o sql
-
-tratamento de cada url que tentam acessar indevidamente
-
-validar que helpdesk está tentando acessar dashboard TI
 
 tela de loading para todos
 

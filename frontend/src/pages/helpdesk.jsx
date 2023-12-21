@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import NavBar from "../components/navbar";
-import "../styles/bootstrap-5.3.0-dist/css/bootstrap.css";
+import "../styles/bootstrap/css/bootstrap.css";
 import {
   Div,
   Form,

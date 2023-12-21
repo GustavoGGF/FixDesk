@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React from "react";
 import {
   Div1,
@@ -9,13 +10,44 @@ import {
   CLose,
   BtnClose,
   H5,
+  DropBTN,
+  DropDown,
+  DropContent,
+  Arrow,
+  DropContent2,
 } from "../styles/navbarStyle";
-import "../styles/bootstrap-5.3.0-dist/css/bootstrap.css";
-import "../styles/bootstrap-5.3.0-dist/js/bootstrap";
+import "../styles/bootstrap/css/bootstrap.css";
+import "../styles/bootstrap/js/bootstrap.js";
 import Logo from "../images/logos/fixdesk.png";
 import ImgClose from "../images/components/close.png";
+import ArrowDown from "../images/components/caret-down-square.svg";
 
 export default function NavBar({ Name, JobTitle }) {
+  document.getElementById("root").addEventListener("click", function (event) {
+    if (
+      event.target.id !== "btndrop" &&
+      event.target.id !== "dropcontent" &&
+      event.target.id !== "imgdrop" &&
+      event.target.id !== "dropcontent2" &&
+      event.target.id !== "btn3" &&
+      event.target.id !== "btn2" &&
+      event.target.id !== "btn1" &&
+      event.target.id !== "dropdwn2"
+    ) {
+      if (
+        !document
+          .getElementById("dropcontent")
+          .classList.contains("visually-hidden")
+      ) {
+        document.getElementById("dropcontent").classList.add("visually-hidden");
+        return;
+      } else {
+        return;
+      }
+    }
+    return;
+  });
+
   function helpdeskPage() {
     return (window.location.href = "/helpdesk/");
   }
@@ -45,6 +77,58 @@ export default function NavBar({ Name, JobTitle }) {
       .catch((err) => {
         return console.log(err);
       });
+  }
+
+  function DropD(event) {
+    console.log(event.target.id);
+    if (
+      (event.target.id === "btndrop" &&
+        document
+          .getElementById("dropcontent")
+          .classList.contains("visually-hidden")) ||
+      (event.target.id === "imgdrop" &&
+        document
+          .getElementById("dropcontent")
+          .classList.contains("visually-hidden"))
+    ) {
+      document
+        .getElementById("dropcontent")
+        .classList.remove("visually-hidden");
+      return;
+    } else if (
+      (event.target.id === "btndrop" &&
+        !document
+          .getElementById("dropcontent")
+          .classList.contains("visually-hidden")) ||
+      (event.target.id === "imgdrop" &&
+        !document
+          .getElementById("dropcontent")
+          .classList.contains("visually-hidden"))
+    ) {
+      document.getElementById("dropcontent").classList.add("visually-hidden");
+      document.getElementById("dropcontent2").classList.add("visually-hidden");
+      return;
+    } else if (
+      event.target.id === "btn1" &&
+      document
+        .getElementById("dropcontent2")
+        .classList.contains("visually-hidden")
+    ) {
+      document
+        .getElementById("dropcontent2")
+        .classList.remove("visually-hidden");
+      return;
+    } else if (
+      event.target.id === "btn1" &&
+      !document
+        .getElementById("dropcontent2")
+        .classList.contains("visually-hidden")
+    ) {
+      document.getElementById("dropcontent2").classList.add("visually-hidden");
+      return;
+    }
+
+    return;
   }
 
   return (
@@ -90,7 +174,7 @@ export default function NavBar({ Name, JobTitle }) {
             aria-labelledby="offcanvasNavbarLabel"
           >
             <div className="offcanvas-header bg-primary">
-              <div>
+              <div className="d-flex align-items-center">
                 <Img src={Logo} alt="" />
                 <H5
                   className="offcanvas-title fw-bold"
@@ -144,6 +228,40 @@ export default function NavBar({ Name, JobTitle }) {
                   >
                     FAQ
                   </A>
+                </li>
+                <li className="nav-item">
+                  <DropDown>
+                    <DropBTN
+                      className="btn btn-light"
+                      onClick={DropD}
+                      id="btndrop"
+                    >
+                      Configuração
+                      <Arrow src={ArrowDown} alt="" id="imgdrop" />
+                    </DropBTN>
+                    <DropContent className="visually-hidden" id="dropcontent">
+                      <DropDown id="dropdwn2">
+                        <DropBTN
+                          className="btn btn-light"
+                          id="btn1"
+                          onClick={DropD}
+                        >
+                          Tema
+                        </DropBTN>
+                        <DropContent2
+                          id="dropcontent2"
+                          className="visually-hidden"
+                        >
+                          <DropBTN className="btn btn-light" id="btn2">
+                            Claro
+                          </DropBTN>
+                          <DropBTN className="btn btn-light" id="btn3">
+                            Escuro
+                          </DropBTN>
+                        </DropContent2>
+                      </DropDown>
+                    </DropContent>
+                  </DropDown>
                 </li>
                 <li className="nav-item position-absolute bottom-0 start-50 translate-middle-x w-100">
                   <Logout
