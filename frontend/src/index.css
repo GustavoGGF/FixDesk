@@ -365,3 +365,23 @@
 .themeBlack {
   background-color: #201b2c;
 }
+
+.colorBlack {
+  color: #f1faee;
+}
+
+.colorLight {
+  color: #201b2c;
+}
+
+.themeFilterLight {
+  -webkit-box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.75);
+  -moz-box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.75);
+  box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.75);
+}
+
+.themeCardLight {
+  -webkit-box-shadow: -1px 13px 10px 3px rgba(0, 0, 0, 0.75);
+  -moz-box-shadow: -1px 13px 10px 3px rgba(0, 0, 0, 0.75);
+  box-shadow: -1px 13px 10px 3px rgba(0, 0, 0, 0.75);
+}

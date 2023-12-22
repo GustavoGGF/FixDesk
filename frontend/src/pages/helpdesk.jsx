@@ -55,6 +55,7 @@ export default function Helpdesk() {
     } else if (Theme === "light") {
       return ThemeLight();
     }
+    return;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -120,6 +121,7 @@ export default function Helpdesk() {
   const [themeTicket, SetThemeTicket] = useState("");
 
   function ThemeBlack() {
+    console.log("teste");
     SetThemeTicket("");
     return SetTheme("themeBlack");
   }
@@ -1641,7 +1643,7 @@ export default function Helpdesk() {
   }
 
   return (
-    <Div classList={theme}>
+    <Div className={theme}>
       {navbar && <NavBar Name={Data.name} JobTitle={Data.job_title} />}
       {loading && (
         <div className="position-absolute top-50 start-50 translate-middle">

@@ -19,6 +19,7 @@ export default function Login() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   const [loginPage, SetLoginPage] = useState(true);
   const [passlimit, SetPassLimit] = useState(false);
   const [awaitValidation, SAwaitValidation] = useState(false);
@@ -27,12 +28,15 @@ export default function Login() {
   const [messageerror, SetMessageError] = useState("");
   const [animate, SetAnimate] = useState("");
   const [theme, SetTheme] = useState("");
+  const [color, SetColor] = useState("");
 
   function ThemeBlack() {
+    SetColor("colorBlack");
     return SetTheme("themeBlack");
   }
 
   function ThemeLight() {
+    SetColor("colorLight");
     return SetTheme("themeLight");
   }
 
@@ -129,10 +133,10 @@ export default function Login() {
       {loginPage && (
         <div className="position-absolute top-50 start-50 translate-middle d-flex flex-column none animate__animated">
           <form action="" method="POST">
-            <Span>Usuário</Span>
+            <Span className={color}>Usuário</Span>
             <input id="user" type="text" className="form-control" name="user" />
 
-            <Span>Senha</Span>
+            <Span className={color}>Senha</Span>
             <input
               id="pass"
               type="password"

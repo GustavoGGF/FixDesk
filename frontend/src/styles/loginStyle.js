@@ -12,7 +12,6 @@ export const IMG = styled.img`
 `;
 
 export const Span = styled.span`
-  color: #f1faee;
   font-weight: bold;
   font-size: 1.3em;
 `;

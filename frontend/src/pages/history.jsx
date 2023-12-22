@@ -69,6 +69,19 @@ import DownTick from "../images/components/attachment.png";
 import ptBR from "date-fns/locale/pt";
 
 export default function History() {
+  useEffect(() => {
+    const Theme = localStorage.getItem("Theme");
+    if (Theme === null) {
+      localStorage.setItem("Theme", "black");
+      return ThemeBlack();
+    } else if (Theme === "black") {
+      return ThemeBlack();
+    } else if (Theme === "light") {
+      return ThemeLight();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const [navbar, SetNavbar] = useState(false);
   const [loading, SetLoading] = useState(true);
   const [ticketWindow, SetTicketWindow] = useState(false);
@@ -130,6 +143,21 @@ export default function History() {
   const [nameNWFiles, SetNameNWFiles] = useState();
   const [newFiles, SetNewFiles] = useState(false);
   const [blurNav, SetBlurNav] = useState("");
+  const [theme, SetTheme] = useState("");
+  const [themeFilter, SetThemeFilter] = useState("");
+  const [themeCard, SetThemeCard] = useState("");
+
+  function ThemeBlack() {
+    SetThemeFilter("");
+    SetThemeCard("");
+    return SetTheme("themeBlack");
+  }
+
+  function ThemeLight() {
+    SetThemeCard("themeCardLight");
+    SetThemeFilter("themeFilterLight");
+    return SetTheme("themeLight");
+  }
 
   let count = 0;
   let timeoutId;
@@ -722,7 +750,7 @@ export default function History() {
 
       const Div = (
         <DivCard
-          className={`animate__animated animate__zoomInDown ${colorBorder}`}
+          className={`animate__animated animate__zoomInDown ${colorBorder} ${themeCard}`}
           onClick={() => {
             helpdeskPage({ id: ticket["id"] });
           }}
@@ -1463,7 +1491,7 @@ export default function History() {
   }
 
   return (
-    <Div>
+    <Div className={theme}>
       {navbar && (
         <div className={blurNav}>
           <Navbar Name={Data.name} JobTitle={Data.job_title} />
@@ -1478,7 +1506,7 @@ export default function History() {
           />
         </div>
       )}
-      <DivFilter className={blurNav}>
+      <DivFilter className={`${blurNav} ${themeFilter}`}>
         <div className="form-floating">
           <Input1
             type="text"

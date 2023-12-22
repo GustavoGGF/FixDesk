@@ -136,6 +136,12 @@ export default function NavBar({ Name, JobTitle }) {
     return window.location.reload();
   }
 
+  function ThemeBlack() {
+    localStorage.setItem("Theme", "black");
+
+    return window.location.reload();
+  }
+
   return (
     <>
       <nav className="navbar bg-primary">
@@ -264,7 +270,11 @@ export default function NavBar({ Name, JobTitle }) {
                           >
                             Claro
                           </DropBTN>
-                          <DropBTN className="btn btn-light" id="btn3">
+                          <DropBTN
+                            className="btn btn-light"
+                            id="btn3"
+                            onClick={ThemeBlack}
+                          >
                             Escuro
                           </DropBTN>
                         </DropContent2>
