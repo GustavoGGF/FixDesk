@@ -408,7 +408,6 @@ export default function Helpdesk() {
       SetSynch(false);
       SetOffice(false);
       SetEng(false);
-      SetAlocate(false);
       setDateEquip(false);
       return;
     } else if (option === "user") {
@@ -429,7 +428,6 @@ export default function Helpdesk() {
       SetSynch(false);
       SetOffice(false);
       SetEng(false);
-      SetAlocate(false);
       setDateEquip(false);
       return;
     } else if (option === "internet") {
@@ -451,7 +449,6 @@ export default function Helpdesk() {
       SetSynch(false);
       SetOffice(false);
       SetEng(false);
-      SetAlocate(false);
       setDateEquip(false);
       return;
     } else if (option === "folder") {
@@ -473,7 +470,6 @@ export default function Helpdesk() {
       SetSynch(false);
       SetOffice(false);
       SetEng(false);
-      SetAlocate(false);
       setDateEquip(false);
       return;
     } else if (option === "none") {

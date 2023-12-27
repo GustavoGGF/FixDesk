@@ -9,6 +9,12 @@ import {
   DivDrop,
   P1,
   DivFilter,
+  IMGConfig,
+  DropBTN,
+  DropContent2,
+  DivModify,
+  InputTicket,
+  ZIndex,
 } from "../styles/dashboardTIStyle";
 import Loading from "../components/loading";
 import DashBoardPie from "../components/dashboardPie";
@@ -56,7 +62,13 @@ import {
   Calendar,
   DivCal,
 } from "../styles/historyStyle";
-import { DivNameFile, BtnFile, ImgFile } from "../styles/helpdeskStyle.js";
+import { DropDown } from "../styles/navbarStyle.js";
+import {
+  DivNameFile,
+  BtnFile,
+  ImgFile,
+  Select,
+} from "../styles/helpdeskStyle.js";
 import CloseIMG from "../images/components/close.png";
 import Message from "../components/message";
 import "../styles/bootstrap/css/bootstrap.css";
@@ -81,6 +93,7 @@ import DownTick from "../images/components/attachment.png";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import ptBR from "date-fns/locale/pt";
+import Seeting from "../images/components/definicoes.png";
 
 export default function DashboardTI() {
   useEffect(() => {
@@ -165,6 +178,25 @@ export default function DashboardTI() {
   const [theme, SetTheme] = useState("");
   const [themeFilter, SetThemeFilter] = useState("");
   const [themeCard, SetThemeCard] = useState("");
+  const [modifyTicket, SetModifyTicket] = useState(false);
+  const [infra, setInfra] = useState(false);
+  const [system, SetSystem] = useState(false);
+  const [backup, setBackup] = useState(false);
+  const [mail, setMail] = useState(false);
+  const [equip, setEquip] = useState(false);
+  const [internet, setInternet] = useState(false);
+  const [folder, setFolder] = useState(false);
+  const [sector, setsector] = useState("");
+  const [sap, SetSAP] = useState(false);
+  const [mbi, SetMBI] = useState(false);
+  const [synch, SetSynch] = useState(false);
+  const [office, SetOffice] = useState(false);
+  const [eng, SetEng] = useState(false);
+  const [occurrence, setOccurrence] = useState("");
+  const [problemn, setProblemn] = useState("");
+  const [fake, SetFake] = useState(true);
+  const [OcurrenceFake, SetOcurrenceFake] = useState(true);
+  const [dataModify, SetDataModify] = useState(true);
 
   function ThemeBlack() {
     SetThemeFilter("");
@@ -699,6 +731,7 @@ export default function DashboardTI() {
               "Reabra o Chamado para poder ver com mais detalhes"
             );
             SetMessageChat(true);
+            SetDataModify(false);
             return;
           }
           if (
@@ -762,6 +795,7 @@ export default function DashboardTI() {
           SetTypeError("Permissão Negada");
           SetMessageError("Assuma o Chamado para poder ver com mais detalhes");
           SetMessageChat(true);
+          SetDataModify(false);
         }
 
         return SetTicketWindow(true);
@@ -852,6 +886,7 @@ export default function DashboardTI() {
   }
 
   function closeMessage() {
+    SetModifyTicket(false);
     return SetMessageChat(false);
   }
 
@@ -1594,6 +1629,484 @@ export default function DashboardTI() {
       });
   }
 
+  function OpenConfig(event) {
+    if (
+      (event.target.id === "drp" &&
+        document
+          .getElementById("dropcont")
+          .classList.contains("visually-hidden")) ||
+      (event.target.id === "imd" &&
+        document
+          .getElementById("dropcont")
+          .classList.contains("visually-hidden"))
+    ) {
+      document.getElementById("dropcont").classList.remove("visually-hidden");
+      return;
+    } else {
+      document.getElementById("dropcont").classList.add("visually-hidden");
+      return;
+    }
+  }
+
+  function TicketModify() {
+    SetModifyTicket(true);
+  }
+
+  function handleSelect() {
+    const select = document.getElementById("select-Form");
+
+    const option = select.options[select.selectedIndex].value;
+
+    if (option === "infra") {
+      setInfra(true);
+      setBackup(false);
+      setMail(false);
+      setEquip(false);
+      setInternet(false);
+      setFolder(false);
+      setsector("Infraestrutura");
+      SetSystem(false);
+      SetMBI(false);
+      SetSAP(false);
+      SetOffice(false);
+      SetSynch(false);
+      SetEng(false);
+      SetFake(true);
+      SetOcurrenceFake(false);
+      return;
+    } else if (option === "sistema") {
+      SetSystem(true);
+      setInfra(false);
+      setBackup(false);
+      setMail(false);
+      setEquip(false);
+      setInternet(false);
+      setFolder(false);
+      setsector("Sistema");
+      SetMBI(false);
+      SetSAP(false);
+      SetSynch(false);
+      SetOffice(false);
+      SetEng(false);
+      SetFake(true);
+      SetOcurrenceFake(false);
+      return;
+    } else if (option === "none") {
+      setInfra(false);
+      SetSystem(false);
+      setBackup(false);
+      setMail(false);
+      setEquip(false);
+      setInternet(false);
+      setFolder(false);
+      setsector("");
+      SetMBI(false);
+      SetSAP(false);
+      SetSynch(false);
+      SetOffice(false);
+      SetEng(false);
+      SetFake(true);
+      SetOcurrenceFake(true);
+      return;
+    }
+  }
+
+  function selectProblem() {
+    const select = document.getElementById("select-error");
+
+    const option = select.options[select.selectedIndex].value;
+
+    if (option === "backup") {
+      setBackup(true);
+      setMail(false);
+      setEquip(false);
+      setInternet(false);
+      setFolder(false);
+      setOccurrence("Backup");
+      SetSAP(false);
+      SetMBI(false);
+      SetSynch(false);
+      SetOffice(false);
+      SetEng(false);
+      SetFake(false);
+      return;
+    } else if (option === "mail") {
+      setMail(true);
+      setBackup(false);
+      setEquip(false);
+      setInternet(false);
+      setFolder(false);
+      setOccurrence("E-mail");
+      SetSAP(false);
+      SetMBI(false);
+      SetSynch(false);
+      SetOffice(false);
+      SetEng(false);
+      SetFake(false);
+      return;
+    } else if (option === "equip") {
+      setEquip(true);
+      setBackup(false);
+      setMail(false);
+      setInternet(false);
+      setFolder(false);
+      setOccurrence("Equipamento");
+      SetSAP(false);
+      SetMBI(false);
+      SetSynch(false);
+      SetOffice(false);
+      SetEng(false);
+      SetFake(false);
+      return;
+    } else if (option === "internet") {
+      setInternet(true);
+      setBackup(false);
+      setMail(false);
+      setEquip(false);
+      setFolder(false);
+      setOccurrence("Internet");
+      SetSAP(false);
+      SetMBI(false);
+      SetSynch(false);
+      SetOffice(false);
+      SetEng(false);
+      SetFake(false);
+      return;
+    } else if (option === "folder") {
+      setFolder(true);
+      setBackup(false);
+      setMail(false);
+      setEquip(false);
+      setInternet(false);
+      setOccurrence("Permissão");
+      SetSAP(false);
+      SetMBI(false);
+      SetSynch(false);
+      SetOffice(false);
+      SetEng(false);
+      SetFake(false);
+      return;
+    } else if (option === "none") {
+      setBackup(false);
+      setMail(false);
+      setEquip(false);
+      SetFake(true);
+      setInternet(false);
+      setFolder(false);
+      SetSAP(false);
+      SetMBI(false);
+      SetSynch(false);
+      SetOffice(false);
+      SetEng(false);
+      return;
+    } else if (option === "sap") {
+      SetSAP(true);
+      SetMBI(false);
+      SetSynch(false);
+      SetOffice(false);
+      setBackup(false);
+      setMail(false);
+      setEquip(false);
+      setInternet(false);
+      setFolder(false);
+      setOccurrence("SAP");
+      SetEng(false);
+      SetFake(false);
+      return;
+    } else if (option === "mbi") {
+      SetMBI(true);
+      SetSAP(false);
+      setBackup(false);
+      setMail(false);
+      setEquip(false);
+      setInternet(false);
+      setFolder(false);
+      setOccurrence("MBI");
+      SetSynch(false);
+      SetOffice(false);
+      SetEng(false);
+      SetFake(false);
+      return;
+    } else if (option === "synch") {
+      SetFake(false);
+      SetSynch(true);
+      SetMBI(false);
+      SetSAP(false);
+      setBackup(false);
+      setMail(false);
+      setEquip(false);
+      setInternet(false);
+      setFolder(false);
+      setOccurrence("Synchro");
+      SetOffice(false);
+      SetEng(false);
+      return;
+    } else if (option === "office") {
+      SetFake(false);
+      SetOffice(true);
+      SetSynch(false);
+      SetMBI(false);
+      SetSAP(false);
+      setBackup(false);
+      setMail(false);
+      setEquip(false);
+      setInternet(false);
+      setFolder(false);
+      SetEng(false);
+      setOccurrence("Office");
+      return;
+    } else if (option === "eng") {
+      SetFake(false);
+      SetEng(true);
+      SetOffice(false);
+      SetSynch(false);
+      SetMBI(false);
+      SetSAP(false);
+      setBackup(false);
+      setMail(false);
+      setEquip(false);
+      setInternet(false);
+      setFolder(false);
+      setOccurrence("Softwares de Eng");
+      return;
+    }
+  }
+
+  function selectBackup() {
+    const selectBackup = document.getElementById("select-backup");
+    const optionBackup = selectBackup.options[selectBackup.selectedIndex].value;
+
+    if (optionBackup === "pasta") {
+      setProblemn("Restaurar pasta");
+      return;
+    } else if (optionBackup === "mail") {
+      setProblemn("Restaurar e-mail");
+      return;
+    } else if (optionBackup === "none") {
+      return;
+    }
+  }
+
+  function selectMail() {
+    const selectMail = document.getElementById("select-mail");
+    const optionMail = selectMail.options[selectMail.selectedIndex].value;
+
+    if (optionMail === "maxcap") {
+      setProblemn("Aumentar capacidade de e-mail");
+      return;
+    } else if (optionMail === "conect") {
+      setProblemn("Problema com conexão");
+
+      return;
+    } else if (optionMail === "none") {
+      return;
+    }
+  }
+
+  function selectEquip() {
+    const selectEquip = document.getElementById("select-equip");
+    const optionEquip = selectEquip.options[selectEquip.selectedIndex].value;
+
+    if (optionEquip === "off") {
+      setProblemn("Equipamento não liga");
+      return;
+    } else if (optionEquip === "printer") {
+      setProblemn("Problema com a impressora");
+      return;
+    } else if (optionEquip === "roaming") {
+      setProblemn("Mudanca de local de trabalho");
+      return;
+    } else if (optionEquip === "usb") {
+      setProblemn("USB");
+      return;
+    } else if (optionEquip === "none") {
+      return;
+    } else if (optionEquip === "change") {
+      setProblemn("Trocar Equipamento");
+      return;
+    }
+  }
+
+  function selectInternet() {
+    const select = document.getElementById("select-internet");
+    const option = select.options[select.selectedIndex].value;
+
+    if (option === "lib") {
+      setProblemn("Liberacao de site");
+      return;
+    } else if (option === "block") {
+      setProblemn("Bloqueio de site");
+      return;
+    } else if (option === "none") {
+      return;
+    }
+  }
+
+  function selectFolder() {
+    const select = document.getElementById("select-folder");
+    const option = select.options[select.selectedIndex].value;
+
+    if (option === "lib") {
+      setProblemn("Liberar pasta");
+      return;
+    } else if (option === "block") {
+      setProblemn("Bloquear pasta");
+      return;
+    } else if (option === "none") {
+      return;
+    }
+  }
+
+  function selectSAP() {
+    const selectSAP = document.getElementById("select-sap");
+    const optionSAP = selectSAP.options[selectSAP.selectedIndex].value;
+
+    if (optionSAP === "user") {
+      setProblemn("Criação/exclusão usuário");
+      return;
+    } else if (optionSAP === "access") {
+      setProblemn("Liberação/bloqueio de acessos");
+      return;
+    } else if (optionSAP === "quest") {
+      setProblemn("Dúvidas operacionais");
+      return;
+    } else if (optionSAP === "error") {
+      setProblemn("Correção de falhas");
+      return;
+    } else if (optionSAP === "none") {
+      return;
+    }
+  }
+
+  function selectMBI() {
+    const select_MBI = document.getElementById("select-mbi");
+    const optionMBI = select_MBI.options[select_MBI.selectedIndex].value;
+
+    if (optionMBI === "user") {
+      setProblemn("Criação/exclusão usuário");
+      return;
+    } else if (optionMBI === "access") {
+      setProblemn("Liberação/bloqueio de acessos");
+      return;
+    } else if (optionMBI === "quest") {
+      setProblemn("Dúvidas operacionais");
+      return;
+    } else if (optionMBI === "error") {
+      setProblemn("Correção de falhas");
+      return;
+    } else if (optionMBI === "none") {
+      return;
+    }
+  }
+
+  function selectOffice() {
+    const selectOffice = document.getElementById("select-office");
+    const optionOffice = selectOffice.options[selectOffice.selectedIndex].value;
+
+    if (optionOffice === "buy") {
+      setProblemn("Aquisição de software/licenciamento");
+      return;
+    } else if (optionOffice === "error") {
+      setProblemn("Correção de falhas");
+      return;
+    } else if (optionOffice === "none") {
+      return;
+    }
+  }
+
+  function selectEng() {
+    const selectEng = document.getElementById("select-eng");
+    const optionEng = selectEng.options[selectEng.selectedIndex].value;
+
+    if (optionEng === "buy") {
+      setProblemn("Aquisição de software/licenciamento");
+      return;
+    } else if (optionEng === "error") {
+      setProblemn("Correção de falhas");
+      return;
+    } else if (optionEng === "none") {
+      return;
+    }
+  }
+
+  function uploadModify() {
+    if (sector.length < 1) {
+      SetMessage(true);
+      SetTypeError("Dados Insuficientes");
+      SetMessageError("Obrigatório Informar o Setor Responsavel");
+      return;
+    } else if (occurrence.length < 1) {
+      SetMessage(true);
+      SetTypeError("Dados Insuficientes");
+      SetMessageError("Obrigatório Informar a Ocorrência");
+      return;
+    } else if (problemn.length < 1) {
+      SetMessage(true);
+      SetTypeError("Dados Insuficientes");
+      SetMessageError("Obrigatório Informar o Problema");
+      return;
+    }
+
+    fetch("/helpdesk/ticket/" + ticketID, {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": token,
+        "Modify-Ticket": "modify",
+      },
+      body: JSON.stringify({
+        sector: sector,
+        tech: userData.name,
+        OldSector: ticketSECTOR,
+        occurrence: occurrence,
+        OldOccurrence: ticketOCCURRENCE,
+        OldProblemn: ticketPROBLEMN,
+        problemn: problemn,
+      }),
+    })
+      .then((response) => {
+        response.json();
+
+        if (response.status === 402) {
+          SetMessage(true);
+          SetTypeError("Erro de Dados");
+          SetMessageError("Modificação Identica ao chamado atual Cancelada");
+          return;
+        } else if (response.status === 200) {
+          return window.location.reload();
+        }
+      })
+      .then((data) => {
+        return data && window.location.reload();
+      })
+      .catch((err) => {
+        return console.log(err);
+      });
+  }
+
+  function selectSynch() {
+    const selectSynch = document.getElementById("select-synch");
+    const optionSynch = selectSynch.options[selectSynch.selectedIndex].value;
+
+    if (optionSynch === "user") {
+      setProblemn("Criação/exclusão usuário");
+      return;
+    } else if (optionSynch === "access") {
+      setProblemn("Liberação/bloqueio de acessos");
+      return;
+    } else if (optionSynch === "quest") {
+      setProblemn("Dúvidas operacionais");
+      return;
+    } else if (optionSynch === "error") {
+      setProblemn("Correção de falhas");
+    } else if (optionSynch === "none") {
+      return;
+    }
+  }
+
+  function closeModify() {
+    SetModifyTicket(false);
+  }
+
   return (
     <Div className={`position-relative ${theme}`}>
       {navbar && (
@@ -1602,13 +2115,13 @@ export default function DashboardTI() {
         </div>
       )}
       {message && (
-        <div className="position-absolute top-0 start-50 translate-middle-x mt-5 z-3">
+        <ZIndex className="position-fixed top-0 start-50 translate-middle-x mt-5">
           <Message
             TypeError={typeError}
             MessageError={messageError}
             CloseMessage={closeMessage2}
           />
-        </div>
+        </ZIndex>
       )}
       {dropdownBTN && (
         <DivDrop className={`position-absolute top-0 start-0 ${classBlur}`}>
@@ -1825,6 +2338,37 @@ export default function DashboardTI() {
               <BtnNF onClick={downloadTicket}>
                 <img src={DownTick} alt="download Ticket" />
               </BtnNF>
+              <DropDown>
+                <DropBTN id="drp" onClick={OpenConfig}>
+                  <IMGConfig id="imd" src={Seeting} alt="" />
+                </DropBTN>
+                <DropContent2 id="dropcont" className="visually-hidden">
+                  <DropBTN
+                    className="btn btn-success w-100"
+                    onClick={() => {
+                      closeTicket();
+                    }}
+                    hidden={ticketOpen === true ? false : true}
+                  >
+                    Finalizar
+                  </DropBTN>
+                  <DropBTN
+                    className="btn btn-info w-100"
+                    onClick={() => {
+                      reopenTicket();
+                    }}
+                    hidden={ticketOpen}
+                  >
+                    Reabrir
+                  </DropBTN>
+                  <DropBTN
+                    className="btn btn-danger w-100"
+                    onClick={TicketModify}
+                  >
+                    Modificar
+                  </DropBTN>
+                </DropContent2>
+              </DropDown>
             </div>
             <div className="w-100 justify-content-center d-flex">
               <h3 className="text-center text-uppercase fw-bold text-danger mt-3">
@@ -2063,24 +2607,6 @@ export default function DashboardTI() {
                 ))}
               </select>
             </div>
-            <button
-              className="btn btn-success w-100"
-              onClick={() => {
-                closeTicket();
-              }}
-              hidden={ticketOpen === true ? false : true}
-            >
-              Finalizar
-            </button>
-            <button
-              className="btn btn-info w-100"
-              onClick={() => {
-                reopenTicket();
-              }}
-              hidden={ticketOpen}
-            >
-              Reabrir
-            </button>
             <DivChat
               id="chatDiv"
               onMouseEnter={() => {
@@ -2179,6 +2705,283 @@ export default function DashboardTI() {
           </div>
           <ImageOpen src={imageurl} alt="" />
         </DivImageOpen>
+      )}
+      {modifyTicket && (
+        <DivModify className="position-fixed top-50 start-50 translate-middle">
+          {messageChat && (
+            <div className="w-100 h-100 d-flex justify-content-center align-items-center">
+              <Message
+                TypeError={typeError}
+                MessageError={messageError}
+                CloseMessage={closeMessage}
+              />
+            </div>
+          )}
+          {dataModify && (
+            <>
+              <div className="w-100 d-flex mt-3 mb-4">
+                <div className="w-100 d-flex justify-content-center">
+                  <h5>Modificação do Chamado {ticketID}</h5>
+                </div>
+                <div className="d-flex justify-content-center">
+                  <button onClick={closeModify}>X</button>
+                </div>
+              </div>
+              <div className="d-flex justify-content-around">
+                <InputTicket
+                  type="text"
+                  value={`Setor: ${ticketSECTOR}`}
+                  disabled
+                />
+                <Select
+                  className="form-select mb-3"
+                  aria-label="Default select example"
+                  id="select-Form"
+                  onChange={handleSelect}
+                >
+                  <option value="none" disabled selected>
+                    Selecione o Setor
+                  </option>
+                  <option value="infra">Infra</option>
+                  <option value="sistema">Sistema</option>
+                </Select>
+              </div>
+              <div className="d-flex justify-content-around mt-3">
+                <InputTicket
+                  type="text"
+                  value={`Ocorrência: ${ticketOCCURRENCE}`}
+                  disabled
+                />
+                {OcurrenceFake && (
+                  <Select className="form-select mb-3">
+                    <option value="none" disabled selected>
+                      Selecione a Ocorrência
+                    </option>
+                  </Select>
+                )}
+                {infra && (
+                  <Select
+                    className="form-select mb-3"
+                    aria-label="Default select example"
+                    id="select-error"
+                    onChange={selectProblem}
+                  >
+                    <option value="none" disabled selected>
+                      Selecione a Ocorrência
+                    </option>
+                    <option value="backup">Backup/Restore</option>
+                    <option value="mail">E-mail</option>
+                    <option value="equip">Equipamento</option>
+                    <option value="internet">Internet</option>
+                    <option value="folder">Pasta</option>
+                  </Select>
+                )}
+                {system && (
+                  <Select
+                    className="form-select mb-3"
+                    aria-label="Default select example"
+                    id="select-error"
+                    onChange={selectProblem}
+                  >
+                    <option value="none" disabled selected>
+                      Selecione o Sistema
+                    </option>
+                    <option value="sap">SAP</option>
+                    <option value="mbi">MBI</option>
+                    <option value="synch">Synchro</option>
+                    <option value="office">Office</option>
+                    <option value="eng">Softwares de Engenharia</option>
+                  </Select>
+                )}
+              </div>
+              <div className="d-flex justify-content-around mt-3">
+                <InputTicket
+                  type="text"
+                  value={`Problema: ${ticketPROBLEMN}`}
+                  disabled
+                />
+                {fake && (
+                  <Select
+                    className="form-select mb-3"
+                    aria-label="Default select example"
+                    id="select-backup"
+                    onChange={selectBackup}
+                  >
+                    <option value="none" disabled selected>
+                      Selecione o problema ocorrido
+                    </option>
+                  </Select>
+                )}
+                {backup && (
+                  <Select
+                    className="form-select mb-3"
+                    aria-label="Default select example"
+                    id="select-backup"
+                    onChange={selectBackup}
+                  >
+                    <option value="none" disabled selected>
+                      Selecione o problema ocorrido
+                    </option>
+                    <option value="pasta">Pasta/Arquivo</option>
+                    <option value="mail">E-mail</option>
+                  </Select>
+                )}
+                {mail && (
+                  <Select
+                    className="form-select mb-3"
+                    aria-label="Default select example"
+                    id="select-mail"
+                    onChange={selectMail}
+                  >
+                    <option value="none" disabled selected>
+                      Selecione o problema ocorrido
+                    </option>
+                    <option value="maxcap">Aumentar capacidade</option>
+                    <option value="conect">Não conecta</option>
+                  </Select>
+                )}
+                {equip && (
+                  <Select
+                    className="form-select mb-3"
+                    aria-label="Default select example"
+                    id="select-equip"
+                    onChange={selectEquip}
+                  >
+                    <option value="none" disabled selected>
+                      Selecione o problema ocorrido
+                    </option>
+                    <option value="off">Computador não liga</option>
+                    <option value="printer">Problema com a impressora</option>
+                    <option value="roaming">
+                      Mudança de local de trabalho
+                    </option>
+                    <option value="usb">Liberação/Bloqueio de USB</option>
+                    <option value="change">Trocar Equipamento</option>
+                  </Select>
+                )}
+                {internet && (
+                  <Select
+                    className="form-select mb-3"
+                    aria-label="Default select example"
+                    id="select-internet"
+                    onChange={selectInternet}
+                  >
+                    <option value="none" disabled selected>
+                      Selecione o problema ocorrido
+                    </option>
+                    <option value="lib">Liberação de site</option>
+                    <option value="block">Bloqueio de site</option>
+                  </Select>
+                )}
+                {folder && (
+                  <Select
+                    className="form-select mb-3"
+                    aria-label="Default select example"
+                    id="select-folder"
+                    onChange={selectFolder}
+                  >
+                    <option value="none" disabled selected>
+                      Selecione o problema ocorrido
+                    </option>
+                    <option value="lib">Liberação de Pasta</option>
+                    <option value="block">Bloqueio de Pasta</option>
+                  </Select>
+                )}
+                {sap && (
+                  <Select
+                    className="form-select mb-3"
+                    aria-label="Default select example"
+                    id="select-sap"
+                    onChange={selectSAP}
+                  >
+                    <option value="none" disabled selected>
+                      Selecione o Problema
+                    </option>
+                    <option value="user">Criação/exclusão de usuários</option>
+                    <option value="access">
+                      Liberação/bloqueio de acessos
+                    </option>
+                    <option value="quest">Dúvidas operacionais</option>
+                    <option value="error">Correção de falhas</option>
+                  </Select>
+                )}
+                {mbi && (
+                  <Select
+                    className="form-select mb-3"
+                    aria-label="Default select example"
+                    id="select-mbi"
+                    onChange={selectMBI}
+                  >
+                    <option value="none" disabled selected>
+                      Selecione o Problema
+                    </option>
+                    <option value="user">Criação/exclusão de usuários</option>
+                    <option value="access">
+                      Liberação/bloqueio de acessos
+                    </option>
+                    <option value="quest">Dúvidas operacionais</option>
+                    <option value="error">Correção de falhas</option>
+                  </Select>
+                )}
+                {synch && (
+                  <Select
+                    className="form-select mb-3"
+                    aria-label="Default select example"
+                    id="select-synch"
+                    onChange={selectSynch}
+                  >
+                    <option value="none" disabled selected>
+                      Selecione o Problema
+                    </option>
+                    <option value="user">Criação/exclusão de usuários</option>
+                    <option value="access">
+                      Liberação/bloqueio de acessos
+                    </option>
+                    <option value="quest">Dúvidas operacionais</option>
+                    <option value="error">Correção de falhas</option>
+                  </Select>
+                )}
+                {office && (
+                  <Select
+                    className="form-select mb-3"
+                    aria-label="Default select example"
+                    id="select-office"
+                    onChange={selectOffice}
+                  >
+                    <option value="none" disabled selected>
+                      Selecione o Problema
+                    </option>
+                    <option value="buy">
+                      Aquisição de software/licenciamento
+                    </option>
+                    <option value="error">Correção de falhas</option>
+                  </Select>
+                )}
+                {eng && (
+                  <Select
+                    className="form-select mb-3"
+                    aria-label="Default select example"
+                    id="select-eng"
+                    onChange={selectEng}
+                  >
+                    <option value="none" disabled selected>
+                      Selecione o Problema
+                    </option>
+                    <option value="buy">
+                      Aquisição de software/licenciamento
+                    </option>
+                    <option value="error">Correção de falhas</option>
+                  </Select>
+                )}
+              </div>
+              <div className="d-flex justify-content-center">
+                <button className="btn btn-warning mt-5" onClick={uploadModify}>
+                  Confirmar
+                </button>
+              </div>
+            </>
+          )}
+        </DivModify>
       )}
     </Div>
   );

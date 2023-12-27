@@ -6,12 +6,6 @@ diagrama de como funciona
 
 implementar Docker
 
-tema dark light
-
-trocar o sql
-
-tela de loading para todos
-
 deixar tecnico fazer mudanças do chamado
 
 ajusta dashboard se n tiver na semana pega mes
@@ -65,3 +59,4 @@ tela para reportar bug
 alocagem de equipamento quando não tem equipamento em X unidade
 
 setinha para baixo do tema
+botão de pegar mais tickets não está funcionando

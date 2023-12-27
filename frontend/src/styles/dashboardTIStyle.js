@@ -101,3 +101,51 @@ export const DivFilter = styled.div`
   padding: 20px;
   margin-top: 150px;
 `;
+
+export const DropBTN = styled.button`
+  background-color: transparent;
+  padding: 16px;
+  font-size: 16px;
+  border: none;
+  justify-content: center;
+  align-items: baseline;
+  display: flex;
+  color: black;
+`;
+
+export const IMGConfig = styled.img`
+  width: 32px;
+`;
+
+export const DropContent2 = styled.div`
+  position: absolute;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 2;
+  padding: 12px 16px;
+  width: 100%;
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+  border-radius: 10px;
+  align-items: center;
+  background-color: rgb(249, 249, 249);
+`;
+
+export const DivModify = styled.div`
+  height: 70%;
+  width: 70%;
+  z-index: 10 !important;
+  background: #f9f9f9;
+  border-radius: 20px;
+  border: 4px solid #ef3c3c;
+`;
+
+export const InputTicket = styled.input`
+  width: 50%;
+`;
+
+export const ZIndex = styled.div`
+  z-index: 100000 !important;
+`;

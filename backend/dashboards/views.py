@@ -151,7 +151,7 @@ def get_ticket_TI(request):
         ticket_data = None
         ticket_json = None
         try:
-            ticket_data = SupportTicket.objects.filter(respective_area="TI")
+            ticket_data = SupportTicket.objects.filter(respective_area="TI", open=True).order_by("-id")[:10]
 
             for ticket in ticket_data:
                 ticket_json = serialize("json", [ticket])

@@ -1012,6 +1012,58 @@ def ticket(request, id):
                 except Exception as e:
                     print(e)
                     return
+
+            if "HTTP_MODIFY_TICKET" in request.META:
+                tech = None
+                newSector = None
+                oldSector = None
+                newOccurrence = None
+                oldOccurrence = None
+                newProblemn = None
+                oldProblemn = None
+                try:
+                    tech = body["tech"]
+                    newSector = body["sector"]
+                    oldSector = body["OldSector"]
+                    ticket = SupportTicket.objects.get(id=id)
+
+                    if newSector == oldSector:
+                        pass
+                    else:
+                        ticket.chat += f"[System:{tech} Mudou o Setor responsavel para {newSector}]"
+                        ticket.sector = newSector
+
+                    newOccurrence = body["occurrence"]
+                    oldOccurrence = body["OldOccurrence"]
+
+                    if newOccurrence == oldOccurrence:
+                        pass
+                    else:
+                        ticket.chat += (
+                            f"[System:{tech} Mudou a Ocorrência para {newOccurrence}]"
+                        )
+                        ticket.occurrence = newOccurrence
+
+                    newProblemn = body["problemn"]
+                    oldProblemn = body["OldProblemn"]
+
+                    if newProblemn == oldProblemn:
+                        return JsonResponse(
+                            {"status": "invalid modify"}, status=402, safe=True
+                        )
+                    else:
+                        ticket.chat += (
+                            f"[System:{tech} Mudou o Problema para {newProblemn}]"
+                        )
+                        ticket.problemn = newProblemn
+
+                        ticket.save()
+
+                    return JsonResponse({"status": "ok"}, status=200, safe=True)
+                except Exception as e:
+                    print(e)
+                    return
+
         except Exception as e:
             print(e)
             return
