@@ -151,7 +151,9 @@ def get_ticket_TI(request):
         ticket_data = None
         ticket_json = None
         try:
-            ticket_data = SupportTicket.objects.filter(respective_area="TI", open=True).order_by("-id")[:10]
+            ticket_data = SupportTicket.objects.filter(
+                respective_area="TI", open=True
+            ).order_by("-id")[:10]
 
             for ticket in ticket_data:
                 ticket_json = serialize("json", [ticket])
@@ -578,6 +580,8 @@ def getDashBoardBarMonth(request):
         ticket_get_date = None
         ticket_day = None
         tickets_area = None
+        day = None
+        histogram_data = None
         try:
             today = date.today()
             month_days = list(range(1, days_in_month + 1))
@@ -591,8 +595,6 @@ def getDashBoardBarMonth(request):
 
                 if tickets_area == "TI":
                     if ticket_day.strftime("%m%Y") == today.strftime("%m%Y"):
-                        day = None
-                        histogram_data = None
                         try:
                             day = ticket_day.day
 
@@ -602,6 +604,9 @@ def getDashBoardBarMonth(request):
 
                         except Exception as e:
                             print(e)
+
+            if histogram_data == None:
+                return JsonResponse({"data": None}, status=210, safe=True)
 
             return JsonResponse(histogram_data, status=200, safe=True)
 
@@ -629,6 +634,8 @@ def getDashBoardBarYear(request):
         months = None
         ticket_day = None
         tickets_area = None
+        day = None
+        histogram_data = None
         try:
             today = date.today()
             months = [
@@ -655,8 +662,6 @@ def getDashBoardBarYear(request):
 
                 if tickets_area == "TI":
                     if ticket_day.strftime("%Y") == today.strftime("%Y"):
-                        day = None
-                        histogram_data = None
                         try:
                             day = ticket_day.month
 
@@ -666,6 +671,9 @@ def getDashBoardBarYear(request):
 
                         except Exception as e:
                             print(e)
+
+            if histogram_data == None:
+                return JsonResponse({"data": None}, status=210, safe=True)
 
             return JsonResponse(histogram_data, status=200, safe=True)
 

@@ -6,16 +6,6 @@ diagrama de como funciona
 
 implementar Docker
 
-deixar tecnico fazer mudanças do chamado
-
-ajusta dashboard se n tiver na semana pega mes
-
-dashboards fazer busca por chamados a cada 20 segundos
-
-arrumar dashbar
-
-tela de chamado por gerenciamento de usuario
-
 liberar dominio de e-mail
 
 tela de carregamento abrindo ticket
@@ -58,5 +48,12 @@ tela para reportar bug
 
 alocagem de equipamento quando não tem equipamento em X unidade
 
-setinha para baixo do tema
+
+V1.0.2
+[setinha para baixo do tema
 botão de pegar mais tickets não está funcionando
+fechar abas to temas em configuração ao clicar fora
+quando tiver sendo feito a montagem dos tickets na tela contar quantos tem em
+verificar se oculta ou mostra o botão de mostrar mais
+atualizar tickets e dashboardPie por minuto
+]
