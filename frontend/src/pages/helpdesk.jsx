@@ -825,6 +825,14 @@ export default function Helpdesk() {
     } else if (optionMail === "none") {
       setAlert(false);
       return;
+    } else if (optionMail === "domin") {
+      setAlert(true);
+      setMessagetitle("Caso de liberar domínion de e-mail");
+      setmessageinfo1("1. Informar dóminio, exemplo @lupatech.com.br");
+      setmessageinfo2("");
+      setProblemn("Liberar domínio");
+      setAlertVerify(false);
+      return;
     }
   }
 
@@ -1779,6 +1787,7 @@ export default function Helpdesk() {
               </option>
               <option value="maxcap">Aumentar capacidade</option>
               <option value="conect">Não conecta</option>
+              <option value="domin">Liberar domínio de E-mail</option>
             </Select>
           )}
           {equip && (

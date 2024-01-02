@@ -6,48 +6,9 @@ diagrama de como funciona
 
 implementar Docker
 
-liberar dominio de e-mail
-
-tela de carregamento abrindo ticket
-
-zerar os tickets ao selecionar um filtro
-
-contrato comodato para os equipamentos
-
-trocar icone de X por lixeira nos novos arquivos dashboard
-
-fechar o chamado fecha a tela de enviar arquivos e limpa os arquivos
-
-ao incluir novos arquivos atualiza o chamado
-
-ao adicionar novos arquivos mostrar no chat
-
-ajustar loadings das paginas, esconder o que não é necessario como bot~çao de mostar mais ticket
-
-ajustar dashboard por data de chamado, mensal, diario, etc...
-
 resetar variaveis front end
 
 fazer mais componentes no react
-
-aoenviar locagem de equipamento, se estiver alocado já, retornar com alocado cinza e pedir para ajustar data
-
-ticket de alocagem de equipamento, clicar para ver o modelo
-
-ver os logs de cada acesso
-
-ajustar botão de mostrar mais tickets, mostrar quanto tiver no minimo 5 tickets e ter animação
-
-ajustar os boões pre selecionados no filtro
-
-ajustar ticket de alocação de equipamento
-
-customizar o scrool
-
-tela para reportar bug
-
-alocagem de equipamento quando não tem equipamento em X unidade
-
 
 V1.0.2
 [setinha para baixo do tema
@@ -56,4 +17,17 @@ fechar abas to temas em configuração ao clicar fora
 quando tiver sendo feito a montagem dos tickets na tela contar quantos tem em
 verificar se oculta ou mostra o botão de mostrar mais
 atualizar tickets e dashboardPie por minuto
+tela de carregamento abrindo ticket
+zerar os tickets ao selecionar um filtro
+contrato comodato para os equipamentos
+trocar icone de X por lixeira nos novos arquivos dashboard
+fechar o chamado fecha a tela de enviar arquivos e limpa os arquivos
+ao incluir novos arquivos atualiza o chamado
+ao adicionar novos arquivos mostrar no chat
+ajustar loadings das paginas, esconder o que não é necessario como bot~çao de mostar mais ticket
+aoenviar locagem de equipamento, se estiver alocado já, retornar com alocado cinza e pedir para ajustar data
+ajustar botão de mostrar mais tickets, mostrar quanto tiver no minimo 5 tickets e ter animação
+customizar o scrool
+tela para reportar bug
+alocagem de equipamento quando não tem equipamento em X unidade
 ]
