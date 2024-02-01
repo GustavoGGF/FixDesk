@@ -48,8 +48,12 @@ export default function Login() {
     const user = document.getElementById("user").value;
     const pass = document.getElementById("pass").value;
 
+    console.log("eviou");
+
     fetch("validation/", {
       method: "POST",
+      mode: "cors",
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
       },

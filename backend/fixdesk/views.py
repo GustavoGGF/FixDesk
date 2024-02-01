@@ -9,6 +9,7 @@ from ldap3 import Connection, SAFE_SYNC, ALL_ATTRIBUTES
 from threading import Thread
 from django.contrib.auth.models import User, Group
 from django.contrib.auth import login
+import sys
 
 
 def CreateOrVerifyUser(user, password, request, helpdesk, name_create_user):
@@ -107,7 +108,9 @@ def validation(request):
 
         except Exception as e:
             print(e)
-            return JsonResponse({"status": e}, status=400, safe=True)
+            erro = str(e)
+            print(erro, flush=True)
+            return JsonResponse({"status": e}, status=1, safe=True)
 
         dominio = None
         server1 = None
@@ -132,7 +135,9 @@ def validation(request):
 
         except Exception as e:
             print(e)
-            return JsonResponse({"status": e}, status=400)
+            erro = str(e)
+            print(erro, flush=True)
+            return JsonResponse({"status": e}, status=2)
 
         avg_ping = None
         pingFormat = None
@@ -153,8 +158,9 @@ def validation(request):
             min_ping_server = min(server_pings, key=lambda x: x[1])
 
         except Exception as e:
-            print(e)
-            return JsonResponse({"status": "error"}, status=400)
+            erro = str(e)
+            print(erro, flush=True)
+            return JsonResponse({"status": "error"}, status=3)
 
         server = None
         conn = None
@@ -186,8 +192,7 @@ def validation(request):
                 )
 
         except Exception as e:
-            error_message = str(e)
-            print(error_message)
+            print(e)
             return JsonResponse({"status": error_message}, status=401, safe=True)
 
         extractor = None
@@ -195,7 +200,6 @@ def validation(request):
         task = None
         tech_user = None
         tech_ti = None
-        # tech_admin = None
         tech_leader = None
 
         try:
@@ -223,7 +227,6 @@ def validation(request):
 
             tech_user = getenv("TECH_USER")
             tech_ti = getenv("TECH_TECH_TI")
-            tech_admin = getenv("TECH_ADM")
             tech_leader = getenv("TECH_LEADER")
 
         except Exception as e:

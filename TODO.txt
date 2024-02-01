@@ -6,10 +6,6 @@ diagrama de como funciona
 
 implementar Docker
 
-resetar variaveis front end
-
-fazer mais componentes no react
-
 V1.0.2
 [setinha para baixo do tema
 botão de pegar mais tickets não está funcionando
