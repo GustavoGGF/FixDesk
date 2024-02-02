@@ -4,8 +4,6 @@ Usar HTTPS para criptografar a comunicação entre o navegador do usuário e o s
 
 diagrama de como funciona
 
-implementar Docker
-
 V1.0.2
 [setinha para baixo do tema
 botão de pegar mais tickets não está funcionando
@@ -26,4 +24,5 @@ ajustar botão de mostrar mais tickets, mostrar quanto tiver no minimo 5 tickets
 customizar o scrool
 tela para reportar bug
 alocagem de equipamento quando não tem equipamento em X unidade
-]
+colocar nomes em cada aba para facil identificação
+colocar avisa de tamanho de arquivo e quantidade

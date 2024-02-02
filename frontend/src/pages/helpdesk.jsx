@@ -121,7 +121,6 @@ export default function Helpdesk() {
   const [themeTicket, SetThemeTicket] = useState("");
 
   function ThemeBlack() {
-    console.log("teste");
     SetThemeTicket("");
     return SetTheme("themeBlack");
   }

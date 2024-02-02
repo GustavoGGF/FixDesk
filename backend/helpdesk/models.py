@@ -1,9 +1,6 @@
 from django.db import models
 from dashboards.models import Equipaments
 from os.path import join
-from os import path, makedirs
-from django.core.files.base import ContentFile
-
 
 def support_ticket_file_path(instance, filename):
     return join("uploads", str(instance.ticket.id), filename)

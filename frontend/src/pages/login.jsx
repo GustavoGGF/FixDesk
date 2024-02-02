@@ -48,8 +48,6 @@ export default function Login() {
     const user = document.getElementById("user").value;
     const pass = document.getElementById("pass").value;
 
-    console.log("eviou");
-
     fetch("validation/", {
       method: "POST",
       mode: "cors",
@@ -80,9 +78,15 @@ export default function Login() {
           SetLoginPage(true);
           SetPassLimit(true);
           SAwaitValidation(false);
-        } else {
+        }
+      })
+      .then((data) => {
+        const dataUser = localStorage.getItem("dataUser");
+        if (dataUser === null) {
+          localStorage.setItem("dataUser", data);
           return window.location.replace("/helpdesk");
         }
+        return;
       })
       .catch((err) => {
         return console.log(err);

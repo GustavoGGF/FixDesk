@@ -116,4 +116,13 @@ STATIC_ROOT = os.path.join("static")
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-SESSION_COOKIE_AGE = 1800
+SESSION_COOKIE_AGE = 3600
+
+SESSION_ENGINE = "django.contrib.sessions.backends.db"
+
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
+    }
+}

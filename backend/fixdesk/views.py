@@ -9,6 +9,7 @@ from ldap3 import Connection, SAFE_SYNC, ALL_ATTRIBUTES
 from threading import Thread
 from django.contrib.auth.models import User, Group
 from django.contrib.auth import login
+from django.contrib.auth.models import AbstractUser
 
 
 def CreateOrVerifyUser(user, password, request, helpdesk, name_create_user):
@@ -21,10 +22,6 @@ def CreateOrVerifyUser(user, password, request, helpdesk, name_create_user):
     group_user = None
     group_tech = None
     Valid = None
-
-    print("============")
-    print(helpdesk)
-    print("============")
 
     try:
         userAuthentic = User.objects.get(username=user)
@@ -319,9 +316,9 @@ def validation(request):
 
             data_json = dumps(client.__dict__)
 
-            environ["REACT_DATA"] = data_json
-
-            return JsonResponse({"status": "valid"}, status=200, safe=True)
+            return JsonResponse(
+                {"status": "valid", "data_user": data_json}, status=200, safe=True
+            )
 
         except Exception as e:
             error_message = str(e)
