@@ -9,7 +9,6 @@ from ldap3 import Connection, SAFE_SYNC, ALL_ATTRIBUTES
 from threading import Thread
 from django.contrib.auth.models import User, Group
 from django.contrib.auth import login
-import sys
 
 
 def CreateOrVerifyUser(user, password, request, helpdesk, name_create_user):
@@ -22,6 +21,10 @@ def CreateOrVerifyUser(user, password, request, helpdesk, name_create_user):
     group_user = None
     group_tech = None
     Valid = None
+
+    print("============")
+    print(helpdesk)
+    print("============")
 
     try:
         userAuthentic = User.objects.get(username=user)
@@ -55,18 +58,24 @@ def CreateOrVerifyUser(user, password, request, helpdesk, name_create_user):
             userAuthentic.groups.remove(group_tech)
             userAuthentic.groups.remove(group_leader)
             group_user.save()
+            group_tech.save()
+            group_leader.save()
             Valid = True
         elif helpdesk == "Tecnico TI":
             userAuthentic.groups.add(group_tech)
             userAuthentic.groups.remove(group_user)
             userAuthentic.groups.remove(group_leader)
             group_user.save()
+            group_tech.save()
+            group_leader.save()
             Valid = True
         elif helpdesk == "Gestor":
             userAuthentic.groups.add(group_leader)
             userAuthentic.groups.remove(group_user)
             userAuthentic.groups.add(group_tech)
             group_user.save()
+            group_tech.save()
+            group_leader.save()
             Valid = True
         else:
             userAuthentic.groups.remove(group_user)
@@ -74,6 +83,7 @@ def CreateOrVerifyUser(user, password, request, helpdesk, name_create_user):
             userAuthentic.groups.remove(group_leader)
             group_user.save()
             group_tech.save()
+            group_leader.save()
             Valid = False
     except Exception as e:
         print(e)
