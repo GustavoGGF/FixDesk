@@ -81,9 +81,10 @@ export default function Login() {
         }
       })
       .then((data) => {
-        const dataUser = localStorage.getItem("dataUser");
+        console.log(data);
+        const dataUser = localStorage.getItem("dataInfo");
         if (dataUser === null) {
-          localStorage.setItem("dataUser", data);
+          localStorage.setItem("dataInfo", data);
           return window.location.replace("/helpdesk");
         }
         return;
