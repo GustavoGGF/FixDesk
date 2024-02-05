@@ -61,8 +61,6 @@ export default function Login() {
       }),
     })
       .then((response) => {
-        response.json();
-
         if (response.status === 401) {
           SetMessage(true);
           SetTypeMessage("Credencial Inválida");
@@ -78,16 +76,13 @@ export default function Login() {
           SetLoginPage(true);
           SetPassLimit(true);
           SAwaitValidation(false);
+        } else {
+          return response.json();
         }
       })
       .then((data) => {
-        console.log(data);
-        const dataUser = localStorage.getItem("dataInfo");
-        if (dataUser === null) {
-          localStorage.setItem("dataInfo", data);
-          return window.location.replace("/helpdesk");
-        }
-        return;
+        localStorage.setItem("dataInfo", JSON.stringify(data));
+        return window.location.replace("/helpdesk");
       })
       .catch((err) => {
         return console.log(err);

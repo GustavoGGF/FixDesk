@@ -85,7 +85,7 @@ export default function Helpdesk() {
   const [formnewuser, setFormNewUser] = useState(false);
   const [formdeluser, setFormDelUser] = useState(false);
   const [selectedDay, setSelectedDay] = useState(new Date());
-  const [Data, SetData] = useState([]);
+  const [Data, SetData] = useState();
   const [message, SetMessage] = useState(false);
   const [typeError, setTypeError] = useState("");
   const [messageError, setMessageError] = useState("");
@@ -159,7 +159,8 @@ export default function Helpdesk() {
       .then((data) => {
         SetEquipaments(data.equipaments);
         SetCSRFToken(data.token);
-        return SetData(data.data);
+        const dataInfo = JSON.parse(localStorage.getItem("dataInfo"));
+        return SetData(dataInfo.data);
       })
       .catch((err) => {
         return console.error("Erro na solicitação:", err);

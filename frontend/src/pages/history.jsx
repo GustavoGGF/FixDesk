@@ -222,11 +222,16 @@ export default function History() {
   }
 
   useEffect(() => {
+    const dataInfo = JSON.parse(localStorage.getItem("dataInfo"));
+    SetData(dataInfo.data);
+    const formData = new FormData();
+    formData.append("name", dataInfo.data.name);
     fetch("", {
       method: "POST",
       headers: {
         Accept: "application/json",
       },
+      body: formData,
     })
       .then((response) => {
         if (response.status === 402) {
@@ -236,7 +241,6 @@ export default function History() {
       })
       .then((data) => {
         SetToken(data.token);
-        SetData(data.data);
         SetTickets(data.tickets);
         SetCountTicket(10);
         SetOrderBy("-id");

@@ -31,15 +31,9 @@ import re
 @login_required(login_url="/login")
 def firstView(request):
     if request.method == "POST":
-        data = None
-        Data_User = None
         csrf = None
         equipament_list = []
         try:
-            data = getenv("REACT_DATA")
-
-            Data_User = loads(data)
-
             csrf = get_token(request)
 
             if Equipaments.objects.count() > 0:
@@ -67,7 +61,7 @@ def firstView(request):
                     equipament_list.append(equipaments)
 
             return JsonResponse(
-                {"data": Data_User, "token": csrf, "equipaments": equipament_list},
+                {"token": csrf, "equipaments": equipament_list},
                 status=200,
                 safe=True,
             )
@@ -80,7 +74,6 @@ def firstView(request):
             Back_Tech = None
             Back_Leader = None
             User = None
-            data = None
             try:
                 Back_User = getenv("DJANGO_GROUP_USER")
                 Back_Tech = getenv("DJANGO_GROUP_TECH")
@@ -409,14 +402,24 @@ def history(request):
     if request.method == "POST":
         csrf = None
         data = None
-        Data_User = None
+        Back_User = None
+        Back_Tech = None
+        Back_Leader = None
+        User = None
         try:
             csrf = get_token(request)
-            data = getenv("REACT_DATA")
-            Data_User = loads(data)
 
-            if data is not None:
-                pass
+            if request.user.is_authenticated:
+                Back_User = getenv("DJANGO_GROUP_USER")
+                Back_Tech = getenv("DJANGO_GROUP_TECH")
+                Back_Leader = getenv("DJANGO_GROUP_LEADER")
+                User = request.user
+                if User.groups.filter(name=Back_User):
+                    pass
+                elif User.groups.filter(name=Back_Tech):
+                    pass
+                elif User.groups.filter(name=Back_Leader):
+                    pass
 
         except Exception as e:
             print(e)
@@ -429,7 +432,7 @@ def history(request):
         ticket_json = None
         try:
             ticket_data = SupportTicket.objects.filter(
-                ticketRequester=Data_User["name"], open=True
+                ticketRequester=User, open=True
             ).order_by("-id")[:10]
 
             for ticket in ticket_data:
@@ -440,14 +443,16 @@ def history(request):
             print(e)
 
         ticket_objects = []
+        nameUser = None
         try:
+            nameUser = request.POST.get("name")
             for ticket in ticket_list:
                 ticket_data = loads(ticket)[0]["fields"]
                 ticket_data["id"] = loads(ticket)[0]["pk"]
                 ticket_objects.append(ticket_data)
 
             return JsonResponse(
-                {"data": Data_User, "token": csrf, "tickets": ticket_objects},
+                {"data": nameUser, "token": csrf, "tickets": ticket_objects},
                 status=200,
                 safe=True,
             )

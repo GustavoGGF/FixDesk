@@ -307,18 +307,23 @@ def validation(request):
             return JsonResponse({"status": e}, status=400)
 
         client = None
-        data_json = None
 
         try:
             client = UserHelpDesk(
                 name, department, job_title, mail, company, helpdesk, pid
             )
 
-            data_json = dumps(client.__dict__)
+            client_data = {
+                "name": client.name,
+                "departament": client.department,
+                "job_title": client.job_title,
+                "mail": client.mail,
+                "company": client.company,
+                "helpdesk": client.helpdesk,
+                "pid": client.pid,
+            }
 
-            return JsonResponse(
-                {"status": "valid", "data_user": data_json}, status=200, safe=True
-            )
+            return JsonResponse({"data": client_data}, status=200, safe=True)
 
         except Exception as e:
             error_message = str(e)

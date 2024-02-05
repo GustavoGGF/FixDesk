@@ -227,6 +227,8 @@ export default function DashboardTI() {
   }
 
   useEffect(() => {
+    const dataInfo = JSON.parse(localStorage.getItem("dataInfo"));
+    SetUserData(dataInfo.data);
     fetch("", {
       method: "POST",
       headers: { Accept: "application/json" },
@@ -236,7 +238,6 @@ export default function DashboardTI() {
       })
       .then((data) => {
         SetTechs(data.techs);
-        SetUserData(data.userData);
         SetToken(data.token);
         return userData;
       })

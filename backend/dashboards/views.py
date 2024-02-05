@@ -24,8 +24,6 @@ from django.core.files.base import ContentFile
 @login_required(login_url="/login")
 def dashboard_TI(request):
     if request.method == "POST":
-        userData = None
-        data = None
         csrf = None
         techs = []
         group = None
@@ -36,10 +34,6 @@ def dashboard_TI(request):
         name_tech = None
 
         try:
-            data = getenv("REACT_DATA")
-
-            userData = loads(data)
-
             csrf = get_token(request)
 
             group_name = getenv("DJANGO_GROUP_TECH")
@@ -57,7 +51,7 @@ def dashboard_TI(request):
                 techs.append(name_tech)
 
             return JsonResponse(
-                {"userData": userData, "token": csrf, "techs": techs},
+                {"token": csrf, "techs": techs},
                 status=200,
                 safe=True,
             )
