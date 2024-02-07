@@ -401,7 +401,6 @@ def submitTicket(request):
 def history(request):
     if request.method == "POST":
         csrf = None
-        data = None
         Back_User = None
         Back_Tech = None
         Back_Leader = None
@@ -409,17 +408,16 @@ def history(request):
         try:
             csrf = get_token(request)
 
-            if request.user.is_authenticated:
-                Back_User = getenv("DJANGO_GROUP_USER")
-                Back_Tech = getenv("DJANGO_GROUP_TECH")
-                Back_Leader = getenv("DJANGO_GROUP_LEADER")
-                User = request.user
-                if User.groups.filter(name=Back_User):
-                    pass
-                elif User.groups.filter(name=Back_Tech):
-                    pass
-                elif User.groups.filter(name=Back_Leader):
-                    pass
+            Back_User = getenv("DJANGO_GROUP_USER")
+            Back_Tech = getenv("DJANGO_GROUP_TECH")
+            Back_Leader = getenv("DJANGO_GROUP_LEADER")
+            User = request.user
+            if User.groups.filter(name=Back_User):
+                pass
+            elif User.groups.filter(name=Back_Tech):
+                pass
+            elif User.groups.filter(name=Back_Leader):
+                pass
 
         except Exception as e:
             print(e)
@@ -427,12 +425,16 @@ def history(request):
                 {"status": "Invalid Credentials"}, status=402, safe=True
             )
 
+        print("passou pela autenticação")
+
         ticket_list = []
         ticket_data = None
         ticket_json = None
+        UserTicket = None
         try:
+            UserTicket = request.POST.get("name")
             ticket_data = SupportTicket.objects.filter(
-                ticketRequester=User, open=True
+                ticketRequester=UserTicket, open=True
             ).order_by("-id")[:10]
 
             for ticket in ticket_data:
@@ -443,16 +445,14 @@ def history(request):
             print(e)
 
         ticket_objects = []
-        nameUser = None
         try:
-            nameUser = request.POST.get("name")
             for ticket in ticket_list:
                 ticket_data = loads(ticket)[0]["fields"]
                 ticket_data["id"] = loads(ticket)[0]["pk"]
                 ticket_objects.append(ticket_data)
 
             return JsonResponse(
-                {"data": nameUser, "token": csrf, "tickets": ticket_objects},
+                {"token": csrf, "tickets": ticket_objects},
                 status=200,
                 safe=True,
             )

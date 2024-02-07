@@ -69,6 +69,7 @@ export default function Login() {
           SetPassLimit(false);
           SetAnimate("");
           SAwaitValidation(false);
+          return;
         } else if (response.status === 425) {
           SetMessage(true);
           SetTypeMessage("Acesso Restrito");
@@ -76,13 +77,18 @@ export default function Login() {
           SetLoginPage(true);
           SetPassLimit(true);
           SAwaitValidation(false);
+          return;
         } else {
           return response.json();
         }
       })
       .then((data) => {
-        localStorage.setItem("dataInfo", JSON.stringify(data));
-        return window.location.replace("/helpdesk");
+        if (data !== undefined) {
+          localStorage.setItem("dataInfo", JSON.stringify(data));
+          return window.location.replace("/helpdesk");
+        } else {
+          return;
+        }
       })
       .catch((err) => {
         return console.log(err);

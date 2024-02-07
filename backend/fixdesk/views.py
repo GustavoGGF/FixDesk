@@ -2,14 +2,13 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from dotenv import load_dotenv
 from django.shortcuts import redirect
-from json import loads, dumps
-from os import getenv, environ
+from json import loads
+from os import getenv
 from ping3 import ping
 from ldap3 import Connection, SAFE_SYNC, ALL_ATTRIBUTES
 from threading import Thread
 from django.contrib.auth.models import User, Group
 from django.contrib.auth import login
-from django.contrib.auth.models import AbstractUser
 
 
 def CreateOrVerifyUser(user, password, request, helpdesk, name_create_user):
@@ -200,7 +199,7 @@ def validation(request):
 
         except Exception as e:
             print(e)
-            return JsonResponse({"status": error_message}, status=401, safe=True)
+            return JsonResponse({"status": "invalid access"}, status=401, safe=True)
 
         extractor = None
         information = None
@@ -307,6 +306,7 @@ def validation(request):
             return JsonResponse({"status": e}, status=400)
 
         client = None
+        client_data = None
 
         try:
             client = UserHelpDesk(
