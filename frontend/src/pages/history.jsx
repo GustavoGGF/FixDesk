@@ -1256,7 +1256,7 @@ export default function History() {
     SetProblemSyst(false);
     SetProblemInfra(false);
     SetFakeSelect(true);
-
+    SetTicketsDash([]);
     fetch("/helpdesk/getTicketFilterWords/", {
       method: "GET",
       headers: {
@@ -1292,6 +1292,7 @@ export default function History() {
 
   function ticketOpen() {
     SetTickets();
+    SetTicketsDash([]);
     const btn = document.getElementById("btnopen");
     btn.classList.add("btn-success");
     const btn2 = document.getElementById("btnclose");
@@ -1337,6 +1338,7 @@ export default function History() {
 
   function ticketClose() {
     SetTickets([]);
+    SetTicketsDash([]);
     const btn = document.getElementById("btnopen");
     btn.classList.remove("btn-success");
     const btn2 = document.getElementById("btnclose");
@@ -1382,6 +1384,7 @@ export default function History() {
 
   function statusTicketAll() {
     SetTickets([]);
+    SetTicketsDash([]);
     const btn = document.getElementById("btnopen");
     btn.classList.remove("btn-success");
     const btn2 = document.getElementById("btnclose");

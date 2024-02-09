@@ -4,7 +4,9 @@ Usar HTTPS para criptografar a comunicação entre o navegador do usuário e o s
 
 diagrama de como funciona
 
-arruma falha login
+icone de endereço
+
+resetar ticker quando clicar em algum filtro
 
 V1.0.2
 [setinha para baixo do tema
