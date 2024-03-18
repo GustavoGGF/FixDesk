@@ -1,32 +1,57 @@
-responsividade
-
 Usar HTTPS para criptografar a comunicação entre o navegador do usuário e o servidor.
 
 diagrama de como funciona
 
-icone de endereço
+ajustar departamento
+
+versões
 
 resetar ticker quando clicar em algum filtro
 
-V1.0.2
-[setinha para baixo do tema
+ticket instalar programa, arquivo corrompido
+
+setinha para baixo do tema
+
 botão de pegar mais tickets não está funcionando
+
 fechar abas to temas em configuração ao clicar fora
+
 quando tiver sendo feito a montagem dos tickets na tela contar quantos tem em
+
 verificar se oculta ou mostra o botão de mostrar mais
+
 atualizar tickets e dashboardPie por minuto
+
 tela de carregamento abrindo ticket
+
 zerar os tickets ao selecionar um filtro
+
 contrato comodato para os equipamentos
+
 trocar icone de X por lixeira nos novos arquivos dashboard
+
 fechar o chamado fecha a tela de enviar arquivos e limpa os arquivos
+
 ao incluir novos arquivos atualiza o chamado
+
 ao adicionar novos arquivos mostrar no chat
+
 ajustar loadings das paginas, esconder o que não é necessario como bot~çao de mostar mais ticket
+
 aoenviar locagem de equipamento, se estiver alocado já, retornar com alocado cinza e pedir para ajustar data
+
 ajustar botão de mostrar mais tickets, mostrar quanto tiver no minimo 5 tickets e ter animação
+
 customizar o scrool
+
 tela para reportar bug
+
 alocagem de equipamento quando não tem equipamento em X unidade
+
 colocar nomes em cada aba para facil identificação
+
 colocar avisa de tamanho de arquivo e quantidade
+
+boas práticas de desenvolvimento
+
+z-index ao clicar em tema

@@ -8,6 +8,7 @@ import "animate.css";
 
 export default function Login() {
   useEffect(() => {
+    document.title = "FixDesk";
     const Theme = localStorage.getItem("Theme");
     if (Theme === null) {
       localStorage.setItem("Theme", "black");
@@ -126,20 +127,10 @@ export default function Login() {
     <Div className={theme}>
       {message && (
         <div className="mt-5 position-relative">
-          <Message
-            TypeError={typemessage}
-            MessageError={messageerror}
-            className="position-absolute top-0 start-50 translate-middle-x"
-            CloseMessage={closeMessage}
-          />
+          <Message TypeError={typemessage} MessageError={messageerror} className="position-absolute top-0 start-50 translate-middle-x" CloseMessage={closeMessage} />
         </div>
       )}
-      <IMG
-        id="logo"
-        src={Logo}
-        alt="Logo da lupatech"
-        className="position-absolute top-0 start-20 none animate__animated animate__slideInDown"
-      />
+      <IMG id="logo" src={Logo} alt="Logo da lupatech" className="position-absolute top-0 start-20 none animate__animated animate__slideInDown" />
       {loginPage && (
         <div className="position-absolute top-50 start-50 translate-middle d-flex flex-column none animate__animated">
           <form action="" method="POST">
@@ -147,19 +138,10 @@ export default function Login() {
             <input id="user" type="text" className="form-control" name="user" />
 
             <Span className={color}>Senha</Span>
-            <input
-              id="pass"
-              type="password"
-              className="form-control mb-5"
-              name="pass"
-              onKeyUp={verifyPass}
-            />
+            <input id="pass" type="password" className="form-control mb-5" name="pass" onKeyUp={verifyPass} />
 
             {passlimit && (
-              <button
-                className={`btn btn-success w-100 ${animate}`}
-                onClick={verifylogin}
-              >
+              <button className={`btn btn-success w-100 ${animate}`} onClick={verifylogin}>
                 Logar
               </button>
             )}

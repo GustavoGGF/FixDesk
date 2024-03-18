@@ -1,40 +1,8 @@
 import React, { useState, useEffect } from "react";
 import NavBar from "../components/navbar";
 import "../styles/bootstrap/css/bootstrap.css";
-import {
-  Div,
-  Form,
-  Input,
-  Input2,
-  Select,
-  Div2,
-  Calendar,
-  Textarea,
-  ImageEquip,
-  DivEquip,
-  InputRadio,
-  PNameFile,
-  DivNameFile,
-  ImgFile,
-  BtnFile,
-} from "../styles/helpdeskStyle";
-import {
-  DivUpload,
-  HeaderFiles,
-  PFiles,
-  IMGFile,
-  Span1,
-  Span2,
-  BodyFiles,
-  PFiles2,
-  B1,
-  InputFiles,
-  IMGFile2,
-  FooterFiles,
-  Divider,
-  Span3,
-  ListFiles,
-} from "../styles/Equipment_RegistrationStyle";
+import { Div, Form, Input, Input2, Select, Div2, Calendar, Textarea, ImageEquip, DivEquip, InputRadio, PNameFile, DivNameFile, ImgFile, BtnFile } from "../styles/helpdeskStyle";
+import { DivUpload, HeaderFiles, PFiles, IMGFile, Span1, Span2, BodyFiles, PFiles2, B1, InputFiles, IMGFile2, FooterFiles, Divider, Span3, ListFiles } from "../styles/Equipment_RegistrationStyle";
 import { DayPicker } from "react-day-picker";
 import ptBR from "date-fns/locale/pt";
 import "react-day-picker/dist/style.css";
@@ -46,6 +14,7 @@ import Exclude from "../images/components/close.png";
 
 export default function Helpdesk() {
   useEffect(() => {
+    document.title = "Abrir Chamado";
     const Theme = localStorage.getItem("Theme");
     if (Theme === null) {
       localStorage.setItem("Theme", "black");
@@ -130,18 +99,9 @@ export default function Helpdesk() {
     return SetTheme("themeLight");
   }
 
-  const footerDay = selectedDay ? (
-    <p>Você selecionou {format(selectedDay, "PPP")}</p>
-  ) : (
-    <p>Selecione uma data</p>
-  );
+  const footerDay = selectedDay ? <p>Você selecionou {format(selectedDay, "PPP")}</p> : <p>Selecione uma data</p>;
 
-  const footerAlocate =
-    daysForAlocate.length >= 1 ? (
-      <p>Você alocou por {daysForAlocate.length} dia(s).</p>
-    ) : (
-      <p>Selecione um ou mais dias.</p>
-    );
+  const footerAlocate = daysForAlocate.length >= 1 ? <p>Você alocou por {daysForAlocate.length} dia(s).</p> : <p>Selecione um ou mais dias.</p>;
 
   let file_name = [];
 
@@ -205,9 +165,7 @@ export default function Helpdesk() {
           Object.keys(files).forEach((file) => {
             let load = 2000 + file * 2000; // fake load
             setTimeout(() => {
-              $(`.file--${file}`)
-                .querySelector(".progress")
-                .classList.remove("active");
+              $(`.file--${file}`).querySelector(".progress").classList.remove("active");
               $(`.file--${file}`).querySelector(".done").classList.add("anim");
             }, load);
           });
@@ -595,9 +553,7 @@ export default function Helpdesk() {
     if (optionSynch === "user") {
       setAlert(true);
       setMessagetitle("Caso de Criação/exclusão de usuários");
-      setmessageinfo1(
-        "1. Informar o usuário que deverá ser criado ou excluido"
-      );
+      setmessageinfo1("1. Informar o usuário que deverá ser criado ou excluido");
       setmessageinfo2("2. Informar os acessos que o mesmo poderá utilizar");
       setProblemn("Criação/exclusão usuário");
       setAlertVerify(false);
@@ -638,9 +594,7 @@ export default function Helpdesk() {
     if (optionMBI === "user") {
       setAlert(true);
       setMessagetitle("Caso de Criação/exclusão de usuários");
-      setmessageinfo1(
-        "1. Informar o usuário que deverá ser criado ou excluido"
-      );
+      setmessageinfo1("1. Informar o usuário que deverá ser criado ou excluido");
       setmessageinfo2("2. Informar os acessos que o mesmo poderá utilizar");
       setProblemn("Criação/exclusão usuário");
       setAlertVerify(false);
@@ -682,9 +636,7 @@ export default function Helpdesk() {
     if (optionSAP === "user") {
       setAlert(true);
       setMessagetitle("Caso de Criação/exclusão de usuários");
-      setmessageinfo1(
-        "1. Informar o usuário que deverá ser criado ou excluido"
-      );
+      setmessageinfo1("1. Informar o usuário que deverá ser criado ou excluido");
       setmessageinfo2("2. Informar os acessos que o mesmo poderá utilizar");
       setProblemn("Criação/exclusão usuário");
       setAlertVerify(false);
@@ -856,9 +808,7 @@ export default function Helpdesk() {
       SetAlocate(false);
       setAlert(true);
       setMessagetitle("Caso de computador não ligar");
-      setmessageinfo1(
-        "1. Informar o usuario e setor de onde fica o equipamento"
-      );
+      setmessageinfo1("1. Informar o usuario e setor de onde fica o equipamento");
       setmessageinfo2("");
       setProblemn("Equipamento não liga");
       setAlertVerify(false);
@@ -876,9 +826,7 @@ export default function Helpdesk() {
       SetAlocate(false);
       setAlert(true);
       setMessagetitle("Caso de troca de local de trabalho");
-      setmessageinfo1(
-        "1. Informar se no local existe ponto de rede e de energia"
-      );
+      setmessageinfo1("1. Informar se no local existe ponto de rede e de energia");
       setmessageinfo2("");
       setProblemn("Mudanca de local de trabalho");
       setAlertVerify(false);
@@ -888,9 +836,7 @@ export default function Helpdesk() {
       setAlert(true);
       setMessagetitle("Caso de liberação/bloqueio de USB");
       setmessageinfo1("1. Justificar a solicitação");
-      setmessageinfo2(
-        "2. Caso não seja o gestor da area, anexar a autorização do mesmo"
-      );
+      setmessageinfo2("2. Caso não seja o gestor da area, anexar a autorização do mesmo");
       setProblemn("USB");
       setAlertVerify(false);
       return;
@@ -903,9 +849,7 @@ export default function Helpdesk() {
       setAlert(true);
       setMessagetitle("Caso de Alocação de equipamento");
       setmessageinfo1("1. Selecionar o equipamento desejado");
-      setmessageinfo2(
-        "2. Informar a data e a necessidade de equipamentos adicionais como teclado, etc..."
-      );
+      setmessageinfo2("2. Informar a data e a necessidade de equipamentos adicionais como teclado, etc...");
       setAlertVerify(false);
       SetAlocate(true);
       setProblemn("Alocação de Máquina");
@@ -922,10 +866,7 @@ export default function Helpdesk() {
                 })
               }
             >
-              <ImageEquip
-                src={`data:image/jpeg;base64,${equipament.image}`}
-                alt=""
-              />
+              <ImageEquip src={`data:image/jpeg;base64,${equipament.image}`} alt="" />
               <p>Modelo: {equipament.model}</p>
               <p>Empresa: {equipament.company}</p>
             </DivEquip>
@@ -988,9 +929,7 @@ export default function Helpdesk() {
       setAlert(true);
       setMessagetitle("Caso de liberação de pasta");
       setmessageinfo1("1. Informar o diretorio completo da pasta");
-      setmessageinfo2(
-        "2.Caso não seja o gestor responsavel pela pasta, anexar a autorização do mesmo"
-      );
+      setmessageinfo2("2.Caso não seja o gestor responsavel pela pasta, anexar a autorização do mesmo");
       setProblemn("Liberar pasta");
       setAlertVerify(false);
       return;
@@ -998,9 +937,7 @@ export default function Helpdesk() {
       setAlert(true);
       setMessagetitle("Caso de bloqueio de pasta");
       setmessageinfo1("1. Informar o diretorio completo da pasta");
-      setmessageinfo2(
-        "2.Caso não seja o gestor responsavel pela pasta, anexar a autorização do mesmo"
-      );
+      setmessageinfo2("2.Caso não seja o gestor responsavel pela pasta, anexar a autorização do mesmo");
       setProblemn("Bloquear pasta");
       setAlertVerify(false);
       return;
@@ -1021,9 +958,7 @@ export default function Helpdesk() {
       setAlert(true);
       setMessagetitle("Caso de liberação de site");
       setmessageinfo1("1. Informar o link completo do site");
-      setmessageinfo2(
-        "2.Caso não seja o gestor da area, anexar a autorização do mesmo"
-      );
+      setmessageinfo2("2.Caso não seja o gestor da area, anexar a autorização do mesmo");
       setProblemn("Liberacao de site");
       setAlertVerify(false);
       return;
@@ -1031,9 +966,7 @@ export default function Helpdesk() {
       setAlert(true);
       setMessagetitle("Caso de bloqueio de site");
       setmessageinfo1("1. Informar o link completo do site");
-      setmessageinfo2(
-        "2.Caso não seja o gestor da area, anexar a autorização do mesmo"
-      );
+      setmessageinfo2("2.Caso não seja o gestor da area, anexar a autorização do mesmo");
       setProblemn("Bloqueio de site");
       setAlertVerify(false);
       return;
@@ -1081,9 +1014,7 @@ export default function Helpdesk() {
           } else if (selectedValue === "no") {
             setMachine(true);
             setMessagetitle("Caso de não haver maquina");
-            setmessageinfo1(
-              "1. Deverá ser feita uma solicitação de equipamento"
-            );
+            setmessageinfo1("1. Deverá ser feita uma solicitação de equipamento");
             setmessageinfo2("");
             SetNecessaryMachine(true);
             return;
@@ -1129,8 +1060,7 @@ export default function Helpdesk() {
     // Formatar a data no formato dd/mm/yy
 
     // Formatando para data BR
-    var dataFormatada =
-      ano + "-" + ("0" + mes).slice(-2) + "-" + ("0" + dia).slice(-2);
+    var dataFormatada = ano + "-" + ("0" + mes).slice(-2) + "-" + ("0" + dia).slice(-2);
 
     ano.toString().slice(-2);
     // Formatando para data BR
@@ -1270,9 +1200,7 @@ export default function Helpdesk() {
       if (dirsave.length < 2) {
         SetMessage(true);
         setTypeError("Falta de dados");
-        setMessageError(
-          "Obrigatório informar onde os dados devem ser salvos!!!"
-        );
+        setMessageError("Obrigatório informar onde os dados devem ser salvos!!!");
         return;
       }
       formData.append("ticketRequester", Data.name);
@@ -1421,10 +1349,7 @@ export default function Helpdesk() {
                 })
               }
             >
-              <ImageEquip
-                src={`data:image/jpeg;base64,${equipament.image}`}
-                alt=""
-              />
+              <ImageEquip src={`data:image/jpeg;base64,${equipament.image}`} alt="" />
               <p>Modelo: {equipament.model}</p>
               <p>Empresa: {equipament.company}</p>
             </DivEquip>
@@ -1446,10 +1371,7 @@ export default function Helpdesk() {
                 })
               }
             >
-              <ImageEquip
-                src={`data:image/jpeg;base64,${equipament.image}`}
-                alt=""
-              />
+              <ImageEquip src={`data:image/jpeg;base64,${equipament.image}`} alt="" />
               <p>Modelo: {equipament.model}</p>
               <p>Empresa: {equipament.company}</p>
             </DivEquip>
@@ -1471,10 +1393,7 @@ export default function Helpdesk() {
                 })
               }
             >
-              <ImageEquip
-                src={`data:image/jpeg;base64,${equipament.image}`}
-                alt=""
-              />
+              <ImageEquip src={`data:image/jpeg;base64,${equipament.image}`} alt="" />
               <p>Modelo: {equipament.model}</p>
               <p>Empresa: {equipament.company}</p>
             </DivEquip>
@@ -1496,10 +1415,7 @@ export default function Helpdesk() {
                 })
               }
             >
-              <ImageEquip
-                src={`data:image/jpeg;base64,${equipament.image}`}
-                alt=""
-              />
+              <ImageEquip src={`data:image/jpeg;base64,${equipament.image}`} alt="" />
               <p>Modelo: {equipament.model}</p>
               <p>Empresa: {equipament.company}</p>
             </DivEquip>
@@ -1521,10 +1437,7 @@ export default function Helpdesk() {
                 })
               }
             >
-              <ImageEquip
-                src={`data:image/jpeg;base64,${equipament.image}`}
-                alt=""
-              />
+              <ImageEquip src={`data:image/jpeg;base64,${equipament.image}`} alt="" />
               <p>Modelo: {equipament.model}</p>
               <p>Empresa: {equipament.company}</p>
             </DivEquip>
@@ -1545,10 +1458,7 @@ export default function Helpdesk() {
               })
             }
           >
-            <ImageEquip
-              src={`data:image/jpeg;base64,${equipament.image}`}
-              alt=""
-            />
+            <ImageEquip src={`data:image/jpeg;base64,${equipament.image}`} alt="" />
             <p>Modelo: {equipament.model}</p>
             <p>Empresa: {equipament.company}</p>
           </DivEquip>
@@ -1656,84 +1566,44 @@ export default function Helpdesk() {
       )}
       {message && (
         <div className="position-fixed top-50 start-50 translate-middle z-3">
-          <Message
-            TypeError={typeError}
-            MessageError={messageError}
-            CloseMessage={closeMessage}
-          />
+          <Message TypeError={typeError} MessageError={messageError} CloseMessage={closeMessage} />
         </div>
       )}
       {dashboard && (
-        <Form
-          className={`mx-auto d-flex flex-column align-items-center justify-content-around ${themeTicket}`}
-        >
+        <Form className={`mx-auto d-flex flex-column align-items-center justify-content-around ${themeTicket}`}>
           <div className="mb-3">
             <input type="hidden" name="_csrf" value={csrf} />
             <label htmlFor="nameInput" className="form-label">
               Nome
             </label>
-            <Input
-              type="name"
-              className="form-control"
-              id="nameInput"
-              value={Data.name}
-              disabled
-            />
+            <Input type="name" className="form-control" id="nameInput" value={Data.name} disabled />
           </div>
           <div className="mb-3">
             <label htmlFor="departmentInput" className="form-label">
               Departamento
             </label>
-            <Input
-              type="text"
-              className="form-control"
-              id="departmentInput"
-              value={Data.department || ""}
-              disabled={Data.department}
-            />
+            <Input type="text" className="form-control" id="departmentInput" value={Data.department || ""} disabled={Data.department} />
           </div>
           <div className="mb-3">
             <label htmlFor="mailInput" className="form-label">
               Email
             </label>
-            <Input
-              type="text"
-              className="form-control"
-              id="mailInput"
-              value={Data.mail || ""}
-              disabled={Data.mail}
-            />
+            <Input type="text" className="form-control" id="mailInput" value={Data.mail || ""} disabled={Data.mail} />
           </div>
           <div className="mb-3">
             <label htmlFor="companyInput" className="form-label">
               Empresa
             </label>
-            <Input
-              type="text"
-              className="form-control"
-              id="companyInput"
-              value={Data.company || ""}
-              disabled={Data.company}
-            />
+            <Input type="text" className="form-control" id="companyInput" value={Data.company || ""} disabled={Data.company} />
           </div>
-          <Select
-            className="form-select mb-3"
-            aria-label="Default select example"
-            id="selectAR"
-            onChange={selectARes}
-          >
+          <Select className="form-select mb-3" aria-label="Default select example" id="selectAR" onChange={selectARes}>
             <option value="none" disabled selected>
               Seleciona a Área Respectiva
             </option>
             <option value="TI">TI</option>
           </Select>
           {respectiveTI && (
-            <Select
-              className="form-select mb-3"
-              aria-label="Default select example"
-              id="select-Form"
-              onChange={handleSelect}
-            >
+            <Select className="form-select mb-3" aria-label="Default select example" id="select-Form" onChange={handleSelect}>
               <option value="none" disabled selected>
                 Selecione o tipo de ocorrência
               </option>
@@ -1742,32 +1612,20 @@ export default function Helpdesk() {
             </Select>
           )}
           {infra && (
-            <Select
-              className="form-select mb-3"
-              aria-label="Default select example"
-              id="select-error"
-              onChange={selectProblem}
-            >
+            <Select className="form-select mb-3" aria-label="Default select example" id="select-error" onChange={selectProblem}>
               <option value="none" disabled selected>
                 Selecione o problema ocorrido
               </option>
               <option value="backup">Backup/Restore</option>
               <option value="mail">E-mail</option>
               <option value="equip">Equipamento</option>
-              {(Data.helpdesk === "Admin" || Data.helpdesk === "Gestor") && (
-                <option value="user">Gerenciamento de usuário</option>
-              )}
+              {(Data.helpdesk === "Admin" || Data.helpdesk === "Gestor") && <option value="user">Gerenciamento de usuário</option>}
               <option value="internet">Internet</option>
               <option value="folder">Pasta</option>
             </Select>
           )}
           {backup && (
-            <Select
-              className="form-select mb-3"
-              aria-label="Default select example"
-              id="select-backup"
-              onChange={selectBackup}
-            >
+            <Select className="form-select mb-3" aria-label="Default select example" id="select-backup" onChange={selectBackup}>
               <option value="none" disabled selected>
                 Selecione o problema ocorrido
               </option>
@@ -1776,12 +1634,7 @@ export default function Helpdesk() {
             </Select>
           )}
           {mail && (
-            <Select
-              className="form-select mb-3"
-              aria-label="Default select example"
-              id="select-mail"
-              onChange={selectMail}
-            >
+            <Select className="form-select mb-3" aria-label="Default select example" id="select-mail" onChange={selectMail}>
               <option value="none" disabled selected>
                 Selecione o problema ocorrido
               </option>
@@ -1791,12 +1644,7 @@ export default function Helpdesk() {
             </Select>
           )}
           {equip && (
-            <Select
-              className="form-select mb-3"
-              aria-label="Default select example"
-              id="select-equip"
-              onChange={selectEquip}
-            >
+            <Select className="form-select mb-3" aria-label="Default select example" id="select-equip" onChange={selectEquip}>
               <option value="none" disabled selected>
                 Selecione o problema ocorrido
               </option>
@@ -1809,12 +1657,7 @@ export default function Helpdesk() {
             </Select>
           )}
           {user && (
-            <Select
-              className="form-select mb-3"
-              aria-label="Default select example"
-              id="select-user"
-              onChange={selectUser}
-            >
+            <Select className="form-select mb-3" aria-label="Default select example" id="select-user" onChange={selectUser}>
               <option value="none" disabled selected>
                 Selecione o problema ocorrido
               </option>
@@ -1823,12 +1666,7 @@ export default function Helpdesk() {
             </Select>
           )}
           {internet && (
-            <Select
-              className="form-select mb-3"
-              aria-label="Default select example"
-              id="select-internet"
-              onChange={selectInternet}
-            >
+            <Select className="form-select mb-3" aria-label="Default select example" id="select-internet" onChange={selectInternet}>
               <option value="none" disabled selected>
                 Selecione o problema ocorrido
               </option>
@@ -1842,95 +1680,41 @@ export default function Helpdesk() {
                 <span className="input-group-text" id="basic-addon1">
                   Nome
                 </span>
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="NOME COMPLETO!!"
-                  aria-label="newname"
-                  aria-describedby="basic-addon1"
-                  onKeyDown={nameNewUser}
-                />
+                <input type="text" className="form-control" placeholder="NOME COMPLETO!!" aria-label="newname" aria-describedby="basic-addon1" onKeyDown={nameNewUser} />
               </div>
               <div className="input-group mb-3">
                 <span className="input-group-text" id="basic-addon1">
                   Setor
                 </span>
-                <input
-                  type="text"
-                  className="form-control w-75"
-                  placeholder="Setor/Departamento"
-                  aria-label="newdepartamen"
-                  aria-describedby="basic-addon1"
-                  onKeyDown={SectorNewUser}
-                />
+                <input type="text" className="form-control w-75" placeholder="Setor/Departamento" aria-label="newdepartamen" aria-describedby="basic-addon1" onKeyDown={SectorNewUser} />
               </div>
               <div className="d-flex flex-column justify-content-start">
                 <div className="d-flex mb-3">
-                  <InputRadio
-                    type="radio"
-                    className="form-check-input"
-                    name="motivation"
-                    onChange={selectMotivation}
-                    value="new"
-                  />
+                  <InputRadio type="radio" className="form-check-input" name="motivation" onChange={selectMotivation} value="new" />
                   <span>Nova contratação</span>
                 </div>
                 <div className="d-flex mb-3">
-                  <InputRadio
-                    type="radio"
-                    className="form-check-input"
-                    name="motivation"
-                    onChange={selectMotivation}
-                    value="old"
-                  />
+                  <InputRadio type="radio" className="form-check-input" name="motivation" onChange={selectMotivation} value="old" />
                   <span>Remanejamento para outro setor/departamento</span>
                 </div>
                 <div className="d-flex mb-3">
-                  <InputRadio
-                    type="radio"
-                    className="form-check-input"
-                    name="motivation"
-                    onChange={selectMotivation}
-                    value="other"
-                  />
+                  <InputRadio type="radio" className="form-check-input" name="motivation" onChange={selectMotivation} value="other" />
                   <span>Outro</span>
-                  <Input2
-                    type="text"
-                    className="form-control"
-                    disabled={motivation}
-                  />
+                  <Input2 type="text" className="form-control" disabled={motivation} />
                 </div>
               </div>
               <div className="d-flex flex-column justify-content-start mb-3">
-                <span className="mb-3">
-                  Existe equipamento de informática disponivel no setor para o
-                  usuário?
-                </span>
+                <span className="mb-3">Existe equipamento de informática disponivel no setor para o usuário?</span>
                 <div className="d-flex">
-                  <InputRadio
-                    type="radio"
-                    className="form-check-input"
-                    name="machine"
-                    onChange={selectMachine}
-                    value="yes"
-                  />
+                  <InputRadio type="radio" className="form-check-input" name="machine" onChange={selectMachine} value="yes" />
                   <span className="mb-3">SIM</span>
                 </div>
                 <div className="d-flex mb-3">
-                  <InputRadio
-                    type="radio"
-                    className="form-check-input"
-                    name="machine"
-                    onChange={selectMachine}
-                    value="no"
-                  />
+                  <InputRadio type="radio" className="form-check-input" name="machine" onChange={selectMachine} value="no" />
                   <span>NÃO</span>
                 </div>
                 {machine && (
-                  <Div2
-                    className="alert alert-warning d-flex flex-column text-center"
-                    role="alert"
-                  >
+                  <Div2 className="alert alert-warning d-flex flex-column text-center" role="alert">
                     <h5>{messagetitle}</h5>
                     <span>{messageinfo1}</span>
                   </Div2>
@@ -1938,12 +1722,7 @@ export default function Helpdesk() {
               </div>
               <div className="w-100 ">
                 <span>Informe a unidade</span>
-                <Select
-                  className="form-select mb-3 mt-3 text-center mx-auto"
-                  aria-label="Default select example"
-                  id="select-company-new-user"
-                  onChange={selectCompanyNW}
-                >
+                <Select className="form-select mb-3 mt-3 text-center mx-auto" aria-label="Default select example" id="select-company-new-user" onChange={selectCompanyNW}>
                   <option value="none" selected>
                     Selecione a unidade
                   </option>
@@ -1958,95 +1737,53 @@ export default function Helpdesk() {
                 </Select>
               </div>
               <div className="d-flex flex-column mb-3">
-                <span className="mb-1">
-                  Informe o sistemas/softwares que requisitam usuario/licença
-                </span>
+                <span className="mb-1">Informe o sistemas/softwares que requisitam usuario/licença</span>
                 <div className="mx-auto">
                   <ul className="list-group">
                     <li className="list-group-item">
-                      <input
-                        className="form-check-input me-1"
-                        type="checkbox"
-                        value="SAP"
-                        onChange={softwaresNewUser}
-                      />
+                      <input className="form-check-input me-1" type="checkbox" value="SAP" onChange={softwaresNewUser} />
                       <label className="form-check-label" htmlFor="SAP">
                         SAP
                       </label>
                     </li>
                     <li className="list-group-item">
-                      <input
-                        className="form-check-input me-1"
-                        type="checkbox"
-                        value="MBI"
-                        onChange={softwaresNewUser}
-                      />
+                      <input className="form-check-input me-1" type="checkbox" value="MBI" onChange={softwaresNewUser} />
                       <label className="form-check-label" htmlFor="MBI">
                         MBI / NetTerm
                       </label>
                     </li>
                     <li className="list-group-item">
-                      <input
-                        className="form-check-input me-1"
-                        type="checkbox"
-                        value="Solfis"
-                        onChange={softwaresNewUser}
-                      />
+                      <input className="form-check-input me-1" type="checkbox" value="Solfis" onChange={softwaresNewUser} />
                       <label className="form-check-label" htmlFor="Solfis">
                         Synchro Fiscal (Solfis)
                       </label>
                     </li>
                     <li className="list-group-item">
-                      <input
-                        className="form-check-input me-1"
-                        type="checkbox"
-                        value="DFe Manager"
-                        onChange={softwaresNewUser}
-                      />
+                      <input className="form-check-input me-1" type="checkbox" value="DFe Manager" onChange={softwaresNewUser} />
                       <label className="form-check-label" htmlFor="DFe">
                         Synchro NFe (DFe Manager)
                       </label>
                     </li>
                     <li className="list-group-item">
-                      <input
-                        className="form-check-input me-1"
-                        type="checkbox"
-                        value="Metadados"
-                        onChange={softwaresNewUser}
-                      />
+                      <input className="form-check-input me-1" type="checkbox" value="Metadados" onChange={softwaresNewUser} />
                       <label className="form-check-label" htmlFor="Metadados">
                         Metadados
                       </label>
                     </li>
                     <li className="list-group-item">
-                      <input
-                        className="form-check-input me-1"
-                        type="checkbox"
-                        value="AutoCad"
-                        onChange={softwaresNewUser}
-                      />
+                      <input className="form-check-input me-1" type="checkbox" value="AutoCad" onChange={softwaresNewUser} />
                       <label className="form-check-label" htmlFor="AutoCad">
                         AutoCad
                       </label>
                     </li>
                     <li className="list-group-item">
-                      <input
-                        className="form-check-input me-1"
-                        type="checkbox"
-                        value="SolidWorks"
-                        onChange={softwaresNewUser}
-                      />
+                      <input className="form-check-input me-1" type="checkbox" value="SolidWorks" onChange={softwaresNewUser} />
                       <label className="form-check-label" htmlFor="SolidWorks">
                         SolidWorks
                       </label>
                     </li>
                     <li className="list-group-item">
-                      <input
-                        className="form-check-input me-1"
-                        type="checkbox"
-                        value="Office"
-                        onChange={softwaresNewUser}
-                      />
+                      <input className="form-check-input me-1" type="checkbox" value="Office" onChange={softwaresNewUser} />
                       <label className="form-check-label" htmlFor="Office">
                         Office
                       </label>
@@ -2056,47 +1793,24 @@ export default function Helpdesk() {
               </div>
               <div>
                 <span>Centro de custo:</span>
-                <input
-                  type="number"
-                  className="form-control"
-                  onKeyDown={centralCost}
-                />
+                <input type="number" className="form-control" onKeyDown={centralCost} />
               </div>
               <div className="mb-3">
                 <span>Cargo/Função:</span>
-                <input
-                  type="text"
-                  className="form-control"
-                  onKeyDown={jobTitleFunct}
-                />
+                <input type="text" className="form-control" onKeyDown={jobTitleFunct} />
               </div>
               <div className="text-center">
                 <span className="mb-3">Data de inicio das atitividades:</span>
                 <Calendar className="mt-3 d-flex">
-                  <DayPicker
-                    fixedWeeks
-                    showOutsideDays
-                    selected={selectedDay}
-                    onSelect={setSelectedDay}
-                    mode="single"
-                    footer={footerDay}
-                    locale={ptBR}
-                  />
+                  <DayPicker fixedWeeks showOutsideDays selected={selectedDay} onSelect={setSelectedDay} mode="single" footer={footerDay} locale={ptBR} />
                 </Calendar>
               </div>
               <div>
                 <span className="mb-2">
-                  Informe um usuário que tenha o perfil semelhante ao do
-                  contratado. Inclua observações caso exista alguma restrição na
-                  cópia deste, ou digite nenhum caso não exista semelhante.(terá
+                  Informe um usuário que tenha o perfil semelhante ao do contratado. Inclua observações caso exista alguma restrição na cópia deste, ou digite nenhum caso não exista semelhante.(terá
                   as mesmas permissões)
                 </span>
-                <input
-                  type="text"
-                  className="form-control mt-3"
-                  placeholder="NOME COMPLETO!!!"
-                  onKeyDown={nameCopyUser}
-                />
+                <input type="text" className="form-control mt-3" placeholder="NOME COMPLETO!!!" onKeyDown={nameCopyUser} />
               </div>
             </div>
           )}
@@ -2106,64 +1820,25 @@ export default function Helpdesk() {
                 <span className="input-group-text" id="basic-addon1">
                   Nome
                 </span>
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="NOME COMPLETO!!"
-                  aria-label="delname"
-                  aria-describedby="basic-addon1"
-                  onKeyDown={nameNewUser}
-                />
+                <input type="text" className="form-control" placeholder="NOME COMPLETO!!" aria-label="delname" aria-describedby="basic-addon1" onKeyDown={nameNewUser} />
               </div>
-              <span>
-                Informar para quem os e-mails deverão ser direcionados
-              </span>
+              <span>Informar para quem os e-mails deverão ser direcionados</span>
               <div className="input-group mb-3 mt-3">
                 <span className="input-group-text" id="basic-addon1">
                   email
                 </span>
-                <input
-                  type="mail"
-                  className="form-control"
-                  placeholder="NOME COMPLETO!!"
-                  aria-label="delmail"
-                  aria-describedby="basic-addon1"
-                  onKeyDown={emailDelegation}
-                />
+                <input type="mail" className="form-control" placeholder="NOME COMPLETO!!" aria-label="delmail" aria-describedby="basic-addon1" onKeyDown={emailDelegation} />
               </div>
-              <span className="mb-3">
-                Informar diretorio onde deverá ser salvo os documentos da pasta
-                pessoal U
-              </span>
-              <input
-                type="text"
-                className="form-control mb-3"
-                placeholder="informar diretorio completo"
-                onKeyDown={saveU}
-              />
-              <span className="mb-3">
-                Informar a data que deverá ser feito o bloqueio do usuario
-              </span>
+              <span className="mb-3">Informar diretorio onde deverá ser salvo os documentos da pasta pessoal U</span>
+              <input type="text" className="form-control mb-3" placeholder="informar diretorio completo" onKeyDown={saveU} />
+              <span className="mb-3">Informar a data que deverá ser feito o bloqueio do usuario</span>
               <div className="t-3 d-flex justify-content-center">
-                <DayPicker
-                  fixedWeeks
-                  showOutsideDays
-                  selected={selectedDay}
-                  onSelect={setSelectedDay}
-                  mode="single"
-                  footer={footerDay}
-                  locale={ptBR}
-                />
+                <DayPicker fixedWeeks showOutsideDays selected={selectedDay} onSelect={setSelectedDay} mode="single" footer={footerDay} locale={ptBR} />
               </div>
             </div>
           )}
           {folder && (
-            <Select
-              className="form-select mb-3"
-              aria-label="Default select example"
-              id="select-folder"
-              onChange={selectFolder}
-            >
+            <Select className="form-select mb-3" aria-label="Default select example" id="select-folder" onChange={selectFolder}>
               <option value="none" disabled selected>
                 Selecione o problema ocorrido
               </option>
@@ -2172,12 +1847,7 @@ export default function Helpdesk() {
             </Select>
           )}
           {system && (
-            <Select
-              className="form-select mb-3"
-              aria-label="Default select example"
-              id="select-error"
-              onChange={selectProblem}
-            >
+            <Select className="form-select mb-3" aria-label="Default select example" id="select-error" onChange={selectProblem}>
               <option value="none" disabled selected>
                 Selecione o Sistema
               </option>
@@ -2189,12 +1859,7 @@ export default function Helpdesk() {
             </Select>
           )}
           {sap && (
-            <Select
-              className="form-select mb-3"
-              aria-label="Default select example"
-              id="select-sap"
-              onChange={selectSAP}
-            >
+            <Select className="form-select mb-3" aria-label="Default select example" id="select-sap" onChange={selectSAP}>
               <option value="none" disabled selected>
                 Selecione o Problema
               </option>
@@ -2205,12 +1870,7 @@ export default function Helpdesk() {
             </Select>
           )}
           {mbi && (
-            <Select
-              className="form-select mb-3"
-              aria-label="Default select example"
-              id="select-mbi"
-              onChange={selectMBI}
-            >
+            <Select className="form-select mb-3" aria-label="Default select example" id="select-mbi" onChange={selectMBI}>
               <option value="none" disabled selected>
                 Selecione o Problema
               </option>
@@ -2221,12 +1881,7 @@ export default function Helpdesk() {
             </Select>
           )}
           {synch && (
-            <Select
-              className="form-select mb-3"
-              aria-label="Default select example"
-              id="select-synch"
-              onChange={selectSynch}
-            >
+            <Select className="form-select mb-3" aria-label="Default select example" id="select-synch" onChange={selectSynch}>
               <option value="none" disabled selected>
                 Selecione o Problema
               </option>
@@ -2237,12 +1892,7 @@ export default function Helpdesk() {
             </Select>
           )}
           {office && (
-            <Select
-              className="form-select mb-3"
-              aria-label="Default select example"
-              id="select-office"
-              onChange={selectOffice}
-            >
+            <Select className="form-select mb-3" aria-label="Default select example" id="select-office" onChange={selectOffice}>
               <option value="none" disabled selected>
                 Selecione o Problema
               </option>
@@ -2251,12 +1901,7 @@ export default function Helpdesk() {
             </Select>
           )}
           {eng && (
-            <Select
-              className="form-select mb-3"
-              aria-label="Default select example"
-              id="select-eng"
-              onChange={selectEng}
-            >
+            <Select className="form-select mb-3" aria-label="Default select example" id="select-eng" onChange={selectEng}>
               <option value="none" disabled selected>
                 Selecione o Problema
               </option>
@@ -2279,12 +1924,7 @@ export default function Helpdesk() {
           {alocate && (
             <div className="w-100">
               <div className="d-flex justify-content-center">
-                <Select
-                  className="form-select mb-3"
-                  aria-label="Default select example"
-                  id="select-company-equip"
-                  onChange={selectCompanyEquip}
-                >
+                <Select className="form-select mb-3" aria-label="Default select example" id="select-company-equip" onChange={selectCompanyEquip}>
                   <option value="none" disabled selected>
                     Selecione uma Unidade
                   </option>
@@ -2296,34 +1936,20 @@ export default function Helpdesk() {
                   <option value="all">Todas Unidades</option>
                 </Select>
               </div>
-              <div className="d-flex flex-wrap justify-content-center">
-                {dashequipaments}
-              </div>
+              <div className="d-flex flex-wrap justify-content-center">{dashequipaments}</div>
             </div>
           )}
           {dateequip && (
             <div className="justify-content-center text-center">
-              <span className="mb-1 mt-2">
-                Data de alocagem do Equipamento:
-              </span>
+              <span className="mb-1 mt-2">Data de alocagem do Equipamento:</span>
               <Calendar className="mt-3">
-                <DayPicker
-                  mode="multiple"
-                  selected={daysForAlocate}
-                  onSelect={SetDaysForAlocate}
-                  footer={footerAlocate}
-                  locale={ptBR}
-                />
+                <DayPicker mode="multiple" selected={daysForAlocate} onSelect={SetDaysForAlocate} footer={footerAlocate} locale={ptBR} />
               </Calendar>
             </div>
           )}
           <div className="d-flex flex-column">
             <div className="form-floating mb-3 mx-auto">
-              <Textarea
-                className="form-control"
-                id="floatingTextarea2"
-                onKeyUp={getObservation}
-              ></Textarea>
+              <Textarea className="form-control" id="floatingTextarea2" onKeyUp={getObservation}></Textarea>
               <label htmlFor="floatingTextarea2">Observação</label>
             </div>
             <h3 className="text-center mt-1">Upload de Arquivo</h3>
@@ -2336,11 +1962,7 @@ export default function Helpdesk() {
                     <Span2 className="load">load</Span2>
                   </PFiles>
                 </HeaderFiles>
-                <BodyFiles
-                  className="body"
-                  id="drop"
-                  onDrop={() => inputDrop()}
-                >
+                <BodyFiles className="body" id="drop" onDrop={() => inputDrop()}>
                   <IMGFile src={File} alt="" />
                   <PFiles2 className="pointer-none">
                     <B1>Drag and drop</B1> files here to begin the upload
@@ -2358,12 +1980,7 @@ export default function Helpdesk() {
               </div>
             </DivUpload>
           </div>
-          <input
-            type="submit"
-            className="importar btn btn-primary mt-3 mb-3"
-            onClick={submitTicket}
-            value={"Enviar"}
-          />
+          <input type="submit" className="importar btn btn-primary mt-3 mb-3" onClick={submitTicket} value={"Enviar"} />
         </Form>
       )}
     </Div>

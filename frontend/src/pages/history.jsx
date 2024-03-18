@@ -70,6 +70,7 @@ import ptBR from "date-fns/locale/pt";
 
 export default function History() {
   useEffect(() => {
+    document.title = "Meus Chamados";
     const Theme = localStorage.getItem("Theme");
     if (Theme === null) {
       localStorage.setItem("Theme", "black");
@@ -101,8 +102,7 @@ export default function History() {
   const [ticketPROBLEMN, SetTicketPROBLEMN] = useState("");
   const [ticketOBSERVATION, SetTicketOBSERVATION] = useState("");
   const [lifeTime, SetLifetime] = useState("");
-  const [ticketResponsible_Technician, SetTicketResponsible_Technician] =
-    useState("");
+  const [ticketResponsible_Technician, SetTicketResponsible_Technician] = useState("");
   const [ticketID, SetTicketID] = useState("");
   const [mountChat, SetMountChat] = useState([]);
   const [chat, SetChat] = useState(true);
@@ -324,11 +324,7 @@ export default function History() {
           const Div = (
             <DivAlocate className="d-flex flex-column w-100 align-items-center">
               <p className="text-center">Modelo: {data.equipament["model"]}</p>
-              <IMGFiles2
-                src={`data:image/jpeg;base64,${data.equipament["image"]}`}
-                onClick={openImage}
-                alt=""
-              />
+              <IMGFiles2 src={`data:image/jpeg;base64,${data.equipament["image"]}`} onClick={openImage} alt="" />
             </DivAlocate>
           );
 
@@ -548,11 +544,7 @@ export default function History() {
             }
           }
         }
-        if (
-          data.chat !== null &&
-          data.chat !== undefined &&
-          data.chat !== "undefined"
-        ) {
+        if (data.chat !== null && data.chat !== undefined && data.chat !== "undefined") {
           SetCountChat(data.chat.length);
           SetFetchChat(true);
 
@@ -563,10 +555,7 @@ export default function History() {
 
           arrayChat.forEach(function (item) {
             if (item.includes("System")) {
-              item = item
-                .replace("System:", "")
-                .replace("[", "")
-                .replace("]", "");
+              item = item.replace("System:", "").replace("[", "").replace("]", "");
               const newItem = (
                 <div className="text-center d-flex justify-content-center text-break">
                   <p className="pChat">{item}</p>
@@ -575,10 +564,7 @@ export default function History() {
               SetMountChat((mountChat) => [...mountChat, newItem]);
             }
             if (item.includes("Technician")) {
-              item = item
-                .replace("Technician:", "")
-                .replace("[", "")
-                .replace("]", "");
+              item = item.replace("Technician:", "").replace("[", "").replace("]", "");
               const newItem = (
                 <div className="d-flex justify-content-start w-100 text-break">
                   <p className="tChat2">{item}</p>
@@ -587,10 +573,7 @@ export default function History() {
               SetMountChat((mountChat) => [...mountChat, newItem]);
             }
             if (item.includes("User")) {
-              item = item
-                .replace("User:", "")
-                .replace("[", "")
-                .replace("]", "");
+              item = item.replace("User:", "").replace("[", "").replace("]", "");
               const newItem = (
                 <div className="d-flex justify-content-end w-100 text-break">
                   <p className="uChat1">{item}</p>
@@ -604,9 +587,7 @@ export default function History() {
         } else {
           const chatDiv = document.getElementById("chatDiv");
           chatDiv.style.background = "#e9ecef";
-          setMessageError(
-            "O CHAT ESTÁ INDIPONIVÉL ATÉ O TECNICO INICIAR UMA CONVERSA"
-          );
+          setMessageError("O CHAT ESTÁ INDIPONIVÉL ATÉ O TECNICO INICIAR UMA CONVERSA");
           setTypeError("PERMISSÃO NEGADA");
           SetMessageChat(true);
           SetChat(false);
@@ -626,11 +607,7 @@ export default function History() {
       const byteCharacters = atob(cleanBase64);
       const byteArrays = [];
 
-      for (
-        let offset = 0;
-        offset < byteCharacters.length;
-        offset += sliceSize
-      ) {
+      for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
         const slice = byteCharacters.slice(offset, offset + sliceSize);
 
         const byteNumbers = new Array(slice.length);
@@ -730,10 +707,7 @@ export default function History() {
 
       if (ticket["open"] === false) {
         colorBorder = "ticektClose";
-      } else if (
-        ticket["open"] === true &&
-        ticket["responsible_technician"] === null
-      ) {
+      } else if (ticket["open"] === true && ticket["responsible_technician"] === null) {
         const currentDate = new Date();
 
         const diferenceMilisecond = currentDate - date;
@@ -745,10 +719,7 @@ export default function History() {
         } else {
           colorBorder = "ticektOpenNotView";
         }
-      } else if (
-        ticket["open"] === true &&
-        ticket["responsible_technician"] !== null
-      ) {
+      } else if (ticket["open"] === true && ticket["responsible_technician"] !== null) {
         colorBorder = "ticektOpenInView";
       }
 
@@ -801,10 +772,7 @@ export default function History() {
 
       if (ticket["open"] === false) {
         colorBorder = "ticektCloseList";
-      } else if (
-        ticket["open"] === true &&
-        ticket["responsible_technician"] === null
-      ) {
+      } else if (ticket["open"] === true && ticket["responsible_technician"] === null) {
         const currentDate = new Date();
 
         const diferenceMilisecond = currentDate - date;
@@ -816,10 +784,7 @@ export default function History() {
         } else {
           colorBorder = "ticektOpenNotViewList";
         }
-      } else if (
-        ticket["open"] === true &&
-        ticket["responsible_technician"] !== null
-      ) {
+      } else if (ticket["open"] === true && ticket["responsible_technician"] !== null) {
         colorBorder = "ticektOpenInViewList";
       }
 
@@ -901,11 +866,7 @@ export default function History() {
   }
 
   async function reloadChat({ data }) {
-    if (
-      data.chat !== null &&
-      data.chat !== undefined &&
-      data.chat !== "undefined"
-    ) {
+    if (data.chat !== null && data.chat !== undefined && data.chat !== "undefined") {
       SetMountChat([]);
       var arrayChat = data.chat.match(/\[.*?\]/g);
 
@@ -924,10 +885,7 @@ export default function History() {
           SetMountChat((mountChat) => [...mountChat, newItem]);
         }
         if (item.includes("Technician")) {
-          item = item
-            .replace("Technician:", "")
-            .replace("[", "")
-            .replace("]", "");
+          item = item.replace("Technician:", "").replace("[", "").replace("]", "");
           const newItem = (
             <div className="d-flex justify-content-start w-100 text-break">
               <p className="tChat2">{item}</p>
@@ -953,9 +911,7 @@ export default function History() {
     } else {
       const chatDiv = document.getElementById("chatDiv");
       chatDiv.style.background = "#e9ecef";
-      setMessageError(
-        "O CHAT ESTÁ INDIPONIVÉL ATÉ O TECNICO INICIAR UMA CONVERSA"
-      );
+      setMessageError("O CHAT ESTÁ INDIPONIVÉL ATÉ O TECNICO INICIAR UMA CONVERSA");
       setTypeError("PERMISSÃO NEGADA");
       SetMessageChat(true);
       SetChat(false);
@@ -1506,28 +1462,15 @@ export default function History() {
       )}
       {message && (
         <div className="position-absolute top-0 start-50 translate-middle-x mt-5 z-3">
-          <Message
-            TypeError={typeError}
-            MessageError={messageError}
-            CloseMessage={closeMessage}
-          />
+          <Message TypeError={typeError} MessageError={messageError} CloseMessage={closeMessage} />
         </div>
       )}
       <DivFilter className={`${blurNav} ${themeFilter}`}>
         <div className="form-floating">
-          <Input1
-            type="text"
-            className="form-control"
-            id="floatingInput"
-            onKeyDown={getTicketKey}
-          />
+          <Input1 type="text" className="form-control" id="floatingInput" onKeyDown={getTicketKey} />
           <label htmlFor="floatingInput">Ocorrência | Problema | Data...</label>
         </div>
-        <Select1
-          id="selectOcorrence"
-          className="form-select"
-          onChange={enableProblem}
-        >
+        <Select1 id="selectOcorrence" className="form-select" onChange={enableProblem}>
           <option value="null" selected disabled>
             Tipo de Ocorrência
           </option>
@@ -1579,12 +1522,7 @@ export default function History() {
             <option value="all">Todos</option>
           </Select1>
         )}
-        <Select1
-          name=""
-          id="select-order"
-          className="form-select"
-          onChange={selectOrder}
-        >
+        <Select1 name="" id="select-order" className="form-select" onChange={selectOrder}>
           <option value="none" disabled>
             Ordernar
           </option>
@@ -1594,9 +1532,7 @@ export default function History() {
           <option value="ancient">Data Antiga</option>
         </Select1>
         <DivContainerImages className="d-flex">
-          <PSelectView className="position-absolute top-0 start-0 translate-middle">
-            Quantidade
-          </PSelectView>
+          <PSelectView className="position-absolute top-0 start-0 translate-middle">Quantidade</PSelectView>
           <DivImages
             className="btn"
             id="fiveView"
@@ -1643,9 +1579,7 @@ export default function History() {
           </DivImages>
         </DivContainerImages>
         <DivSelectView>
-          <PSelectView className="position-absolute top-0 start-0 translate-middle">
-            Modo de Visualização
-          </PSelectView>
+          <PSelectView className="position-absolute top-0 start-0 translate-middle">Modo de Visualização</PSelectView>
           <button className="btn" id="selectView-List" onClick={listCard}>
             <ImgSelectView src={List} className="img-fluid" alt="" />
           </button>
@@ -1654,9 +1588,7 @@ export default function History() {
           </button>
         </DivSelectView>
         <DivSelectView className="mt-3">
-          <PSelectView className="position-absolute top-0 start-0 translate-middle">
-            Status
-          </PSelectView>
+          <PSelectView className="position-absolute top-0 start-0 translate-middle">Status</PSelectView>
           <Button1
             className="btn btn-success"
             id="btnopen"
@@ -1707,9 +1639,7 @@ export default function History() {
                 </BtnNF>
               </div>
               <div className="w-100 justify-content-center d-flex">
-                <h3 className="text-center text-uppercase fw-bold text-danger mt-3">
-                  chamado {ticketID}
-                </h3>
+                <h3 className="text-center text-uppercase fw-bold text-danger mt-3">chamado {ticketID}</h3>
               </div>
               <div className="w-100 justify-content-end d-flex">
                 <CloseBTN onClick={Close_ticket}>
@@ -1718,161 +1648,31 @@ export default function History() {
               </div>
             </div>
             <div className="d-flex flex-column">
-              <input
-                type="text"
-                value={"Usuário: " + ticketNAME}
-                className="form-control"
-                disabled
-              />
-              <input
-                type="text"
-                value={"Departamento: " + ticketDEPARTMENT}
-                className="form-control"
-                disabled
-              />
-              <input
-                type="text"
-                value={"Email: " + ticketMAIL}
-                className="form-control"
-                disabled
-                hidden={ticketMAIL.length > 1 ? false : true}
-              />
-              <input
-                type="text"
-                value={"Unidade: " + ticketCOMPANY}
-                className="form-control"
-                disabled
-              />
-              <input
-                type="text"
-                value={"Setor: " + ticketSECTOR}
-                className="form-control"
-                disabled
-              />
-              <input
-                type="text"
-                value={"Ocorrência: " + ticketOCCURRENCE}
-                className="form-control"
-                disabled
-              />
-              <input
-                type="text"
-                value={"Problema: " + ticketPROBLEMN}
-                className="form-control"
-                disabled
-              />
-              <input
-                type="text"
-                value={"Nome: " + namenewuser}
-                className="form-control"
-                disabled
-                hidden={namenewuser.length > 1 ? false : true}
-              />
-              <input
-                type="text"
-                value={"Setor: " + sectornewuser}
-                className="form-control"
-                disabled
-                hidden={sectornewuser === "undefined" ? true : false}
-              />
-              <input
-                type="text"
-                value={"Remanejamento: " + wherefrom}
-                className="form-control"
-                disabled
-                hidden={wherefrom.length > 1 ? false : true}
-              />
-              <input
-                type="text"
-                value="Necessita-se de máquina"
-                className="form-control"
-                disabled
-                hidden={machinenewuser === true ? false : true}
-              />
-              <input
-                type="text"
-                value={"Filial: " + companynewuser}
-                className="form-control"
-                disabled
-                hidden={companynewuser.length > 1 ? false : true}
-              />
-              <input
-                type="text"
-                value={"Softwares Necessisarios: " + softwarenewuser}
-                className="form-control"
-                disabled
-                hidden={softwarenewuser.length > 1 ? false : true}
-              />
-              <input
-                type="text"
-                value={"Centro de custo: " + costcenter}
-                className="form-control"
-                disabled
-                hidden={costcenter.length > 1 ? false : true}
-              />
-              <input
-                type="text"
-                value={"Cargo: " + jobtitlenewuser}
-                className="form-control"
-                disabled
-                hidden={jobtitlenewuser.length > 1 ? false : true}
-              />
-              <input
-                type="text"
-                value={"Centro de custo: " + costcenter}
-                className="form-control"
-                disabled
-                hidden={costcenter.length > 1 ? false : true}
-              />
-              <input
-                type="text"
-                value={"Transferir e-mails para: " + mailtranfer}
-                className="form-control"
-                disabled
-                hidden={mailtranfer.length > 1 ? false : true}
-              />
-              <input
-                type="text"
-                value={"Transferir dados para: " + oldfile}
-                className="form-control"
-                disabled
-                hidden={oldfile.length > 1 ? false : true}
-              />
-              <PBloq
-                hidden={
-                  jobtitlenewuser.length > 1 || mailtranfer.length > 1
-                    ? false
-                    : true
-                }
-              >
-                {jobtitlenewuser.length > 1
-                  ? "Funcionario iniciara as atividades dia:"
-                  : "Bloquear acesso a partir de:"}
+              <input type="text" value={"Usuário: " + ticketNAME} className="form-control" disabled />
+              <input type="text" value={"Departamento: " + ticketDEPARTMENT} className="form-control" disabled />
+              <input type="text" value={"Email: " + ticketMAIL} className="form-control" disabled hidden={ticketMAIL.length > 1 ? false : true} />
+              <input type="text" value={"Unidade: " + ticketCOMPANY} className="form-control" disabled />
+              <input type="text" value={"Setor: " + ticketSECTOR} className="form-control" disabled />
+              <input type="text" value={"Ocorrência: " + ticketOCCURRENCE} className="form-control" disabled />
+              <input type="text" value={"Problema: " + ticketPROBLEMN} className="form-control" disabled />
+              <input type="text" value={"Nome: " + namenewuser} className="form-control" disabled hidden={namenewuser.length > 1 ? false : true} />
+              <input type="text" value={"Setor: " + sectornewuser} className="form-control" disabled hidden={sectornewuser === "undefined" ? true : false} />
+              <input type="text" value={"Remanejamento: " + wherefrom} className="form-control" disabled hidden={wherefrom.length > 1 ? false : true} />
+              <input type="text" value="Necessita-se de máquina" className="form-control" disabled hidden={machinenewuser === true ? false : true} />
+              <input type="text" value={"Filial: " + companynewuser} className="form-control" disabled hidden={companynewuser.length > 1 ? false : true} />
+              <input type="text" value={"Softwares Necessisarios: " + softwarenewuser} className="form-control" disabled hidden={softwarenewuser.length > 1 ? false : true} />
+              <input type="text" value={"Centro de custo: " + costcenter} className="form-control" disabled hidden={costcenter.length > 1 ? false : true} />
+              <input type="text" value={"Cargo: " + jobtitlenewuser} className="form-control" disabled hidden={jobtitlenewuser.length > 1 ? false : true} />
+              <input type="text" value={"Centro de custo: " + costcenter} className="form-control" disabled hidden={costcenter.length > 1 ? false : true} />
+              <input type="text" value={"Transferir e-mails para: " + mailtranfer} className="form-control" disabled hidden={mailtranfer.length > 1 ? false : true} />
+              <input type="text" value={"Transferir dados para: " + oldfile} className="form-control" disabled hidden={oldfile.length > 1 ? false : true} />
+              <PBloq hidden={jobtitlenewuser.length > 1 || mailtranfer.length > 1 ? false : true}>
+                {jobtitlenewuser.length > 1 ? "Funcionario iniciara as atividades dia:" : "Bloquear acesso a partir de:"}
               </PBloq>
-              <DivCal
-                hidden={
-                  jobtitlenewuser.length > 1 || mailtranfer.length > 1
-                    ? false
-                    : true
-                }
-              >
-                <DayPicker
-                  id="calendarALT"
-                  fixedWeeks
-                  showOutsideDays
-                  selected={startworknewuser}
-                  className="cald"
-                  mode="single"
-                  locale={ptBR}
-                />
+              <DivCal hidden={jobtitlenewuser.length > 1 || mailtranfer.length > 1 ? false : true}>
+                <DayPicker id="calendarALT" fixedWeeks showOutsideDays selected={startworknewuser} className="cald" mode="single" locale={ptBR} />
               </DivCal>
-              <input
-                type="text"
-                value={"Copiar usuario de: " + copyprofilenewuser}
-                className="form-control"
-                disabled
-                hidden={copyprofilenewuser.length > 1 ? false : true}
-              />
+              <input type="text" value={"Copiar usuario de: " + copyprofilenewuser} className="form-control" disabled hidden={copyprofilenewuser.length > 1 ? false : true} />
               <DivINp hidden={imageEquipament === undefined}>
                 {imageEquipament}
                 <DivAlocate className="d-flex flex-column">
@@ -1881,51 +1681,22 @@ export default function History() {
                 <Calendar className="d-flex flex-column">
                   <p className="text-center">Data de alocação</p>
                   <div>
-                    <DayPicker
-                      id="calendarALT"
-                      fixedWeeks
-                      showOutsideDays
-                      selected={daysLocated}
-                      mode="multiple"
-                      localte={ptBR}
-                    />
+                    <DayPicker id="calendarALT" fixedWeeks showOutsideDays selected={daysLocated} mode="multiple" localte={ptBR} />
                   </div>
                 </Calendar>
               </DivINp>
               <input
                 type="text"
-                value={
-                  ticketOBSERVATION
-                    ? "Observação: " + ticketOBSERVATION
-                    : "Observação: "
-                }
+                value={ticketOBSERVATION ? "Observação: " + ticketOBSERVATION : "Observação: "}
                 className="form-control"
                 disabled
                 hidden={ticketOBSERVATION.length > 1 ? false : true}
               />
-              <input
-                type="text"
-                value={"tempo de vida do chamado: " + lifeTime + " dias"}
-                className="form-control"
-                disabled
-              />
-              <DivFile
-                hidden={fileticket.length >= 1 ? false : true}
-                className="w-100"
-              >
+              <input type="text" value={"tempo de vida do chamado: " + lifeTime + " dias"} className="form-control" disabled />
+              <DivFile hidden={fileticket.length >= 1 ? false : true} className="w-100">
                 {fileticket}
               </DivFile>
-              <input
-                type="text"
-                value={
-                  "Tecnico responsavel: " +
-                  (ticketResponsible_Technician
-                    ? ticketResponsible_Technician
-                    : "Nenhum técnico atribuído")
-                }
-                className="form-control"
-                disabled
-              />
+              <input type="text" value={"Tecnico responsavel: " + (ticketResponsible_Technician ? ticketResponsible_Technician : "Nenhum técnico atribuído")} className="form-control" disabled />
             </div>
             <DivChat
               id="chatDiv"
@@ -1937,38 +1708,20 @@ export default function History() {
               {mountChat}
               {messageChat && (
                 <div className="w-100 h-100 d-flex justify-content-center align-items-center">
-                  <Message
-                    TypeError={typeError}
-                    MessageError={messageError}
-                    CloseMessage={closeMessage2}
-                  />
+                  <Message TypeError={typeError} MessageError={messageError} CloseMessage={closeMessage2} />
                 </div>
               )}
             </DivChat>
             {chat && (
               <div className="w-100 d-flex">
                 <div className="w-100">
-                  <input
-                    className="form-control h-100 fs-5"
-                    type="text"
-                    onKeyUp={NewChat}
-                    id="input-chat"
-                  />
+                  <input className="form-control h-100 fs-5" type="text" onKeyUp={NewChat} id="input-chat" />
                 </div>
                 <BtnChat2>
-                  <InputFile
-                    className="w-100"
-                    type="file"
-                    multiple
-                    onInput={UploadNewFiles}
-                  />
+                  <InputFile className="w-100" type="file" multiple onInput={UploadNewFiles} />
                 </BtnChat2>
                 <div>
-                  <BtnChat
-                    className="btn"
-                    type="submit"
-                    onClick={SendChat}
-                  ></BtnChat>
+                  <BtnChat className="btn" type="submit" onClick={SendChat}></BtnChat>
                 </div>
               </div>
             )}
@@ -1980,10 +1733,7 @@ export default function History() {
                   <h3 className="text-light fw-bold">Arquivos</h3>
                 </div>
                 <div className="h-100 align-items-start justify-content-end d-flex">
-                  <BtnNF
-                    className="bg-transparent pe-auto"
-                    onClick={closeNWFiles}
-                  >
+                  <BtnNF className="bg-transparent pe-auto" onClick={closeNWFiles}>
                     <ImgBTNCls src={CloseIMG} alt="Fechar" />
                   </BtnNF>
                 </div>
@@ -1991,10 +1741,7 @@ export default function History() {
               <AdjustListFiles>{nameNWFiles}</AdjustListFiles>
               <div className="d-flex justify-content-end align-items-center flex-column">
                 <DivHR></DivHR>
-                <button
-                  className="btn btn-success w-50 mt-2"
-                  onClick={submitNewFiles}
-                >
+                <button className="btn btn-success w-50 mt-2" onClick={submitNewFiles}>
                   Enviar
                 </button>
               </div>

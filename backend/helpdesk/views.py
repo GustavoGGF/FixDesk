@@ -3,7 +3,7 @@ from django.views.decorators.csrf import csrf_exempt, requires_csrf_token
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from os import getenv
-from json import dumps, loads
+from json import loads
 from django.middleware.csrf import get_token
 from datetime import datetime, date
 import pytz
