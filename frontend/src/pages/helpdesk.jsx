@@ -119,7 +119,9 @@ export default function Helpdesk() {
       .then((data) => {
         SetEquipaments(data.equipaments);
         SetCSRFToken(data.token);
-        const dataInfo = JSON.parse(localStorage.getItem("dataInfo"));
+        const storedData = localStorage.getItem("dataInfo");
+
+        const dataInfo = storedData ? JSON.parse(storedData) : null;
         return SetData(dataInfo.data);
       })
       .catch((err) => {
@@ -1099,7 +1101,7 @@ export default function Helpdesk() {
         NewDatesAlocate.push(dateFormated);
       }
       formData.append("ticketRequester", Data.name);
-      formData.append("department", Data.department);
+      formData.append("department", Data.departament);
       formData.append("mail", Data.mail);
       formData.append("company", Data.company);
       formData.append("phone", Data.phone);
@@ -1163,7 +1165,7 @@ export default function Helpdesk() {
       }
 
       formData.append("ticketRequester", Data.name);
-      formData.append("department", Data.department);
+      formData.append("department", Data.departament);
       formData.append("mail", Data.mail);
       formData.append("company", Data.company);
       formData.append("phone", Data.phone);
@@ -1204,7 +1206,7 @@ export default function Helpdesk() {
         return;
       }
       formData.append("ticketRequester", Data.name);
-      formData.append("department", Data.department);
+      formData.append("department", Data.departament);
       formData.append("mail", Data.mail);
       formData.append("company", Data.company);
       formData.append("phone", Data.phone);
@@ -1221,7 +1223,7 @@ export default function Helpdesk() {
       formData.append("start_work_new_user", selectedDay);
     } else {
       formData.append("ticketRequester", Data.name);
-      formData.append("department", Data.department);
+      formData.append("department", Data.departament);
       formData.append("mail", Data.mail);
       formData.append("company", Data.company);
       formData.append("phone", Data.phone);
@@ -1582,7 +1584,7 @@ export default function Helpdesk() {
             <label htmlFor="departmentInput" className="form-label">
               Departamento
             </label>
-            <Input type="text" className="form-control" id="departmentInput" value={Data.department || ""} disabled={Data.department} />
+            <Input type="text" className="form-control" id="departmentInput" value={Data.departament || ""} disabled={Data.departament} />
           </div>
           <div className="mb-3">
             <label htmlFor="mailInput" className="form-label">

@@ -8,8 +8,6 @@ versões
 
 resetar ticker quando clicar em algum filtro
 
-ticket instalar programa, arquivo corrompido
-
 setinha para baixo do tema
 
 botão de pegar mais tickets não está funcionando
@@ -55,3 +53,11 @@ colocar avisa de tamanho de arquivo e quantidade
 boas práticas de desenvolvimento
 
 z-index ao clicar em tema
+
+boas práticas
+
+mudar icone pelo fixdesk
+
+organizar esrutura do projeto
+
+ticket de: instalar programa, arquivo corrompido
