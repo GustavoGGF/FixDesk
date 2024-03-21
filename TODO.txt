@@ -1,5 +1,9 @@
 Usar HTTPS para criptografar a comunicação entre o navegador do usuário e o servidor.
 
+descobrir a demora
+
+tecnico pode ver pode ver chta, mas não pode enviar mensagem
+
 diagrama de como funciona (creately ver se é de graça)
 
 versões
