@@ -1,8 +1,6 @@
 Usar HTTPS para criptografar a comunicação entre o navegador do usuário e o servidor.
 
-diagrama de como funciona
-
-ajustar departamento
+diagrama de como funciona (creately ver se é de graça)
 
 versões
 
@@ -54,10 +52,14 @@ boas práticas de desenvolvimento
 
 z-index ao clicar em tema
 
-boas práticas
+boas práticas organizar pastas, css, javascript
+
+melhorar codigo
 
 mudar icone pelo fixdesk
 
 organizar esrutura do projeto
 
 ticket de: instalar programa, arquivo corrompido
+
+criar :root var colors para usar

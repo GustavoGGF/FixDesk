@@ -1,24 +1,20 @@
 @keyframes file {
   50% {
-    box-shadow: -8px 8px 0 -3px #fff, -8px 8px 0 lightgray, -8px 8px 0 -3px #fff,
-      -8px 8px 0 lightgray;
+    box-shadow: -8px 8px 0 -3px #fff, -8px 8px 0 lightgray, -8px 8px 0 -3px #fff, -8px 8px 0 lightgray;
   }
   75%,
   100% {
-    box-shadow: -8px 8px 0 -3px #fff, -8px 8px 0 lightgray,
-      -16px 16px 0 -3px #fff, -16px 16px 0 lightgray;
+    box-shadow: -8px 8px 0 -3px #fff, -8px 8px 0 lightgray, -16px 16px 0 -3px #fff, -16px 16px 0 lightgray;
   }
 }
 
 @-webkit-keyframes file {
   50% {
-    box-shadow: -8px 8px 0 -3px #fff, -8px 8px 0 lightgray, -8px 8px 0 -3px #fff,
-      -8px 8px 0 lightgray;
+    box-shadow: -8px 8px 0 -3px #fff, -8px 8px 0 lightgray, -8px 8px 0 -3px #fff, -8px 8px 0 lightgray;
   }
   75%,
   100% {
-    box-shadow: -8px 8px 0 -3px #fff, -8px 8px 0 lightgray,
-      -16px 16px 0 -3px #fff, -16px 16px 0 lightgray;
+    box-shadow: -8px 8px 0 -3px #fff, -8px 8px 0 lightgray, -16px 16px 0 -3px #fff, -16px 16px 0 lightgray;
   }
 }
 
@@ -155,8 +151,7 @@
         height: 5px;
         border: solid 1px lightgray;
         border-radius: 2px;
-        background: linear-gradient(to left, rgba(black, 0.2), rgba(black, 0.8))
-          no-repeat;
+        background: linear-gradient(to left, rgba(black, 0.2), rgba(black, 0.8)) no-repeat;
         background-size: 100% 100%;
         &.active {
           animation: progress 30s linear;
@@ -384,4 +379,8 @@
   -webkit-box-shadow: -1px 13px 10px 3px rgba(0, 0, 0, 0.75);
   -moz-box-shadow: -1px 13px 10px 3px rgba(0, 0, 0, 0.75);
   box-shadow: -1px 13px 10px 3px rgba(0, 0, 0, 0.75);
+}
+
+.inifit {
+  animation: infinite;
 }
