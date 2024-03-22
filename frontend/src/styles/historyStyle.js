@@ -74,6 +74,7 @@ export const IMGFiles = styled.img`
 
 export const InputFile = styled.input`
   opacity: 0;
+  z-index: 10 !important;
 `;
 
 export const DivImageOpen = styled.div`

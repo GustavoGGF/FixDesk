@@ -1,101 +1,75 @@
 Usar HTTPS para criptografar a comunicação entre o navegador do usuário e o servidor.
 
-deixar link de navegação de pastas
-
-observação de 20mb por arquivo anexado
-
-data no ticket do chamado
-
-mudar cores do status dos ticker deixar igual cor dos tickets
-
-hora no chamado
-
-imprimir chat pdf
-
-arrumar arquivos anexados
-
-nos filstros mostrar chamados que estão comigo
-
-transferencia de chamado na engrenagem
-
-nome do arquivo na tela de ticket
-
-notificação
-
-data e hora no chat
-
-email de abertura de chamado e chamado finalizado
-
+Tudo[
 tema de fundo
-
-assim que abre o chamado algo que ajude o usuario a saber se foi
-
-tecnico pode ver pode ver chta, mas não pode enviar mensagem
-
-ao clicar na engrenagem do chamado aberto do TI quando clicar fora tem que fechar
-
 diagrama de como funciona (creately ver se é de graça)
-
-versões
-
-resetar ticker quando clicar em algum filtro
-
 setinha para baixo do tema
-
-botão de pegar mais tickets não está funcionando
-
 fechar abas to temas em configuração ao clicar fora
+colocar nomes em cada aba para facil identificação
+tela para reportar bug
+boas práticas de desenvolvimento
+z-index ao clicar em tema
+mudar icone pelo fixdesk
+ticket de: instalar programa, arquivo corrompido
+criar :root var colors para usar
+loading, simbolo lupatech se dissolver girar e voltar
+]
 
-quando tiver sendo feito a montagem dos tickets na tela contar quantos tem em
+Login[]
 
-verificar se oculta ou mostra o botão de mostrar mais
-
-atualizar tickets e dashboardPie por minuto
-
-tela de carregamento abrindo ticket
-
-zerar os tickets ao selecionar um filtro
-
+HelpDesk[
+    deixar link de navegação de pastas
+observação de 20mb por arquivo anexado
+assim que abre o chamado algo que ajude o usuario a saber se foi
 contrato comodato para os equipamentos
+aoenviar locagem de equipamento, se estiver alocado já, retornar com alocado cinza e pedir para ajustar data
+alocagem de equipamento quando não tem equipamento em X unidade
+colocar avisa de tamanho de arquivo e quantidade
+]
 
+DashBoard[
+    data no ticket do chamado
+mudar cores do status dos ticker deixar igual cor dos tickets
+hora no chamado
+imprimir chat pdf
+arrumar arquivos anexados
+nos filstros mostrar chamados que estão comigo
+nome do arquivo na tela de ticket
+data e hora no chat
+ao clicar na engrenagem do chamado aberto do TI quando clicar fora tem que fechar
+resetar ticker quando clicar em algum filtro
+botão de pegar mais tickets não está funcionando
+quando tiver sendo feito a montagem dos tickets na tela contar quantos tem em verificar se oculta ou mostra o botão de mostrar mais
+atualizar tickets e dashboardPie por minuto
+tela de carregamento abrindo ticket
+zerar os tickets ao selecionar um filtro
 trocar icone de X por lixeira nos novos arquivos dashboard
-
 fechar o chamado fecha a tela de enviar arquivos e limpa os arquivos
 
 ao incluir novos arquivos atualiza o chamado
 
 ao adicionar novos arquivos mostrar no chat
+]
 
-ajustar loadings das paginas, esconder o que não é necessario como bot~çao de mostar mais ticket
 
-aoenviar locagem de equipamento, se estiver alocado já, retornar com alocado cinza e pedir para ajustar data
+History[data no ticket do chamado
+mudar cores do status dos ticker deixar igual cor dos tickets
+hora no chamado
+imprimir chat pdf
+arrumar arquivos anexados
+nome do arquivo na tela de ticket
+notificação
+data e hora no chat
+email de abertura de chamado e chamado finalizado
+resetar ticker quando clicar em algum filtro
+botão de pegar mais tickets não está funcionando
+quando tiver sendo feito a montagem dos tickets na tela contar quantos tem em verificar se oculta ou mostra o botão de mostrar mais
+tela de carregamento abrindo ticket
+zerar os tickets ao selecionar um filtro
+fechar o chamado fecha a tela de enviar arquivos e limpa os arquivos
 
-ajustar botão de mostrar mais tickets, mostrar quanto tiver no minimo 5 tickets e ter animação
+ao incluir novos arquivos atualiza o chamado
 
-customizar o scrool
+ao adicionar novos arquivos mostrar no chat
+]
 
-tela para reportar bug
-
-alocagem de equipamento quando não tem equipamento em X unidade
-
-colocar nomes em cada aba para facil identificação
-
-colocar avisa de tamanho de arquivo e quantidade
-
-boas práticas de desenvolvimento
-
-z-index ao clicar em tema
-
-boas práticas organizar pastas, css, javascript
-
-melhorar codigo
-
-mudar icone pelo fixdesk
-
-organizar esrutura do projeto
-
-ticket de: instalar programa, arquivo corrompido
-
-criar :root var colors para usar
-
-loading, simbolo lupatech se dissolver girar e voltar

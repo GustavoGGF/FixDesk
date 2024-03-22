@@ -95,3 +95,10 @@ export const BtnFile = styled.button`
 export const ImgFile = styled.img`
   width: 25px;
 `;
+
+export const InputFile = styled.input`
+  opacity: 0;
+  z-index: 10 !important;
+  top: 0;
+  left: 0;
+`;

@@ -384,3 +384,7 @@
 .inifit {
   animation: infinite;
 }
+
+.pointer {
+  cursor: pointer;
+}

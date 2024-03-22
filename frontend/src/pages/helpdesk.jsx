@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import NavBar from "../components/navbar";
 import "../styles/bootstrap/css/bootstrap.css";
-import { Div, Form, Input, Input2, Select, Div2, Calendar, Textarea, ImageEquip, DivEquip, InputRadio, PNameFile, DivNameFile, ImgFile, BtnFile } from "../styles/helpdeskStyle";
+import { Div, Form, Input, Input2, Select, Div2, Calendar, Textarea, ImageEquip, DivEquip, InputRadio, PNameFile, DivNameFile, ImgFile, BtnFile, InputFile } from "../styles/helpdeskStyle";
 import { DivUpload, HeaderFiles, PFiles, IMGFile, Span1, Span2, BodyFiles, PFiles2, B1, InputFiles, IMGFile2, FooterFiles, Divider, Span3, ListFiles } from "../styles/Equipment_RegistrationStyle";
 import { DayPicker } from "react-day-picker";
 import ptBR from "date-fns/locale/pt";
@@ -1958,8 +1958,9 @@ export default function Helpdesk() {
             <DivUpload className="upload">
               <div className="upload-files">
                 <HeaderFiles>
-                  <PFiles>
+                  <PFiles className="position-relative pointer">
                     <IMGFile2 src={Cloud} alt="" />
+                    <InputFile className="w-100 h-100 position-absolute" type="file" multiple onInput={"UploadNewFiles"} />
                     <Span1 className="up">up</Span1>
                     <Span2 className="load">load</Span2>
                   </PFiles>
