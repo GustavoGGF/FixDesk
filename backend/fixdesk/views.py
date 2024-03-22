@@ -122,9 +122,6 @@ def validation(request):
         server1 = None
         server2 = None
         server3 = None
-        server4 = None
-        server5 = None
-        server6 = None
         ldap_servers = []
 
         try:
@@ -133,11 +130,8 @@ def validation(request):
             server1 = getenv("SERVER1")
             server2 = getenv("SERVER2")
             server3 = getenv("SERVER3")
-            server4 = getenv("SERVER4")
-            server5 = getenv("SERVER5")
-            server6 = getenv("SERVER6")
 
-            ldap_servers = [server1, server2, server3, server4, server5, server6]
+            ldap_servers = [server1, server2, server3]
 
         except Exception as e:
             print(e)
@@ -162,6 +156,8 @@ def validation(request):
                     server_pings[server] = float("inf")
 
             min_ping_server = min(server_pings, key=lambda x: x[1])
+
+            print(min_ping_server)
 
         except Exception as e:
             erro = str(e)

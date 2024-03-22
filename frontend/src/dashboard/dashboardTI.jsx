@@ -480,10 +480,6 @@ export default function DashboardTI() {
 
         var name_verify = userData.name;
 
-        if (name_verify.includes("ADM")) {
-          name_verify = name_verify.replace("ADM", "").trim();
-        }
-
         if (data.file.length >= 1) {
           const files = data.file;
           for (let i = 0; i < files.length; i++) {
@@ -686,66 +682,65 @@ export default function DashboardTI() {
             }
           }
         }
+        if (data.chat !== null && data.chat !== undefined && data.chat !== "undefined") {
+          SetCountChat(data.chat.length);
+          SetFetchChat(true);
 
-        if (data.responsible_technician === name_verify) {
-          if (!data.open) {
-            const chatDiv = document.getElementById("chatDiv");
-            chatDiv.style.background = "#e9ecef";
-            SetChat(false);
-            SetTypeError("Permissão Negada");
-            SetMessageError("Reabra o Chamado para poder ver com mais detalhes");
-            SetMessageChat(true);
-            SetDataModify(false);
-            return;
-          }
-          if (data.chat !== null && data.chat !== undefined && data.chat !== "undefined") {
-            SetCountChat(data.chat.length);
-            SetFetchChat(true);
+          var arrayChat = data.chat.match(/\[.*?\]/g);
 
-            var arrayChat = data.chat.match(/\[.*?\]/g);
-
-            const chatDiv = document.getElementById("chatDiv");
-            chatDiv.style.background = "transparent";
-
-            arrayChat.forEach(function (item) {
-              if (item.includes("System")) {
-                item = item.replace("System:", "").replace("[", "").replace("]", "");
-                const newItem = (
-                  <div className="text-center d-flex justify-content-center text-break">
-                    <p className="pChat">{item}</p>
-                  </div>
-                );
-                SetMountChat((mountChat) => [...mountChat, newItem]);
-              }
-              if (item.includes("Technician")) {
-                item = item.replace("Technician:", "").replace("[", "").replace("]", "");
-                const newItem = (
-                  <div className="d-flex justify-content-end w-100 text-break">
-                    <p className="tChat1">{item}</p>
-                  </div>
-                );
-                SetMountChat((mountChat) => [...mountChat, newItem]);
-              }
-              if (item.includes("User")) {
-                item = item.replace("User:", "").replace("[", "").replace("]", "");
-                const newItem = (
-                  <div className="d-flex justify-content-start w-100 text-break">
-                    <p className="uChat2">{item}</p>
-                  </div>
-                );
-                SetMountChat((mountChat) => [...mountChat, newItem]);
-              }
-              SetChat(true);
-            });
-            aumentarCount();
-          }
-        } else {
           const chatDiv = document.getElementById("chatDiv");
-          chatDiv.style.background = "#e9ecef";
+          chatDiv.style.background = "transparent";
+
+          arrayChat.forEach(function (item) {
+            if (item.includes("System")) {
+              item = item.replace("System:", "").replace("[", "").replace("]", "");
+              const newItem = (
+                <div className="text-center d-flex justify-content-center text-break">
+                  <p className="pChat">{item}</p>
+                </div>
+              );
+              SetMountChat((mountChat) => [...mountChat, newItem]);
+            }
+            if (item.includes("Technician")) {
+              item = item.replace("Technician:", "").replace("[", "").replace("]", "");
+              const newItem = (
+                <div className="d-flex justify-content-end w-100 text-break">
+                  <p className="tChat1">{item}</p>
+                </div>
+              );
+              SetMountChat((mountChat) => [...mountChat, newItem]);
+            }
+            if (item.includes("User")) {
+              item = item.replace("User:", "").replace("[", "").replace("]", "");
+              const newItem = (
+                <div className="d-flex justify-content-start w-100 text-break">
+                  <p className="uChat2">{item}</p>
+                </div>
+              );
+              SetMountChat((mountChat) => [...mountChat, newItem]);
+            }
+            SetChat(true);
+          });
+          aumentarCount();
+        }
+
+        var nameVer = name_verify.split(" ");
+        var techVer = data.responsible_technician.split(" ");
+
+        var allFind = true;
+        for (var i = 0; i < techVer.length; i++) {
+          if (nameVer.indexOf(techVer[i]) === -1) {
+            allFind = false;
+            break;
+          }
+        }
+
+        if (allFind) {
+          SetChat(true);
+        } else if (data.responsible_technician == null) {
           SetChat(false);
-          SetTypeError("Permissão Negada");
-          SetMessageError("Assuma o Chamado para poder ver com mais detalhes");
-          SetMessageChat(true);
+        } else {
+          SetChat(false);
           SetDataModify(false);
         }
 
@@ -856,8 +851,8 @@ export default function DashboardTI() {
           if (response.status === 200) {
             return window.location.reload();
           } else if (response.status === 304) {
-            SetTypeError("Sistema Anti-Idiota");
-            SetMessageError("Está tentando transferir o Chamado para si mesmo sendo que já assumiu o mesmo??");
+            SetTypeError("Operação Inválida");
+            SetMessageError("O Chamado Já está com você");
             return SetMessage(true);
           }
         })
@@ -2264,6 +2259,16 @@ export default function DashboardTI() {
                   <DropBTN className="btn btn-danger w-100" onClick={TicketModify}>
                     Modificar
                   </DropBTN>
+                  <select className="form-select" onChange={ChangeTechnician} value={selectedTech} hidden={ticketOpen === true ? false : true}>
+                    <option key={0} value="" disabled>
+                      Tranferir
+                    </option>
+                    {techs.map((tech, index) => (
+                      <option key={index + 1} value={tech}>
+                        {tech}
+                      </option>
+                    ))}
+                  </select>
                 </DropContent2>
               </DropDown>
             </div>
@@ -2322,18 +2327,6 @@ export default function DashboardTI() {
                 {fileticket}
               </DivFile>
               <input type="text" value={"Tecnico responsavel: " + (ticketResponsible_Technician ? ticketResponsible_Technician : "Nenhum técnico atribuído")} className="form-control" disabled />
-            </div>
-            <div>
-              <select className="form-select" onChange={ChangeTechnician} value={selectedTech} hidden={ticketOpen === true ? false : true}>
-                <option key={0} value="" disabled>
-                  Tranferir
-                </option>
-                {techs.map((tech, index) => (
-                  <option key={index + 1} value={tech}>
-                    {tech}
-                  </option>
-                ))}
-              </select>
             </div>
             <DivChat
               id="chatDiv"

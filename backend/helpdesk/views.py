@@ -536,10 +536,16 @@ def ticket(request, id):
                             {"status": "invalid modify"}, status=304, safe=True
                         )
 
-                    SupportTicket.objects.filter(id=id).update(
-                        responsible_technician=responsible_technician,
-                        chat=f"[System:{technician} atendeu ao Chamado]",
-                    )
+                    ticket = SupportTicket.objects.get(id=id)
+
+                    if ticket.chat == None:
+                        ticket.chat = f"[System:{technician} atendeu ao Chamado]"
+                    else:
+                        ticket.chat += f"[System:{technician} Transfereu o Chamado para {technician}]"
+
+                    ticket.responsible_technician = responsible_technician
+
+                    ticket.save()
 
                     return JsonResponse({}, status=200, safe=True)
 
@@ -1264,6 +1270,8 @@ def ticket(request, id):
 
             if t.equipament:
                 equipament_image = t.equipament.equipament
+
+                print(t.responsible_technician)
 
                 with equipament_image.open() as img:
                     pil_image = Image.open(img)

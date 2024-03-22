@@ -1,8 +1,38 @@
 Usar HTTPS para criptografar a comunicação entre o navegador do usuário e o servidor.
 
-descobrir a demora
+deixar link de navegação de pastas
+
+observação de 20mb por arquivo anexado
+
+data no ticket do chamado
+
+mudar cores do status dos ticker deixar igual cor dos tickets
+
+hora no chamado
+
+imprimir chat pdf
+
+arrumar arquivos anexados
+
+nos filstros mostrar chamados que estão comigo
+
+transferencia de chamado na engrenagem
+
+nome do arquivo na tela de ticket
+
+notificação
+
+data e hora no chat
+
+email de abertura de chamado e chamado finalizado
+
+tema de fundo
+
+assim que abre o chamado algo que ajude o usuario a saber se foi
 
 tecnico pode ver pode ver chta, mas não pode enviar mensagem
+
+ao clicar na engrenagem do chamado aberto do TI quando clicar fora tem que fechar
 
 diagrama de como funciona (creately ver se é de graça)
 
@@ -67,3 +97,5 @@ organizar esrutura do projeto
 ticket de: instalar programa, arquivo corrompido
 
 criar :root var colors para usar
+
+loading, simbolo lupatech se dissolver girar e voltar
