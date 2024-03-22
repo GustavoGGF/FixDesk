@@ -101,4 +101,5 @@ export const InputFile = styled.input`
   z-index: 10 !important;
   top: 0;
   left: 0;
+  cursor: pointer;
 `;

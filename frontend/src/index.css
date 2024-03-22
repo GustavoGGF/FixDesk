@@ -1,3 +1,9 @@
+:root {
+  --white: #ffffff;
+  --light-green: #affc41;
+  --light-white: #eae0d5;
+}
+
 @keyframes file {
   50% {
     box-shadow: -8px 8px 0 -3px #fff, -8px 8px 0 lightgray, -8px 8px 0 -3px #fff, -8px 8px 0 lightgray;
@@ -381,7 +387,7 @@
   box-shadow: -1px 13px 10px 3px rgba(0, 0, 0, 0.75);
 }
 
-.inifit {
+.infinit {
   animation: infinite;
 }
 
