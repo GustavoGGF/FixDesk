@@ -81,8 +81,12 @@ export default function Helpdesk() {
   const [maildelegation, setMailDelegation] = useState("");
   const [dirsave, setDirSave] = useState("");
   const [nameOnDropFiles, setNameOnDropFiles] = useState("");
+  const [nameOnInutFiles, setNameOnInputFiles] = useState("");
   const [theme, setTheme] = useState("");
   const [themeTicket, setThemeTicket] = useState("");
+  const [inputDropControl, setInputDropControl] = useState(true);
+  const [inputManualControl, setInputManualControl] = useState(false);
+  const [arrayInput, setArrayInput] = useState([]);
 
   const footerDay = selectedDay ? <p>Você selecionou {format(selectedDay, "PPP")}</p> : <p>Selecione uma dataUser</p>;
   const footerAlocate = daysForAlocate.length >= 1 ? <p>Você alocou por {daysForAlocate.length} dia(s).</p> : <p>Selecione um ou mais dias.</p>;
@@ -112,11 +116,11 @@ export default function Helpdesk() {
         if (!response.ok) {
           throw new Error("Erro na solicitação");
         }
-        const dataUser = await response.json();
-        setEquipaments(dataUser.equipaments);
-        setCSRFToken(dataUser.token);
-        const storedDataUser = localStorage.getItem("dataUserInfo");
-        const dataUserInfo = storedDataUser ? JSON.parse(storedDataUser).dataUser : null;
+        const data = await response.json();
+        setEquipaments(data.equipaments);
+        setCSRFToken(data.token);
+        const storedDataUser = localStorage.getItem("dataInfo");
+        const dataUserInfo = storedDataUser ? JSON.parse(storedDataUser).data : null;
         setdataUser(dataUserInfo);
       } catch (error) {
         console.error("Erro na solicitação:", error);
@@ -149,6 +153,10 @@ export default function Helpdesk() {
           //files template
           let template = `${Object.keys(files).join("")}`;
 
+          if (fileimg.length <= 0) {
+            return;
+          }
+
           $("#drop").classList.add("hidden");
           $("footer").classList.add("hasFiles");
           $(".importar").classList.add("active");
@@ -176,8 +184,8 @@ export default function Helpdesk() {
           evt.preventDefault();
         };
         $("#drop").ondrop = (evt) => {
-          for (let i = 0; i < evt.dataUserTransfer.files.length; i++) {
-            setFileImg((itens) => [...itens, evt.dataUserTransfer.files[i]]);
+          for (let i = 0; i < evt.dataTransfer.files.length; i++) {
+            setFileImg((itens) => [...itens, evt.dataTransfer.files[i]]);
           }
 
           $("footer").classList.add("hasFiles");
@@ -200,8 +208,6 @@ export default function Helpdesk() {
         // input change
         $("input[type=file]").addEventListener("change", handleFileSelect);
       })();
-    } else {
-      return;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dashboard]);
@@ -895,6 +901,7 @@ export default function Helpdesk() {
           });
           break;
         } else {
+          setMessage(true);
           setTypeError("Falta de Dados");
           setMessageError("Nenhum equipamento Cadastrado");
           break;
@@ -1317,6 +1324,8 @@ export default function Helpdesk() {
   }
 
   function inputDrop() {
+    setInputDropControl(true);
+    setInputManualControl(false);
     file_name = fileimg.map((fileItem) => fileItem.name);
 
     setFileName(file_name);
@@ -1331,6 +1340,8 @@ export default function Helpdesk() {
           onClick={() => {
             fileimg.splice(index, 1);
             inputDrop();
+            const divider = document.getElementById("divider");
+            divider.classList.remove("lineTop");
           }}
         >
           <ImgFile src={Exclude} alt="Excluir arquivo" />
@@ -1341,8 +1352,70 @@ export default function Helpdesk() {
     const Div = <div className="w-100">{paragraphs}</div>;
 
     setNameOnDropFiles(Div);
+  }
 
-    return nameOnDropFiles;
+  function inputManual(event) {
+    setInputDropControl(false);
+    setInputManualControl(true);
+
+    const files = event.target.files;
+    console.log(files);
+
+    const fileList = Array.from(files);
+    setArrayInput(fileList);
+
+    const drop = document.getElementById("drop");
+    drop.classList.add("hidden");
+    const divider = document.getElementById("divider");
+    divider.classList.add("lineTop");
+
+    const paragraphs = fileList.map((file, index) => (
+      <DivNameFile>
+        <PNameFile key={index} className="text-break">
+          {file.name}
+        </PNameFile>
+        <BtnFile
+          type="button"
+          onClick={() => {
+            const drop = document.getElementById("drop");
+            drop.classList.remove("hidden");
+            const divider = document.getElementById("divider");
+            divider.classList.remove("lineTop");
+            removeFile(index);
+          }}
+        >
+          <ImgFile src={Exclude} alt="Excluir arquivo" />
+        </BtnFile>
+      </DivNameFile>
+    ));
+
+    setNameOnInputFiles(paragraphs);
+  }
+
+  function removeFile(indexToRemove) {
+    if (arrayInput.length < 1) {
+      setNameOnInputFiles("");
+      setInputManualControl(false);
+      return;
+    }
+    const updatedFiles = arrayInput.filter((_, index) => index !== indexToRemove);
+    setArrayInput(updatedFiles);
+
+    const updatedParagraphs = updatedFiles.map((file, index) => (
+      <DivNameFile key={index}>
+        <PNameFile className="text-break">{file.name}</PNameFile>
+        <BtnFile type="button" onClick={() => removeFile(index)}>
+          <ImgFile src={Exclude} alt="Excluir arquivo" />
+        </BtnFile>
+      </DivNameFile>
+    ));
+
+    const drop = document.getElementById("drop");
+    drop.classList.add("hidden");
+    const divider = document.getElementById("divider");
+    divider.classList.add("lineTop");
+
+    setNameOnInputFiles(updatedParagraphs);
   }
 
   function selectCompanyEquip() {
@@ -1969,25 +2042,28 @@ export default function Helpdesk() {
                 <HeaderFiles>
                   <PFiles className="position-relative pointer">
                     <IMGFile2 src={Cloud} alt="" />
-                    <InputFile className="w-100 h-100 position-absolute" type="file" multiple onInput={"UploadNewFiles"} />
+                    <InputFile className="w-100 h-100 position-absolute pointer" type="file" multiple onChange={inputManual} />
                     <Span1 className="up">up</Span1>
                     <Span2 className="load">load</Span2>
                   </PFiles>
                 </HeaderFiles>
-                <BodyFiles className="body" id="drop" onDrop={() => inputDrop()}>
+                <BodyFiles id="drop" onDrop={() => inputDrop()}>
                   <IMGFile src={File} alt="" />
                   <PFiles2 className="pointer-none">
-                    <B1>Drag and drop</B1> files here to begin the upload
+                    <B1>Arraste e Solte</B1> os arquivos aqui para fazer upload{" "}
                   </PFiles2>
-                  <InputFiles type="file" id="inputName" multiple />
+                  <InputFiles type="file" id="inputManual" multiple />
                 </BodyFiles>
-                <FooterFiles id="footerFiles">
+                <FooterFiles>
                   <Divider className="divider overflow-hidden" id="divider">
                     <Span3 className="mb-3">FILE</Span3>
                   </Divider>
-                  <ListFiles className="list-files" id="list-files">
-                    {nameOnDropFiles}
-                  </ListFiles>
+                  {inputDropControl && (
+                    <ListFiles className="list-files" id="list-files">
+                      {nameOnDropFiles}
+                    </ListFiles>
+                  )}
+                  {inputManualControl && <ListFiles>{nameOnInutFiles}</ListFiles>}
                 </FooterFiles>
               </div>
             </DivUpload>

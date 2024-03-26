@@ -13,14 +13,14 @@ ticket de: instalar programa, arquivo corrompido
 criar :root var colors para usar
 loading, simbolo lupatech se dissolver girar e voltar
 usar unverse io
+requirements.txt melhorar
 ]
 
 Login[]
 
 HelpDesk[
 contrato comodato para os equipamentos
-aoenviar locagem de equipamento, se estiver alocado já, retornar com alocado cinza e pedir para ajustar data
-alocagem de equipamento quando não tem equipamento em X unidade
+ao enviar locagem de equipamento, se estiver alocado já, retornar com alocado cinza e pedir para ajustar data
 colocar avisa de tamanho de arquivo e quantidade
 deixar link de navegação de pastas
 observação de 20mb por arquivo anexado
