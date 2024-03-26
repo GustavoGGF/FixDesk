@@ -1013,11 +1013,9 @@ export default function Helpdesk() {
     option.forEach((radio) => {
       radio.addEventListener("change", (event) => {
         if (event.target.checked) {
-          const selectedValue = event.target.value;
+          setMotivationContract(event.target.value);
 
-          setMotivationContract(selectedValue);
-
-          if (selectedValue === "other") {
+          if (event.target.value === "other") {
             setMotivation(false);
           } else {
             setMotivation(true);
@@ -1025,7 +1023,6 @@ export default function Helpdesk() {
         }
       });
     });
-    return;
   }
 
   function selectMachine() {
@@ -1034,18 +1031,15 @@ export default function Helpdesk() {
     option.forEach((radio) => {
       radio.addEventListener("change", (event) => {
         if (event.target.checked) {
-          const selectedValue = event.target.value;
-          if (selectedValue === "yes") {
+          if (event.target.value === "yes") {
             setMachine(false);
             setNecessaryMachine(false);
-            return;
-          } else if (selectedValue === "no") {
+          } else if (event.target.value === "no") {
             setMachine(true);
             setMessagetitle("Caso de não haver maquina");
             setMessageinfo1("1. Deverá ser feita uma solicitação de equipamento");
             setMessageinfo2("");
             setNecessaryMachine(true);
-            return;
           }
         }
       });
@@ -1054,8 +1048,6 @@ export default function Helpdesk() {
 
   function submitTicket(event) {
     event.preventDefault();
-
-    // * Caso nenhuma opção seja selecionada mostra mensagem e não cria o chamado
 
     if (respectiveArea.length === 0) {
       setAlertVerify(true);
@@ -1363,9 +1355,126 @@ export default function Helpdesk() {
     const select = document.getElementById("select-company-equip");
     const option = select.options[select.selectedIndex].value;
 
-    if (option === "csc") {
-      equipaments.forEach((equipament) => {
-        if (equipament.company === "CSC") {
+    switch (option) {
+      default:
+        break;
+      case "csc":
+        equipaments.forEach((equipament) => {
+          if (equipament.company === "CSC") {
+            const Div = (
+              <DivEquip
+                className="equipsclass"
+                onClick={(event) =>
+                  selectEquipament({
+                    element: event.currentTarget,
+                    id: equipament.id,
+                  })
+                }
+              >
+                <ImageEquip src={`dataUser:image/jpeg;base64,${equipament.image}`} alt="" />
+                <p>Modelo: {equipament.model}</p>
+                <p>Empresa: {equipament.company}</p>
+              </DivEquip>
+            );
+
+            setDashEquipaments((prvDiv) => [...prvDiv, Div]);
+          }
+        });
+        break;
+      case "fiber":
+        equipaments.forEach((equipament) => {
+          if (equipament.company === "FIBER") {
+            const Div = (
+              <DivEquip
+                className="equipsclass"
+                onClick={(event) =>
+                  selectEquipament({
+                    element: event.currentTarget,
+                    id: equipament.id,
+                  })
+                }
+              >
+                <ImageEquip src={`dataUser:image/jpeg;base64,${equipament.image}`} alt="" />
+                <p>Modelo: {equipament.model}</p>
+                <p>Empresa: {equipament.company}</p>
+              </DivEquip>
+            );
+
+            setDashEquipaments((prvDiv) => [...prvDiv, Div]);
+          }
+        });
+        break;
+      case "vera":
+        equipaments.forEach((equipament) => {
+          if (equipament.company === "VERA") {
+            const Div = (
+              <DivEquip
+                className="equipsclass"
+                onClick={(event) =>
+                  selectEquipament({
+                    element: event.currentTarget,
+                    id: equipament.id,
+                  })
+                }
+              >
+                <ImageEquip src={`dataUser:image/jpeg;base64,${equipament.image}`} alt="" />
+                <p>Modelo: {equipament.model}</p>
+                <p>Empresa: {equipament.company}</p>
+              </DivEquip>
+            );
+
+            setDashEquipaments((prvDiv) => [...prvDiv, Div]);
+          }
+        });
+        break;
+      case "ropes":
+        equipaments.forEach((equipament) => {
+          if (equipament.company === "ROPES") {
+            const Div = (
+              <DivEquip
+                className="equipsclass"
+                onClick={(event) =>
+                  selectEquipament({
+                    element: event.currentTarget,
+                    id: equipament.id,
+                  })
+                }
+              >
+                <ImageEquip src={`dataUser:image/jpeg;base64,${equipament.image}`} alt="" />
+                <p>Modelo: {equipament.model}</p>
+                <p>Empresa: {equipament.company}</p>
+              </DivEquip>
+            );
+
+            setDashEquipaments((prvDiv) => [...prvDiv, Div]);
+          }
+        });
+        break;
+      case "mna":
+        equipaments.forEach((equipament) => {
+          if (equipament.company === "MNA") {
+            const Div = (
+              <DivEquip
+                className="equipsclass"
+                onClick={(event) =>
+                  selectEquipament({
+                    element: event.currentTarget,
+                    id: equipament.id,
+                  })
+                }
+              >
+                <ImageEquip src={`dataUser:image/jpeg;base64,${equipament.image}`} alt="" />
+                <p>Modelo: {equipament.model}</p>
+                <p>Empresa: {equipament.company}</p>
+              </DivEquip>
+            );
+
+            setDashEquipaments((prvDiv) => [...prvDiv, Div]);
+          }
+        });
+        break;
+      case "all":
+        equipaments.forEach((equipament) => {
           const Div = (
             <DivEquip
               className="equipsclass"
@@ -1383,118 +1492,9 @@ export default function Helpdesk() {
           );
 
           setDashEquipaments((prvDiv) => [...prvDiv, Div]);
-        }
-      });
-    } else if (option === "fiber") {
-      equipaments.forEach((equipament) => {
-        if (equipament.company === "FIBER") {
-          const Div = (
-            <DivEquip
-              className="equipsclass"
-              onClick={(event) =>
-                selectEquipament({
-                  element: event.currentTarget,
-                  id: equipament.id,
-                })
-              }
-            >
-              <ImageEquip src={`dataUser:image/jpeg;base64,${equipament.image}`} alt="" />
-              <p>Modelo: {equipament.model}</p>
-              <p>Empresa: {equipament.company}</p>
-            </DivEquip>
-          );
-
-          setDashEquipaments((prvDiv) => [...prvDiv, Div]);
-        }
-      });
-    } else if (option === "vera") {
-      equipaments.forEach((equipament) => {
-        if (equipament.company === "VERA") {
-          const Div = (
-            <DivEquip
-              className="equipsclass"
-              onClick={(event) =>
-                selectEquipament({
-                  element: event.currentTarget,
-                  id: equipament.id,
-                })
-              }
-            >
-              <ImageEquip src={`dataUser:image/jpeg;base64,${equipament.image}`} alt="" />
-              <p>Modelo: {equipament.model}</p>
-              <p>Empresa: {equipament.company}</p>
-            </DivEquip>
-          );
-
-          setDashEquipaments((prvDiv) => [...prvDiv, Div]);
-        }
-      });
-    } else if (option === "ropes") {
-      equipaments.forEach((equipament) => {
-        if (equipament.company === "ROPES") {
-          const Div = (
-            <DivEquip
-              className="equipsclass"
-              onClick={(event) =>
-                selectEquipament({
-                  element: event.currentTarget,
-                  id: equipament.id,
-                })
-              }
-            >
-              <ImageEquip src={`dataUser:image/jpeg;base64,${equipament.image}`} alt="" />
-              <p>Modelo: {equipament.model}</p>
-              <p>Empresa: {equipament.company}</p>
-            </DivEquip>
-          );
-
-          setDashEquipaments((prvDiv) => [...prvDiv, Div]);
-        }
-      });
-    } else if (option === "mna") {
-      equipaments.forEach((equipament) => {
-        if (equipament.company === "MNA") {
-          const Div = (
-            <DivEquip
-              className="equipsclass"
-              onClick={(event) =>
-                selectEquipament({
-                  element: event.currentTarget,
-                  id: equipament.id,
-                })
-              }
-            >
-              <ImageEquip src={`dataUser:image/jpeg;base64,${equipament.image}`} alt="" />
-              <p>Modelo: {equipament.model}</p>
-              <p>Empresa: {equipament.company}</p>
-            </DivEquip>
-          );
-
-          setDashEquipaments((prvDiv) => [...prvDiv, Div]);
-        }
-      });
-    } else if (option === "all") {
-      equipaments.forEach((equipament) => {
-        const Div = (
-          <DivEquip
-            className="equipsclass"
-            onClick={(event) =>
-              selectEquipament({
-                element: event.currentTarget,
-                id: equipament.id,
-              })
-            }
-          >
-            <ImageEquip src={`dataUser:image/jpeg;base64,${equipament.image}`} alt="" />
-            <p>Modelo: {equipament.model}</p>
-            <p>Empresa: {equipament.company}</p>
-          </DivEquip>
-        );
-
-        setDashEquipaments((prvDiv) => [...prvDiv, Div]);
-      });
+        });
+        break;
     }
-    return;
   }
 
   function nameNewUser(event) {
@@ -1502,15 +1502,11 @@ export default function Helpdesk() {
   }
 
   function emailDelegation(event) {
-    var mailDele = event.target.value;
-    setMailDelegation(mailDele);
-    return;
+    setMailDelegation(event.target.value);
   }
 
   function saveU(event) {
-    var dir = event.target.value;
-    setDirSave(dir);
-    return;
+    setDirSave(event.target.value);
   }
 
   function SectorNewUser(event) {
