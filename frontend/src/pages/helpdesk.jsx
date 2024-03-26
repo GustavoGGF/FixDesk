@@ -776,30 +776,33 @@ export default function Helpdesk() {
     const selectMail = document.getElementById("select-mail");
     const optionMail = selectMail.options[selectMail.selectedIndex].value;
 
-    if (optionMail === "maxcap") {
-      setAlert(false);
-      setProblemn("Aumentar capacidade de e-mail");
-      setAlertVerify(false);
-      return;
-    } else if (optionMail === "conect") {
-      setAlert(true);
-      setMessagetitle("Caso de email não conecta na internet");
-      setMessageinfo1("1. Informar mensagem de erro");
-      setMessageinfo2("");
-      setProblemn("Problema com conexão");
-      setAlertVerify(false);
-      return;
-    } else if (optionMail === "none") {
-      setAlert(false);
-      return;
-    } else if (optionMail === "domin") {
-      setAlert(true);
-      setMessagetitle("Caso de liberar domínion de e-mail");
-      setMessageinfo1("1. Informar dóminio, exemplo @lupatech.com.br");
-      setMessageinfo2("");
-      setProblemn("Liberar domínio");
-      setAlertVerify(false);
-      return;
+    switch (optionMail) {
+      default:
+        break;
+      case "maxcap":
+        setAlert(false);
+        setProblemn("Aumentar capacidade de e-mail");
+        setAlertVerify(false);
+        break;
+      case "conect":
+        setAlert(true);
+        setMessagetitle("Caso de email não conecta na internet");
+        setMessageinfo1("1. Informar mensagem de erro");
+        setMessageinfo2("");
+        setProblemn("Problema com conexão");
+        setAlertVerify(false);
+        break;
+      case "none":
+        setAlert(false);
+        break;
+      case "domin":
+        setAlert(true);
+        setMessagetitle("Caso de liberar domínion de e-mail");
+        setMessageinfo1("1. Informar dóminio, exemplo @lupatech.com.br");
+        setMessageinfo2("");
+        setProblemn("Liberar domínio");
+        setAlertVerify(false);
+        break;
     }
   }
 
@@ -810,99 +813,100 @@ export default function Helpdesk() {
       el.style.border = "none";
     });
 
-    element.style.border = "2px solid #5FDD9D";
+    element.classList.add("borderEquip");
     setDateEquip(true);
-    return;
   }
 
   function selectEquip() {
     const selectEquip = document.getElementById("select-equip");
     const optionEquip = selectEquip.options[selectEquip.selectedIndex].value;
 
-    if (optionEquip === "off") {
-      setAlocate(false);
-      setAlert(true);
-      setMessagetitle("Caso de computador não ligar");
-      setMessageinfo1("1. Informar o usuario e setor de onde fica o equipamento");
-      setMessageinfo2("");
-      setProblemn("Equipamento não liga");
-      setAlertVerify(false);
-      return;
-    } else if (optionEquip === "printer") {
-      setAlocate(false);
-      setAlert(true);
-      setMessagetitle("Caso de problema com a impressora");
-      setMessageinfo1("1. Informar onde a impressora está localizada");
-      setMessageinfo2("2. Informar menssagem de erro que aparece");
-      setProblemn("Problema com a impressora");
-      setAlertVerify(false);
-      return;
-    } else if (optionEquip === "roaming") {
-      setAlocate(false);
-      setAlert(true);
-      setMessagetitle("Caso de troca de local de trabalho");
-      setMessageinfo1("1. Informar se no local existe ponto de rede e de energia");
-      setMessageinfo2("");
-      setProblemn("Mudanca de local de trabalho");
-      setAlertVerify(false);
-      return;
-    } else if (optionEquip === "usb") {
-      setAlocate(false);
-      setAlert(true);
-      setMessagetitle("Caso de liberação/bloqueio de USB");
-      setMessageinfo1("1. Justificar a solicitação");
-      setMessageinfo2("2. Caso não seja o gestor da area, anexar a autorização do mesmo");
-      setProblemn("USB");
-      setAlertVerify(false);
-      return;
-    } else if (optionEquip === "none") {
-      setAlert(false);
-      setAlocate(false);
-      return;
-    } else if (optionEquip === "alocate") {
-      setDashEquipaments("");
-      setAlert(true);
-      setMessagetitle("Caso de Alocação de equipamento");
-      setMessageinfo1("1. Selecionar o equipamento desejado");
-      setMessageinfo2("2. Informar a dataUser e a necessidade de equipamentos adicionais como teclado, etc...");
-      setAlertVerify(false);
-      setAlocate(true);
-      setProblemn("Alocação de Máquina");
+    switch (optionEquip) {
+      default:
+        break;
+      case "off":
+        setAlocate(false);
+        setAlert(true);
+        setMessagetitle("Caso de computador não ligar");
+        setMessageinfo1("1. Informar o usuario e setor de onde fica o equipamento");
+        setMessageinfo2("");
+        setProblemn("Equipamento não liga");
+        setAlertVerify(false);
+        break;
+      case "printer":
+        setAlocate(false);
+        setAlert(true);
+        setMessagetitle("Caso de problema com a impressora");
+        setMessageinfo1("1. Informar onde a impressora está localizada");
+        setMessageinfo2("2. Informar menssagem de erro que aparece");
+        setProblemn("Problema com a impressora");
+        setAlertVerify(false);
+        break;
+      case "roaming":
+        setAlocate(false);
+        setAlert(true);
+        setMessagetitle("Caso de troca de local de trabalho");
+        setMessageinfo1("1. Informar se no local existe ponto de rede e de energia");
+        setMessageinfo2("");
+        setProblemn("Mudanca de local de trabalho");
+        setAlertVerify(false);
+        break;
+      case "usb":
+        setAlocate(false);
+        setAlert(true);
+        setMessagetitle("Caso de liberação/bloqueio de USB");
+        setMessageinfo1("1. Justificar a solicitação");
+        setMessageinfo2("2. Caso não seja o gestor da area, anexar a autorização do mesmo");
+        setProblemn("USB");
+        setAlertVerify(false);
+        break;
+      case "none":
+        setAlert(false);
+        setAlocate(false);
+        break;
+      case "alocate":
+        setDashEquipaments("");
+        setAlert(true);
+        setMessagetitle("Caso de Alocação de equipamento");
+        setMessageinfo1("1. Selecionar o equipamento desejado");
+        setMessageinfo2("2. Informar a dataUser e a necessidade de equipamentos adicionais como teclado, etc...");
+        setAlertVerify(false);
+        setAlocate(true);
+        setProblemn("Alocação de Máquina");
+        if (equipaments && Object.keys(equipaments).length > 0) {
+          equipaments.forEach((equipament) => {
+            const Div = (
+              <DivEquip
+                className="equipsclass"
+                onClick={(event) =>
+                  selectEquipament({
+                    element: event.currentTarget,
+                    id: equipament.id,
+                  })
+                }
+              >
+                <ImageEquip src={`dataUser:image/jpeg;base64,${equipament.image}`} alt="" />
+                <p>Modelo: {equipament.model}</p>
+                <p>Empresa: {equipament.company}</p>
+              </DivEquip>
+            );
 
-      if (equipaments && Object.keys(equipaments).length > 0) {
-        equipaments.forEach((equipament) => {
-          const Div = (
-            <DivEquip
-              className="equipsclass"
-              onClick={(event) =>
-                selectEquipament({
-                  element: event.currentTarget,
-                  id: equipament.id,
-                })
-              }
-            >
-              <ImageEquip src={`dataUser:image/jpeg;base64,${equipament.image}`} alt="" />
-              <p>Modelo: {equipament.model}</p>
-              <p>Empresa: {equipament.company}</p>
-            </DivEquip>
-          );
-
-          setDashEquipaments((prvDiv) => [...prvDiv, Div]);
-        });
-        return;
-      } else {
-        setTypeError("Falta de Dados");
-        setMessageError("Nenhum equipamento Cadastrado");
-        return;
-      }
-    } else if (optionEquip === "change") {
-      setAlert(true);
-      setMessagetitle("Caso de Troca de Equipamento");
-      setMessageinfo1("1. Informar o Equipamento");
-      setMessageinfo2("2. Justificar o motivo da troca");
-      setProblemn("Trocar Equipamento");
-      setAlertVerify(false);
-      return;
+            setDashEquipaments((prvDiv) => [...prvDiv, Div]);
+          });
+          break;
+        } else {
+          setTypeError("Falta de Dados");
+          setMessageError("Nenhum equipamento Cadastrado");
+          break;
+        }
+      case "change":
+        setAlert(true);
+        setMessagetitle("Caso de Troca de Equipamento");
+        setMessageinfo1("1. Informar o Equipamento");
+        setMessageinfo2("2. Justificar o motivo da troca");
+        setProblemn("Trocar Equipamento");
+        setAlertVerify(false);
+        break;
     }
   }
 
@@ -910,29 +914,32 @@ export default function Helpdesk() {
     const select = document.getElementById("select-user");
     const option = select.options[select.selectedIndex].value;
 
-    if (option === "adduser") {
-      setAlert(false);
-      setFormNewUser(true);
-      setFormDelUser(false);
-      setProblemn("Criacao de usuario de rede");
-      setAlertVerify(false);
-      setMotivationContract("");
-      setSectorNewUser("");
-      setNewName("");
-      return;
-    } else if (option === "deluser") {
-      setFormDelUser(true);
-      setFormNewUser(false);
-      setAlert(false);
-      setProblemn("Exclusao de usuario de rede");
-      setAlertVerify(false);
-      return;
-    } else if (option === "none") {
-      setAlert(false);
-      setFormNewUser(false);
-      setFormDelUser(false);
-      setAlertVerify(false);
-      return;
+    switch (option) {
+      default:
+        break;
+      case "adduser":
+        setAlert(false);
+        setFormNewUser(true);
+        setFormDelUser(false);
+        setProblemn("Criacao de usuario de rede");
+        setAlertVerify(false);
+        setMotivationContract("");
+        setSectorNewUser("");
+        setNewName("");
+        break;
+      case "deluser":
+        setFormDelUser(true);
+        setFormNewUser(false);
+        setAlert(false);
+        setProblemn("Exclusao de usuario de rede");
+        setAlertVerify(false);
+        break;
+      case "none":
+        setAlert(false);
+        setFormNewUser(false);
+        setFormDelUser(false);
+        setAlertVerify(false);
+        break;
     }
   }
 
@@ -940,28 +947,31 @@ export default function Helpdesk() {
     const select = document.getElementById("select-folder");
     const option = select.options[select.selectedIndex].value;
 
-    if (option === "lib") {
-      setAlert(true);
-      setMessagetitle("Caso de liberação de pasta");
-      setMessageinfo1("1. Informar o diretorio completo da pasta");
-      setMessageinfo2("2.Caso não seja o gestor responsavel pela pasta, anexar a autorização do mesmo");
-      setProblemn("Liberar pasta");
-      setAlertVerify(false);
-      return;
-    } else if (option === "block") {
-      setAlert(true);
-      setMessagetitle("Caso de bloqueio de pasta");
-      setMessageinfo1("1. Informar o diretorio completo da pasta");
-      setMessageinfo2("2.Caso não seja o gestor responsavel pela pasta, anexar a autorização do mesmo");
-      setProblemn("Bloquear pasta");
-      setAlertVerify(false);
-      return;
-    } else if (option === "none") {
-      setAlert(false);
-      setMessagetitle("");
-      setMessageinfo1("");
-      setMessageinfo2("");
-      return;
+    switch (option) {
+      default:
+        break;
+      case "lib":
+        setAlert(true);
+        setMessagetitle("Caso de liberação de pasta");
+        setMessageinfo1("1. Informar o diretorio completo da pasta");
+        setMessageinfo2("2.Caso não seja o gestor responsavel pela pasta, anexar a autorização do mesmo");
+        setProblemn("Liberar pasta");
+        setAlertVerify(false);
+        break;
+      case "block":
+        setAlert(true);
+        setMessagetitle("Caso de bloqueio de pasta");
+        setMessageinfo1("1. Informar o diretorio completo da pasta");
+        setMessageinfo2("2.Caso não seja o gestor responsavel pela pasta, anexar a autorização do mesmo");
+        setProblemn("Bloquear pasta");
+        setAlertVerify(false);
+        break;
+      case "none":
+        setAlert(false);
+        setMessagetitle("");
+        setMessageinfo1("");
+        setMessageinfo2("");
+        break;
     }
   }
 
@@ -969,28 +979,31 @@ export default function Helpdesk() {
     const select = document.getElementById("select-internet");
     const option = select.options[select.selectedIndex].value;
 
-    if (option === "lib") {
-      setAlert(true);
-      setMessagetitle("Caso de liberação de site");
-      setMessageinfo1("1. Informar o link completo do site");
-      setMessageinfo2("2.Caso não seja o gestor da area, anexar a autorização do mesmo");
-      setProblemn("Liberacao de site");
-      setAlertVerify(false);
-      return;
-    } else if (option === "block") {
-      setAlert(true);
-      setMessagetitle("Caso de bloqueio de site");
-      setMessageinfo1("1. Informar o link completo do site");
-      setMessageinfo2("2.Caso não seja o gestor da area, anexar a autorização do mesmo");
-      setProblemn("Bloqueio de site");
-      setAlertVerify(false);
-      return;
-    } else if (option === "none") {
-      setAlert(false);
-      setMessagetitle("");
-      setMessageinfo1("");
-      setMessageinfo2("");
-      return;
+    switch (option) {
+      default:
+        break;
+      case "lib":
+        setAlert(true);
+        setMessagetitle("Caso de liberação de site");
+        setMessageinfo1("1. Informar o link completo do site");
+        setMessageinfo2("2.Caso não seja o gestor da area, anexar a autorização do mesmo");
+        setProblemn("Liberacao de site");
+        setAlertVerify(false);
+        break;
+      case "block":
+        setAlert(true);
+        setMessagetitle("Caso de bloqueio de site");
+        setMessageinfo1("1. Informar o link completo do site");
+        setMessageinfo2("2.Caso não seja o gestor da area, anexar a autorização do mesmo");
+        setProblemn("Bloqueio de site");
+        setAlertVerify(false);
+        break;
+      case "none":
+        setAlert(false);
+        setMessagetitle("");
+        setMessageinfo1("");
+        setMessageinfo2("");
+        break;
     }
   }
 
