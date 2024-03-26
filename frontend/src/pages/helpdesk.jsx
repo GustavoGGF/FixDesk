@@ -595,41 +595,44 @@ export default function Helpdesk() {
     const select_MBI = document.getElementById("select-mbi");
     const optionMBI = select_MBI.options[select_MBI.selectedIndex].value;
 
-    if (optionMBI === "user") {
-      setAlert(true);
-      setMessagetitle("Caso de Criação/exclusão de usuários");
-      setMessageinfo1("1. Informar o usuário que deverá ser criado ou excluido");
-      setMessageinfo2("2. Informar os acessos que o mesmo poderá utilizar");
-      setProblemn("Criação/exclusão usuário");
-      setAlertVerify(false);
-      return;
-    } else if (optionMBI === "access") {
-      setAlert(true);
-      setMessagetitle("Caso de Liberação/bloqueio de acessos");
-      setMessageinfo1("1. Descreva o que deseja bloquear e/ou liberar");
-      setMessageinfo2("");
-      setProblemn("Liberação/bloqueio de acessos");
-      setAlertVerify(false);
-      return;
-    } else if (optionMBI === "quest") {
-      setAlert(true);
-      setMessagetitle("Caso de Dúvidas operacionais");
-      setMessageinfo1("1. Descreva o que deseja saber");
-      setMessageinfo2("");
-      setProblemn("Dúvidas operacionais");
-      setAlertVerify(false);
-      return;
-    } else if (optionMBI === "error") {
-      setAlert(true);
-      setMessagetitle("Caso de Correção de falhas");
-      setMessageinfo1("1. Informe o Erro");
-      setMessageinfo2("");
-      setProblemn("Correção de falhas");
-      setAlertVerify(false);
-      return;
-    } else if (optionMBI === "none") {
-      setAlert(false);
-      return;
+    switch (optionMBI) {
+      default:
+        break;
+      case "user":
+        setAlert(true);
+        setMessagetitle("Caso de Criação/exclusão de usuários");
+        setMessageinfo1("1. Informar o usuário que deverá ser criado ou excluido");
+        setMessageinfo2("2. Informar os acessos que o mesmo poderá utilizar");
+        setProblemn("Criação/exclusão usuário");
+        setAlertVerify(false);
+        break;
+      case "access":
+        setAlert(true);
+        setMessagetitle("Caso de Liberação/bloqueio de acessos");
+        setMessageinfo1("1. Descreva o que deseja bloquear e/ou liberar");
+        setMessageinfo2("");
+        setProblemn("Liberação/bloqueio de acessos");
+        setAlertVerify(false);
+        break;
+      case "quest":
+        setAlert(true);
+        setMessagetitle("Caso de Dúvidas operacionais");
+        setMessageinfo1("1. Descreva o que deseja saber");
+        setMessageinfo2("");
+        setProblemn("Dúvidas operacionais");
+        setAlertVerify(false);
+        break;
+      case "error":
+        setAlert(true);
+        setMessagetitle("Caso de Correção de falhas");
+        setMessageinfo1("1. Informe o Erro");
+        setMessageinfo2("");
+        setProblemn("Correção de falhas");
+        setAlertVerify(false);
+        break;
+      case "none":
+        setAlert(false);
+        break;
     }
   }
 
@@ -637,41 +640,44 @@ export default function Helpdesk() {
     const selectSAP = document.getElementById("select-sap");
     const optionSAP = selectSAP.options[selectSAP.selectedIndex].value;
 
-    if (optionSAP === "user") {
-      setAlert(true);
-      setMessagetitle("Caso de Criação/exclusão de usuários");
-      setMessageinfo1("1. Informar o usuário que deverá ser criado ou excluido");
-      setMessageinfo2("2. Informar os acessos que o mesmo poderá utilizar");
-      setProblemn("Criação/exclusão usuário");
-      setAlertVerify(false);
-      return;
-    } else if (optionSAP === "access") {
-      setAlert(true);
-      setMessagetitle("Caso de Liberação/bloqueio de acessos");
-      setMessageinfo1("1. Descreva o que deseja bloquear e/ou liberar");
-      setMessageinfo2("");
-      setProblemn("Liberação/bloqueio de acessos");
-      setAlertVerify(false);
-      return;
-    } else if (optionSAP === "quest") {
-      setAlert(true);
-      setMessagetitle("Caso de Dúvidas operacionais");
-      setMessageinfo1("1. Descreva o que deseja saber");
-      setMessageinfo2("");
-      setProblemn("Dúvidas operacionais");
-      setAlertVerify(false);
-      return;
-    } else if (optionSAP === "error") {
-      setAlert(true);
-      setMessagetitle("Caso de Correção de falhas");
-      setMessageinfo1("1. Informe o Erro");
-      setMessageinfo2("");
-      setProblemn("Correção de falhas");
-      setAlertVerify(false);
-      return;
-    } else if (optionSAP === "none") {
-      setAlert(false);
-      return;
+    switch (optionSAP) {
+      default:
+        break;
+      case "user":
+        setAlert(true);
+        setMessagetitle("Caso de Criação/exclusão de usuários");
+        setMessageinfo1("1. Informar o usuário que deverá ser criado ou excluido");
+        setMessageinfo2("2. Informar os acessos que o mesmo poderá utilizar");
+        setProblemn("Criação/exclusão usuário");
+        setAlertVerify(false);
+        break;
+      case "access":
+        setAlert(true);
+        setMessagetitle("Caso de Liberação/bloqueio de acessos");
+        setMessageinfo1("1. Descreva o que deseja bloquear e/ou liberar");
+        setMessageinfo2("");
+        setProblemn("Liberação/bloqueio de acessos");
+        setAlertVerify(false);
+        break;
+      case "quest":
+        setAlert(true);
+        setMessagetitle("Caso de Dúvidas operacionais");
+        setMessageinfo1("1. Descreva o que deseja saber");
+        setMessageinfo2("");
+        setProblemn("Dúvidas operacionais");
+        setAlertVerify(false);
+        break;
+      case "error":
+        setAlert(true);
+        setMessagetitle("Caso de Correção de falhas");
+        setMessageinfo1("1. Informe o Erro");
+        setMessageinfo2("");
+        setProblemn("Correção de falhas");
+        setAlertVerify(false);
+        break;
+      case "none":
+        setAlert(false);
+        break;
     }
   }
 
@@ -679,59 +685,61 @@ export default function Helpdesk() {
     const selectOffice = document.getElementById("select-office");
     const optionOffice = selectOffice.options[selectOffice.selectedIndex].value;
 
-    if (optionOffice === "buy") {
-      setAlert(true);
-      setMessagetitle("Aquisição de software/licenciamento");
-      setMessageinfo1("1. Informe para quem será a licença");
-      setMessageinfo2("");
-      setProblemn("Aquisição de software/licenciamento");
-      setAlertVerify(false);
-      return;
-    } else if (optionOffice === "error") {
-      setAlert(true);
-      setMessagetitle("Caso de Correção de falhas");
-      setMessageinfo1("1. Informe o Erro");
-      setMessageinfo2("");
-      setProblemn("Correção de falhas");
-      setAlertVerify(false);
-      return;
-    } else if (optionOffice === "none") {
-      setAlert(false);
-      return;
+    switch (optionOffice) {
+      default:
+        break;
+      case "buy":
+        setAlert(true);
+        setMessagetitle("Aquisição de software/licenciamento");
+        setMessageinfo1("1. Informe para quem será a licença");
+        setMessageinfo2("");
+        setProblemn("Aquisição de software/licenciamento");
+        setAlertVerify(false);
+        break;
+      case "error":
+        setAlert(true);
+        setMessagetitle("Caso de Correção de falhas");
+        setMessageinfo1("1. Informe o Erro");
+        setMessageinfo2("");
+        setProblemn("Correção de falhas");
+        setAlertVerify(false);
+        break;
+      case "none":
+        setAlert(false);
+        break;
     }
   }
 
-  function getObservation() {
-    const textArea = document.getElementById("floatingTextarea2");
-
-    setObservation(textArea.value);
-
-    return;
+  function getObservation(event) {
+    setObservation(event.target.value);
   }
 
   function selectEng() {
     const selectEng = document.getElementById("select-eng");
     const optionEng = selectEng.options[selectEng.selectedIndex].value;
 
-    if (optionEng === "buy") {
-      setAlert(true);
-      setMessagetitle("Aquisição de software/licenciamento");
-      setMessageinfo1("1. Informe para quem será a licença");
-      setMessageinfo2("");
-      setProblemn("Aquisição de software/licenciamento");
-      setAlertVerify(false);
-      return;
-    } else if (optionEng === "error") {
-      setAlert(true);
-      setMessagetitle("Caso de Correção de falhas");
-      setMessageinfo1("1. Informe o Erro");
-      setMessageinfo2("");
-      setProblemn("Correção de falhas");
-      setAlertVerify(false);
-      return;
-    } else if (optionEng === "none") {
-      setAlert(false);
-      return;
+    switch (optionEng) {
+      default:
+        break;
+      case "buyt":
+        setAlert(true);
+        setMessagetitle("Aquisição de software/licenciamento");
+        setMessageinfo1("1. Informe para quem será a licença");
+        setMessageinfo2("");
+        setProblemn("Aquisição de software/licenciamento");
+        setAlertVerify(false);
+        break;
+      case "error":
+        setAlert(true);
+        setMessagetitle("Caso de Correção de falhas");
+        setMessageinfo1("1. Informe o Erro");
+        setMessageinfo2("");
+        setProblemn("Correção de falhas");
+        setAlertVerify(false);
+        break;
+      case "none":
+        setAlert(false);
+        break;
     }
   }
 
@@ -739,25 +747,28 @@ export default function Helpdesk() {
     const selectBackup = document.getElementById("select-backup");
     const optionBackup = selectBackup.options[selectBackup.selectedIndex].value;
 
-    if (optionBackup === "pasta") {
-      setAlert(true);
-      setMessagetitle("Caso de pasta");
-      setMessageinfo1("1. Informar o caminho completo da pasta");
-      setMessageinfo2("2. Informar a dataUser de criação e exclusão do arquivo");
-      setProblemn("Restaurar pasta");
-      setAlertVerify(false);
-      return;
-    } else if (optionBackup === "mail") {
-      setAlert(true);
-      setMessagetitle("Caso de e-mail");
-      setMessageinfo1("1. Descreva o que deseja restaurar");
-      setMessageinfo2("");
-      setProblemn("Restaurar e-mail");
-      setAlertVerify(false);
-      return;
-    } else if (optionBackup === "none") {
-      setAlert(false);
-      return;
+    switch (optionBackup) {
+      default:
+        break;
+      case "pasta":
+        setAlert(true);
+        setMessagetitle("Caso de pasta");
+        setMessageinfo1("1. Informar o caminho completo da pasta");
+        setMessageinfo2("2. Informar a dataUser de criação e exclusão do arquivo");
+        setProblemn("Restaurar pasta");
+        setAlertVerify(false);
+        break;
+      case "mail":
+        setAlert(true);
+        setMessagetitle("Caso de e-mail");
+        setMessageinfo1("1. Descreva o que deseja restaurar");
+        setMessageinfo2("");
+        setProblemn("Restaurar e-mail");
+        setAlertVerify(false);
+        break;
+      case "none":
+        setAlert(false);
+        break;
     }
   }
 
@@ -1948,7 +1959,7 @@ export default function Helpdesk() {
           )}
           <div className="d-flex flex-column">
             <div className="form-floating mb-3 mx-auto">
-              <Textarea className="form-control" id="floatingTextarea2" onKeyUp={getObservation}></Textarea>
+              <Textarea className="form-control" id="floatingTextarea2" onChange={getObservation}></Textarea>
               <label htmlFor="floatingTextarea2">Observação</label>
             </div>
             <h3 className="text-center mt-1">Upload de Arquivo</h3>
