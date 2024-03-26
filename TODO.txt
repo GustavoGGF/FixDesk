@@ -14,6 +14,7 @@ criar :root var colors para usar
 loading, simbolo lupatech se dissolver girar e voltar
 usar unverse io
 requirements.txt melhorar
+ao entrar em url errada redirecionar
 ]
 
 Login[]

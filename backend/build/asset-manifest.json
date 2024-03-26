@@ -1,19 +1,18 @@
 {
   "files": {
-    "main.css": "/static/css/main.8e9ed4ce.css",
-    "main.js": "/static/js/main.5a7e0997.js",
+    "main.css": "/static/css/main.cdd960c5.css",
+    "main.js": "/static/js/main.f29364e1.js",
     "static/media/definicoes.png": "/static/media/definicoes.25f9223de2d58f6bf587.png",
-    "static/media/close.png": "/static/media/close.92eb52856aeed7bf88fc.png",
     "static/media/fixdesk.png": "/static/media/fixdesk.ac323cae5cc46de51786.png",
     "static/media/lupalogo.png": "/static/media/lupalogo.79d387b20db4e815087e.png",
     "static/media/identificacao.png": "/static/media/identificacao.ef008ff7999bbf4d6a1f.png",
     "index.html": "/index.html",
     "static/media/caret-down-square.svg": "/static/media/caret-down-square.8e67f1d918a871e63142bedb11799909.svg",
-    "main.8e9ed4ce.css.map": "/static/css/main.8e9ed4ce.css.map",
-    "main.5a7e0997.js.map": "/static/js/main.5a7e0997.js.map"
+    "main.cdd960c5.css.map": "/static/css/main.cdd960c5.css.map",
+    "main.f29364e1.js.map": "/static/js/main.f29364e1.js.map"
   },
   "entrypoints": [
-    "static/css/main.8e9ed4ce.css",
-    "static/js/main.5a7e0997.js"
+    "static/css/main.cdd960c5.css",
+    "static/js/main.f29364e1.js"
   ]
 }

@@ -4,8 +4,8 @@ import { Chart } from "chart.js/auto";
 import { Div, Div2 } from "../styles/dashboardPie";
 
 export default function DashBoardPie({ sector }) {
-  const [dataPie, SetDataPie] = useState("");
-  const [loading, SetLoading] = useState(true);
+  const [dataPie, setDataPie] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -22,8 +22,8 @@ export default function DashBoardPie({ sector }) {
         }
 
         const data = await response.json();
-        SetDataPie(data);
-        SetLoading(false);
+        setDataPie(data);
+        setLoading(false);
         return;
       } catch (err) {
         return console.error(err);
@@ -46,21 +46,11 @@ export default function DashBoardPie({ sector }) {
       myChart = new Chart(dash, {
         type: "pie",
         data: {
-          labels: [
-            "Chamados",
-            "Chamados em Aberto",
-            "Chamados Finalizados",
-            "Chamados Urgentes(mais de 7 dias aberto)",
-          ],
+          labels: ["Chamados", "Chamados em Aberto", "Chamados Finalizados", "Chamados Urgentes(mais de 7 dias aberto)"],
           datasets: [
             {
               data: dataPie.data,
-              backgroundColor: [
-                "rgb(0, 180, 216)",
-                "rgb(255, 214, 10)",
-                "rgb(56, 176, 0)",
-                "rgb(208, 0, 0)",
-              ],
+              backgroundColor: ["#00b4d8", "#ffd60a", "#38b000", "#d00000"],
               hoverOffset: 4,
             },
           ],
@@ -68,8 +58,6 @@ export default function DashBoardPie({ sector }) {
       });
 
       dash.style.display = "block";
-    } else {
-      return;
     }
   }, [dataPie]);
 

@@ -40,7 +40,6 @@ export default function DashboardBar() {
           setMessageError("Buscando Chamados do Mês");
           barChartData = "";
           periodMonth();
-          return;
         }
         return response.json();
       })
@@ -49,13 +48,11 @@ export default function DashboardBar() {
         setLabelDash("Chamados da Semana");
         CallNewBar();
         setHistogramData(data);
-        return;
       })
       .catch((err) => {
         setMessage(true);
         setTypeError("Fatal Error");
         setMessageError(err);
-        return;
       });
   }
 
@@ -77,7 +74,6 @@ export default function DashboardBar() {
           setMessageError("Buscando Chamados do Ano");
           barChartData = "";
           periodYear();
-          return;
         }
         return response.json();
       })
@@ -112,7 +108,6 @@ export default function DashboardBar() {
           setMessageError("Buscando Todos os Chamados");
           barChartData = "";
           periodAll();
-          return;
         }
         return response.json();
       })
@@ -121,7 +116,6 @@ export default function DashboardBar() {
         setLabelDash("Chamados deste Ano");
         setHistogramData(data);
         CallNewBar();
-        return;
       })
       .catch((err) => {
         setMessage(true);
@@ -156,7 +150,6 @@ export default function DashboardBar() {
         setLabelDash("Todos os Chamados");
         setHistogramData(data);
         CallNewBar();
-        return;
       })
       .catch((err) => {
         setMessage(true);

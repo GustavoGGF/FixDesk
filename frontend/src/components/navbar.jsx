@@ -1,21 +1,6 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from "react";
-import {
-  Div1,
-  A,
-  Logout,
-  Img,
-  ALink,
-  SpanUser,
-  CLose,
-  BtnClose,
-  H5,
-  DropBTN,
-  DropDown,
-  DropContent,
-  Arrow,
-  DropContent2,
-} from "../styles/navbarStyle";
+import { Div1, A, Logout, Img, ALink, SpanUser, CLose, BtnClose, H5, DropBTN, DropDown, DropContent, Arrow, DropContent2 } from "../styles/navbarStyle";
 import "../styles/bootstrap/css/bootstrap.css";
 import "../styles/bootstrap/js/bootstrap.js";
 import Logo from "../images/logos/fixdesk.png";
@@ -33,11 +18,7 @@ export default function NavBar({ Name, JobTitle }) {
       event.target.id !== "btn1" &&
       event.target.id !== "dropdwn2"
     ) {
-      if (
-        !document
-          .getElementById("dropcontent")
-          .classList.contains("visually-hidden")
-      ) {
+      if (!document.getElementById("dropcontent").classList.contains("visually-hidden")) {
         document.getElementById("dropcontent").classList.add("visually-hidden");
         return;
       } else {
@@ -71,58 +52,32 @@ export default function NavBar({ Name, JobTitle }) {
       },
     })
       .then((response) => {
-        return response.text() && window.location.reload();
+        response.text() && window.location.reload();
       })
       .catch((err) => {
-        return console.log(err);
+        console.log(err);
       });
   }
 
   function DropD(event) {
     console.log(event.target.id);
     if (
-      (event.target.id === "btndrop" &&
-        document
-          .getElementById("dropcontent")
-          .classList.contains("visually-hidden")) ||
-      (event.target.id === "imgdrop" &&
-        document
-          .getElementById("dropcontent")
-          .classList.contains("visually-hidden"))
+      (event.target.id === "btndrop" && document.getElementById("dropcontent").classList.contains("visually-hidden")) ||
+      (event.target.id === "imgdrop" && document.getElementById("dropcontent").classList.contains("visually-hidden"))
     ) {
-      document
-        .getElementById("dropcontent")
-        .classList.remove("visually-hidden");
+      document.getElementById("dropcontent").classList.remove("visually-hidden");
       return;
     } else if (
-      (event.target.id === "btndrop" &&
-        !document
-          .getElementById("dropcontent")
-          .classList.contains("visually-hidden")) ||
-      (event.target.id === "imgdrop" &&
-        !document
-          .getElementById("dropcontent")
-          .classList.contains("visually-hidden"))
+      (event.target.id === "btndrop" && !document.getElementById("dropcontent").classList.contains("visually-hidden")) ||
+      (event.target.id === "imgdrop" && !document.getElementById("dropcontent").classList.contains("visually-hidden"))
     ) {
       document.getElementById("dropcontent").classList.add("visually-hidden");
       document.getElementById("dropcontent2").classList.add("visually-hidden");
       return;
-    } else if (
-      event.target.id === "btn1" &&
-      document
-        .getElementById("dropcontent2")
-        .classList.contains("visually-hidden")
-    ) {
-      document
-        .getElementById("dropcontent2")
-        .classList.remove("visually-hidden");
+    } else if (event.target.id === "btn1" && document.getElementById("dropcontent2").classList.contains("visually-hidden")) {
+      document.getElementById("dropcontent2").classList.remove("visually-hidden");
       return;
-    } else if (
-      event.target.id === "btn1" &&
-      !document
-        .getElementById("dropcontent2")
-        .classList.contains("visually-hidden")
-    ) {
+    } else if (event.target.id === "btn1" && !document.getElementById("dropcontent2").classList.contains("visually-hidden")) {
       document.getElementById("dropcontent2").classList.add("visually-hidden");
       return;
     }
@@ -165,14 +120,7 @@ export default function NavBar({ Name, JobTitle }) {
                 <SpanUser>{Name}</SpanUser>
                 <SpanUser>{JobTitle}</SpanUser>
               </Div1>
-              <button
-                className="navbar-toggler"
-                type="button"
-                data-bs-toggle="offcanvas"
-                data-bs-target="#offcanvasNavbar"
-                aria-controls="offcanvasNavbar"
-                aria-label="Toggle navigation"
-              >
+              <button className="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
                 <span className="navbar-toggler-icon"></span>
               </button>
             </divc>
@@ -187,94 +135,52 @@ export default function NavBar({ Name, JobTitle }) {
             <div className="offcanvas-header bg-primary">
               <div className="d-flex align-items-center">
                 <Img src={Logo} alt="" />
-                <H5
-                  className="offcanvas-title fw-bold"
-                  id="offcanvasNavbarLabel"
-                >
+                <H5 className="offcanvas-title fw-bold" id="offcanvasNavbarLabel">
                   FixDesk
                 </H5>
               </div>
-              <BtnClose
-                type="button"
-                data-bs-dismiss="offcanvas"
-                aria-label="Close"
-              >
+              <BtnClose type="button" data-bs-dismiss="offcanvas" aria-label="Close">
                 <CLose src={ImgClose} alt="" />
               </BtnClose>
             </div>
             <div className="offcanvas-body bg-primary">
               <ul className="navbar-nav justify-content-start flex-grow-1 pe-3 h-100 position-relative">
                 <li className="nav-item">
-                  <A
-                    className="nav-link btn btn-light"
-                    aria-current="page"
-                    onClick={helpdeskPage}
-                  >
+                  <A className="nav-link btn btn-light" aria-current="page" onClick={helpdeskPage}>
                     Criar Chamado
                   </A>
                 </li>
                 <li className="nav-item">
-                  <A
-                    className="nav-link btn btn-light"
-                    aria-current="page"
-                    onClick={historyPage}
-                  >
+                  <A className="nav-link btn btn-light" aria-current="page" onClick={historyPage}>
                     Meus Chamados
                   </A>
                 </li>
                 <li className="nav-item">
-                  <A
-                    className="nav-link btn btn-light"
-                    aria-current="page"
-                    onClick={DashboardPage}
-                  >
+                  <A className="nav-link btn btn-light" aria-current="page" onClick={DashboardPage}>
                     Dashboard
                   </A>
                 </li>
                 <li className="nav-item">
-                  <A
-                    className="nav-link btn btn-light"
-                    aria-current="page"
-                    onClick={FAQPage}
-                  >
+                  <A className="nav-link btn btn-light" aria-current="page" onClick={FAQPage}>
                     FAQ
                   </A>
                 </li>
                 <li className="nav-item">
                   <DropDown>
-                    <DropBTN
-                      className="btn btn-light"
-                      onClick={DropD}
-                      id="btndrop"
-                    >
+                    <DropBTN className="btn btn-light" onClick={DropD} id="btndrop">
                       Configuração
                       <Arrow src={ArrowDown} alt="" id="imgdrop" />
                     </DropBTN>
                     <DropContent className="visually-hidden" id="dropcontent">
                       <DropDown id="dropdwn2">
-                        <DropBTN
-                          className="btn btn-light"
-                          id="btn1"
-                          onClick={DropD}
-                        >
+                        <DropBTN className="btn btn-light" id="btn1" onClick={DropD}>
                           Tema
                         </DropBTN>
-                        <DropContent2
-                          id="dropcontent2"
-                          className="visually-hidden"
-                        >
-                          <DropBTN
-                            className="btn btn-light"
-                            id="btn2"
-                            onClick={ThemeLight}
-                          >
+                        <DropContent2 id="dropcontent2" className="visually-hidden">
+                          <DropBTN className="btn btn-light" id="btn2" onClick={ThemeLight}>
                             Claro
                           </DropBTN>
-                          <DropBTN
-                            className="btn btn-light"
-                            id="btn3"
-                            onClick={ThemeBlack}
-                          >
+                          <DropBTN className="btn btn-light" id="btn3" onClick={ThemeBlack}>
                             Escuro
                           </DropBTN>
                         </DropContent2>
@@ -283,11 +189,7 @@ export default function NavBar({ Name, JobTitle }) {
                   </DropDown>
                 </li>
                 <li className="nav-item position-absolute bottom-0 start-50 translate-middle-x w-100">
-                  <Logout
-                    className="nav-link btn btn-danger"
-                    aria-current="page"
-                    onClick={Exit}
-                  >
+                  <Logout className="nav-link btn btn-danger" aria-current="page" onClick={Exit}>
                     Sair
                   </Logout>
                 </li>
