@@ -15,17 +15,13 @@ import Exclude from "../images/components/close.png";
 export default function Helpdesk() {
   useEffect(() => {
     document.title = "Abrir Chamado";
-    const Theme = localStorage.getItem("Theme");
-    if (Theme === null) {
+    const theme = localStorage.getItem("Theme");
+    if (theme === null || theme === "black") {
       localStorage.setItem("Theme", "black");
-      return ThemeBlack();
-    } else if (Theme === "black") {
-      return ThemeBlack();
-    } else if (Theme === "light") {
-      return ThemeLight();
+      ThemeBlack();
+    } else if (theme === "light") {
+      ThemeLight();
     }
-    return;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const [csrfToken, setCSRFToken] = useState("");
@@ -66,69 +62,68 @@ export default function Helpdesk() {
   const [office, setOffice] = useState(false);
   const [eng, setEng] = useState(false);
   const [alocate, setAlocate] = useState(false);
-  const [equipaments, SetEquipaments] = useState();
-  const [dashequipaments, SetDashEquipaments] = useState("");
-  const [filename, SetFileName] = useState([]);
-  const [fileimg, SetFileImg] = useState([]);
-  const [uploadRuninng, SetUploadRunning] = useState();
+  const [equipaments, setEquipaments] = useState();
+  const [dashequipaments, setDashEquipaments] = useState("");
+  const [filename, setFileName] = useState([]);
+  const [fileimg, setFileImg] = useState([]);
   const [dateequip, setDateEquip] = useState(false);
-  const [daysForAlocate, SetDaysForAlocate] = useState([]);
-  const [equipamentSelected, SetEquipamentSelected] = useState("");
-  const [newname, SetNewName] = useState("");
-  const [sectornewuser, SetSectorNewUser] = useState("");
-  const [motivationContract, SetMotivationContract] = useState("");
-  const [necessaryMachine, SetNecessaryMachine] = useState();
-  const [companynewUser, SetCompanyNewUser] = useState("");
-  const [softwareNewUser, SetSoftwareNewUser] = useState([]);
-  const [centralcost, SetCentralCost] = useState("");
-  const [jobtitlenewuser, SetJobTitleNewUser] = useState("");
-  const [copyUser, SetCopyUser] = useState("");
-  const [maildelegation, SetMailDelegation] = useState("");
-  const [dirsave, SetDirSave] = useState("");
-  const [nameOnDropFiles, SetNameOnDropFiles] = useState("");
-  const [theme, SetTheme] = useState("");
-  const [themeTicket, SetThemeTicket] = useState("");
-
-  function ThemeBlack() {
-    SetThemeTicket("");
-    return SetTheme("themeBlack");
-  }
-
-  function ThemeLight() {
-    SetThemeTicket("themeLightTicket");
-    return SetTheme("themeLight");
-  }
+  const [daysForAlocate, setDaysForAlocate] = useState([]);
+  const [equipamentSelected, setEquipamentSelected] = useState("");
+  const [newname, setNewName] = useState("");
+  const [sectornewuser, setSectorNewUser] = useState("");
+  const [motivationContract, setMotivationContract] = useState("");
+  const [necessaryMachine, setNecessaryMachine] = useState();
+  const [companynewUser, setCompanyNewUser] = useState("");
+  const [softwareNewUser, setSoftwareNewUser] = useState([]);
+  const [centralcost, setCentralCost] = useState("");
+  const [jobtitlenewuser, setJobTitleNewUser] = useState("");
+  const [copyUser, setCopyUser] = useState("");
+  const [maildelegation, setMailDelegation] = useState("");
+  const [dirsave, setDirSave] = useState("");
+  const [nameOnDropFiles, setNameOnDropFiles] = useState("");
+  const [theme, setTheme] = useState("");
+  const [themeTicket, setThemeTicket] = useState("");
 
   const footerDay = selectedDay ? <p>Você selecionou {format(selectedDay, "PPP")}</p> : <p>Selecione uma dataUser</p>;
-
   const footerAlocate = daysForAlocate.length >= 1 ? <p>Você alocou por {daysForAlocate.length} dia(s).</p> : <p>Selecione um ou mais dias.</p>;
 
   let file_name = [];
 
+  function ThemeBlack() {
+    setThemeTicket("");
+    setTheme("themeBlack");
+  }
+
+  function ThemeLight() {
+    setThemeTicket("themeLightTicket");
+    setTheme("themeLight");
+  }
+
   useEffect(() => {
-    fetch("", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-      },
-      body: {},
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((dataUser) => {
-        SetEquipaments(dataUser.equipaments);
+    const fetchData = async () => {
+      try {
+        const response = await fetch("", {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+          },
+          body: {},
+        });
+        if (!response.ok) {
+          throw new Error("Erro na solicitação");
+        }
+        const dataUser = await response.json();
+        setEquipaments(dataUser.equipaments);
         setCSRFToken(dataUser.token);
-        const storeddataUser = localStorage.getItem("dataUserInfo");
+        const storedDataUser = localStorage.getItem("dataUserInfo");
+        const dataUserInfo = storedDataUser ? JSON.parse(storedDataUser).dataUser : null;
+        setdataUser(dataUserInfo);
+      } catch (error) {
+        console.error("Erro na solicitação:", error);
+      }
+    };
 
-        const dataUserInfo = storeddataUser ? JSON.parse(storeddataUser) : null;
-        return setdataUser(dataUserInfo.dataUser);
-      })
-      .catch((err) => {
-        return console.error("Erro na solicitação:", err);
-      });
-
-    return;
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -136,7 +131,6 @@ export default function Helpdesk() {
       setLoading(false);
       setNavbar(true);
       setDashboard(true);
-      SetUploadRunning("Running");
     }
   }, [dataUser]);
 
@@ -183,7 +177,7 @@ export default function Helpdesk() {
         };
         $("#drop").ondrop = (evt) => {
           for (let i = 0; i < evt.dataUserTransfer.files.length; i++) {
-            SetFileImg((itens) => [...itens, evt.dataUserTransfer.files[i]]);
+            setFileImg((itens) => [...itens, evt.dataUserTransfer.files[i]]);
           }
 
           $("footer").classList.add("hasFiles");
@@ -210,339 +204,346 @@ export default function Helpdesk() {
       return;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [uploadRuninng]);
+  }, [dashboard]);
 
   function selectARes() {
     const select = document.getElementById("selectAR");
-
     const option = select.options[select.selectedIndex].value;
 
-    if (option === "TI") {
-      setAlert(false);
-      setRespectiveTI(true);
-      setRespectiveArea("TI");
-      setAlertVerify(false);
-      return respectiveArea;
-    } else if (option === "none") {
-      setRespectiveTI(false);
-      setAlert(false);
-      return;
+    switch (option) {
+      case "TI":
+        setAlert(false);
+        setRespectiveTI(true);
+        setRespectiveArea("TI");
+        setAlertVerify(false);
+        break;
+      case "none":
+        setRespectiveTI(false);
+        setAlert(false);
+        break;
+      default:
+        setRespectiveTI(false);
+        setAlert(false);
+        break;
     }
   }
 
   function handleSelect() {
     const select = document.getElementById("select-Form");
-
     const option = select.options[select.selectedIndex].value;
 
-    if (option === "infra") {
-      setInfra(true);
-      setAlert(false);
-      setBackup(false);
-      setMail(false);
-      setFormNewUser(false);
-      setFormDelUser(false);
-      setEquip(false);
-      setUser(false);
-      setInternet(false);
-      setFolder(false);
-      setAlertVerify(false);
-      setsector("Infraestrutura");
-      setSystem(false);
-      setMBI(false);
-      setSAP(false);
-      setOffice(false);
-      setSynch(false);
-      setEng(false);
-      setAlocate(false);
-      setDateEquip(false);
-      return;
-    } else if (option === "sistema") {
-      setSystem(true);
-      setInfra(false);
-      setAlert(false);
-      setBackup(false);
-      setMail(false);
-      setFormNewUser(false);
-      setFormDelUser(false);
-      setEquip(false);
-      setUser(false);
-      setInternet(false);
-      setFolder(false);
-      setsector("Sistema");
-      setAlertVerify(false);
-      setMBI(false);
-      setSAP(false);
-      setSynch(false);
-      setOffice(false);
-      setEng(false);
-      setAlocate(false);
-      setDateEquip(false);
-      return;
-    } else if (option === "none") {
-      setInfra(false);
-      setSystem(false);
-      setAlert(false);
-      setBackup(false);
-      setMail(false);
-      setFormNewUser(false);
-      setFormDelUser(false);
-      setEquip(false);
-      setUser(false);
-      setInternet(false);
-      setFolder(false);
-      setsector("");
-      setMBI(false);
-      setSAP(false);
-      setSynch(false);
-      setOffice(false);
-      setEng(false);
-      setAlocate(false);
-      setDateEquip(false);
-      return;
+    switch (option) {
+      default:
+        break;
+      case "infra":
+        setInfra(true);
+        setAlert(false);
+        setBackup(false);
+        setMail(false);
+        setFormNewUser(false);
+        setFormDelUser(false);
+        setEquip(false);
+        setUser(false);
+        setInternet(false);
+        setFolder(false);
+        setAlertVerify(false);
+        setsector("Infraestrutura");
+        setSystem(false);
+        setMBI(false);
+        setSAP(false);
+        setOffice(false);
+        setSynch(false);
+        setEng(false);
+        setAlocate(false);
+        setDateEquip(false);
+        break;
+      case "sistema":
+        setSystem(true);
+        setInfra(false);
+        setAlert(false);
+        setBackup(false);
+        setMail(false);
+        setFormNewUser(false);
+        setFormDelUser(false);
+        setEquip(false);
+        setUser(false);
+        setInternet(false);
+        setFolder(false);
+        setsector("Sistema");
+        setAlertVerify(false);
+        setMBI(false);
+        setSAP(false);
+        setSynch(false);
+        setOffice(false);
+        setEng(false);
+        setAlocate(false);
+        setDateEquip(false);
+        break;
+      case "none":
+        setInfra(false);
+        setSystem(false);
+        setAlert(false);
+        setBackup(false);
+        setMail(false);
+        setFormNewUser(false);
+        setFormDelUser(false);
+        setEquip(false);
+        setUser(false);
+        setInternet(false);
+        setFolder(false);
+        setsector("");
+        setMBI(false);
+        setSAP(false);
+        setSynch(false);
+        setOffice(false);
+        setEng(false);
+        setAlocate(false);
+        setDateEquip(false);
     }
   }
 
   function selectProblem() {
     const select = document.getElementById("select-error");
-
     const option = select.options[select.selectedIndex].value;
 
-    if (option === "backup") {
-      setBackup(true);
-      setAlert(false);
-      setMail(false);
-      setEquip(false);
-      setFormNewUser(false);
-      setFormDelUser(false);
-      setUser(false);
-      setInternet(false);
-      setFolder(false);
-      setOccurrence("Backup");
-      setAlertVerify(false);
-      setSAP(false);
-      setMBI(false);
-      setSynch(false);
-      setOffice(false);
-      setEng(false);
-      setAlocate(false);
-      setDateEquip(false);
-      return;
-    } else if (option === "mail") {
-      setMail(true);
-      setBackup(false);
-      setAlert(false);
-      setEquip(false);
-      setFormNewUser(false);
-      setFormDelUser(false);
-      setUser(false);
-      setInternet(false);
-      setFolder(false);
-      setOccurrence("E-mail");
-      setAlertVerify(false);
-      setSAP(false);
-      setMBI(false);
-      setSynch(false);
-      setOffice(false);
-      setEng(false);
-      setAlocate(false);
-      setDateEquip(false);
-      return;
-    } else if (option === "equip") {
-      setEquip(true);
-      setBackup(false);
-      setMail(false);
-      setAlert(false);
-      setFormNewUser(false);
-      setFormDelUser(false);
-      setUser(false);
-      setInternet(false);
-      setFolder(false);
-      setAlertVerify(false);
-      setAlocate(false);
-      setOccurrence("Equipamento");
-      setSAP(false);
-      setMBI(false);
-      setSynch(false);
-      setOffice(false);
-      setEng(false);
-      setDateEquip(false);
-      return;
-    } else if (option === "user") {
-      setUser(true);
-      setBackup(false);
-      setAlert(false);
-      setMail(false);
-      setEquip(false);
-      setFormDelUser(false);
-      setFormNewUser(false);
-      setInternet(false);
-      setFolder(false);
-      setAlertVerify(false);
-      setAlocate(false);
-      setOccurrence("Gerenciamento de Usuario");
-      setSAP(false);
-      setMBI(false);
-      setSynch(false);
-      setOffice(false);
-      setEng(false);
-      setDateEquip(false);
-      return;
-    } else if (option === "internet") {
-      setInternet(true);
-      setBackup(false);
-      setAlert(false);
-      setMail(false);
-      setEquip(false);
-      setUser(false);
-      setFormNewUser(false);
-      setFormDelUser(false);
-      setFolder(false);
-      setAlertVerify(false);
-      setAlocate(false);
-      setDateEquip(false);
-      setOccurrence("Internet");
-      setSAP(false);
-      setMBI(false);
-      setSynch(false);
-      setOffice(false);
-      setEng(false);
-      setDateEquip(false);
-      return;
-    } else if (option === "folder") {
-      setFolder(true);
-      setBackup(false);
-      setAlert(false);
-      setMail(false);
-      setEquip(false);
-      setUser(false);
-      setFormNewUser(false);
-      setFormDelUser(false);
-      setInternet(false);
-      setAlertVerify(false);
-      setAlocate(false);
-      setDateEquip(false);
-      setOccurrence("Permissão");
-      setSAP(false);
-      setMBI(false);
-      setSynch(false);
-      setOffice(false);
-      setEng(false);
-      setDateEquip(false);
-      return;
-    } else if (option === "none") {
-      setBackup(false);
-      setAlert(false);
-      setMail(false);
-      setEquip(false);
-      setUser(false);
-      setFormNewUser(false);
-      setFormDelUser(false);
-      setInternet(false);
-      setFolder(false);
-      setSAP(false);
-      setMBI(false);
-      setSynch(false);
-      setOffice(false);
-      setEng(false);
-      setAlocate(false);
-      setDateEquip(false);
-      return;
-    } else if (option === "sap") {
-      setSAP(true);
-      setMBI(false);
-      setSynch(false);
-      setOffice(false);
-      setBackup(false);
-      setAlert(false);
-      setMail(false);
-      setEquip(false);
-      setUser(false);
-      setFormNewUser(false);
-      setFormDelUser(false);
-      setInternet(false);
-      setFolder(false);
-      setOccurrence("SAP");
-      setEng(false);
-      setAlocate(false);
-      setDateEquip(false);
-      return;
-    } else if (option === "mbi") {
-      setMBI(true);
-      setSAP(false);
-      setBackup(false);
-      setAlert(false);
-      setMail(false);
-      setEquip(false);
-      setUser(false);
-      setFormNewUser(false);
-      setFormDelUser(false);
-      setInternet(false);
-      setFolder(false);
-      setOccurrence("MBI");
-      setSynch(false);
-      setOffice(false);
-      setAlocate(false);
-      setEng(false);
-      setDateEquip(false);
-      return;
-    } else if (option === "synch") {
-      setSynch(true);
-      setMBI(false);
-      setSAP(false);
-      setBackup(false);
-      setAlert(false);
-      setMail(false);
-      setEquip(false);
-      setUser(false);
-      setFormNewUser(false);
-      setFormDelUser(false);
-      setInternet(false);
-      setFolder(false);
-      setOccurrence("Synchro");
-      setOffice(false);
-      setAlocate(false);
-      setEng(false);
-      setDateEquip(false);
-      return;
-    } else if (option === "office") {
-      setOffice(true);
-      setSynch(false);
-      setMBI(false);
-      setSAP(false);
-      setBackup(false);
-      setAlert(false);
-      setMail(false);
-      setEquip(false);
-      setUser(false);
-      setAlocate(false);
-      setFormNewUser(false);
-      setFormDelUser(false);
-      setInternet(false);
-      setFolder(false);
-      setEng(false);
-      setOccurrence("Office");
-      setDateEquip(false);
-      return;
-    } else if (option === "eng") {
-      setEng(true);
-      setOffice(false);
-      setSynch(false);
-      setMBI(false);
-      setSAP(false);
-      setBackup(false);
-      setAlocate(false);
-      setAlert(false);
-      setMail(false);
-      setEquip(false);
-      setUser(false);
-      setFormNewUser(false);
-      setFormDelUser(false);
-      setInternet(false);
-      setFolder(false);
-      setOccurrence("Softwares de Eng");
-      setDateEquip(false);
-      return;
+    switch (option) {
+      default:
+        break;
+      case "backup":
+        setBackup(true);
+        setAlert(false);
+        setMail(false);
+        setEquip(false);
+        setFormNewUser(false);
+        setFormDelUser(false);
+        setUser(false);
+        setInternet(false);
+        setFolder(false);
+        setOccurrence("Backup");
+        setAlertVerify(false);
+        setSAP(false);
+        setMBI(false);
+        setSynch(false);
+        setOffice(false);
+        setEng(false);
+        setAlocate(false);
+        setDateEquip(false);
+        break;
+      case "mail":
+        setMail(true);
+        setBackup(false);
+        setAlert(false);
+        setEquip(false);
+        setFormNewUser(false);
+        setFormDelUser(false);
+        setUser(false);
+        setInternet(false);
+        setFolder(false);
+        setOccurrence("E-mail");
+        setAlertVerify(false);
+        setSAP(false);
+        setMBI(false);
+        setSynch(false);
+        setOffice(false);
+        setEng(false);
+        setAlocate(false);
+        setDateEquip(false);
+        break;
+      case "equip":
+        setEquip(true);
+        setBackup(false);
+        setMail(false);
+        setAlert(false);
+        setFormNewUser(false);
+        setFormDelUser(false);
+        setUser(false);
+        setInternet(false);
+        setFolder(false);
+        setAlertVerify(false);
+        setAlocate(false);
+        setOccurrence("Equipamento");
+        setSAP(false);
+        setMBI(false);
+        setSynch(false);
+        setOffice(false);
+        setEng(false);
+        setDateEquip(false);
+        break;
+      case "user":
+        setUser(true);
+        setBackup(false);
+        setAlert(false);
+        setMail(false);
+        setEquip(false);
+        setFormDelUser(false);
+        setFormNewUser(false);
+        setInternet(false);
+        setFolder(false);
+        setAlertVerify(false);
+        setAlocate(false);
+        setOccurrence("Gerenciamento de Usuario");
+        setSAP(false);
+        setMBI(false);
+        setSynch(false);
+        setOffice(false);
+        setEng(false);
+        setDateEquip(false);
+        break;
+      case "internet":
+        setInternet(true);
+        setBackup(false);
+        setAlert(false);
+        setMail(false);
+        setEquip(false);
+        setUser(false);
+        setFormNewUser(false);
+        setFormDelUser(false);
+        setFolder(false);
+        setAlertVerify(false);
+        setAlocate(false);
+        setDateEquip(false);
+        setOccurrence("Internet");
+        setSAP(false);
+        setMBI(false);
+        setSynch(false);
+        setOffice(false);
+        setEng(false);
+        setDateEquip(false);
+        break;
+      case "folder":
+        setFolder(true);
+        setBackup(false);
+        setAlert(false);
+        setMail(false);
+        setEquip(false);
+        setUser(false);
+        setFormNewUser(false);
+        setFormDelUser(false);
+        setInternet(false);
+        setAlertVerify(false);
+        setAlocate(false);
+        setDateEquip(false);
+        setOccurrence("Permissão");
+        setSAP(false);
+        setMBI(false);
+        setSynch(false);
+        setOffice(false);
+        setEng(false);
+        setDateEquip(false);
+        break;
+      case "none":
+        setBackup(false);
+        setAlert(false);
+        setMail(false);
+        setEquip(false);
+        setUser(false);
+        setFormNewUser(false);
+        setFormDelUser(false);
+        setInternet(false);
+        setFolder(false);
+        setSAP(false);
+        setMBI(false);
+        setSynch(false);
+        setOffice(false);
+        setEng(false);
+        setAlocate(false);
+        setDateEquip(false);
+        break;
+      case "sap":
+        setSAP(true);
+        setMBI(false);
+        setSynch(false);
+        setOffice(false);
+        setBackup(false);
+        setAlert(false);
+        setMail(false);
+        setEquip(false);
+        setUser(false);
+        setFormNewUser(false);
+        setFormDelUser(false);
+        setInternet(false);
+        setFolder(false);
+        setOccurrence("SAP");
+        setEng(false);
+        setAlocate(false);
+        setDateEquip(false);
+        break;
+      case "mbi":
+        setMBI(true);
+        setSAP(false);
+        setBackup(false);
+        setAlert(false);
+        setMail(false);
+        setEquip(false);
+        setUser(false);
+        setFormNewUser(false);
+        setFormDelUser(false);
+        setInternet(false);
+        setFolder(false);
+        setOccurrence("MBI");
+        setSynch(false);
+        setOffice(false);
+        setAlocate(false);
+        setEng(false);
+        setDateEquip(false);
+        break;
+      case "synch":
+        setSynch(true);
+        setMBI(false);
+        setSAP(false);
+        setBackup(false);
+        setAlert(false);
+        setMail(false);
+        setEquip(false);
+        setUser(false);
+        setFormNewUser(false);
+        setFormDelUser(false);
+        setInternet(false);
+        setFolder(false);
+        setOccurrence("Synchro");
+        setOffice(false);
+        setAlocate(false);
+        setEng(false);
+        setDateEquip(false);
+        break;
+      case "office":
+        setOffice(true);
+        setSynch(false);
+        setMBI(false);
+        setSAP(false);
+        setBackup(false);
+        setAlert(false);
+        setMail(false);
+        setEquip(false);
+        setUser(false);
+        setAlocate(false);
+        setFormNewUser(false);
+        setFormDelUser(false);
+        setInternet(false);
+        setFolder(false);
+        setEng(false);
+        setOccurrence("Office");
+        setDateEquip(false);
+        break;
+      case "eng":
+        setEng(true);
+        setOffice(false);
+        setSynch(false);
+        setMBI(false);
+        setSAP(false);
+        setBackup(false);
+        setAlocate(false);
+        setAlert(false);
+        setMail(false);
+        setEquip(false);
+        setUser(false);
+        setFormNewUser(false);
+        setFormDelUser(false);
+        setInternet(false);
+        setFolder(false);
+        setOccurrence("Softwares de Eng");
+        setDateEquip(false);
+        break;
     }
   }
 
@@ -550,40 +551,43 @@ export default function Helpdesk() {
     const selectSynch = document.getElementById("select-synch");
     const optionSynch = selectSynch.options[selectSynch.selectedIndex].value;
 
-    if (optionSynch === "user") {
-      setAlert(true);
-      setMessagetitle("Caso de Criação/exclusão de usuários");
-      setMessageinfo1("1. Informar o usuário que deverá ser criado ou excluido");
-      setMessageinfo2("2. Informar os acessos que o mesmo poderá utilizar");
-      setProblemn("Criação/exclusão usuário");
-      setAlertVerify(false);
-      return;
-    } else if (optionSynch === "access") {
-      setAlert(true);
-      setMessagetitle("Caso de Liberação/bloqueio de acessos");
-      setMessageinfo1("1. Descreva o que deseja bloquear e/ou liberar");
-      setMessageinfo2("");
-      setProblemn("Liberação/bloqueio de acessos");
-      setAlertVerify(false);
-      return;
-    } else if (optionSynch === "quest") {
-      setAlert(true);
-      setMessagetitle("Caso de Dúvidas operacionais");
-      setMessageinfo1("1. Descreva o que deseja saber");
-      setMessageinfo2("");
-      setProblemn("Dúvidas operacionais");
-      setAlertVerify(false);
-      return;
-    } else if (optionSynch === "error") {
-      setAlert(true);
-      setMessagetitle("Caso de Correção de falhas");
-      setMessageinfo1("1. Informe o Erro");
-      setMessageinfo2("");
-      setProblemn("Correção de falhas");
-      setAlertVerify(false);
-    } else if (optionSynch === "none") {
-      setAlert(false);
-      return;
+    switch (optionSynch) {
+      default:
+        break;
+      case "user":
+        setAlert(true);
+        setMessagetitle("Caso de Criação/exclusão de usuários");
+        setMessageinfo1("1. Informar o usuário que deverá ser criado ou excluido");
+        setMessageinfo2("2. Informar os acessos que o mesmo poderá utilizar");
+        setProblemn("Criação/exclusão usuário");
+        setAlertVerify(false);
+        break;
+      case "access":
+        setAlert(true);
+        setMessagetitle("Caso de Liberação/bloqueio de acessos");
+        setMessageinfo1("1. Descreva o que deseja bloquear e/ou liberar");
+        setMessageinfo2("");
+        setProblemn("Liberação/bloqueio de acessos");
+        setAlertVerify(false);
+        break;
+      case "quest":
+        setAlert(true);
+        setMessagetitle("Caso de Dúvidas operacionais");
+        setMessageinfo1("1. Descreva o que deseja saber");
+        setMessageinfo2("");
+        setProblemn("Dúvidas operacionais");
+        setAlertVerify(false);
+        break;
+      case "error":
+        setAlert(true);
+        setMessagetitle("Caso de Correção de falhas");
+        setMessageinfo1("1. Informe o Erro");
+        setMessageinfo2("");
+        setProblemn("Correção de falhas");
+        setAlertVerify(false);
+        break;
+      case "none":
+        setAlert(false);
     }
   }
 
@@ -789,7 +793,7 @@ export default function Helpdesk() {
   }
 
   function selectEquipament({ element, id }) {
-    SetEquipamentSelected(id);
+    setEquipamentSelected(id);
     const allElements = document.querySelectorAll(".equipsclass");
     allElements.forEach((el) => {
       el.style.border = "none";
@@ -845,7 +849,7 @@ export default function Helpdesk() {
       setAlocate(false);
       return;
     } else if (optionEquip === "alocate") {
-      SetDashEquipaments("");
+      setDashEquipaments("");
       setAlert(true);
       setMessagetitle("Caso de Alocação de equipamento");
       setMessageinfo1("1. Selecionar o equipamento desejado");
@@ -872,7 +876,7 @@ export default function Helpdesk() {
             </DivEquip>
           );
 
-          SetDashEquipaments((prvDiv) => [...prvDiv, Div]);
+          setDashEquipaments((prvDiv) => [...prvDiv, Div]);
         });
         return;
       } else {
@@ -901,9 +905,9 @@ export default function Helpdesk() {
       setFormDelUser(false);
       setProblemn("Criacao de usuario de rede");
       setAlertVerify(false);
-      SetMotivationContract("");
-      SetSectorNewUser("");
-      SetNewName("");
+      setMotivationContract("");
+      setSectorNewUser("");
+      setNewName("");
       return;
     } else if (option === "deluser") {
       setFormDelUser(true);
@@ -987,7 +991,7 @@ export default function Helpdesk() {
         if (event.target.checked) {
           const selectedValue = event.target.value;
 
-          SetMotivationContract(selectedValue);
+          setMotivationContract(selectedValue);
 
           if (selectedValue === "other") {
             setMotivation(false);
@@ -1009,14 +1013,14 @@ export default function Helpdesk() {
           const selectedValue = event.target.value;
           if (selectedValue === "yes") {
             setMachine(false);
-            SetNecessaryMachine(false);
+            setNecessaryMachine(false);
             return;
           } else if (selectedValue === "no") {
             setMachine(true);
             setMessagetitle("Caso de não haver maquina");
             setMessageinfo1("1. Deverá ser feita uma solicitação de equipamento");
             setMessageinfo2("");
-            SetNecessaryMachine(true);
+            setNecessaryMachine(true);
             return;
           }
         }
@@ -1270,7 +1274,7 @@ export default function Helpdesk() {
             behavior: "smooth",
           });
         } else if (Status === 310) {
-          SetDaysForAlocate([]);
+          setDaysForAlocate([]);
           const dates = dataUser.dates;
           var btn = document.querySelectorAll(".rdp-day");
           btn.forEach(function (b) {
@@ -1304,7 +1308,7 @@ export default function Helpdesk() {
   function inputDrop() {
     file_name = fileimg.map((fileItem) => fileItem.name);
 
-    SetFileName(file_name);
+    setFileName(file_name);
 
     const paragraphs = file_name.map((fileName, index) => (
       <DivNameFile>
@@ -1325,13 +1329,13 @@ export default function Helpdesk() {
 
     const Div = <div className="w-100">{paragraphs}</div>;
 
-    SetNameOnDropFiles(Div);
+    setNameOnDropFiles(Div);
 
     return nameOnDropFiles;
   }
 
   function selectCompanyEquip() {
-    SetDashEquipaments("");
+    setDashEquipaments("");
     const select = document.getElementById("select-company-equip");
     const option = select.options[select.selectedIndex].value;
 
@@ -1354,7 +1358,7 @@ export default function Helpdesk() {
             </DivEquip>
           );
 
-          SetDashEquipaments((prvDiv) => [...prvDiv, Div]);
+          setDashEquipaments((prvDiv) => [...prvDiv, Div]);
         }
       });
     } else if (option === "fiber") {
@@ -1376,7 +1380,7 @@ export default function Helpdesk() {
             </DivEquip>
           );
 
-          SetDashEquipaments((prvDiv) => [...prvDiv, Div]);
+          setDashEquipaments((prvDiv) => [...prvDiv, Div]);
         }
       });
     } else if (option === "vera") {
@@ -1398,7 +1402,7 @@ export default function Helpdesk() {
             </DivEquip>
           );
 
-          SetDashEquipaments((prvDiv) => [...prvDiv, Div]);
+          setDashEquipaments((prvDiv) => [...prvDiv, Div]);
         }
       });
     } else if (option === "ropes") {
@@ -1420,7 +1424,7 @@ export default function Helpdesk() {
             </DivEquip>
           );
 
-          SetDashEquipaments((prvDiv) => [...prvDiv, Div]);
+          setDashEquipaments((prvDiv) => [...prvDiv, Div]);
         }
       });
     } else if (option === "mna") {
@@ -1442,7 +1446,7 @@ export default function Helpdesk() {
             </DivEquip>
           );
 
-          SetDashEquipaments((prvDiv) => [...prvDiv, Div]);
+          setDashEquipaments((prvDiv) => [...prvDiv, Div]);
         }
       });
     } else if (option === "all") {
@@ -1463,34 +1467,30 @@ export default function Helpdesk() {
           </DivEquip>
         );
 
-        SetDashEquipaments((prvDiv) => [...prvDiv, Div]);
+        setDashEquipaments((prvDiv) => [...prvDiv, Div]);
       });
     }
     return;
   }
 
   function nameNewUser(event) {
-    var nameUser = event.target.value;
-    SetNewName(nameUser);
-    return;
+    setNewName(event.target.value);
   }
 
   function emailDelegation(event) {
     var mailDele = event.target.value;
-    SetMailDelegation(mailDele);
+    setMailDelegation(mailDele);
     return;
   }
 
   function saveU(event) {
     var dir = event.target.value;
-    SetDirSave(dir);
+    setDirSave(dir);
     return;
   }
 
   function SectorNewUser(event) {
-    var company = event.target.value;
-    SetSectorNewUser(company);
-    return;
+    setSectorNewUser(event.target.value);
   }
 
   function selectCompanyNW() {
@@ -1498,28 +1498,28 @@ export default function Helpdesk() {
     const option = select.options[select.selectedIndex].value;
 
     if (option === "0") {
-      SetCompanyNewUser("CSC");
+      setCompanyNewUser("CSC");
       return;
     } else if (option === "1") {
-      SetCompanyNewUser("Fiberliners");
+      setCompanyNewUser("Fiberliners");
       return;
     } else if (option === "2") {
-      SetCompanyNewUser("Valmicro");
+      setCompanyNewUser("Valmicro");
       return;
     } else if (option === "3") {
-      SetCompanyNewUser("Valmicro – Mipel Sul");
+      setCompanyNewUser("Valmicro – Mipel Sul");
       return;
     } else if (option === "4") {
-      SetCompanyNewUser("Ropes");
+      setCompanyNewUser("Ropes");
       return;
     } else if (option === "5") {
-      SetCompanyNewUser("Escritorio Corporativo SP");
+      setCompanyNewUser("Escritorio Corporativo SP");
       return;
     } else if (option === "6") {
-      SetCompanyNewUser("Valmicro SP");
+      setCompanyNewUser("Valmicro SP");
       return;
     } else if (option === "7") {
-      SetCompanyNewUser("Mipel Microfusão");
+      setCompanyNewUser("Mipel Microfusão");
       return;
     }
   }
@@ -1534,25 +1534,25 @@ export default function Helpdesk() {
       }
     });
 
-    return SetSoftwareNewUser(Array);
+    return setSoftwareNewUser(Array);
   }
 
   function centralCost(event) {
     var cost = event.target.value;
 
-    return SetCentralCost(cost);
+    return setCentralCost(cost);
   }
 
   function jobTitleFunct(event) {
     var job = event.target.value;
 
-    return SetJobTitleNewUser(job);
+    return setJobTitleNewUser(job);
   }
 
   function nameCopyUser(event) {
     var copy = event.target.value;
 
-    return SetCopyUser(copy);
+    return setCopyUser(copy);
   }
 
   return (
@@ -1942,7 +1942,7 @@ export default function Helpdesk() {
             <div className="justify-content-center text-center">
               <span className="mb-1 mt-2">dataUser de alocagem do Equipamento:</span>
               <Calendar className="mt-3">
-                <DayPicker mode="multiple" selected={daysForAlocate} onSelect={SetDaysForAlocate} footer={footerAlocate} locale={ptBR} />
+                <DayPicker mode="multiple" selected={daysForAlocate} onSelect={setDaysForAlocate} footer={footerAlocate} locale={ptBR} />
               </Calendar>
             </div>
           )}
