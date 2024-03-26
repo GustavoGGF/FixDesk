@@ -1097,7 +1097,6 @@ export default function Helpdesk() {
       formdataUser.append("department", dataUser.department);
       formdataUser.append("mail", dataUser.mail);
       formdataUser.append("company", dataUser.company);
-      formdataUser.append("phone", dataUser.phone);
       formdataUser.append("sector", sector);
       formdataUser.append("occurrence", occurrence);
       formdataUser.append("problemn", problemn);
@@ -1122,7 +1121,6 @@ export default function Helpdesk() {
       formdataUser.append("department", dataUser.departament);
       formdataUser.append("mail", dataUser.mail);
       formdataUser.append("company", dataUser.company);
-      formdataUser.append("phone", dataUser.phone);
       formdataUser.append("sector", sector);
       formdataUser.append("occurrence", occurrence);
       formdataUser.append("problemn", problemn);
@@ -1186,7 +1184,6 @@ export default function Helpdesk() {
       formdataUser.append("department", dataUser.departament);
       formdataUser.append("mail", dataUser.mail);
       formdataUser.append("company", dataUser.company);
-      formdataUser.append("phone", dataUser.phone);
       formdataUser.append("sector", sector);
       formdataUser.append("occurrence", occurrence);
       formdataUser.append("problemn", problemn);
@@ -1227,7 +1224,6 @@ export default function Helpdesk() {
       formdataUser.append("department", dataUser.departament);
       formdataUser.append("mail", dataUser.mail);
       formdataUser.append("company", dataUser.company);
-      formdataUser.append("phone", dataUser.phone);
       formdataUser.append("sector", sector);
       formdataUser.append("occurrence", occurrence);
       formdataUser.append("problemn", problemn);
@@ -1244,7 +1240,6 @@ export default function Helpdesk() {
       formdataUser.append("department", dataUser.departament);
       formdataUser.append("mail", dataUser.mail);
       formdataUser.append("company", dataUser.company);
-      formdataUser.append("phone", dataUser.phone);
       formdataUser.append("sector", sector);
       formdataUser.append("occurrence", occurrence);
       formdataUser.append("problemn", problemn);
@@ -1517,30 +1512,33 @@ export default function Helpdesk() {
     const select = document.getElementById("select-company-new-user");
     const option = select.options[select.selectedIndex].value;
 
-    if (option === "0") {
-      setCompanyNewUser("CSC");
-      return;
-    } else if (option === "1") {
-      setCompanyNewUser("Fiberliners");
-      return;
-    } else if (option === "2") {
-      setCompanyNewUser("Valmicro");
-      return;
-    } else if (option === "3") {
-      setCompanyNewUser("Valmicro – Mipel Sul");
-      return;
-    } else if (option === "4") {
-      setCompanyNewUser("Ropes");
-      return;
-    } else if (option === "5") {
-      setCompanyNewUser("Escritorio Corporativo SP");
-      return;
-    } else if (option === "6") {
-      setCompanyNewUser("Valmicro SP");
-      return;
-    } else if (option === "7") {
-      setCompanyNewUser("Mipel Microfusão");
-      return;
+    switch (option) {
+      default:
+        break;
+      case "0":
+        setCompanyNewUser("CSC");
+        break;
+      case "1":
+        setCompanyNewUser("Fiberliners");
+        break;
+      case "2":
+        setCompanyNewUser("Valmicro");
+        break;
+      case "3":
+        setCompanyNewUser("Valmicro – Mipel Sul");
+        break;
+      case "4":
+        setCompanyNewUser("Ropes");
+        break;
+      case "5":
+        setCompanyNewUser("Escritorio Corporativo SP");
+        break;
+      case "6":
+        setCompanyNewUser("Valmicro SP");
+        break;
+      case "7":
+        setCompanyNewUser("Mipel Microfusão");
+        break;
     }
   }
 
@@ -1558,21 +1556,15 @@ export default function Helpdesk() {
   }
 
   function centralCost(event) {
-    var cost = event.target.value;
-
-    return setCentralCost(cost);
+    setCentralCost(event.target.value);
   }
 
   function jobTitleFunct(event) {
-    var job = event.target.value;
-
-    return setJobTitleNewUser(job);
+    setJobTitleNewUser(event.target.value);
   }
 
   function nameCopyUser(event) {
-    var copy = event.target.value;
-
-    return setCopyUser(copy);
+    setCopyUser(event.target.value);
   }
 
   return (
