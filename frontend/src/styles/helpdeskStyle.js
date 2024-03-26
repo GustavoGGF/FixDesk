@@ -14,25 +14,25 @@ export const Div2 = styled.div`
 export const Form = styled.form`
   width: 80%;
   min-height: 80%;
-  background: #f1faee;
-  border-radius: 10px;
-  margin-top: 30px;
-  margin-bottom: 30px;
-  padding: 10px;
+  background: var(--light-white2);
+  border-radius: 1em;
+  margin-top: 2em;
+  margin-bottom: 2em;
+  padding: 1em;
 `;
 
 export const Input = styled.input`
-  width: 300px;
+  width: 20em;
 `;
 
 export const Select = styled.select`
-  width: 300px;
+  width: 20em;
   ${(props) => props.required}
 `;
 
 export const Input2 = styled.input`
-  height: 25px;
-  margin-left: 10px;
+  height: 2em;
+  margin-left: 10em;
 `;
 
 export const Calendar = styled.div`
@@ -43,37 +43,29 @@ export const Calendar = styled.div`
 `;
 
 export const Textarea = styled.textarea`
-  height: 100px !important;
-  width: 300px;
+  height: 8em !important;
+  width: 20em;
   resize: none;
 `;
 
-export const Notification = styled.div`
-  width: 350px;
-  height: 150px;
-  margin-top: 20px;
-  background: #fee440;
-  border-radius: 10px;
-`;
-
 export const ImageEquip = styled.img`
-  width: 250px;
+  width: 12em;
 `;
 
 export const DivEquip = styled.div`
-  margin: 10px;
+  margin: 1em;
   display: flex;
   flex-direction: column;
   cursor: pointer;
-  padding: 10px;
+  padding: 1em;
   text-align: center;
   &:hover {
-    border: dashed 1px black;
+    border: dashed 0.1em black;
   }
 `;
 
 export const InputRadio = styled.input`
-  margin-right: 5px;
+  margin-right: 3em;
 `;
 
 export const DivNameFile = styled.div`
@@ -84,7 +76,7 @@ export const DivNameFile = styled.div`
 `;
 
 export const PNameFile = styled.div`
-  margin-right: 5px;
+  margin-right: 3em;
 `;
 
 export const BtnFile = styled.button`
@@ -93,7 +85,7 @@ export const BtnFile = styled.button`
 `;
 
 export const ImgFile = styled.img`
-  width: 25px;
+  width: 2.2em;
 `;
 
 export const InputFile = styled.input`
