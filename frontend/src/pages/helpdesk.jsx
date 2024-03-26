@@ -28,21 +28,21 @@ export default function Helpdesk() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const [csrf, SetCSRFToken] = useState("");
+  const [csrfToken, setCSRFToken] = useState("");
   const [messagetitle, setMessagetitle] = useState("");
-  const [messageinfo1, setmessageinfo1] = useState("");
-  const [messageinfo2, setmessageinfo2] = useState("");
+  const [messageinfo1, setMessageinfo1] = useState("");
+  const [messageinfo2, setMessageinfo2] = useState("");
   const [sector, setsector] = useState("");
   const [occurrence, setOccurrence] = useState("");
   const [problemn, setProblemn] = useState("");
   const [observation, setObservation] = useState("");
-  const [loading, SetLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [motivation, setMotivation] = useState(true);
   const [alertverify, setAlertVerify] = useState(false);
-  const [navbar, SetNavbar] = useState(false);
-  const [dashboard, SetDashboard] = useState(false);
+  const [navbar, setNavbar] = useState(false);
+  const [dashboard, setDashboard] = useState(false);
   const [infra, setInfra] = useState(false);
-  const [system, SetSystem] = useState(false);
+  const [system, setSystem] = useState(false);
   const [backup, setBackup] = useState(false);
   const [alert, setAlert] = useState(false);
   const [machine, setMachine] = useState(false);
@@ -54,18 +54,18 @@ export default function Helpdesk() {
   const [formnewuser, setFormNewUser] = useState(false);
   const [formdeluser, setFormDelUser] = useState(false);
   const [selectedDay, setSelectedDay] = useState(new Date());
-  const [Data, SetData] = useState();
-  const [message, SetMessage] = useState(false);
+  const [dataUser, setdataUser] = useState();
+  const [message, setMessage] = useState(false);
   const [typeError, setTypeError] = useState("");
   const [messageError, setMessageError] = useState("");
   const [respectiveTI, setRespectiveTI] = useState(false);
   const [respectiveArea, setRespectiveArea] = useState("");
-  const [sap, SetSAP] = useState(false);
-  const [mbi, SetMBI] = useState(false);
-  const [synch, SetSynch] = useState(false);
-  const [office, SetOffice] = useState(false);
-  const [eng, SetEng] = useState(false);
-  const [alocate, SetAlocate] = useState(false);
+  const [sap, setSAP] = useState(false);
+  const [mbi, setMBI] = useState(false);
+  const [synch, setSynch] = useState(false);
+  const [office, setOffice] = useState(false);
+  const [eng, setEng] = useState(false);
+  const [alocate, setAlocate] = useState(false);
   const [equipaments, SetEquipaments] = useState();
   const [dashequipaments, SetDashEquipaments] = useState("");
   const [filename, SetFileName] = useState([]);
@@ -99,7 +99,7 @@ export default function Helpdesk() {
     return SetTheme("themeLight");
   }
 
-  const footerDay = selectedDay ? <p>Você selecionou {format(selectedDay, "PPP")}</p> : <p>Selecione uma data</p>;
+  const footerDay = selectedDay ? <p>Você selecionou {format(selectedDay, "PPP")}</p> : <p>Selecione uma dataUser</p>;
 
   const footerAlocate = daysForAlocate.length >= 1 ? <p>Você alocou por {daysForAlocate.length} dia(s).</p> : <p>Selecione um ou mais dias.</p>;
 
@@ -116,13 +116,13 @@ export default function Helpdesk() {
       .then((response) => {
         return response.json();
       })
-      .then((data) => {
-        SetEquipaments(data.equipaments);
-        SetCSRFToken(data.token);
-        const storedData = localStorage.getItem("dataInfo");
+      .then((dataUser) => {
+        SetEquipaments(dataUser.equipaments);
+        setCSRFToken(dataUser.token);
+        const storeddataUser = localStorage.getItem("dataUserInfo");
 
-        const dataInfo = storedData ? JSON.parse(storedData) : null;
-        return SetData(dataInfo.data);
+        const dataUserInfo = storeddataUser ? JSON.parse(storeddataUser) : null;
+        return setdataUser(dataUserInfo.dataUser);
       })
       .catch((err) => {
         return console.error("Erro na solicitação:", err);
@@ -132,15 +132,13 @@ export default function Helpdesk() {
   }, []);
 
   useEffect(() => {
-    if (Data && Object.keys(Data).length > 0) {
-      SetLoading(false);
-      SetNavbar(true);
-      SetDashboard(true);
-      return SetUploadRunning("Running");
-    } else {
-      return;
+    if (dataUser && Object.keys(dataUser).length > 0) {
+      setLoading(false);
+      setNavbar(true);
+      setDashboard(true);
+      SetUploadRunning("Running");
     }
-  }, [Data]);
+  }, [dataUser]);
 
   useEffect(() => {
     if (dashboard === true) {
@@ -184,8 +182,8 @@ export default function Helpdesk() {
           evt.preventDefault();
         };
         $("#drop").ondrop = (evt) => {
-          for (let i = 0; i < evt.dataTransfer.files.length; i++) {
-            SetFileImg((itens) => [...itens, evt.dataTransfer.files[i]]);
+          for (let i = 0; i < evt.dataUserTransfer.files.length; i++) {
+            SetFileImg((itens) => [...itens, evt.dataUserTransfer.files[i]]);
           }
 
           $("footer").classList.add("hasFiles");
@@ -250,17 +248,17 @@ export default function Helpdesk() {
       setFolder(false);
       setAlertVerify(false);
       setsector("Infraestrutura");
-      SetSystem(false);
-      SetMBI(false);
-      SetSAP(false);
-      SetOffice(false);
-      SetSynch(false);
-      SetEng(false);
-      SetAlocate(false);
+      setSystem(false);
+      setMBI(false);
+      setSAP(false);
+      setOffice(false);
+      setSynch(false);
+      setEng(false);
+      setAlocate(false);
       setDateEquip(false);
       return;
     } else if (option === "sistema") {
-      SetSystem(true);
+      setSystem(true);
       setInfra(false);
       setAlert(false);
       setBackup(false);
@@ -273,17 +271,17 @@ export default function Helpdesk() {
       setFolder(false);
       setsector("Sistema");
       setAlertVerify(false);
-      SetMBI(false);
-      SetSAP(false);
-      SetSynch(false);
-      SetOffice(false);
-      SetEng(false);
-      SetAlocate(false);
+      setMBI(false);
+      setSAP(false);
+      setSynch(false);
+      setOffice(false);
+      setEng(false);
+      setAlocate(false);
       setDateEquip(false);
       return;
     } else if (option === "none") {
       setInfra(false);
-      SetSystem(false);
+      setSystem(false);
       setAlert(false);
       setBackup(false);
       setMail(false);
@@ -294,12 +292,12 @@ export default function Helpdesk() {
       setInternet(false);
       setFolder(false);
       setsector("");
-      SetMBI(false);
-      SetSAP(false);
-      SetSynch(false);
-      SetOffice(false);
-      SetEng(false);
-      SetAlocate(false);
+      setMBI(false);
+      setSAP(false);
+      setSynch(false);
+      setOffice(false);
+      setEng(false);
+      setAlocate(false);
       setDateEquip(false);
       return;
     }
@@ -322,12 +320,12 @@ export default function Helpdesk() {
       setFolder(false);
       setOccurrence("Backup");
       setAlertVerify(false);
-      SetSAP(false);
-      SetMBI(false);
-      SetSynch(false);
-      SetOffice(false);
-      SetEng(false);
-      SetAlocate(false);
+      setSAP(false);
+      setMBI(false);
+      setSynch(false);
+      setOffice(false);
+      setEng(false);
+      setAlocate(false);
       setDateEquip(false);
       return;
     } else if (option === "mail") {
@@ -342,12 +340,12 @@ export default function Helpdesk() {
       setFolder(false);
       setOccurrence("E-mail");
       setAlertVerify(false);
-      SetSAP(false);
-      SetMBI(false);
-      SetSynch(false);
-      SetOffice(false);
-      SetEng(false);
-      SetAlocate(false);
+      setSAP(false);
+      setMBI(false);
+      setSynch(false);
+      setOffice(false);
+      setEng(false);
+      setAlocate(false);
       setDateEquip(false);
       return;
     } else if (option === "equip") {
@@ -361,13 +359,13 @@ export default function Helpdesk() {
       setInternet(false);
       setFolder(false);
       setAlertVerify(false);
-      SetAlocate(false);
+      setAlocate(false);
       setOccurrence("Equipamento");
-      SetSAP(false);
-      SetMBI(false);
-      SetSynch(false);
-      SetOffice(false);
-      SetEng(false);
+      setSAP(false);
+      setMBI(false);
+      setSynch(false);
+      setOffice(false);
+      setEng(false);
       setDateEquip(false);
       return;
     } else if (option === "user") {
@@ -381,13 +379,13 @@ export default function Helpdesk() {
       setInternet(false);
       setFolder(false);
       setAlertVerify(false);
-      SetAlocate(false);
+      setAlocate(false);
       setOccurrence("Gerenciamento de Usuario");
-      SetSAP(false);
-      SetMBI(false);
-      SetSynch(false);
-      SetOffice(false);
-      SetEng(false);
+      setSAP(false);
+      setMBI(false);
+      setSynch(false);
+      setOffice(false);
+      setEng(false);
       setDateEquip(false);
       return;
     } else if (option === "internet") {
@@ -401,14 +399,14 @@ export default function Helpdesk() {
       setFormDelUser(false);
       setFolder(false);
       setAlertVerify(false);
-      SetAlocate(false);
+      setAlocate(false);
       setDateEquip(false);
       setOccurrence("Internet");
-      SetSAP(false);
-      SetMBI(false);
-      SetSynch(false);
-      SetOffice(false);
-      SetEng(false);
+      setSAP(false);
+      setMBI(false);
+      setSynch(false);
+      setOffice(false);
+      setEng(false);
       setDateEquip(false);
       return;
     } else if (option === "folder") {
@@ -422,14 +420,14 @@ export default function Helpdesk() {
       setFormDelUser(false);
       setInternet(false);
       setAlertVerify(false);
-      SetAlocate(false);
+      setAlocate(false);
       setDateEquip(false);
       setOccurrence("Permissão");
-      SetSAP(false);
-      SetMBI(false);
-      SetSynch(false);
-      SetOffice(false);
-      SetEng(false);
+      setSAP(false);
+      setMBI(false);
+      setSynch(false);
+      setOffice(false);
+      setEng(false);
       setDateEquip(false);
       return;
     } else if (option === "none") {
@@ -442,19 +440,19 @@ export default function Helpdesk() {
       setFormDelUser(false);
       setInternet(false);
       setFolder(false);
-      SetSAP(false);
-      SetMBI(false);
-      SetSynch(false);
-      SetOffice(false);
-      SetEng(false);
-      SetAlocate(false);
+      setSAP(false);
+      setMBI(false);
+      setSynch(false);
+      setOffice(false);
+      setEng(false);
+      setAlocate(false);
       setDateEquip(false);
       return;
     } else if (option === "sap") {
-      SetSAP(true);
-      SetMBI(false);
-      SetSynch(false);
-      SetOffice(false);
+      setSAP(true);
+      setMBI(false);
+      setSynch(false);
+      setOffice(false);
       setBackup(false);
       setAlert(false);
       setMail(false);
@@ -465,13 +463,13 @@ export default function Helpdesk() {
       setInternet(false);
       setFolder(false);
       setOccurrence("SAP");
-      SetEng(false);
-      SetAlocate(false);
+      setEng(false);
+      setAlocate(false);
       setDateEquip(false);
       return;
     } else if (option === "mbi") {
-      SetMBI(true);
-      SetSAP(false);
+      setMBI(true);
+      setSAP(false);
       setBackup(false);
       setAlert(false);
       setMail(false);
@@ -482,16 +480,16 @@ export default function Helpdesk() {
       setInternet(false);
       setFolder(false);
       setOccurrence("MBI");
-      SetSynch(false);
-      SetOffice(false);
-      SetAlocate(false);
-      SetEng(false);
+      setSynch(false);
+      setOffice(false);
+      setAlocate(false);
+      setEng(false);
       setDateEquip(false);
       return;
     } else if (option === "synch") {
-      SetSynch(true);
-      SetMBI(false);
-      SetSAP(false);
+      setSynch(true);
+      setMBI(false);
+      setSAP(false);
       setBackup(false);
       setAlert(false);
       setMail(false);
@@ -502,38 +500,38 @@ export default function Helpdesk() {
       setInternet(false);
       setFolder(false);
       setOccurrence("Synchro");
-      SetOffice(false);
-      SetAlocate(false);
-      SetEng(false);
+      setOffice(false);
+      setAlocate(false);
+      setEng(false);
       setDateEquip(false);
       return;
     } else if (option === "office") {
-      SetOffice(true);
-      SetSynch(false);
-      SetMBI(false);
-      SetSAP(false);
+      setOffice(true);
+      setSynch(false);
+      setMBI(false);
+      setSAP(false);
       setBackup(false);
       setAlert(false);
       setMail(false);
       setEquip(false);
       setUser(false);
-      SetAlocate(false);
+      setAlocate(false);
       setFormNewUser(false);
       setFormDelUser(false);
       setInternet(false);
       setFolder(false);
-      SetEng(false);
+      setEng(false);
       setOccurrence("Office");
       setDateEquip(false);
       return;
     } else if (option === "eng") {
-      SetEng(true);
-      SetOffice(false);
-      SetSynch(false);
-      SetMBI(false);
-      SetSAP(false);
+      setEng(true);
+      setOffice(false);
+      setSynch(false);
+      setMBI(false);
+      setSAP(false);
       setBackup(false);
-      SetAlocate(false);
+      setAlocate(false);
       setAlert(false);
       setMail(false);
       setEquip(false);
@@ -555,32 +553,32 @@ export default function Helpdesk() {
     if (optionSynch === "user") {
       setAlert(true);
       setMessagetitle("Caso de Criação/exclusão de usuários");
-      setmessageinfo1("1. Informar o usuário que deverá ser criado ou excluido");
-      setmessageinfo2("2. Informar os acessos que o mesmo poderá utilizar");
+      setMessageinfo1("1. Informar o usuário que deverá ser criado ou excluido");
+      setMessageinfo2("2. Informar os acessos que o mesmo poderá utilizar");
       setProblemn("Criação/exclusão usuário");
       setAlertVerify(false);
       return;
     } else if (optionSynch === "access") {
       setAlert(true);
       setMessagetitle("Caso de Liberação/bloqueio de acessos");
-      setmessageinfo1("1. Descreva o que deseja bloquear e/ou liberar");
-      setmessageinfo2("");
+      setMessageinfo1("1. Descreva o que deseja bloquear e/ou liberar");
+      setMessageinfo2("");
       setProblemn("Liberação/bloqueio de acessos");
       setAlertVerify(false);
       return;
     } else if (optionSynch === "quest") {
       setAlert(true);
       setMessagetitle("Caso de Dúvidas operacionais");
-      setmessageinfo1("1. Descreva o que deseja saber");
-      setmessageinfo2("");
+      setMessageinfo1("1. Descreva o que deseja saber");
+      setMessageinfo2("");
       setProblemn("Dúvidas operacionais");
       setAlertVerify(false);
       return;
     } else if (optionSynch === "error") {
       setAlert(true);
       setMessagetitle("Caso de Correção de falhas");
-      setmessageinfo1("1. Informe o Erro");
-      setmessageinfo2("");
+      setMessageinfo1("1. Informe o Erro");
+      setMessageinfo2("");
       setProblemn("Correção de falhas");
       setAlertVerify(false);
     } else if (optionSynch === "none") {
@@ -596,32 +594,32 @@ export default function Helpdesk() {
     if (optionMBI === "user") {
       setAlert(true);
       setMessagetitle("Caso de Criação/exclusão de usuários");
-      setmessageinfo1("1. Informar o usuário que deverá ser criado ou excluido");
-      setmessageinfo2("2. Informar os acessos que o mesmo poderá utilizar");
+      setMessageinfo1("1. Informar o usuário que deverá ser criado ou excluido");
+      setMessageinfo2("2. Informar os acessos que o mesmo poderá utilizar");
       setProblemn("Criação/exclusão usuário");
       setAlertVerify(false);
       return;
     } else if (optionMBI === "access") {
       setAlert(true);
       setMessagetitle("Caso de Liberação/bloqueio de acessos");
-      setmessageinfo1("1. Descreva o que deseja bloquear e/ou liberar");
-      setmessageinfo2("");
+      setMessageinfo1("1. Descreva o que deseja bloquear e/ou liberar");
+      setMessageinfo2("");
       setProblemn("Liberação/bloqueio de acessos");
       setAlertVerify(false);
       return;
     } else if (optionMBI === "quest") {
       setAlert(true);
       setMessagetitle("Caso de Dúvidas operacionais");
-      setmessageinfo1("1. Descreva o que deseja saber");
-      setmessageinfo2("");
+      setMessageinfo1("1. Descreva o que deseja saber");
+      setMessageinfo2("");
       setProblemn("Dúvidas operacionais");
       setAlertVerify(false);
       return;
     } else if (optionMBI === "error") {
       setAlert(true);
       setMessagetitle("Caso de Correção de falhas");
-      setmessageinfo1("1. Informe o Erro");
-      setmessageinfo2("");
+      setMessageinfo1("1. Informe o Erro");
+      setMessageinfo2("");
       setProblemn("Correção de falhas");
       setAlertVerify(false);
       return;
@@ -638,32 +636,32 @@ export default function Helpdesk() {
     if (optionSAP === "user") {
       setAlert(true);
       setMessagetitle("Caso de Criação/exclusão de usuários");
-      setmessageinfo1("1. Informar o usuário que deverá ser criado ou excluido");
-      setmessageinfo2("2. Informar os acessos que o mesmo poderá utilizar");
+      setMessageinfo1("1. Informar o usuário que deverá ser criado ou excluido");
+      setMessageinfo2("2. Informar os acessos que o mesmo poderá utilizar");
       setProblemn("Criação/exclusão usuário");
       setAlertVerify(false);
       return;
     } else if (optionSAP === "access") {
       setAlert(true);
       setMessagetitle("Caso de Liberação/bloqueio de acessos");
-      setmessageinfo1("1. Descreva o que deseja bloquear e/ou liberar");
-      setmessageinfo2("");
+      setMessageinfo1("1. Descreva o que deseja bloquear e/ou liberar");
+      setMessageinfo2("");
       setProblemn("Liberação/bloqueio de acessos");
       setAlertVerify(false);
       return;
     } else if (optionSAP === "quest") {
       setAlert(true);
       setMessagetitle("Caso de Dúvidas operacionais");
-      setmessageinfo1("1. Descreva o que deseja saber");
-      setmessageinfo2("");
+      setMessageinfo1("1. Descreva o que deseja saber");
+      setMessageinfo2("");
       setProblemn("Dúvidas operacionais");
       setAlertVerify(false);
       return;
     } else if (optionSAP === "error") {
       setAlert(true);
       setMessagetitle("Caso de Correção de falhas");
-      setmessageinfo1("1. Informe o Erro");
-      setmessageinfo2("");
+      setMessageinfo1("1. Informe o Erro");
+      setMessageinfo2("");
       setProblemn("Correção de falhas");
       setAlertVerify(false);
       return;
@@ -680,16 +678,16 @@ export default function Helpdesk() {
     if (optionOffice === "buy") {
       setAlert(true);
       setMessagetitle("Aquisição de software/licenciamento");
-      setmessageinfo1("1. Informe para quem será a licença");
-      setmessageinfo2("");
+      setMessageinfo1("1. Informe para quem será a licença");
+      setMessageinfo2("");
       setProblemn("Aquisição de software/licenciamento");
       setAlertVerify(false);
       return;
     } else if (optionOffice === "error") {
       setAlert(true);
       setMessagetitle("Caso de Correção de falhas");
-      setmessageinfo1("1. Informe o Erro");
-      setmessageinfo2("");
+      setMessageinfo1("1. Informe o Erro");
+      setMessageinfo2("");
       setProblemn("Correção de falhas");
       setAlertVerify(false);
       return;
@@ -714,16 +712,16 @@ export default function Helpdesk() {
     if (optionEng === "buy") {
       setAlert(true);
       setMessagetitle("Aquisição de software/licenciamento");
-      setmessageinfo1("1. Informe para quem será a licença");
-      setmessageinfo2("");
+      setMessageinfo1("1. Informe para quem será a licença");
+      setMessageinfo2("");
       setProblemn("Aquisição de software/licenciamento");
       setAlertVerify(false);
       return;
     } else if (optionEng === "error") {
       setAlert(true);
       setMessagetitle("Caso de Correção de falhas");
-      setmessageinfo1("1. Informe o Erro");
-      setmessageinfo2("");
+      setMessageinfo1("1. Informe o Erro");
+      setMessageinfo2("");
       setProblemn("Correção de falhas");
       setAlertVerify(false);
       return;
@@ -740,16 +738,16 @@ export default function Helpdesk() {
     if (optionBackup === "pasta") {
       setAlert(true);
       setMessagetitle("Caso de pasta");
-      setmessageinfo1("1. Informar o caminho completo da pasta");
-      setmessageinfo2("2. Informar a data de criação e exclusão do arquivo");
+      setMessageinfo1("1. Informar o caminho completo da pasta");
+      setMessageinfo2("2. Informar a dataUser de criação e exclusão do arquivo");
       setProblemn("Restaurar pasta");
       setAlertVerify(false);
       return;
     } else if (optionBackup === "mail") {
       setAlert(true);
       setMessagetitle("Caso de e-mail");
-      setmessageinfo1("1. Descreva o que deseja restaurar");
-      setmessageinfo2("");
+      setMessageinfo1("1. Descreva o que deseja restaurar");
+      setMessageinfo2("");
       setProblemn("Restaurar e-mail");
       setAlertVerify(false);
       return;
@@ -771,8 +769,8 @@ export default function Helpdesk() {
     } else if (optionMail === "conect") {
       setAlert(true);
       setMessagetitle("Caso de email não conecta na internet");
-      setmessageinfo1("1. Informar mensagem de erro");
-      setmessageinfo2("");
+      setMessageinfo1("1. Informar mensagem de erro");
+      setMessageinfo2("");
       setProblemn("Problema com conexão");
       setAlertVerify(false);
       return;
@@ -782,8 +780,8 @@ export default function Helpdesk() {
     } else if (optionMail === "domin") {
       setAlert(true);
       setMessagetitle("Caso de liberar domínion de e-mail");
-      setmessageinfo1("1. Informar dóminio, exemplo @lupatech.com.br");
-      setmessageinfo2("");
+      setMessageinfo1("1. Informar dóminio, exemplo @lupatech.com.br");
+      setMessageinfo2("");
       setProblemn("Liberar domínio");
       setAlertVerify(false);
       return;
@@ -807,53 +805,53 @@ export default function Helpdesk() {
     const optionEquip = selectEquip.options[selectEquip.selectedIndex].value;
 
     if (optionEquip === "off") {
-      SetAlocate(false);
+      setAlocate(false);
       setAlert(true);
       setMessagetitle("Caso de computador não ligar");
-      setmessageinfo1("1. Informar o usuario e setor de onde fica o equipamento");
-      setmessageinfo2("");
+      setMessageinfo1("1. Informar o usuario e setor de onde fica o equipamento");
+      setMessageinfo2("");
       setProblemn("Equipamento não liga");
       setAlertVerify(false);
       return;
     } else if (optionEquip === "printer") {
-      SetAlocate(false);
+      setAlocate(false);
       setAlert(true);
       setMessagetitle("Caso de problema com a impressora");
-      setmessageinfo1("1. Informar onde a impressora está localizada");
-      setmessageinfo2("2. Informar menssagem de erro que aparece");
+      setMessageinfo1("1. Informar onde a impressora está localizada");
+      setMessageinfo2("2. Informar menssagem de erro que aparece");
       setProblemn("Problema com a impressora");
       setAlertVerify(false);
       return;
     } else if (optionEquip === "roaming") {
-      SetAlocate(false);
+      setAlocate(false);
       setAlert(true);
       setMessagetitle("Caso de troca de local de trabalho");
-      setmessageinfo1("1. Informar se no local existe ponto de rede e de energia");
-      setmessageinfo2("");
+      setMessageinfo1("1. Informar se no local existe ponto de rede e de energia");
+      setMessageinfo2("");
       setProblemn("Mudanca de local de trabalho");
       setAlertVerify(false);
       return;
     } else if (optionEquip === "usb") {
-      SetAlocate(false);
+      setAlocate(false);
       setAlert(true);
       setMessagetitle("Caso de liberação/bloqueio de USB");
-      setmessageinfo1("1. Justificar a solicitação");
-      setmessageinfo2("2. Caso não seja o gestor da area, anexar a autorização do mesmo");
+      setMessageinfo1("1. Justificar a solicitação");
+      setMessageinfo2("2. Caso não seja o gestor da area, anexar a autorização do mesmo");
       setProblemn("USB");
       setAlertVerify(false);
       return;
     } else if (optionEquip === "none") {
       setAlert(false);
-      SetAlocate(false);
+      setAlocate(false);
       return;
     } else if (optionEquip === "alocate") {
       SetDashEquipaments("");
       setAlert(true);
       setMessagetitle("Caso de Alocação de equipamento");
-      setmessageinfo1("1. Selecionar o equipamento desejado");
-      setmessageinfo2("2. Informar a data e a necessidade de equipamentos adicionais como teclado, etc...");
+      setMessageinfo1("1. Selecionar o equipamento desejado");
+      setMessageinfo2("2. Informar a dataUser e a necessidade de equipamentos adicionais como teclado, etc...");
       setAlertVerify(false);
-      SetAlocate(true);
+      setAlocate(true);
       setProblemn("Alocação de Máquina");
 
       if (equipaments && Object.keys(equipaments).length > 0) {
@@ -868,7 +866,7 @@ export default function Helpdesk() {
                 })
               }
             >
-              <ImageEquip src={`data:image/jpeg;base64,${equipament.image}`} alt="" />
+              <ImageEquip src={`dataUser:image/jpeg;base64,${equipament.image}`} alt="" />
               <p>Modelo: {equipament.model}</p>
               <p>Empresa: {equipament.company}</p>
             </DivEquip>
@@ -885,8 +883,8 @@ export default function Helpdesk() {
     } else if (optionEquip === "change") {
       setAlert(true);
       setMessagetitle("Caso de Troca de Equipamento");
-      setmessageinfo1("1. Informar o Equipamento");
-      setmessageinfo2("2. Justificar o motivo da troca");
+      setMessageinfo1("1. Informar o Equipamento");
+      setMessageinfo2("2. Justificar o motivo da troca");
       setProblemn("Trocar Equipamento");
       setAlertVerify(false);
       return;
@@ -930,24 +928,24 @@ export default function Helpdesk() {
     if (option === "lib") {
       setAlert(true);
       setMessagetitle("Caso de liberação de pasta");
-      setmessageinfo1("1. Informar o diretorio completo da pasta");
-      setmessageinfo2("2.Caso não seja o gestor responsavel pela pasta, anexar a autorização do mesmo");
+      setMessageinfo1("1. Informar o diretorio completo da pasta");
+      setMessageinfo2("2.Caso não seja o gestor responsavel pela pasta, anexar a autorização do mesmo");
       setProblemn("Liberar pasta");
       setAlertVerify(false);
       return;
     } else if (option === "block") {
       setAlert(true);
       setMessagetitle("Caso de bloqueio de pasta");
-      setmessageinfo1("1. Informar o diretorio completo da pasta");
-      setmessageinfo2("2.Caso não seja o gestor responsavel pela pasta, anexar a autorização do mesmo");
+      setMessageinfo1("1. Informar o diretorio completo da pasta");
+      setMessageinfo2("2.Caso não seja o gestor responsavel pela pasta, anexar a autorização do mesmo");
       setProblemn("Bloquear pasta");
       setAlertVerify(false);
       return;
     } else if (option === "none") {
       setAlert(false);
       setMessagetitle("");
-      setmessageinfo1("");
-      setmessageinfo2("");
+      setMessageinfo1("");
+      setMessageinfo2("");
       return;
     }
   }
@@ -959,24 +957,24 @@ export default function Helpdesk() {
     if (option === "lib") {
       setAlert(true);
       setMessagetitle("Caso de liberação de site");
-      setmessageinfo1("1. Informar o link completo do site");
-      setmessageinfo2("2.Caso não seja o gestor da area, anexar a autorização do mesmo");
+      setMessageinfo1("1. Informar o link completo do site");
+      setMessageinfo2("2.Caso não seja o gestor da area, anexar a autorização do mesmo");
       setProblemn("Liberacao de site");
       setAlertVerify(false);
       return;
     } else if (option === "block") {
       setAlert(true);
       setMessagetitle("Caso de bloqueio de site");
-      setmessageinfo1("1. Informar o link completo do site");
-      setmessageinfo2("2.Caso não seja o gestor da area, anexar a autorização do mesmo");
+      setMessageinfo1("1. Informar o link completo do site");
+      setMessageinfo2("2.Caso não seja o gestor da area, anexar a autorização do mesmo");
       setProblemn("Bloqueio de site");
       setAlertVerify(false);
       return;
     } else if (option === "none") {
       setAlert(false);
       setMessagetitle("");
-      setmessageinfo1("");
-      setmessageinfo2("");
+      setMessageinfo1("");
+      setMessageinfo2("");
       return;
     }
   }
@@ -1016,8 +1014,8 @@ export default function Helpdesk() {
           } else if (selectedValue === "no") {
             setMachine(true);
             setMessagetitle("Caso de não haver maquina");
-            setmessageinfo1("1. Deverá ser feita uma solicitação de equipamento");
-            setmessageinfo2("");
+            setMessageinfo1("1. Deverá ser feita uma solicitação de equipamento");
+            setMessageinfo2("");
             SetNecessaryMachine(true);
             return;
           }
@@ -1052,45 +1050,45 @@ export default function Helpdesk() {
     }
     // * Caso nenhuma opção seja selecionada mostra mensagem e não cria o chamado
 
-    // Obter o dia, mês e ano da data atual
-    var dataAtual = new Date();
+    // Obter o dia, mês e ano da dataUser atual
+    var dataUserAtual = new Date();
 
-    var dia = dataAtual.getDate();
-    var mes = dataAtual.getMonth() + 1; // Os meses em JavaScript são indexados a partir de zero, por isso é necessário adicionar 1
-    var ano = dataAtual.getFullYear();
+    var dia = dataUserAtual.getDate();
+    var mes = dataUserAtual.getMonth() + 1; // Os meses em JavaScript são indexados a partir de zero, por isso é necessário adicionar 1
+    var ano = dataUserAtual.getFullYear();
 
-    // Formatar a data no formato dd/mm/yy
+    // Formatar a dataUser no formato dd/mm/yy
 
-    // Formatando para data BR
-    var dataFormatada = ano + "-" + ("0" + mes).slice(-2) + "-" + ("0" + dia).slice(-2);
+    // Formatando para dataUser BR
+    var dataUserFormatada = ano + "-" + ("0" + mes).slice(-2) + "-" + ("0" + dia).slice(-2);
 
     ano.toString().slice(-2);
-    // Formatando para data BR
+    // Formatando para dataUser BR
 
     let Status;
     let NewDatesAlocate = [];
 
-    const formData = new FormData();
+    const formdataUser = new FormData();
 
     var total_size = 0;
 
     if (filename.length > 0) {
-      formData.append("ticketRequester", Data.name);
-      formData.append("department", Data.department);
-      formData.append("mail", Data.mail);
-      formData.append("company", Data.company);
-      formData.append("phone", Data.phone);
-      formData.append("sector", sector);
-      formData.append("occurrence", occurrence);
-      formData.append("problemn", problemn);
-      formData.append("observation", observation);
-      formData.append("start_date", dataFormatada);
-      formData.append("PID", Data.pid);
-      formData.append("respective_area", respectiveArea);
+      formdataUser.append("ticketRequester", dataUser.name);
+      formdataUser.append("department", dataUser.department);
+      formdataUser.append("mail", dataUser.mail);
+      formdataUser.append("company", dataUser.company);
+      formdataUser.append("phone", dataUser.phone);
+      formdataUser.append("sector", sector);
+      formdataUser.append("occurrence", occurrence);
+      formdataUser.append("problemn", problemn);
+      formdataUser.append("observation", observation);
+      formdataUser.append("start_date", dataUserFormatada);
+      formdataUser.append("PID", dataUser.pid);
+      formdataUser.append("respective_area", respectiveArea);
       for (let i = 0; i < fileimg.length; i++) {
         const file = fileimg[i];
         total_size += file.size;
-        formData.append("image", file);
+        formdataUser.append("image", file);
       }
     } else if (daysForAlocate.length > 0) {
       for (let dateObj of daysForAlocate) {
@@ -1100,143 +1098,143 @@ export default function Helpdesk() {
         const dateFormated = `${year}-${month}-${day}`;
         NewDatesAlocate.push(dateFormated);
       }
-      formData.append("ticketRequester", Data.name);
-      formData.append("department", Data.departament);
-      formData.append("mail", Data.mail);
-      formData.append("company", Data.company);
-      formData.append("phone", Data.phone);
-      formData.append("sector", sector);
-      formData.append("occurrence", occurrence);
-      formData.append("problemn", problemn);
-      formData.append("observation", observation);
-      formData.append("start_date", dataFormatada);
-      formData.append("PID", Data.pid);
-      formData.append("respective_area", respectiveArea);
-      formData.append("id_equipament", equipamentSelected);
-      formData.append("days_alocated", NewDatesAlocate);
+      formdataUser.append("ticketRequester", dataUser.name);
+      formdataUser.append("department", dataUser.departament);
+      formdataUser.append("mail", dataUser.mail);
+      formdataUser.append("company", dataUser.company);
+      formdataUser.append("phone", dataUser.phone);
+      formdataUser.append("sector", sector);
+      formdataUser.append("occurrence", occurrence);
+      formdataUser.append("problemn", problemn);
+      formdataUser.append("observation", observation);
+      formdataUser.append("start_date", dataUserFormatada);
+      formdataUser.append("PID", dataUser.pid);
+      formdataUser.append("respective_area", respectiveArea);
+      formdataUser.append("id_equipament", equipamentSelected);
+      formdataUser.append("days_alocated", NewDatesAlocate);
     } else if (problemn === "Criacao de usuario de rede") {
       if (newname.length < 2) {
-        SetMessage(true);
+        setMessage(true);
         setTypeError("Falta de dados");
         setMessageError("Nome Obrigatório!!!");
         return;
       }
 
       if (sectornewuser.length < 1) {
-        SetMessage(true);
+        setMessage(true);
         setTypeError("Falta de dados");
         setMessageError("Setor Obrigatório!!!");
         return;
       }
 
       if (motivationContract.length < 2) {
-        SetMessage(true);
+        setMessage(true);
         setTypeError("Falta de dados");
         setMessageError("Tipo da Contratação Obrigatória!!!");
         return;
       }
 
       if (necessaryMachine === undefined) {
-        SetMessage(true);
+        setMessage(true);
         setTypeError("Falta de dados");
         setMessageError("Obigatório informar a necessidade de Máquina!!!");
         return;
       }
 
       if (companynewUser.length < 2) {
-        SetMessage(true);
+        setMessage(true);
         setTypeError("Falta de dados");
         setMessageError("Obigatório informar a Unidade!!!");
         return;
       }
 
       if (centralcost.length < 2) {
-        SetMessage(true);
+        setMessage(true);
         setTypeError("Falta de dados");
         setMessageError("Obigatório Informar Centro de Custo!!!");
         return;
       }
 
       if (jobtitlenewuser.length < 2) {
-        SetMessage(true);
+        setMessage(true);
         setTypeError("Falta de dados");
         setMessageError("Obigatório Informar o cargo!!!");
         return;
       }
 
-      formData.append("ticketRequester", Data.name);
-      formData.append("department", Data.departament);
-      formData.append("mail", Data.mail);
-      formData.append("company", Data.company);
-      formData.append("phone", Data.phone);
-      formData.append("sector", sector);
-      formData.append("occurrence", occurrence);
-      formData.append("problemn", problemn);
-      formData.append("observation", observation);
-      formData.append("start_date", dataFormatada);
-      formData.append("PID", Data.pid);
-      formData.append("respective_area", respectiveArea);
-      formData.append("new_user", newname);
-      formData.append("sector_new_user", sectornewuser);
-      formData.append("where_from", motivationContract);
-      formData.append("machine_new_user", necessaryMachine);
-      formData.append("company_new_user", companynewUser);
-      formData.append("software_new_user", softwareNewUser);
-      formData.append("cost_center", centralcost);
-      formData.append("job_title_new_user", jobtitlenewuser);
-      formData.append("start_work_new_user", selectedDay);
-      formData.append("copy_profile_new_user", copyUser);
+      formdataUser.append("ticketRequester", dataUser.name);
+      formdataUser.append("department", dataUser.departament);
+      formdataUser.append("mail", dataUser.mail);
+      formdataUser.append("company", dataUser.company);
+      formdataUser.append("phone", dataUser.phone);
+      formdataUser.append("sector", sector);
+      formdataUser.append("occurrence", occurrence);
+      formdataUser.append("problemn", problemn);
+      formdataUser.append("observation", observation);
+      formdataUser.append("start_date", dataUserFormatada);
+      formdataUser.append("PID", dataUser.pid);
+      formdataUser.append("respective_area", respectiveArea);
+      formdataUser.append("new_user", newname);
+      formdataUser.append("sector_new_user", sectornewuser);
+      formdataUser.append("where_from", motivationContract);
+      formdataUser.append("machine_new_user", necessaryMachine);
+      formdataUser.append("company_new_user", companynewUser);
+      formdataUser.append("software_new_user", softwareNewUser);
+      formdataUser.append("cost_center", centralcost);
+      formdataUser.append("job_title_new_user", jobtitlenewuser);
+      formdataUser.append("start_work_new_user", selectedDay);
+      formdataUser.append("copy_profile_new_user", copyUser);
     } else if (problemn === "Exclusao de usuario de rede") {
       if (newname.length < 2) {
-        SetMessage(true);
+        setMessage(true);
         setTypeError("Falta de dados");
         setMessageError("Nome Obrigatório!!!");
         return;
       }
       if (maildelegation.length < 2) {
-        SetMessage(true);
+        setMessage(true);
         setTypeError("Falta de dados");
         setMessageError("E-mail para transferencia Obrigatório!!!");
         return;
       }
       if (dirsave.length < 2) {
-        SetMessage(true);
+        setMessage(true);
         setTypeError("Falta de dados");
         setMessageError("Obrigatório informar onde os dados devem ser salvos!!!");
         return;
       }
-      formData.append("ticketRequester", Data.name);
-      formData.append("department", Data.departament);
-      formData.append("mail", Data.mail);
-      formData.append("company", Data.company);
-      formData.append("phone", Data.phone);
-      formData.append("sector", sector);
-      formData.append("occurrence", occurrence);
-      formData.append("problemn", problemn);
-      formData.append("observation", observation);
-      formData.append("start_date", dataFormatada);
-      formData.append("PID", Data.pid);
-      formData.append("respective_area", respectiveArea);
-      formData.append("new_user", newname);
-      formData.append("mail_tranfer", maildelegation);
-      formData.append("old_files", dirsave);
-      formData.append("start_work_new_user", selectedDay);
+      formdataUser.append("ticketRequester", dataUser.name);
+      formdataUser.append("department", dataUser.departament);
+      formdataUser.append("mail", dataUser.mail);
+      formdataUser.append("company", dataUser.company);
+      formdataUser.append("phone", dataUser.phone);
+      formdataUser.append("sector", sector);
+      formdataUser.append("occurrence", occurrence);
+      formdataUser.append("problemn", problemn);
+      formdataUser.append("observation", observation);
+      formdataUser.append("start_date", dataUserFormatada);
+      formdataUser.append("PID", dataUser.pid);
+      formdataUser.append("respective_area", respectiveArea);
+      formdataUser.append("new_user", newname);
+      formdataUser.append("mail_tranfer", maildelegation);
+      formdataUser.append("old_files", dirsave);
+      formdataUser.append("start_work_new_user", selectedDay);
     } else {
-      formData.append("ticketRequester", Data.name);
-      formData.append("department", Data.departament);
-      formData.append("mail", Data.mail);
-      formData.append("company", Data.company);
-      formData.append("phone", Data.phone);
-      formData.append("sector", sector);
-      formData.append("occurrence", occurrence);
-      formData.append("problemn", problemn);
-      formData.append("observation", observation);
-      formData.append("start_date", dataFormatada);
-      formData.append("PID", Data.pid);
-      formData.append("respective_area", respectiveArea);
+      formdataUser.append("ticketRequester", dataUser.name);
+      formdataUser.append("department", dataUser.departament);
+      formdataUser.append("mail", dataUser.mail);
+      formdataUser.append("company", dataUser.company);
+      formdataUser.append("phone", dataUser.phone);
+      formdataUser.append("sector", sector);
+      formdataUser.append("occurrence", occurrence);
+      formdataUser.append("problemn", problemn);
+      formdataUser.append("observation", observation);
+      formdataUser.append("start_date", dataUserFormatada);
+      formdataUser.append("PID", dataUser.pid);
+      formdataUser.append("respective_area", respectiveArea);
     }
     if (total_size > 10 * 1024 * 1024) {
-      SetMessage(true);
+      setMessage(true);
       setTypeError("Capacidade Máxima Ultrapassada");
       setMessageError("Capacidade Máxima de Arquivos Anexado é de 10MB");
       return;
@@ -1244,17 +1242,17 @@ export default function Helpdesk() {
     fetch("submitTicket/", {
       method: "POST",
       headers: {
-        "X-CSRFToken": csrf,
+        "X-CSRFToken": csrfToken,
       },
-      body: formData,
+      body: formdataUser,
     })
       .then((response) => {
         Status = response.status;
         return response.json();
       })
-      .then((data) => {
+      .then((dataUser) => {
         if (Status === 403) {
-          SetMessage(true);
+          setMessage(true);
           setTypeError("Falta de dados");
           setMessageError("PID Não cadastrado, favor contatar equipe de TI");
           return window.scrollTo({
@@ -1262,10 +1260,9 @@ export default function Helpdesk() {
             behavior: "smooth",
           });
         } else if (Status === 200) {
-          SetMessage(false);
-          return window.location.reload();
+          window.location.reload(true);
         } else if (Status === 320) {
-          SetMessage(true);
+          setMessage(true);
           setTypeError("Dados Inválidos");
           setMessageError("Arquivo Anexado Inválido");
           return window.scrollTo({
@@ -1274,7 +1271,7 @@ export default function Helpdesk() {
           });
         } else if (Status === 310) {
           SetDaysForAlocate([]);
-          const dates = data.dates;
+          const dates = dataUser.dates;
           var btn = document.querySelectorAll(".rdp-day");
           btn.forEach(function (b) {
             for (var i = 0; i < dates.length; i++) {
@@ -1286,9 +1283,9 @@ export default function Helpdesk() {
             }
           });
 
-          SetMessage(true);
+          setMessage(true);
           setTypeError("Dados Inválidos");
-          setMessageError("Data de Alocação Indisponivel");
+          setMessageError("dataUser de Alocação Indisponivel");
           return window.scrollTo({
             top: 0,
             behavior: "smooth",
@@ -1301,7 +1298,7 @@ export default function Helpdesk() {
   }
 
   function closeMessage() {
-    return SetMessage(false);
+    return setMessage(false);
   }
 
   function inputDrop() {
@@ -1351,7 +1348,7 @@ export default function Helpdesk() {
                 })
               }
             >
-              <ImageEquip src={`data:image/jpeg;base64,${equipament.image}`} alt="" />
+              <ImageEquip src={`dataUser:image/jpeg;base64,${equipament.image}`} alt="" />
               <p>Modelo: {equipament.model}</p>
               <p>Empresa: {equipament.company}</p>
             </DivEquip>
@@ -1373,7 +1370,7 @@ export default function Helpdesk() {
                 })
               }
             >
-              <ImageEquip src={`data:image/jpeg;base64,${equipament.image}`} alt="" />
+              <ImageEquip src={`dataUser:image/jpeg;base64,${equipament.image}`} alt="" />
               <p>Modelo: {equipament.model}</p>
               <p>Empresa: {equipament.company}</p>
             </DivEquip>
@@ -1395,7 +1392,7 @@ export default function Helpdesk() {
                 })
               }
             >
-              <ImageEquip src={`data:image/jpeg;base64,${equipament.image}`} alt="" />
+              <ImageEquip src={`dataUser:image/jpeg;base64,${equipament.image}`} alt="" />
               <p>Modelo: {equipament.model}</p>
               <p>Empresa: {equipament.company}</p>
             </DivEquip>
@@ -1417,7 +1414,7 @@ export default function Helpdesk() {
                 })
               }
             >
-              <ImageEquip src={`data:image/jpeg;base64,${equipament.image}`} alt="" />
+              <ImageEquip src={`dataUser:image/jpeg;base64,${equipament.image}`} alt="" />
               <p>Modelo: {equipament.model}</p>
               <p>Empresa: {equipament.company}</p>
             </DivEquip>
@@ -1439,7 +1436,7 @@ export default function Helpdesk() {
                 })
               }
             >
-              <ImageEquip src={`data:image/jpeg;base64,${equipament.image}`} alt="" />
+              <ImageEquip src={`dataUser:image/jpeg;base64,${equipament.image}`} alt="" />
               <p>Modelo: {equipament.model}</p>
               <p>Empresa: {equipament.company}</p>
             </DivEquip>
@@ -1460,7 +1457,7 @@ export default function Helpdesk() {
               })
             }
           >
-            <ImageEquip src={`data:image/jpeg;base64,${equipament.image}`} alt="" />
+            <ImageEquip src={`dataUser:image/jpeg;base64,${equipament.image}`} alt="" />
             <p>Modelo: {equipament.model}</p>
             <p>Empresa: {equipament.company}</p>
           </DivEquip>
@@ -1560,7 +1557,7 @@ export default function Helpdesk() {
 
   return (
     <Div className={theme}>
-      {navbar && <NavBar Name={Data.name} JobTitle={Data.job_title} />}
+      {navbar && <NavBar Name={dataUser.name} JobTitle={dataUser.job_title} />}
       {loading && (
         <div className="position-absolute top-50 start-50 translate-middle">
           <Loading />
@@ -1574,29 +1571,29 @@ export default function Helpdesk() {
       {dashboard && (
         <Form className={`mx-auto d-flex flex-column align-items-center justify-content-around ${themeTicket}`}>
           <div className="mb-3">
-            <input type="hidden" name="_csrf" value={csrf} />
+            <input type="hidden" name="_csrf" value={csrfToken} />
             <label htmlFor="nameInput" className="form-label">
               Nome
             </label>
-            <Input type="name" className="form-control" id="nameInput" value={Data.name} disabled />
+            <Input type="name" className="form-control" id="nameInput" value={dataUser.name} disabled />
           </div>
           <div className="mb-3">
             <label htmlFor="departmentInput" className="form-label">
               Departamento
             </label>
-            <Input type="text" className="form-control" id="departmentInput" value={Data.departament || ""} disabled={Data.departament} />
+            <Input type="text" className="form-control" id="departmentInput" value={dataUser.departament || ""} disabled={dataUser.departament} />
           </div>
           <div className="mb-3">
             <label htmlFor="mailInput" className="form-label">
               Email
             </label>
-            <Input type="text" className="form-control" id="mailInput" value={Data.mail || ""} disabled={Data.mail} />
+            <Input type="text" className="form-control" id="mailInput" value={dataUser.mail || ""} disabled={dataUser.mail} />
           </div>
           <div className="mb-3">
             <label htmlFor="companyInput" className="form-label">
               Empresa
             </label>
-            <Input type="text" className="form-control" id="companyInput" value={Data.company || ""} disabled={Data.company} />
+            <Input type="text" className="form-control" id="companyInput" value={dataUser.company || ""} disabled={dataUser.company} />
           </div>
           <Select className="form-select mb-3" aria-label="Default select example" id="selectAR" onChange={selectARes}>
             <option value="none" disabled selected>
@@ -1621,7 +1618,7 @@ export default function Helpdesk() {
               <option value="backup">Backup/Restore</option>
               <option value="mail">E-mail</option>
               <option value="equip">Equipamento</option>
-              {(Data.helpdesk === "Admin" || Data.helpdesk === "Gestor") && <option value="user">Gerenciamento de usuário</option>}
+              {(dataUser.helpdesk === "Admin" || dataUser.helpdesk === "Gestor") && <option value="user">Gerenciamento de usuário</option>}
               <option value="internet">Internet</option>
               <option value="folder">Pasta</option>
             </Select>
@@ -1802,7 +1799,7 @@ export default function Helpdesk() {
                 <input type="text" className="form-control" onKeyDown={jobTitleFunct} />
               </div>
               <div className="text-center">
-                <span className="mb-3">Data de inicio das atitividades:</span>
+                <span className="mb-3">dataUser de inicio das atitividades:</span>
                 <Calendar className="mt-3 d-flex">
                   <DayPicker fixedWeeks showOutsideDays selected={selectedDay} onSelect={setSelectedDay} mode="single" footer={footerDay} locale={ptBR} />
                 </Calendar>
@@ -1833,7 +1830,7 @@ export default function Helpdesk() {
               </div>
               <span className="mb-3">Informar diretorio onde deverá ser salvo os documentos da pasta pessoal U</span>
               <input type="text" className="form-control mb-3" placeholder="informar diretorio completo" onKeyDown={saveU} />
-              <span className="mb-3">Informar a data que deverá ser feito o bloqueio do usuario</span>
+              <span className="mb-3">Informar a dataUser que deverá ser feito o bloqueio do usuario</span>
               <div className="t-3 d-flex justify-content-center">
                 <DayPicker fixedWeeks showOutsideDays selected={selectedDay} onSelect={setSelectedDay} mode="single" footer={footerDay} locale={ptBR} />
               </div>
@@ -1943,7 +1940,7 @@ export default function Helpdesk() {
           )}
           {dateequip && (
             <div className="justify-content-center text-center">
-              <span className="mb-1 mt-2">Data de alocagem do Equipamento:</span>
+              <span className="mb-1 mt-2">dataUser de alocagem do Equipamento:</span>
               <Calendar className="mt-3">
                 <DayPicker mode="multiple" selected={daysForAlocate} onSelect={SetDaysForAlocate} footer={footerAlocate} locale={ptBR} />
               </Calendar>
