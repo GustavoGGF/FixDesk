@@ -23,8 +23,6 @@ Login[]
 HelpDesk[
 contrato comodato para os equipamentos
 ao enviar locagem de equipamento, se estiver alocado já, retornar com alocado cinza e pedir para ajustar data
-colocar avisa de tamanho de arquivo e quantidade
-observação de 20mb por arquivo anexado
 ]
 
 DashBoard[

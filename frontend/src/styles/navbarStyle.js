@@ -1,11 +1,7 @@
 import styled from "styled-components";
 
 export const Div1 = styled.div`
-  margin-right: 10px;
-`;
-
-export const A = styled.a`
-  cursor: pointer;
+  margin-right: 1em;
 `;
 
 export const Logout = styled.a`
@@ -14,19 +10,19 @@ export const Logout = styled.a`
 `;
 
 export const Img = styled.img`
-  width: 50px;
-  height: 50px;
+  width: 3em;
+  height: 3em;
 `;
 
 export const ALink = styled.a`
   font-weight: bold;
-  color: #f9f9f9;
+  color: var(--light-white3);
   font-size: 1.4em;
 `;
 
 export const SpanUser = styled.span`
   font-weight: bold;
-  color: #f9f9f9;
+  color: var(--light-white3);
 `;
 
 export const BtnClose = styled.button`
@@ -35,12 +31,12 @@ export const BtnClose = styled.button`
 `;
 
 export const CLose = styled.img`
-  width: 30px;
+  width: 2em;
 `;
 
 export const H5 = styled.h5`
   font-weight: bold;
-  color: #f9f9f9;
+  color: var(--light-white3);
 `;
 
 export const DropDown = styled.div`
@@ -63,7 +59,6 @@ export const DropBTN = styled.button`
 `;
 
 export const DropContent = styled.div`
-  position: absolute;
   min-width: 160px;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   z-index: 1;

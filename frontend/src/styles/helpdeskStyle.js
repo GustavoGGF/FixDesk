@@ -76,7 +76,7 @@ export const DivNameFile = styled.div`
 `;
 
 export const PNameFile = styled.div`
-  margin-right: 3em;
+  margin-right: 1em;
 `;
 
 export const BtnFile = styled.button`

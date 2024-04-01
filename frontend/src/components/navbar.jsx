@@ -1,6 +1,8 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from "react";
-import { Div1, A, Logout, Img, ALink, SpanUser, CLose, BtnClose, H5, DropBTN, DropDown, DropContent, Arrow, DropContent2 } from "../styles/navbarStyle";
+
+import { Div1, Logout, Img, ALink, SpanUser, CLose, BtnClose, H5, DropBTN, DropDown, DropContent, Arrow, DropContent2 } from "../styles/navbarStyle";
+
 import "../styles/bootstrap/css/bootstrap.css";
 import "../styles/bootstrap/js/bootstrap.js";
 import Logo from "../images/logos/fixdesk.png";
@@ -27,22 +29,6 @@ export default function NavBar({ Name, JobTitle }) {
     }
     return;
   });
-
-  function helpdeskPage() {
-    return (window.location.href = "/helpdesk/");
-  }
-
-  function historyPage() {
-    return (window.location.href = "/helpdesk/history/");
-  }
-
-  function DashboardPage() {
-    return (window.location.href = "/dashboard_TI/");
-  }
-
-  function FAQPage() {
-    return;
-  }
 
   function Exit() {
     fetch("/helpdesk/exit/", {
@@ -146,24 +132,24 @@ export default function NavBar({ Name, JobTitle }) {
             <div className="offcanvas-body bg-primary">
               <ul className="navbar-nav justify-content-start flex-grow-1 pe-3 h-100 position-relative">
                 <li className="nav-item">
-                  <A className="nav-link btn btn-light" aria-current="page" onClick={helpdeskPage}>
+                  <a className="nav-link btn btn-light pointer" aria-current="page" href="/helpdesk/">
                     Criar Chamado
-                  </A>
+                  </a>
                 </li>
                 <li className="nav-item">
-                  <A className="nav-link btn btn-light" aria-current="page" onClick={historyPage}>
+                  <a className="nav-link btn btn-light pointer" aria-current="page" href="/helpdesk/history/">
                     Meus Chamados
-                  </A>
+                  </a>
                 </li>
                 <li className="nav-item">
-                  <A className="nav-link btn btn-light" aria-current="page" onClick={DashboardPage}>
+                  <a className="nav-link btn btn-light pointer" aria-current="page" href="/dashboard_TI/">
                     Dashboard
-                  </A>
+                  </a>
                 </li>
                 <li className="nav-item">
-                  <A className="nav-link btn btn-light" aria-current="page" onClick={FAQPage}>
+                  <a className="nav-link btn btn-light pointer" aria-current="page" href="#">
                     FAQ
-                  </A>
+                  </a>
                 </li>
                 <li className="nav-item">
                   <DropDown>

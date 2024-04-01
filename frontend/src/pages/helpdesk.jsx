@@ -10,7 +10,7 @@ import { format } from "date-fns";
 import Loading from "../components/loading";
 import Message from "../components/message";
 import Cloud from "../images/components/cloud-uploading.png";
-import Exclude from "../images/components/close.png";
+import Exclude from "../images/components/lixo.png";
 
 export default function Helpdesk() {
   useEffect(() => {
@@ -87,6 +87,7 @@ export default function Helpdesk() {
   const [inputDropControl, setInputDropControl] = useState(true);
   const [inputManualControl, setInputManualControl] = useState(false);
   const [arrayInput, setArrayInput] = useState([]);
+  const [fileSizeNotify, setFileSizeNotify] = useState(false);
 
   const footerDay = selectedDay ? <p>Você selecionou {format(selectedDay, "PPP")}</p> : <p>Selecione uma dataUser</p>;
   const footerAlocate = daysForAlocate.length >= 1 ? <p>Você alocou por {daysForAlocate.length} dia(s).</p> : <p>Selecione um ou mais dias.</p>;
@@ -1327,7 +1328,6 @@ export default function Helpdesk() {
     setInputDropControl(true);
     setInputManualControl(false);
     file_name = fileimg.map((fileItem) => fileItem.name);
-
     setFileName(file_name);
 
     const paragraphs = file_name.map((fileName, index) => (
@@ -1335,6 +1335,24 @@ export default function Helpdesk() {
         <PNameFile key={index} className="text-break">
           {fileName}
         </PNameFile>
+        <div>
+          {(() => {
+            const file = fileimg[index];
+            const sizeInBytes = file.size;
+            let size;
+            let unit;
+
+            if (sizeInBytes >= 1024 * 1024) {
+              size = sizeInBytes / (1024 * 1024);
+              unit = "MB";
+            } else {
+              size = sizeInBytes / 1024;
+              unit = "KB";
+            }
+
+            return `${size.toFixed(2)} ${unit}`;
+          })()}
+        </div>
         <BtnFile
           type="button"
           onClick={() => {
@@ -1352,6 +1370,7 @@ export default function Helpdesk() {
     const Div = <div className="w-100">{paragraphs}</div>;
 
     setNameOnDropFiles(Div);
+    setFileSizeNotify(true);
   }
 
   function inputManual(event) {
@@ -1390,6 +1409,7 @@ export default function Helpdesk() {
     ));
 
     setNameOnInputFiles(paragraphs);
+    setFileSizeNotify(true);
   }
 
   function removeFile(indexToRemove) {
@@ -2040,7 +2060,7 @@ export default function Helpdesk() {
             <DivUpload className="upload">
               <div className="upload-files">
                 <HeaderFiles>
-                  <PFiles className="position-relative pointer">
+                  <PFiles className="position-relative pointer w-100 h-100">
                     <IMGFile2 src={Cloud} alt="" />
                     <InputFile className="w-100 h-100 position-absolute pointer" type="file" multiple onChange={inputManual} />
                     <Span1 className="up">up</Span1>
@@ -2064,6 +2084,7 @@ export default function Helpdesk() {
                     </ListFiles>
                   )}
                   {inputManualControl && <ListFiles>{nameOnInutFiles}</ListFiles>}
+                  {fileSizeNotify && <div className="mt-2">Limite Máximo de arquivo é de 20MB</div>}
                 </FooterFiles>
               </div>
             </DivUpload>

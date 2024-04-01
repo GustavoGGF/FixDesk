@@ -43,12 +43,12 @@ export const HeaderFiles = styled.header`
   text-align: center;
   height: 10em;
   display: flex;
+  padding: 1.2em;
 `;
 
 export const PFiles = styled.p`
   color: var(--pure-white);
   font-size: 4em;
-  margin: 0.3em auto;
 `;
 
 export const IMGFile = styled.img`
