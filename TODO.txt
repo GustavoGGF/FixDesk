@@ -16,6 +16,7 @@ usar unverse io
 requirements.txt melhorar
 ao entrar em url errada redirecionar
 comentar código
+pdf dos chamados
 ]
 
 Login[]
@@ -52,8 +53,6 @@ deixar botão de fechar da tela de cadastro de equipamento fixo
 
 
 History[
-data no ticket do chamado
-mudar cores do status dos ticker deixar igual cor dos tickets
 hora no chamado
 imprimir chat pdf
 arrumar arquivos anexados

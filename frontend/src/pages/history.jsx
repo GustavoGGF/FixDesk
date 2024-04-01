@@ -705,7 +705,11 @@ export default function History() {
       var day = date.getDate();
       var month = date.getMonth() + 1;
       var year = date.getFullYear();
-      var newDate = day + "/" + month + "/" + year;
+
+      var formattedDay = day < 10 ? "0" + day : day;
+      var formattedMonth = month < 10 ? "0" + month : month;
+
+      var newDate = formattedDay + "/" + formattedMonth + "/" + year;
 
       if (ticket["open"] === false) {
         colorBorder = "ticektClose";
@@ -1648,7 +1652,7 @@ export default function History() {
         <DivSelectView className="mt-3">
           <PSelectView className="position-absolute top-0 start-0 translate-middle">Status</PSelectView>
           <Button1
-            className="btn btn-success"
+            className="btn btn-info"
             id="btnopen"
             onClick={() => {
               ticketOpen();
@@ -1657,7 +1661,7 @@ export default function History() {
             Aberto
           </Button1>
           <button
-            className="btn"
+            className="btn btn-success"
             value="close"
             id="btnclose"
             onClick={() => {
