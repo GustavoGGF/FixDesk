@@ -41,12 +41,14 @@ export const HeaderFiles = styled.header`
   border-top-left-radius: 0.5em;
   border-top-right-radius: 0.5em;
   text-align: center;
+  height: 10em;
+  display: flex;
 `;
 
 export const PFiles = styled.p`
   color: var(--pure-white);
   font-size: 4em;
-  padding: 1;
+  margin: 0.3em auto;
 `;
 
 export const IMGFile = styled.img`

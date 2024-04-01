@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+
 import {
   TicketOpen,
   DivUpload,
@@ -120,18 +121,26 @@ export default function Equipment_Registration({ token, equipamentforuser, Close
     const select = document.getElementById("select_company");
     var option = select.options[select.selectedIndex].value;
 
-    if (option === "none") {
-      return;
-    } else if (option === "csc") {
-      return setCompanyName("CSC");
-    } else if (option === "ropes") {
-      return setCompanyName("ROPES");
-    } else if (option === "fiber") {
-      return setCompanyName("FIBER");
-    } else if (option === "vera") {
-      return setCompanyName("VERA");
-    } else if (option === "mna") {
-      return setCompanyName("MNA");
+    switch (option) {
+      default:
+        break;
+      case "none":
+        break;
+      case "csc":
+        setCompanyName("CSC");
+        break;
+      case "ropes":
+        setCompanyName("ROPES");
+        break;
+      case "fiber":
+        setCompanyName("FIBER");
+        break;
+      case "vera":
+        setCompanyName("VERA");
+        break;
+      case "mna":
+        setCompanyName("MNA");
+        break;
     }
   }
 
@@ -175,6 +184,9 @@ export default function Equipment_Registration({ token, equipamentforuser, Close
         return response.json();
       })
       .catch((err) => {
+        setMessageError(err);
+        setTypeError("Fatal ERROR");
+        setMessage(true);
         return console.log(err);
       });
   }

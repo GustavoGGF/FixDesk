@@ -15,6 +15,7 @@ loading, simbolo lupatech se dissolver girar e voltar
 usar unverse io
 requirements.txt melhorar
 ao entrar em url errada redirecionar
+comentar código
 ]
 
 Login[]
@@ -46,6 +47,9 @@ trocar icone de X por lixeira nos novos arquivos dashboard
 fechar o chamado fecha a tela de enviar arquivos e limpa os arquivos
 ao incluir novos arquivos atualiza o chamado
 ao adicionar novos arquivos mostrar no chat
+deixar um blur na tela de cadastro de equipamento
+deixar botão de fechar tela de cadastro de equipamento menor
+deixar botão de fechar da tela de cadastro de equipamento fixo
 ]
 
 
