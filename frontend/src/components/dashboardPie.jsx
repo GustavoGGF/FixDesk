@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Loading from "./loading";
+
 import { Chart } from "chart.js/auto";
-import { Div, Div2 } from "../styles/dashboardPie";
+import { Div } from "../styles/dashboardPie";
 
 export default function DashBoardPie({ sector }) {
   const [dataPie, setDataPie] = useState("");
@@ -64,9 +65,9 @@ export default function DashBoardPie({ sector }) {
   return (
     <Div>
       {loading && <Loading />}
-      <Div2>
+      <div>
         <canvas id="dashpie" className="hidden"></canvas>
-      </Div2>
+      </div>
     </Div>
   );
 }
