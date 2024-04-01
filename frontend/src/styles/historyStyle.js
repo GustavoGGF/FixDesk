@@ -12,7 +12,7 @@ export const Div = styled.div`
 export const TicketOpen = styled.div`
   background: rgb(249, 249, 249);
   width: 80%;
-  border-radius: 20px;
+  border-radius: 1.2em;
   overflow-y: auto;
   z-index: 10 !important;
   max-height: 95%;
@@ -20,41 +20,38 @@ export const TicketOpen = styled.div`
 `;
 
 export const CloseBTN = styled.button`
-  width: 30px;
-  height: 30px;
-  cursor: pointer;
+  width: 2em;
   border: none;
   position: absolute;
-  background: #f9f9f9;
-  margin-right: 15px;
-  margin-top: 10px;
+  background-color: var(--light-white3);
+  margin-right: 1.5em;
+  margin-top: 0.5em;
 `;
 
 export const Close = styled.img`
-  width: 30px;
-  height: 30px;
+  width: 2.3em;
 `;
 
 export const DivChat = styled.div`
-  background: #f1faee;
-  height: 250px;
-  border: 2px solid #03c9f5;
+  background-color: var(--light-white2);
+  height: 16em;
+  border: 2px solid var(--light-blue);
   margin: 0 auto;
   overflow-y: scroll;
   overflow-x: hidden;
 `;
 
 export const BtnChat = styled.button`
-  height: 40px;
-  width: 40px;
+  width: 2.5em;
+  height: 2.5em;
   background-image: url(${SubmitIMG});
   background-position: center;
   background-size: cover;
 `;
 
-export const BtnChat2 = styled.div`
-  height: 40px;
-  width: 40px;
+export const BtnChat2 = styled.button`
+  width: 2.5em;
+  height: 2.5em;
   background-image: url(${SubmitFile});
   background-position: center;
   background-size: cover;
@@ -62,13 +59,12 @@ export const BtnChat2 = styled.div`
 `;
 
 export const IMGFiles = styled.img`
-  width: 60px;
-  height: 60px;
+  width: 4em;
+  height: 4em;
   border: 5px;
-  cursor: pointer;
   transition: 0.7s;
   &:hover {
-    transform: scale(1.5);
+    transform: scale(1.2);
   }
 `;
 
@@ -78,9 +74,8 @@ export const InputFile = styled.input`
 `;
 
 export const DivImageOpen = styled.div`
-  width: 100vh;
   z-index: 10000 !important;
-  background-color: #f9f9f9;
+  background-color: var(--light-white3);
 `;
 
 export const ImageOpen = styled.img`

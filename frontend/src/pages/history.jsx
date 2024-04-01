@@ -71,99 +71,96 @@ import ptBR from "date-fns/locale/pt";
 export default function History() {
   useEffect(() => {
     document.title = "Meus Chamados";
-    const Theme = localStorage.getItem("Theme");
-    if (Theme === null) {
+    const theme = localStorage.getItem("Theme");
+    if (theme === null || theme === "black") {
       localStorage.setItem("Theme", "black");
       return ThemeBlack();
-    } else if (Theme === "black") {
-      return ThemeBlack();
-    } else if (Theme === "light") {
+    } else {
       return ThemeLight();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const [navbar, SetNavbar] = useState(false);
-  const [loading, SetLoading] = useState(true);
-  const [ticketWindow, SetTicketWindow] = useState(false);
-  const [token, SetToken] = useState("");
-  const [Data, SetData] = useState([]);
-  const [loadingDash, SetLoadingDash] = useState(true);
-  const [tickets, SetTickets] = useState([]);
-  const [message, SetMessage] = useState(false);
+  const [navbar, setNavbar] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [ticketWindow, setTicketWindow] = useState(false);
+  const [token, setToken] = useState("");
+  const [Data, setData] = useState([]);
+  const [loadingDash, setLoadingDash] = useState(true);
+  const [tickets, setTickets] = useState([]);
+  const [message, setMessage] = useState(false);
   const [typeError, setTypeError] = useState("");
   const [messageError, setMessageError] = useState("");
-  const [ticketNAME, SetTicketNAME] = useState("");
-  const [ticketDEPARTMENT, SetTicketDEPARTMENT] = useState("");
-  const [ticketMAIL, SetTicketMAIL] = useState("");
-  const [ticketCOMPANY, SetTicketCOMPANY] = useState("");
-  const [ticketSECTOR, SetTicketSECTOR] = useState("");
-  const [ticketOCCURRENCE, SetTicketOCCURRENCE] = useState("");
-  const [ticketPROBLEMN, SetTicketPROBLEMN] = useState("");
-  const [ticketOBSERVATION, SetTicketOBSERVATION] = useState("");
-  const [lifeTime, SetLifetime] = useState("");
-  const [ticketResponsible_Technician, SetTicketResponsible_Technician] = useState("");
-  const [ticketID, SetTicketID] = useState("");
-  const [mountChat, SetMountChat] = useState([]);
-  const [chat, SetChat] = useState(true);
-  const [messageChat, SetMessageChat] = useState(false);
-  const [textChat, SetTextChat] = useState("");
-  const [fetchchat, SetFetchChat] = useState(false);
-  const [countchat, SetCountChat] = useState();
-  const [initUpdateChat, SetInitUpdateChat] = useState();
-  const [fileticket, SetFileTicket] = useState([]);
-  const [imageurl, SetImageUrl] = useState();
-  const [imageopen, SetImageOpen] = useState(false);
-  const [fakeSelect, SetFakeSelect] = useState(true);
-  const [problemInfra, SetProblemInfra] = useState(false);
-  const [ticketsDash, SetTicketsDash] = useState([]);
+  const [ticketNAME, setTicketNAME] = useState("");
+  const [ticketDEPARTMENT, setTicketDEPARTMENT] = useState("");
+  const [ticketMAIL, setTicketMAIL] = useState("");
+  const [ticketCOMPANY, setTicketCOMPANY] = useState("");
+  const [ticketSECTOR, setTicketSECTOR] = useState("");
+  const [ticketOCCURRENCE, setTicketOCCURRENCE] = useState("");
+  const [ticketPROBLEMN, setTicketPROBLEMN] = useState("");
+  const [ticketOBSERVATION, setTicketOBSERVATION] = useState("");
+  const [lifeTime, setLifetime] = useState("");
+  const [ticketResponsible_Technician, setTicketResponsible_Technician] = useState("");
+  const [ticketID, setTicketID] = useState("");
+  const [mountChat, setMountChat] = useState([]);
+  const [chat, setChat] = useState(true);
+  const [messageChat, setMessageChat] = useState(false);
+  const [textChat, setTextChat] = useState("");
+  const [fetchchat, setFetchChat] = useState(false);
+  const [countchat, setCountChat] = useState();
+  const [initUpdateChat, setInitUpdateChat] = useState();
+  const [fileticket, setFileTicket] = useState([]);
+  const [imageurl, setImageUrl] = useState();
+  const [imageopen, setImageOpen] = useState(false);
+  const [fakeSelect, setFakeSelect] = useState(true);
+  const [problemInfra, setProblemInfra] = useState(false);
+  const [ticketsDash, setTicketsDash] = useState([]);
   const [countTicket, SetCountTicket] = useState(0);
-  const [orderby, SetOrderBy] = useState(null);
-  const [imageEquipament, SetImageEquipament] = useState();
-  const [equipamentLocate, SetEquipamentLocate] = useState("");
-  const [daysLocated, SetDaysLocated] = useState();
-  const [namenewuser, SetNameNewUser] = useState("");
-  const [sectornewuser, SetSectorNewUser] = useState("undefined");
-  const [wherefrom, SetWhereFrom] = useState("");
-  const [machinenewuser, SetMachineNewUser] = useState();
-  const [companynewuser, SetCompanyNewUser] = useState("");
-  const [softwarenewuser, SetSoftwareNewUser] = useState("");
-  const [costcenter, SetCostCenter] = useState("");
-  const [jobtitlenewuser, SetJobTitleNewUser] = useState("");
-  const [startworknewuser, SetStartWorkNewUser] = useState();
-  const [copyprofilenewuser, SetCopyProfileNewUser] = useState("");
-  const [mailtranfer, SetMailTranfer] = useState("");
-  const [oldfile, SetOldFiles] = useState("");
-  const [problemTicket, SetProblemTicket] = useState(null);
-  const [sectorTicket, SetSectorTicket] = useState(null);
-  const [problemSyst, SetProblemSyst] = useState(false);
-  const [status, SetStatus] = useState("open");
-  const [btnmore, SetBtnMore] = useState(true);
-  const [uploadNewFiles, SetUploadNewFiles] = useState([]);
-  const [nameNWFiles, SetNameNWFiles] = useState();
-  const [newFiles, SetNewFiles] = useState(false);
-  const [blurNav, SetBlurNav] = useState("");
-  const [theme, SetTheme] = useState("");
-  const [themeFilter, SetThemeFilter] = useState("");
-  const [themeCard, SetThemeCard] = useState("");
-
-  function ThemeBlack() {
-    SetThemeFilter("");
-    SetThemeCard("");
-    return SetTheme("themeBlack");
-  }
-
-  function ThemeLight() {
-    SetThemeCard("themeCardLight");
-    SetThemeFilter("themeFilterLight");
-    return SetTheme("themeLight");
-  }
+  const [orderby, setOrderBy] = useState(null);
+  const [imageEquipament, setImageEquipament] = useState();
+  const [equipamentLocate, setEquipamentLocate] = useState("");
+  const [daysLocated, setDaysLocated] = useState();
+  const [namenewuser, setNameNewUser] = useState("");
+  const [sectornewuser, setSectorNewUser] = useState("undefined");
+  const [wherefrom, setWhereFrom] = useState("");
+  const [machinenewuser, setMachineNewUser] = useState();
+  const [companynewuser, setCompanyNewUser] = useState("");
+  const [softwarenewuser, setSoftwareNewUser] = useState("");
+  const [costcenter, setCostCenter] = useState("");
+  const [jobtitlenewuser, setJobTitleNewUser] = useState("");
+  const [startworknewuser, setStartWorkNewUser] = useState();
+  const [copyprofilenewuser, setCopyProfileNewUser] = useState("");
+  const [mailtranfer, setMailTranfer] = useState("");
+  const [oldfile, setOldFiles] = useState("");
+  const [problemTicket, setProblemTicket] = useState(null);
+  const [sectorTicket, setSectorTicket] = useState(null);
+  const [problemSyst, setProblemSyst] = useState(false);
+  const [status, setStatus] = useState("open");
+  const [btnmore, setBtnMore] = useState(true);
+  const [uploadNewFiles, setUploadNewFiles] = useState([]);
+  const [nameNWFiles, setNameNWFiles] = useState();
+  const [newFiles, setNewFiles] = useState(false);
+  const [blurNav, setBlurNav] = useState("");
+  const [theme, setTheme] = useState("");
+  const [themeFilter, setThemeFilter] = useState("");
+  const [themeCard, setThemeCard] = useState("");
+  const UpNwfile = [];
 
   let count = 0;
   let timeoutId;
   let daysLCT = [];
-  const UpNwfile = [];
   let colorBorder = "";
+
+  function ThemeBlack() {
+    setThemeFilter("");
+    setThemeCard("");
+    return setTheme("themeBlack");
+  }
+
+  function ThemeLight() {
+    setThemeCard("themeCardLight");
+    setThemeFilter("themeFilterLight");
+    return setTheme("themeLight");
+  }
 
   useEffect(() => {
     let paragraphs = [];
@@ -193,7 +190,7 @@ export default function History() {
 
                   const newFileList = dataTransfer.files;
 
-                  SetUploadNewFiles([newFileList]);
+                  setUploadNewFiles([newFileList]);
                 }}
               >
                 <ImgFile src={CloseIMG} alt="Excluir arquivo" />
@@ -203,9 +200,9 @@ export default function History() {
         );
       }
 
-      SetNameNWFiles(paragraphs);
+      setNameNWFiles(paragraphs);
 
-      SetNewFiles(true);
+      setNewFiles(true);
       return;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -214,7 +211,7 @@ export default function History() {
   function aumentarCount() {
     count++;
 
-    SetInitUpdateChat(count);
+    setInitUpdateChat(count);
     if (timeoutId) {
       clearTimeout(timeoutId);
     }
@@ -223,7 +220,7 @@ export default function History() {
 
   useEffect(() => {
     const dataInfo = JSON.parse(localStorage.getItem("dataInfo"));
-    SetData(dataInfo.data);
+    setData(dataInfo.data);
     const formData = new FormData();
     formData.append("name", dataInfo.data.name);
     fetch("", {
@@ -240,29 +237,32 @@ export default function History() {
         return response.json();
       })
       .then((data) => {
-        SetToken(data.token);
-        SetTickets(data.tickets);
+        setToken(data.token);
+        setTickets(data.tickets);
         SetCountTicket(10);
-        SetOrderBy("-id");
+        setOrderBy("-id");
         const btn = document.getElementById("thenView");
         btn.style.backgroundColor = "#00B4D8";
         if (data.tickets.length === 0) {
           setTypeError("Falta de Dados");
           setMessageError("Você Ainda não abriu nenhum chamado");
-          SetLoadingDash(false);
-          SetLoading(false);
-          SetMessage(true);
-          SetNavbar(true);
+          setLoadingDash(false);
+          setLoading(false);
+          setMessage(true);
+          setNavbar(true);
         }
         return;
       })
       .catch((err) => {
+        setTypeError("Faltal ERROR");
+        setMessageError(err);
+        setMessage(true);
         return console.log(err);
       });
   }, []);
 
   function openImage() {
-    return SetImageOpen(true);
+    setImageOpen(true);
   }
 
   function helpdeskPage({ id }) {
@@ -278,11 +278,11 @@ export default function History() {
         return response.json();
       })
       .then((dataBack) => {
-        SetBlurNav("addBlur");
+        setBlurNav("addBlur");
         const dash = document.getElementById("dashboard");
         dash.style.filter = "blur(3px)";
-        SetMessageChat(false);
-        SetMountChat([]);
+        setMessageChat(false);
+        setMountChat([]);
         const data = dataBack.data[0];
         const start_date = new Date(data.start_date);
 
@@ -292,34 +292,34 @@ export default function History() {
 
         var lifetime = Math.floor(calcDate / (1000 * 60 * 60 * 24));
 
-        SetTicketNAME(data.ticketRequester);
-        SetTicketDEPARTMENT(data.department);
-        SetTicketMAIL(data.mail);
-        SetTicketCOMPANY(data.company);
-        SetTicketSECTOR(data.sector);
-        SetTicketOCCURRENCE(data.occurrence);
-        SetTicketPROBLEMN(data.problemn);
-        SetTicketOBSERVATION(data.observation);
-        SetLifetime(lifetime);
-        SetTicketResponsible_Technician(data.responsible_technician);
-        SetTicketID(data.id);
-        SetNameNewUser(data.name_new_user);
+        setTicketNAME(data.ticketRequester);
+        setTicketDEPARTMENT(data.department);
+        setTicketMAIL(data.mail);
+        setTicketCOMPANY(data.company);
+        setTicketSECTOR(data.sector);
+        setTicketOCCURRENCE(data.occurrence);
+        setTicketPROBLEMN(data.problemn);
+        setTicketOBSERVATION(data.observation);
+        setLifetime(lifetime);
+        setTicketResponsible_Technician(data.responsible_technician);
+        setTicketID(data.id);
+        setNameNewUser(data.name_new_user);
         if (data.sector_new_user.length > 1) {
-          SetSectorNewUser(data.sector_new_user);
+          setSectorNewUser(data.sector_new_user);
         } else {
-          SetSectorNewUser("undefined");
+          setSectorNewUser("undefined");
         }
-        SetWhereFrom(data.where_from);
-        SetMachineNewUser(data.machine_new_user);
-        SetCompanyNewUser(data.company_new_user);
-        SetSoftwareNewUser(data.software_new_user);
-        SetCostCenter(data.cost_center);
-        SetJobTitleNewUser(data.job_title_new_user);
+        setWhereFrom(data.where_from);
+        setMachineNewUser(data.machine_new_user);
+        setCompanyNewUser(data.company_new_user);
+        setSoftwareNewUser(data.software_new_user);
+        setCostCenter(data.cost_center);
+        setJobTitleNewUser(data.job_title_new_user);
         var nwdate = new Date(data.start_work_new_user);
-        SetStartWorkNewUser(nwdate);
-        SetCopyProfileNewUser(data.copy_profile_new_user);
-        SetMailTranfer(data.mail_tranfer);
-        SetOldFiles(data.old_files);
+        setStartWorkNewUser(nwdate);
+        setCopyProfileNewUser(data.copy_profile_new_user);
+        setMailTranfer(data.mail_tranfer);
+        setOldFiles(data.old_files);
         if (data.equipament["image"] !== undefined) {
           const Div = (
             <DivAlocate className="d-flex flex-column w-100 align-items-center">
@@ -328,15 +328,15 @@ export default function History() {
             </DivAlocate>
           );
 
-          SetImageEquipament(Div);
-          SetEquipamentLocate(data.equipament["company"]);
+          setImageEquipament(Div);
+          setEquipamentLocate(data.equipament["company"]);
 
           for (let NWdate of data.days_alocated) {
             var date = new Date(NWdate);
             daysLCT.push(date);
           }
 
-          SetDaysLocated(daysLCT);
+          setDaysLocated(daysLCT);
 
           const calendar = document.getElementById("calendarALT");
           calendar.classList.add("AdjustWid");
@@ -373,7 +373,7 @@ export default function History() {
                   />
                 </DivOnBoardFile>
               );
-              SetFileTicket((fileticket) => [...fileticket, Div]);
+              setFileTicket((fileticket) => [...fileticket, Div]);
             } else if (file === "excel") {
               const ContentFileExcel = data.content_file[i];
               const NameFileExcel = data.name_file[i];
@@ -401,7 +401,7 @@ export default function History() {
                   />
                 </DivOnBoardFile>
               );
-              SetFileTicket((fileticket) => [...fileticket, Div]);
+              setFileTicket((fileticket) => [...fileticket, Div]);
             } else if (file === "zip") {
               const ContentFileZip = data.content_file[i];
               const NameFileZip = data.name_file[i];
@@ -429,7 +429,7 @@ export default function History() {
                   />
                 </DivOnBoardFile>
               );
-              SetFileTicket((fileticket) => [...fileticket, Div]);
+              setFileTicket((fileticket) => [...fileticket, Div]);
             } else if (file === "txt") {
               const ContentFileTXT = data.content_file[i];
               const NameFileTXT = data.name_file[i];
@@ -457,7 +457,7 @@ export default function History() {
                   />
                 </DivOnBoardFile>
               );
-              SetFileTicket((fileticket) => [...fileticket, Div]);
+              setFileTicket((fileticket) => [...fileticket, Div]);
             } else if (file === "word") {
               const ContentFileWord = data.content_file[i];
               const NameFileWord = data.name_file[i];
@@ -485,7 +485,7 @@ export default function History() {
                   />
                 </DivOnBoardFile>
               );
-              SetFileTicket((fileticket) => [...fileticket, Div]);
+              setFileTicket((fileticket) => [...fileticket, Div]);
             } else if (file === "pdf") {
               const ContentFilePDF = data.content_file[i];
               const NameFilePDF = data.name_file[i];
@@ -513,7 +513,7 @@ export default function History() {
                   />
                 </DivOnBoardFile>
               );
-              SetFileTicket((fileticket) => [...fileticket, Div]);
+              setFileTicket((fileticket) => [...fileticket, Div]);
             } else if (typeof file === "object") {
               const image = file.image;
               const Div = (
@@ -521,7 +521,7 @@ export default function History() {
                   <IMGFiles
                     src={`data:image/jpeg;base64,${file.image}`}
                     onClick={() => {
-                      SetImageUrl(`data:image/jpeg;base64,${image}`);
+                      setImageUrl(`data:image/jpeg;base64,${image}`);
                       openImage();
                     }}
                     alt=""
@@ -540,13 +540,13 @@ export default function History() {
                   />
                 </DivOnBoardFile>
               );
-              SetFileTicket((fileticket) => [...fileticket, Div]);
+              setFileTicket((fileticket) => [...fileticket, Div]);
             }
           }
         }
         if (data.chat !== null && data.chat !== undefined && data.chat !== "undefined") {
-          SetCountChat(data.chat.length);
-          SetFetchChat(true);
+          setCountChat(data.chat.length);
+          setFetchChat(true);
 
           var arrayChat = data.chat.match(/\[.*?\]/g);
 
@@ -561,7 +561,7 @@ export default function History() {
                   <p className="pChat">{item}</p>
                 </div>
               );
-              SetMountChat((mountChat) => [...mountChat, newItem]);
+              setMountChat((mountChat) => [...mountChat, newItem]);
             }
             if (item.includes("Technician")) {
               item = item.replace("Technician:", "").replace("[", "").replace("]", "");
@@ -570,7 +570,7 @@ export default function History() {
                   <p className="tChat2">{item}</p>
                 </div>
               );
-              SetMountChat((mountChat) => [...mountChat, newItem]);
+              setMountChat((mountChat) => [...mountChat, newItem]);
             }
             if (item.includes("User")) {
               item = item.replace("User:", "").replace("[", "").replace("]", "");
@@ -579,9 +579,9 @@ export default function History() {
                   <p className="uChat1">{item}</p>
                 </div>
               );
-              SetMountChat((mountChat) => [...mountChat, newItem]);
+              setMountChat((mountChat) => [...mountChat, newItem]);
             }
-            SetChat(true);
+            setChat(true);
           });
           aumentarCount();
         } else {
@@ -589,15 +589,18 @@ export default function History() {
           chatDiv.style.background = "#e9ecef";
           setMessageError("O CHAT ESTÁ INDIPONIVÉL ATÉ O TECNICO INICIAR UMA CONVERSA");
           setTypeError("PERMISSÃO NEGADA");
-          SetMessageChat(true);
-          SetChat(false);
+          setMessageChat(true);
+          setChat(false);
         }
       })
       .catch((err) => {
+        setMessageError(err);
+        setTypeError("Fatal ERROR");
+        setMessage(true);
         return console.log(err);
       });
 
-    return SetTicketWindow(true);
+    return setTicketWindow(true);
   }
 
   function downloadMail({ content, data, sliceSize = 512 }) {
@@ -639,30 +642,32 @@ export default function History() {
         .then((data) => {
           var newChat = parseInt(data.chat.length);
           if (newChat > countchat) {
-            SetCountChat(newChat);
+            setCountChat(newChat);
             reloadChat({ data: data });
           }
         })
         .catch((err) => {
+          setMessageError(err);
+          setTypeError("Fatal ERROR");
+          setMessage(true);
           return console.log(err);
         });
       return;
-    } else if (fetchchat === false) {
-      return;
     }
+    return;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initUpdateChat]);
 
   async function Close_ticket() {
     const dash = document.getElementById("dashboard");
     dash.style.filter = "blur(0)";
-    SetBlurNav("");
-    SetTicketWindow(false);
-    SetFetchChat(false);
-    SetImageUrl("");
-    SetFileTicket("");
-    SetImageEquipament();
-    SetJobTitleNewUser("");
+    setBlurNav("");
+    setTicketWindow(false);
+    setFetchChat(false);
+    setImageUrl("");
+    setFileTicket("");
+    setImageEquipament();
+    setJobTitleNewUser("");
     count = 0;
     clearTimeout(timeoutId);
     daysLCT = [];
@@ -672,12 +677,9 @@ export default function History() {
   useEffect(() => {
     if (tickets && Object.keys(tickets).length > 0) {
       const selectView = localStorage.getItem("selectView");
-      if (selectView === null) {
-        localStorage.setItem("selectView", "card");
+      if (selectView === null || selectView === "card") {
         return viewCard();
-      } else if (selectView === "card") {
-        return viewCard();
-      } else if (selectView === "list") {
+      } else {
         return listCard();
       }
     }
@@ -685,9 +687,9 @@ export default function History() {
   }, [tickets]);
 
   function viewCard() {
-    SetTicketsDash([]);
-    SetLoading(false);
-    SetNavbar(true);
+    setTicketsDash([]);
+    setLoading(false);
+    setNavbar(true);
 
     localStorage.setItem("selectView", "card");
 
@@ -738,21 +740,21 @@ export default function History() {
         </DivCard>
       );
 
-      SetTicketsDash((ticketsDash) => [...ticketsDash, Div]);
+      setTicketsDash((ticketsDash) => [...ticketsDash, Div]);
       const dash = document.getElementById("dashboard");
       dash.classList.add("dashCard");
 
-      SetBtnMore(true);
+      setBtnMore(true);
 
-      SetLoadingDash(false);
+      setLoadingDash(false);
       return ticketsDash;
     });
   }
 
   function listCard() {
-    SetTicketsDash([]);
-    SetNavbar(true);
-    SetLoading(false);
+    setTicketsDash([]);
+    setNavbar(true);
+    setLoading(false);
 
     localStorage.setItem("selectView", "list");
 
@@ -803,38 +805,36 @@ export default function History() {
         </DivList>
       );
 
-      SetTicketsDash((ticketsDash) => [...ticketsDash, Div]);
+      setTicketsDash((ticketsDash) => [...ticketsDash, Div]);
       const dash = document.getElementById("dashboard");
       dash.classList.add("dashCard");
 
-      SetBtnMore(true);
+      setBtnMore(true);
 
-      SetLoadingDash(false);
+      setLoadingDash(false);
       return ticketsDash;
     });
   }
 
   function closeMessage() {
-    return SetMessage(false);
+    setMessage(false);
   }
 
   function closeMessage2() {
-    return SetMessageChat(false);
+    setMessageChat(false);
   }
 
   function NewChat(event) {
     const newText = event.target.value;
-    console.log(newText);
     if (event.key === "Enter") {
-      SetTextChat(newText);
+      setTextChat(newText);
       SendChat();
       event.preventDefault();
+      return;
     } else {
-      SetTextChat(newText);
+      setTextChat(newText);
       return;
     }
-
-    return;
   }
 
   function SendChat() {
@@ -861,13 +861,16 @@ export default function History() {
         reloadChat({ data: data });
       })
       .catch((err) => {
+        setMessageError(err);
+        setTypeError("Fatal ERROR");
+        setMessage(true);
         return console.log(err);
       });
   }
 
   async function reloadChat({ data }) {
     if (data.chat !== null && data.chat !== undefined && data.chat !== "undefined") {
-      SetMountChat([]);
+      setMountChat([]);
       var arrayChat = data.chat.match(/\[.*?\]/g);
 
       const chatDiv = document.getElementById("chatDiv");
@@ -882,7 +885,7 @@ export default function History() {
               <p className="pChat">{item}</p>
             </div>
           );
-          SetMountChat((mountChat) => [...mountChat, newItem]);
+          setMountChat((mountChat) => [...mountChat, newItem]);
         }
         if (item.includes("Technician")) {
           item = item.replace("Technician:", "").replace("[", "").replace("]", "");
@@ -891,7 +894,7 @@ export default function History() {
               <p className="tChat2">{item}</p>
             </div>
           );
-          SetMountChat((mountChat) => [...mountChat, newItem]);
+          setMountChat((mountChat) => [...mountChat, newItem]);
         }
         if (item.includes("User")) {
           item = item.replace("User:", "").replace("[", "").replace("]", "");
@@ -900,11 +903,11 @@ export default function History() {
               <p className="uChat1">{item}</p>
             </div>
           );
-          SetMountChat((mountChat) => [...mountChat, newItem]);
+          setMountChat((mountChat) => [...mountChat, newItem]);
         }
-        SetChat(true);
+        setChat(true);
 
-        SetBtnMore(true);
+        setBtnMore(true);
 
         return mountChat;
       });
@@ -913,46 +916,52 @@ export default function History() {
       chatDiv.style.background = "#e9ecef";
       setMessageError("O CHAT ESTÁ INDIPONIVÉL ATÉ O TECNICO INICIAR UMA CONVERSA");
       setTypeError("PERMISSÃO NEGADA");
-      SetMessageChat(true);
-      SetChat(false);
+      setMessageChat(true);
+      setChat(false);
     }
   }
 
   function imageclose() {
-    return SetImageOpen(false);
+    setImageOpen(false);
   }
 
   function enableProblem() {
     const select = document.getElementById("selectOcorrence");
     const option = select.options[select.selectedIndex].value;
 
-    if (option === "infra") {
-      SetFakeSelect(false);
-      SetProblemInfra(true);
-      SetProblemSyst(false);
-      SetProblemTicket(null);
-      SetSectorTicket("Infraestrutura");
-      return getTicketFilterSector({ sector: "Infraestrutura" });
-    } else if (option === "system") {
-      SetFakeSelect(false);
-      SetProblemInfra(false);
-      SetProblemSyst(true);
-      SetProblemTicket(null);
-      SetSectorTicket("Sistema");
-      return getTicketFilterSector({ sector: "Sistema" });
-    } else if (option === "null") {
-      SetFakeSelect(true);
-      SetProblemInfra(false);
-      SetProblemSyst(false);
-      SetProblemTicket(null);
-      return;
-    } else if (option === "all") {
-      SetFakeSelect(true);
-      SetProblemInfra(false);
-      SetProblemSyst(false);
-      SetSectorTicket("all");
-      SetProblemTicket(null);
-      return getTicketFilterSector({ sector: "all" });
+    switch (option) {
+      default:
+        break;
+      case "infra":
+        setFakeSelect(false);
+        setProblemInfra(true);
+        setProblemSyst(false);
+        setProblemTicket(null);
+        setSectorTicket("Infraestrutura");
+        getTicketFilterSector({ sector: "Infraestrutura" });
+        break;
+      case "system":
+        setFakeSelect(false);
+        setProblemInfra(false);
+        setProblemSyst(true);
+        setProblemTicket(null);
+        setSectorTicket("Sistema");
+        getTicketFilterSector({ sector: "Sistema" });
+        break;
+      case "null":
+        setFakeSelect(true);
+        setProblemInfra(false);
+        setProblemSyst(false);
+        setProblemTicket(null);
+        break;
+      case "all":
+        setFakeSelect(true);
+        setProblemInfra(false);
+        setProblemSyst(false);
+        setSectorTicket("all");
+        setProblemTicket(null);
+        getTicketFilterSector({ sector: "all" });
+        break;
     }
   }
 
@@ -960,42 +969,57 @@ export default function History() {
     const select = document.getElementById("selectBo");
     const option = select.options[select.selectedIndex].value;
 
-    if (option === "backup") {
-      SetProblemTicket("Backup");
-      return getTicketFilterProblemn({ problemn: "Backup" });
-    } else if (option === "mail") {
-      SetProblemTicket("E-mail");
-      return getTicketFilterProblemn({ problemn: "E-mail" });
-    } else if (option === "equipamento") {
-      SetProblemTicket("Equipamento");
-      return getTicketFilterProblemn({ problemn: "Equipamento" });
-    } else if (option === "user") {
-      SetProblemTicket("Gerenciamento de Usuario");
-      return getTicketFilterProblemn({ problemn: "Gerenciamento de Usuario" });
-    } else if (option === "internet") {
-      SetProblemTicket("Internet");
-      return getTicketFilterProblemn({ problemn: "Internet" });
-    } else if (option === "permissao") {
-      SetProblemTicket("Permissão");
-      return getTicketFilterProblemn({ problemn: "Permissão" });
-    } else if (option === "all") {
-      SetProblemTicket("all");
-      return getTicketFilterProblemn({ problemn: "all" });
-    } else if (option === "sap") {
-      SetProblemTicket("SAP");
-      return getTicketFilterProblemn({ problemn: "SAP" });
-    } else if (option === "mbi") {
-      SetProblemTicket("MBI");
-      return getTicketFilterProblemn({ problemn: "MBI" });
-    } else if (option === "synchro") {
-      SetProblemTicket("Synchro");
-      return getTicketFilterProblemn({ problemn: "Synchro" });
-    } else if (option === "office") {
-      SetProblemTicket("Office");
-      return getTicketFilterProblemn({ problemn: "Office" });
-    } else if (option === "eng") {
-      SetProblemTicket("Softwares de Eng");
-      return getTicketFilterProblemn({ problemn: "Softwares de Eng" });
+    switch (option) {
+      default:
+        break;
+      case "backup":
+        setProblemTicket("Backup");
+        getTicketFilterProblemn({ problemn: "Backup" });
+        break;
+      case "mail":
+        setProblemTicket("E-mail");
+        getTicketFilterProblemn({ problemn: "E-mail" });
+        break;
+      case "equipamento":
+        setProblemTicket("Equipamento");
+        getTicketFilterProblemn({ problemn: "Equipamento" });
+        break;
+      case "user":
+        setProblemTicket("Gerenciamento de Usuario");
+        getTicketFilterProblemn({ problemn: "Gerenciamento de Usuario" });
+        break;
+      case "internet":
+        setProblemTicket("Internet");
+        getTicketFilterProblemn({ problemn: "Internet" });
+        break;
+      case "permissao":
+        setProblemTicket("Permissão");
+        getTicketFilterProblemn({ problemn: "Permissão" });
+        break;
+      case "all":
+        setProblemTicket("all");
+        getTicketFilterProblemn({ problemn: "all" });
+        break;
+      case "sap":
+        setProblemTicket("SAP");
+        getTicketFilterProblemn({ problemn: "SAP" });
+        break;
+      case "mbi":
+        setProblemTicket("MBI");
+        getTicketFilterProblemn({ problemn: "MBI" });
+        break;
+      case "synchro":
+        setProblemTicket("Synchro");
+        getTicketFilterProblemn({ problemn: "Synchro" });
+        break;
+      case "office":
+        setProblemTicket("Office");
+        getTicketFilterProblemn({ problemn: "Office" });
+        break;
+      case "eng":
+        setProblemTicket("Softwares de Eng");
+        getTicketFilterProblemn({ problemn: "Softwares de Eng" });
+        break;
     }
   }
 
@@ -1014,18 +1038,21 @@ export default function History() {
       })
       .then((data) => {
         SetCountTicket(data.count);
-        SetTickets(data.tickets);
+        setTickets(data.tickets);
         return countTicket;
       })
       .catch((err) => {
+        setMessageError(err);
+        setTypeError("Fatal ERROR");
+        setMessage(true);
         return console.log(err);
       });
   }
 
   function getTicketFilterSector({ sector }) {
-    SetTickets([]);
-    SetTicketsDash([]);
-    SetLoadingDash(true);
+    setTickets([]);
+    setTicketsDash([]);
+    setLoadingDash(true);
 
     fetch("/helpdesk/getTicketFilter/", {
       method: "GET",
@@ -1043,27 +1070,30 @@ export default function History() {
         return response.json();
       })
       .then((data) => {
-        SetLoadingDash(false);
+        setLoadingDash(false);
         if (data.tickets.length === 0) {
-          SetMessage(true);
+          setMessage(true);
           setTypeError("Falta de dados");
           setMessageError("Nenhum ticket com esses Filtros");
-          SetBtnMore(false);
+          setBtnMore(false);
           return;
         } else {
-          SetBtnMore(true);
-          return SetTickets(data.tickets);
+          setBtnMore(true);
+          return setTickets(data.tickets);
         }
       })
       .catch((err) => {
+        setMessageError(err);
+        setTypeError("Fatal ERROR");
+        setMessage(true);
         return console.log(err);
       });
   }
 
   function getTicketFilterProblemn({ problemn }) {
-    SetTickets([]);
-    SetTicketsDash([]);
-    SetLoadingDash(true);
+    setTickets([]);
+    setTicketsDash([]);
+    setLoadingDash(true);
 
     fetch("/helpdesk/getTicketFilter/", {
       method: "GET",
@@ -1082,26 +1112,29 @@ export default function History() {
       })
       .then((data) => {
         if (data.tickets.length === 0) {
-          SetMessage(true);
+          setMessage(true);
           setTypeError("Falta de dados");
           setMessageError("Nenhum ticket com esses Filtros");
-          SetBtnMore(false);
+          setBtnMore(false);
           return;
         } else {
-          SetBtnMore(true);
-          SetLoadingDash(false);
-          return SetTickets(data.tickets);
+          setBtnMore(true);
+          setLoadingDash(false);
+          return setTickets(data.tickets);
         }
       })
       .catch((err) => {
+        setMessageError(err);
+        setTypeError("Fatal ERROR");
+        setMessage(true);
         return console.log(err);
       });
   }
 
   function getTicketFilter({ id, quantity }) {
-    SetTickets([]);
-    SetTicketsDash([]);
-    SetLoadingDash(true);
+    setTickets([]);
+    setTicketsDash([]);
+    setLoadingDash(true);
     const btn1 = document.getElementById("fiveView");
     btn1.style.backgroundColor = "transparent";
 
@@ -1134,25 +1167,28 @@ export default function History() {
       })
       .then((data) => {
         if (data.tickets.length === 0) {
-          SetMessage(true);
+          setMessage(true);
           setTypeError("Falta de dados");
           setMessageError("Nenhum ticket com esses Filtros");
-          SetBtnMore(false);
+          setBtnMore(false);
           return;
         } else {
-          SetBtnMore(true);
-          SetLoadingDash(false);
-          return SetTickets(data.tickets);
+          setBtnMore(true);
+          setLoadingDash(false);
+          return setTickets(data.tickets);
         }
       })
       .catch((err) => {
+        setMessageError(err);
+        setTypeError("Fatal ERROR");
+        setMessage(true);
         return console.log(err);
       });
   }
 
   function getTicketFilterOrderTime({ order }) {
-    SetTickets([]);
-    SetTicketsDash([]);
+    setTickets([]);
+    setTicketsDash([]);
     fetch("/helpdesk/getTicketFilter/", {
       method: "GET",
       headers: {
@@ -1170,36 +1206,42 @@ export default function History() {
       })
       .then((data) => {
         if (data.tickets.length === 0) {
-          SetMessage(true);
+          setMessage(true);
           setTypeError("Falta de dados");
           setMessageError("Nenhum ticket com esses Filtros");
-          SetBtnMore(false);
+          setBtnMore(false);
           return;
         } else {
-          SetBtnMore(true);
-          SetLoadingDash(false);
-          return SetTickets(data.tickets);
+          setBtnMore(true);
+          setLoadingDash(false);
+          return setTickets(data.tickets);
         }
       })
       .catch((err) => {
+        setMessageError(err);
+        setTypeError("Fatal ERROR");
+        setMessage(true);
         return console.log(err);
       });
   }
 
   function selectOrder() {
-    SetTickets();
-    SetTicketsDash([]);
+    setTickets();
+    setTicketsDash([]);
     const select = document.getElementById("select-order");
     const option = select.options[select.selectedIndex].value;
 
-    if (option === "recent") {
-      getTicketFilterOrderTime({ order: "-id" });
-      SetOrderBy("-id");
-      return;
-    } else if (option === "ancient") {
-      getTicketFilterOrderTime({ order: "id" });
-      SetOrderBy("id");
-      return;
+    switch (option) {
+      default:
+        break;
+      case "recent":
+        getTicketFilterOrderTime({ order: "-id" });
+        setOrderBy("-id");
+        break;
+      case "ancient":
+        getTicketFilterOrderTime({ order: "id" });
+        setOrderBy("id");
+        break;
     }
   }
 
@@ -1209,10 +1251,10 @@ export default function History() {
     const select1 = document.getElementById("selectOcorrence");
     select1.value = null;
 
-    SetProblemSyst(false);
-    SetProblemInfra(false);
-    SetFakeSelect(true);
-    SetTicketsDash([]);
+    setProblemSyst(false);
+    setProblemInfra(false);
+    setFakeSelect(true);
+    setTicketsDash([]);
     fetch("/helpdesk/getTicketFilterWords/", {
       method: "GET",
       headers: {
@@ -1228,18 +1270,21 @@ export default function History() {
       })
       .then((data) => {
         if (data.tickets.length === 0) {
-          SetMessage(true);
+          setMessage(true);
           setTypeError("Falta de dados");
           setMessageError("Nenhum ticket com esses Filtros");
-          SetBtnMore(false);
+          setBtnMore(false);
           return;
         } else {
-          SetBtnMore(true);
-          SetLoadingDash(false);
-          return SetTickets(data.tickets);
+          setBtnMore(true);
+          setLoadingDash(false);
+          return setTickets(data.tickets);
         }
       })
       .catch((err) => {
+        setMessageError(err);
+        setTypeError("Fatal ERROR");
+        setMessage(true);
         return console.log(err);
       });
 
@@ -1247,8 +1292,8 @@ export default function History() {
   }
 
   function ticketOpen() {
-    SetTickets();
-    SetTicketsDash([]);
+    setTickets();
+    setTicketsDash([]);
     const btn = document.getElementById("btnopen");
     btn.classList.add("btn-success");
     const btn2 = document.getElementById("btnclose");
@@ -1273,19 +1318,22 @@ export default function History() {
       })
       .then((data) => {
         if (data.tickets.length === 0) {
-          SetMessage(true);
+          setMessage(true);
           setTypeError("Falta de dados");
           setMessageError("Nenhum ticket com esses Filtros");
-          SetBtnMore(false);
+          setBtnMore(false);
           return;
         } else {
-          SetBtnMore(true);
-          SetLoadingDash(false);
-          SetStatus("open");
-          return SetTickets(data.tickets);
+          setBtnMore(true);
+          setLoadingDash(false);
+          setStatus("open");
+          return setTickets(data.tickets);
         }
       })
       .catch((err) => {
+        setMessageError(err);
+        setTypeError("Fatal ERROR");
+        setMessage(true);
         return console.log(err);
       });
 
@@ -1293,8 +1341,8 @@ export default function History() {
   }
 
   function ticketClose() {
-    SetTickets([]);
-    SetTicketsDash([]);
+    setTickets([]);
+    setTicketsDash([]);
     const btn = document.getElementById("btnopen");
     btn.classList.remove("btn-success");
     const btn2 = document.getElementById("btnclose");
@@ -1319,19 +1367,22 @@ export default function History() {
       })
       .then((data) => {
         if (data.tickets.length === 0) {
-          SetMessage(true);
+          setMessage(true);
           setTypeError("Falta de dados");
           setMessageError("Nenhum ticket com esses Filtros");
-          SetBtnMore(false);
+          setBtnMore(false);
           return;
         } else {
-          SetBtnMore(true);
-          SetLoadingDash(false);
-          SetStatus("close");
-          return SetTickets(data.tickets);
+          setBtnMore(true);
+          setLoadingDash(false);
+          setStatus("close");
+          return setTickets(data.tickets);
         }
       })
       .catch((err) => {
+        setMessageError(err);
+        setTypeError("Fatal ERROR");
+        setMessage(true);
         return console.log(err);
       });
 
@@ -1339,8 +1390,8 @@ export default function History() {
   }
 
   function statusTicketAll() {
-    SetTickets([]);
-    SetTicketsDash([]);
+    setTickets([]);
+    setTicketsDash([]);
     const btn = document.getElementById("btnopen");
     btn.classList.remove("btn-success");
     const btn2 = document.getElementById("btnclose");
@@ -1365,19 +1416,22 @@ export default function History() {
       })
       .then((data) => {
         if (data.tickets.length === 0) {
-          SetMessage(true);
+          setMessage(true);
           setTypeError("Falta de dados");
           setMessageError("Nenhum ticket com esses Filtros");
-          SetBtnMore(false);
+          setBtnMore(false);
           return;
         } else {
-          SetBtnMore(true);
-          SetLoadingDash(false);
-          SetStatus("all");
-          return SetTickets(data.tickets);
+          setBtnMore(true);
+          setLoadingDash(false);
+          setStatus("all");
+          return setTickets(data.tickets);
         }
       })
       .catch((err) => {
+        setMessageError(err);
+        setTypeError("Fatal ERROR");
+        setMessage(true);
         return console.log(err);
       });
 
@@ -1387,15 +1441,13 @@ export default function History() {
   function UploadNewFiles(evt) {
     UpNwfile.push(evt.target.files);
     for (let i = 0; i < UpNwfile.length; i++) {
-      SetUploadNewFiles((uploadNewFiles) => [...uploadNewFiles, UpNwfile[i]]);
+      setUploadNewFiles((uploadNewFiles) => [...uploadNewFiles, UpNwfile[i]]);
     }
-    return;
   }
 
   function closeNWFiles() {
-    SetUploadNewFiles("");
-    SetNewFiles(false);
-    return;
+    setUploadNewFiles("");
+    setNewFiles(false);
   }
 
   function submitNewFiles() {
@@ -1418,6 +1470,9 @@ export default function History() {
         return window.location.reload();
       })
       .catch((err) => {
+        setMessageError(err);
+        setTypeError("Fatal ERROR");
+        setMessage(true);
         return console.log(err);
       });
   }
@@ -1449,6 +1504,9 @@ export default function History() {
         document.body.removeChild(a);
       })
       .catch((err) => {
+        setMessageError(err);
+        setTypeError("Fatal ERROR");
+        setMessage(true);
         return console.log(err);
       });
   }
