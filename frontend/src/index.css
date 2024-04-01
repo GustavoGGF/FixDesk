@@ -1,8 +1,12 @@
 :root {
   --white: #ffffff;
   --light-green: #affc41;
+  --ocean-green: #4db6ac;
   --light-white: #eae0d5;
   --light-white2: #f1faee;
+  --light-white3: #f9f9f9;
+  --pure-white: #fff;
+  --pure-black: #000;
 }
 
 @keyframes file {

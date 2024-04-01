@@ -22,34 +22,30 @@ import Cloud from "../images/components/cloud-uploading.png";
 import Message from "./message";
 import Close from "../images/components/close.png";
 
-export default function Equipment_Registration({
-  token,
-  equipamentforuser,
-  CloseFunct,
-}) {
-  const [filename, SetFileName] = useState("");
-  const [fileimg, SetFileImg] = useState();
-  const [modelequipament, SetModelEquipament] = useState("");
-  const [companyname, SetCompanyName] = useState("");
-  const [message, SetMessage] = useState(false);
-  const [typeError, SetTypeError] = useState("");
-  const [messageError, SetMessageError] = useState("");
+export default function Equipment_Registration({ token, equipamentforuser, CloseFunct }) {
+  const [fileName, setFileName] = useState("");
+  const [fileImg, setFileImg] = useState();
+  const [modelEquipament, setModelEquipament] = useState("");
+  const [companyName, setCompanyName] = useState("");
+  const [message, setMessage] = useState(false);
+  const [typeError, setTypeError] = useState("");
+  const [messageError, setMessageError] = useState("");
 
   function inputDrop() {
     const input = document.getElementById("inputName");
     const p = document.getElementById("namefile");
 
-    SetFileImg(input.files[0]);
-    SetFileName(input.files[0].name);
+    setFileImg(input.files[0]);
+    setFileName(input.files[0].name);
 
     return (p.innerText = input.files[0].name);
   }
 
   function modelEquip(event) {
     const newModel = event.target.value;
-    SetModelEquipament(newModel);
+    setModelEquipament(newModel);
 
-    return modelequipament;
+    return modelEquipament;
   }
 
   useEffect(() => {
@@ -77,9 +73,7 @@ export default function Equipment_Registration({
           Object.keys(files).forEach((file) => {
             let load = 2000 + file * 2000; // fake load
             setTimeout(() => {
-              $(`.file--${file}`)
-                .querySelector(".progress")
-                .classList.remove("active");
+              $(`.file--${file}`).querySelector(".progress").classList.remove("active");
               $(`.file--${file}`).querySelector(".done").classList.add("anim");
             }, load);
           });
@@ -129,42 +123,42 @@ export default function Equipment_Registration({
     if (option === "none") {
       return;
     } else if (option === "csc") {
-      return SetCompanyName("CSC");
+      return setCompanyName("CSC");
     } else if (option === "ropes") {
-      return SetCompanyName("ROPES");
+      return setCompanyName("ROPES");
     } else if (option === "fiber") {
-      return SetCompanyName("FIBER");
+      return setCompanyName("FIBER");
     } else if (option === "vera") {
-      return SetCompanyName("VERA");
+      return setCompanyName("VERA");
     } else if (option === "mna") {
-      return SetCompanyName("MNA");
+      return setCompanyName("MNA");
     }
   }
 
   function updateEquipament() {
-    if (filename.length === 0) {
-      SetTypeError("Dados insuficientes");
-      SetMessageError("Imagem do equipamento obrigatoria");
-      return SetMessage(true);
+    if (fileName.length === 0) {
+      setTypeError("Dados insuficientes");
+      setMessageError("Imagem do equipamento obrigatoria");
+      return setMessage(true);
     }
 
-    if (companyname.length === 0) {
-      SetTypeError("Dados insuficientes");
-      SetMessageError("Filial obrigatória");
-      return SetMessage(true);
+    if (companyName.length === 0) {
+      setTypeError("Dados insuficientes");
+      setMessageError("Filial obrigatória");
+      return setMessage(true);
     }
 
-    if (modelequipament.length === 0) {
-      SetTypeError("Dados insuficientes");
-      SetMessageError("Modelo Obrigatório");
-      return SetMessage(true);
+    if (modelEquipament.length === 0) {
+      setTypeError("Dados insuficientes");
+      setMessageError("Modelo Obrigatório");
+      return setMessage(true);
     }
 
     const formData = new FormData();
 
-    formData.append("image", fileimg);
-    formData.append("company", companyname);
-    formData.append("model", modelequipament);
+    formData.append("image", fileImg);
+    formData.append("company", companyName);
+    formData.append("model", modelEquipament);
 
     fetch("equipment_inventory/", {
       method: "POST",
@@ -186,7 +180,7 @@ export default function Equipment_Registration({
   }
 
   function closeMessage() {
-    return SetMessage(false);
+    return setMessage(false);
   }
 
   return (
@@ -194,13 +188,7 @@ export default function Equipment_Registration({
       <div className="w-100 d-flex justify-content-end">
         <IMGClose src={Close} className="img-fluid" onClick={CloseFunct} />
       </div>
-      {message && (
-        <Message
-          MessageError={messageError}
-          TypeError={typeError}
-          CloseMessage={closeMessage}
-        />
-      )}
+      {message && <Message MessageError={messageError} TypeError={typeError} CloseMessage={closeMessage} />}
       <h3 className="text-center mt-1">Cadastro de Equipamentos</h3>
       <p className="text-center">Imagem do Equipamento</p>
       <DivUpload className="upload">
@@ -215,7 +203,7 @@ export default function Equipment_Registration({
           <BodyFiles className="body" id="drop" onDrop={() => inputDrop()}>
             <IMGFile src={File} alt="" />
             <PFiles2 className="pointer-none">
-              <B1>Drag and drop</B1> files here to begin the upload
+              <B1>Arraste e Solte</B1> a imagem do equipamento aqui
             </PFiles2>
             <InputFiles type="file" id="inputName" />
           </BodyFiles>
@@ -226,17 +214,8 @@ export default function Equipment_Registration({
             <ListFiles className="list-files" id="list-files">
               <p id="namefile"></p>
             </ListFiles>
-            <input
-              type="text"
-              className="form-control mx-auto mb-2"
-              placeholder="Modelo"
-              onChange={modelEquip}
-            />
-            <select
-              className="form-select mx-auto w-25"
-              id="select_company"
-              onChange={Select_Company}
-            >
+            <input type="text" className="form-control mx-auto mb-2" placeholder="Modelo" onChange={modelEquip} />
+            <select className="form-select mx-auto w-25" id="select_company" onChange={Select_Company}>
               <option value="none" selected disabled>
                 Filial
               </option>
@@ -246,11 +225,7 @@ export default function Equipment_Registration({
               <option value="vera">Vera</option>
               <option value="mna">MNA</option>
             </select>
-            <button
-              id="importar"
-              className="btn btn-success mt-3"
-              onClick={updateEquipament}
-            >
+            <button id="importar" className="btn btn-success mt-3" onClick={updateEquipament}>
               Cadastrar Equipamento
             </button>
           </FooterFiles>

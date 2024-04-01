@@ -1,75 +1,86 @@
 import styled from "styled-components";
 
 export const TicketOpen = styled.div`
-  background: #f9f9f9;
+  background-color: var(--light-white3);
   width: 80%;
-  height: 90%;
+  overflow: auto;
   position: relative;
-  border-radius: 20px;
+  border-radius: 2em;
+  padding-bottom: 2em;
+  height: 90%;
+  &::-webkit-scrollbar {
+    width: 1em; /* largura da barra de rolagem */
+  }
+  &::-webkit-scrollbar-track {
+    background: var(--light-white3); /* cor de fundo da track (fundo da barra de rolagem) */
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--dark-gray); /* cor do thumb (alça da barra de rolagem) */
+    border-radius: 6px; /* borda do thumb */
+    border: 3px solid var(--light-white3); /* borda do thumb */
+  }
 `;
 
 export const DivUpload = styled.div`
   position: relative;
-  width: 400px;
-  min-height: 445px;
+  width: 40em;
   box-sizing: border-box;
-  border-radius: 5px;
-  box-shadow: 0 2px 5px rgba(black, 0.2);
-  padding-bottom: 20px;
-  background: #fff;
+  border-radius: 0.5em;
+  box-shadow: 0 2px 5px rgba(var(--pure-black), 0.2);
+  padding-bottom: 2em;
+  background: var(--pure-white);
   -webkit-animation: fadeup 0.5s 0.5s ease both;
   animation: fadeup 0.5s 0.5s ease both;
-  transform: translateY(20px);
+  transform: translateY(2em);
   opacity: 0;
   margin: 0 auto;
 `;
 
 export const HeaderFiles = styled.header`
-  background: #4db6ac;
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
+  background-color: var(--ocean-green);
+  border-top-left-radius: 0.5em;
+  border-top-right-radius: 0.5em;
   text-align: center;
 `;
 
 export const PFiles = styled.p`
-  color: #fff;
-  font-size: 40px;
-  margin: 0;
-  padding: 50px 0;
+  color: var(--pure-white);
+  font-size: 4em;
+  padding: 1;
 `;
 
 export const IMGFile = styled.img`
-  width: 100px;
+  width: 10em;
 `;
 
 export const Span1 = styled.span`
   font-weight: bold;
-  transform: translateX(-20px);
+  transform: translateX(-2em);
   display: inline-block;
-  margin-right: 10px;
+  margin-right: 1em;
 `;
 
 export const Span2 = styled.span`
   display: inline-block;
   font-weight: 100;
-  margin-left: -8px;
-  transform: translateX(-20px);
+  margin-left: -0.7em;
+  transform: translateX(-2em);
 `;
 
 export const BodyFiles = styled.div`
   text-align: center;
-  padding: 50px 0;
-  padding-bottom: 30px;
+  padding: 5em 0;
+  padding-bottom: 3em;
 `;
 
 export const PFiles2 = styled.p`
-  font-size: 14px;
-  padding-top: 15px;
+  font-size: 1em;
+  padding-top: 1em;
   line-height: 1.4;
 `;
 
 export const B1 = styled.b`
-  color: #4db6ac;
+  color: var(--ocean-green);
 `;
 
 export const InputFiles = styled.input`
@@ -77,21 +88,19 @@ export const InputFiles = styled.input`
 `;
 
 export const IMGFile2 = styled.img`
-  width: 100px;
-  margin-right: 50px;
+  width: 1.5em;
+  margin-right: 1em;
 `;
 
 export const FooterFiles = styled.footer`
-  width: 100%;
-  margin: 0 auto;
-  height: 0;
+  margin-bottom: 1em;
   text-align: center;
 `;
 
 export const Divider = styled.div`
   margin: 0 auto;
   width: 0;
-  border-top: solid 4px darken(black, 3.5%);
+  border-top: solid 4px darken(var(--pure-black), 3.5%);
   text-align: center;
   transition: width 0.5s ease;
 `;
@@ -113,8 +122,8 @@ export const ListFiles = styled.div`
 `;
 
 export const IMGClose = styled.img`
-  margin: 10px;
-  width: 30px;
-  height: 30px;
+  margin: 1em;
+  width: 3em;
+  height: 3em;
   cursor: pointer;
 `;
