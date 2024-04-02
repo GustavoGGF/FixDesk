@@ -1339,7 +1339,7 @@ export default function Helpdesk() {
         <PNameFile key={index} className="text-break">
           {fileName}
         </PNameFile>
-        <p>
+        <div>
           {(() => {
             const file = fileimg[index];
             const sizeInBytes = file.size;
@@ -1356,7 +1356,7 @@ export default function Helpdesk() {
 
             return `${size.toFixed(2)} ${unit}`;
           })()}
-        </p>
+        </div>
         <BtnFile
           type="button"
           onClick={() => {
@@ -1397,6 +1397,24 @@ export default function Helpdesk() {
         <PNameFile key={index} className="text-break">
           {file.name}
         </PNameFile>
+        <div>
+          {(() => {
+            const file = fileList[index];
+            const sizeInBytes = file.size;
+            let size;
+            let unit;
+
+            if (sizeInBytes >= 1024 * 1024) {
+              size = sizeInBytes / (1024 * 1024);
+              unit = "MB";
+            } else {
+              size = sizeInBytes / 1024;
+              unit = "KB";
+            }
+
+            return `${size.toFixed(2)} ${unit}`;
+          })()}
+        </div>
         <BtnFile
           type="button"
           onClick={() => {

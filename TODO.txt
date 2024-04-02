@@ -50,15 +50,13 @@ ao adicionar novos arquivos mostrar no chat
 deixar um blur na tela de cadastro de equipamento
 deixar botão de fechar tela de cadastro de equipamento menor
 deixar botão de fechar da tela de cadastro de equipamento fixo
+arrumar arquivos anexados
 ]
 
 
 History[
-hora no chamado
 imprimir chat pdf
-arrumar arquivos anexados
 nome do arquivo na tela de ticket
-notificação
 data e hora no chat
 email de abertura de chamado e chamado finalizado
 resetar ticker quando clicar em algum filtro

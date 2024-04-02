@@ -23,17 +23,14 @@ export const TicketOpen = styled.div`
 
 export const DivUpload = styled.div`
   position: relative;
-  width: 40em;
   box-sizing: border-box;
   border-radius: 0.5em;
   box-shadow: 0 2px 5px rgba(var(--pure-black), 0.2);
-  padding-bottom: 2em;
   background: var(--pure-white);
   -webkit-animation: fadeup 0.5s 0.5s ease both;
   animation: fadeup 0.5s 0.5s ease both;
   transform: translateY(2em);
   opacity: 0;
-  margin: 0 auto;
 `;
 
 export const HeaderFiles = styled.header`
