@@ -700,16 +700,24 @@ export default function History() {
     btn2.style.backgroundColor = "transparent";
 
     tickets.forEach((ticket) => {
+      console.log(ticket);
       var date = new Date(ticket["start_date"]);
 
       var day = date.getDate();
       var month = date.getMonth() + 1;
       var year = date.getFullYear();
 
-      var formattedDay = day < 10 ? "0" + day : day;
-      var formattedMonth = month < 10 ? "0" + month : month;
+      function adicionaZero(numero) {
+        if (numero < 10) {
+          return "0" + numero;
+        }
+        return numero;
+      }
 
-      var newDate = formattedDay + "/" + formattedMonth + "/" + year;
+      var dataFormatada = adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
+      var horaFormatada = adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
+
+      var newDate = dataFormatada + " " + horaFormatada;
 
       if (ticket["open"] === false) {
         colorBorder = "ticektClose";

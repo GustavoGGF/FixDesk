@@ -6,7 +6,6 @@ from os import getenv
 from json import loads
 from django.middleware.csrf import get_token
 from datetime import datetime, date
-import pytz
 from .models import SupportTicket, TicketFile
 from django.contrib.auth.models import User
 from .models import SupportTicket
@@ -123,9 +122,8 @@ def submitTicket(request):
             problemn = request.POST.get("problemn")
             observation = request.POST.get("observation")
             start_date_str = request.POST.get("start_date")
-            start_date = datetime.strptime(start_date_str, "%Y-%m-%d").replace(
-                tzinfo=pytz.timezone("America/Sao_Paulo")
-            )
+            print(start_date_str)
+            start_date = datetime.strptime(start_date_str, "%Y-%m-%d %H:%M")
             pid = request.POST.get("PID")
 
             if pid:
@@ -431,6 +429,7 @@ def history(request):
         ticket_data = None
         ticket_json = None
         UserTicket = None
+
         try:
             UserTicket = request.POST.get("name")
             ticket_data = SupportTicket.objects.filter(

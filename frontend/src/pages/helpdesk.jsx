@@ -1084,14 +1084,18 @@ export default function Helpdesk() {
     var dia = dataUserAtual.getDate();
     var mes = dataUserAtual.getMonth() + 1; // Os meses em JavaScript são indexados a partir de zero, por isso é necessário adicionar 1
     var ano = dataUserAtual.getFullYear();
+    function adicionaZero(numero) {
+      if (numero < 10) {
+        return "0" + numero;
+      }
+      return numero;
+    }
+    var horaFormatada = adicionaZero(dataUserAtual.getHours()) + ":" + adicionaZero(dataUserAtual.getMinutes());
 
     // Formatar a dataUser no formato dd/mm/yy
 
     // Formatando para dataUser BR
-    var dataUserFormatada = ano + "-" + ("0" + mes).slice(-2) + "-" + ("0" + dia).slice(-2);
-
-    ano.toString().slice(-2);
-    // Formatando para dataUser BR
+    var dataUserFormatada = ano + "-" + ("0" + mes).slice(-2) + "-" + ("0" + dia).slice(-2) + " " + horaFormatada;
 
     let Status;
     let NewDatesAlocate = [];
@@ -1335,7 +1339,7 @@ export default function Helpdesk() {
         <PNameFile key={index} className="text-break">
           {fileName}
         </PNameFile>
-        <div>
+        <p>
           {(() => {
             const file = fileimg[index];
             const sizeInBytes = file.size;
@@ -1352,7 +1356,7 @@ export default function Helpdesk() {
 
             return `${size.toFixed(2)} ${unit}`;
           })()}
-        </div>
+        </p>
         <BtnFile
           type="button"
           onClick={() => {
