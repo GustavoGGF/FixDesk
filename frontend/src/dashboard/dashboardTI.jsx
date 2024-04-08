@@ -47,6 +47,10 @@ import {
   IMGFiles2,
   Calendar,
   DivCal,
+  DivFlex1,
+  DivFlex2,
+  PChatHourR,
+  PChatHourL,
 } from "../styles/historyStyle";
 import { DropDown } from "../styles/navbarStyle.js";
 import { DivNameFile, BtnFile, ImgFile, Select } from "../styles/helpdeskStyle.js";
@@ -108,8 +112,8 @@ export default function DashboardTI() {
   const [ticketResponsible_Technician, SetTicketResponsible_Technician] = useState("");
   const [ticketWindow, SetTicketWindow] = useState(false);
   const [ticketID, SetTicketID] = useState("");
-  const [mountChat, SetMountChat] = useState([]);
-  const [chat, SetChat] = useState(true);
+  const [mountChat, setMountChat] = useState([]);
+  const [chat, setChat] = useState(true);
   const [selectedTech, setSelectedTech] = useState("");
   const [techs, SetTechs] = useState([]);
   const [messageChat, SetMessageChat] = useState(false);
@@ -118,8 +122,8 @@ export default function DashboardTI() {
   const [textChat, SetTextChat] = useState("");
   const [message, SetMessage] = useState(false);
   const [dropdownBTN, SetDropDownBTN] = useState(false);
-  const [fetchchat, SetFetchChat] = useState(false);
-  const [countchat, SetCountChat] = useState();
+  const [fetchchat, setFetchChat] = useState(false);
+  const [countchat, setCountChat] = useState();
   const [initUpdateChat, SetInitUpdateChat] = useState();
   const [fakeSelect, SetFakeSelect] = useState(true);
   const [problemInfra, SetProblemInfra] = useState(false);
@@ -417,7 +421,7 @@ export default function DashboardTI() {
         const data = dataBack.data[0];
         setSelectedTech("");
         SetMessageChat(false);
-        SetMountChat([]);
+        setMountChat([]);
         const start_date = new Date(data.start_date);
 
         var CurrentDate = new Date();
@@ -683,64 +687,113 @@ export default function DashboardTI() {
           }
         }
         if (data.chat !== null && data.chat !== undefined && data.chat !== "undefined") {
-          SetCountChat(data.chat.length);
-          SetFetchChat(true);
+          setCountChat(data.chat.length);
+          setFetchChat(true);
 
-          var arrayChat = data.chat.match(/\[.*?\]/g);
+          const regex = /\[\[([^[\]]+?)\],\[([^[\]]+?)\],\[([^[\]]+?)\]\]/g;
 
-          const chatDiv = document.getElementById("chatDiv");
-          chatDiv.style.background = "transparent";
+          const chatValue = [];
+          let match;
 
-          arrayChat.forEach(function (item) {
-            if (item.includes("System")) {
-              item = item.replace("System:", "").replace("[", "").replace("]", "");
-              const newItem = (
-                <div className="text-center d-flex justify-content-center text-break">
-                  <p className="pChat">{item}</p>
-                </div>
-              );
-              SetMountChat((mountChat) => [...mountChat, newItem]);
+          while ((match = regex.exec(data.chat)) !== null) {
+            const [, value1, value2, value3] = match;
+            chatValue.push([value1, value2, value3]);
+          }
+
+          setMountChat([]);
+
+          const groupedByDate = {};
+
+          chatValue.forEach((item) => {
+            const date = item[0].split(":")[1].trim(); // Extrai a data do primeiro elemento
+            if (!groupedByDate[date]) {
+              groupedByDate[date] = [];
             }
-            if (item.includes("Technician")) {
-              item = item.replace("Technician:", "").replace("[", "").replace("]", "");
-              const newItem = (
-                <div className="d-flex justify-content-end w-100 text-break">
-                  <p className="tChat1">{item}</p>
-                </div>
-              );
-              SetMountChat((mountChat) => [...mountChat, newItem]);
-            }
-            if (item.includes("User")) {
-              item = item.replace("User:", "").replace("[", "").replace("]", "");
-              const newItem = (
-                <div className="d-flex justify-content-start w-100 text-break">
-                  <p className="uChat2">{item}</p>
-                </div>
-              );
-              SetMountChat((mountChat) => [...mountChat, newItem]);
-            }
-            SetChat(true);
+            groupedByDate[date].push(item);
           });
+
+          const renderGroupedItems = () => {
+            const groupedItems = [];
+            for (const date in groupedByDate) {
+              groupedItems.push(
+                <div key={date}>
+                  <div className="text-center d-flex justify-content-center text-break">
+                    <p className="pChat">{date}</p>
+                  </div>
+                  {groupedByDate[date].map((item, index) => {
+                    // Remover "User:" ou "Tech:" do início da string
+                    var userOrTech = item[1];
+                    const key = `${date}-${index}`;
+                    if (userOrTech.includes("System")) {
+                      userOrTech = userOrTech.replace("System:", "").trim();
+                      return (
+                        <div key={index}>
+                          <div className="text-center d-flex justify-content-center text-break">
+                            <div className="pChat">
+                              <p>{userOrTech + " " + item[2]}</p>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    } else if (userOrTech.includes("Technician")) {
+                      userOrTech = userOrTech.replace("Technician:", "").trim();
+                      return (
+                        <div key={key}>
+                          <DivFlex1 className="w-100 text-break position relative">
+                            <div className="uChat1 position-relative">
+                              <p>{userOrTech}</p>
+                              <PChatHourR className="position-absolute bottom-0 end-0">{item[2]}</PChatHourR>
+                            </div>
+                          </DivFlex1>
+                        </div>
+                      );
+                    } else if (userOrTech.includes("User")) {
+                      userOrTech = userOrTech.replace("User:", "").trim();
+                      return (
+                        <div key={index}>
+                          <DivFlex2 className="w-100 text-break position relative">
+                            <div className="uChat2 position-relative">
+                              <p>{userOrTech}</p>
+                              <PChatHourL className="position-absolute bottom-0 start-0">{item[2]}</PChatHourL>
+                            </div>
+                          </DivFlex2>
+                        </div>
+                      );
+                    }
+                    return userOrTech;
+                  })}
+                </div>
+              );
+            }
+            return groupedItems;
+          };
+
+          setMountChat(renderGroupedItems());
+
+          setChat(true);
+
           aumentarCount();
         }
 
         var nameVer = name_verify.split(" ");
-        var techVer = data.responsible_technician.split(" ");
+        if (data.responsible_technician !== null) {
+          var techVer = data.responsible_technician.split(" ");
 
-        var allFind = true;
-        for (var i = 0; i < techVer.length; i++) {
-          if (nameVer.indexOf(techVer[i]) === -1) {
-            allFind = false;
-            break;
+          var allFind = true;
+          for (var i = 0; i < techVer.length; i++) {
+            if (nameVer.indexOf(techVer[i]) === -1) {
+              allFind = false;
+              break;
+            }
           }
         }
 
         if (allFind) {
-          SetChat(true);
+          setChat(true);
         } else if (data.responsible_technician == null) {
-          SetChat(false);
+          setChat(false);
         } else {
-          SetChat(false);
+          setChat(false);
           SetDataModify(false);
         }
 
@@ -795,7 +848,7 @@ export default function DashboardTI() {
         .then((data) => {
           var newChat = parseInt(data.chat.length);
           if (newChat > countchat) {
-            SetCountChat(newChat);
+            setCountChat(newChat);
             reloadChat({ data: data });
           }
           return;
@@ -815,7 +868,7 @@ export default function DashboardTI() {
     const dash = document.getElementById("dashboard");
     dash.style.filter = "blur(0)";
     SetTicketWindow(false);
-    SetFetchChat(false);
+    setFetchChat(false);
     count = 0;
     clearTimeout(timeoutId);
     return;
@@ -834,6 +887,20 @@ export default function DashboardTI() {
 
   useEffect(() => {
     if (selectedTech.length > 1) {
+      var date = new Date();
+
+      function adicionaZero(numero) {
+        if (numero < 10) {
+          return "0" + numero;
+        }
+        return numero;
+      }
+      var day = date.getDate();
+      var month = date.getMonth() + 1;
+      var year = date.getFullYear();
+
+      var dataFormatada = adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
+      var horaFormatada = adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
       fetch("/helpdesk/ticket/" + ticketID, {
         method: "POST",
         headers: {
@@ -843,6 +910,8 @@ export default function DashboardTI() {
         body: JSON.stringify({
           responsible_technician: selectedTech,
           technician: userData.name,
+          date: dataFormatada,
+          hour: horaFormatada,
         }),
       })
         .then((response) => {
@@ -877,6 +946,19 @@ export default function DashboardTI() {
   }
 
   function SendChat() {
+    var date = new Date();
+    function adicionaZero(numero) {
+      if (numero < 10) {
+        return "0" + numero;
+      }
+      return numero;
+    }
+    var day = date.getDate();
+    var month = date.getMonth() + 1;
+    var year = date.getFullYear();
+
+    var dataFormatada = adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
+    var horaFormatada = adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
     const input = document.getElementById("input-chat");
     input.value = "";
     if (textChat.length === 0) {
@@ -891,6 +973,8 @@ export default function DashboardTI() {
       body: JSON.stringify({
         technician: userData.name,
         chat: textChat,
+        hours: horaFormatada,
+        date: dataFormatada,
       }),
     })
       .then((response) => {
@@ -906,44 +990,88 @@ export default function DashboardTI() {
 
   function reloadChat({ data }) {
     if (data.chat !== null && data.chat !== undefined && data.chat !== "undefined") {
-      SetMountChat([]);
-      var arrayChat = data.chat.match(/\[.*?\]/g);
+      setCountChat(data.chat.length);
+      setFetchChat(true);
 
-      const chatDiv = document.getElementById("chatDiv");
-      chatDiv.style.background = "transparent";
+      const regex = /\[\[([^[\]]+?)\],\[([^[\]]+?)\],\[([^[\]]+?)\]\]/g;
 
-      arrayChat.forEach(function (item) {
-        if (item.includes("System")) {
-          item = item.replace("System:", "").replace("[", "").replace("]", "");
-          const newItem = (
-            <div className="text-center d-flex justify-content-center text-break">
-              <p className="pChat">{item}</p>
-            </div>
-          );
-          SetMountChat((mountChat) => [...mountChat, newItem]);
-        }
-        if (item.includes("Technician")) {
-          item = item.replace("Technician:", "").replace("[", "").replace("]", "");
-          const newItem = (
-            <div className="d-flex justify-content-end w-100 text-break">
-              <p className="tChat1">{item}</p>
-            </div>
-          );
-          SetMountChat((mountChat) => [...mountChat, newItem]);
-        }
-        if (item.includes("User")) {
-          item = item.replace("User:", "").replace("[", "").replace("]", "");
-          const newItem = (
-            <div className="d-flex justify-content-start w-100 text-break">
-              <p className="uChat2">{item}</p>
-            </div>
-          );
-          SetMountChat((mountChat) => [...mountChat, newItem]);
-        }
-        SetChat(true);
+      const chatValue = [];
+      let match;
 
-        return mountChat;
+      while ((match = regex.exec(data.chat)) !== null) {
+        const [, value1, value2, value3] = match;
+        chatValue.push([value1, value2, value3]);
+      }
+
+      setMountChat([]);
+
+      const groupedByDate = {};
+
+      chatValue.forEach((item) => {
+        const date = item[0].split(":")[1].trim(); // Extrai a data do primeiro elemento
+        if (!groupedByDate[date]) {
+          groupedByDate[date] = [];
+        }
+        groupedByDate[date].push(item);
       });
+
+      const renderGroupedItems = () => {
+        const groupedItems = [];
+        for (const date in groupedByDate) {
+          groupedItems.push(
+            <div key={date}>
+              <div className="text-center d-flex justify-content-center text-break">
+                <p className="pChat">{date}</p>
+              </div>
+              {groupedByDate[date].map((item, index) => {
+                // Remover "User:" ou "Tech:" do início da string
+                var userOrTech = item[1];
+                if (userOrTech.includes("System")) {
+                  userOrTech = userOrTech.replace("System:", "").trim();
+                  return (
+                    <div key={index}>
+                      <div className="text-center d-flex justify-content-center text-break">
+                        <div className="pChat">
+                          <p>{userOrTech + " " + item[2]}</p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                } else if (userOrTech.includes("Technician")) {
+                  userOrTech = userOrTech.replace("Technician:", "").trim();
+                  return (
+                    <div key={index}>
+                      <DivFlex1 className="w-100 text-break position relative">
+                        <div className="uChat1 position-relative">
+                          <p>{userOrTech}</p>
+                          <PChatHourR className="position-absolute bottom-0 end-0">{item[2]}</PChatHourR>
+                        </div>
+                      </DivFlex1>
+                    </div>
+                  );
+                } else {
+                  userOrTech = userOrTech.replace("User:", "").trim();
+                  return (
+                    <div key={index}>
+                      <DivFlex2 className="w-100 text-break position relative">
+                        <div className="uChat2 position-relative">
+                          <p>{userOrTech}</p>
+                          <PChatHourL className="position-absolute bottom-0 start-0">{item[2]}</PChatHourL>
+                        </div>
+                      </DivFlex2>
+                    </div>
+                  );
+                }
+              })}
+            </div>
+          );
+        }
+        return groupedItems;
+      };
+
+      setMountChat(renderGroupedItems());
+
+      setChat(true);
     }
   }
 
@@ -2328,13 +2456,7 @@ export default function DashboardTI() {
               </DivFile>
               <input type="text" value={"Tecnico responsavel: " + (ticketResponsible_Technician ? ticketResponsible_Technician : "Nenhum técnico atribuído")} className="form-control" disabled />
             </div>
-            <DivChat
-              id="chatDiv"
-              onMouseEnter={() => {
-                const chatDiv = document.getElementById("chatDiv");
-                chatDiv.scrollTop = chatDiv.scrollHeight;
-              }}
-            >
+            <DivChat id="chatDiv">
               {mountChat}
               {messageChat && (
                 <div className="w-100 h-100 d-flex justify-content-center align-items-center">

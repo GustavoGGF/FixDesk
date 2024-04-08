@@ -24,10 +24,11 @@ Login[]
 HelpDesk[
 contrato comodato para os equipamentos
 ao enviar locagem de equipamento, se estiver alocado já, retornar com alocado cinza e pedir para ajustar data
-otimizar login, deixar rodando a criação de usuario enquanto autentica no ldap
+otimizar login, deixar rodando a criação de usuario enquanto autentica no
 ]
 
 DashBoard[
+ajustar fechar e reabrir chamado
 data no ticket do chamado
 mudar cores do status dos ticker deixar igual cor dos tickets
 hora no chamado
@@ -50,14 +51,18 @@ ao adicionar novos arquivos mostrar no chat
 deixar um blur na tela de cadastro de equipamento
 deixar botão de fechar tela de cadastro de equipamento menor
 deixar botão de fechar da tela de cadastro de equipamento fixo
+hora no chamado
 arrumar arquivos anexados
+nome do arquivo na tela de ticket
+data e hora no chat
 ]
 
+Navbar[
+    Link do icone
+]
 
 History[
 imprimir chat pdf
-nome do arquivo na tela de ticket
-data e hora no chat
 email de abertura de chamado e chamado finalizado
 resetar ticker quando clicar em algum filtro
 botão de pegar mais tickets não está funcionando

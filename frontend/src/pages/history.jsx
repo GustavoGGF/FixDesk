@@ -46,6 +46,10 @@ import {
   DivHR,
   PBloq,
   DivCal,
+  PChatHourL,
+  PChatHourR,
+  DivFlex1,
+  DivFlex2,
 } from "../styles/historyStyle";
 import { DivNameFile, BtnFile, ImgFile } from "../styles/helpdeskStyle";
 import { DayPicker } from "react-day-picker";
@@ -570,41 +574,92 @@ export default function History() {
           setCountChat(data.chat.length);
           setFetchChat(true);
 
-          var arrayChat = data.chat.match(/\[.*?\]/g);
+          const regex = /\[\[([^[\]]+?)\],\[([^[\]]+?)\],\[([^[\]]+?)\]\]/g;
 
-          const chatDiv = document.getElementById("chatDiv");
-          chatDiv.style.background = "transparent";
+          const chatValue = [];
+          let match;
 
-          arrayChat.forEach(function (item) {
-            if (item.includes("System")) {
-              item = item.replace("System:", "").replace("[", "").replace("]", "");
-              const newItem = (
-                <div className="text-center d-flex justify-content-center text-break">
-                  <p className="pChat">{item}</p>
-                </div>
-              );
-              setMountChat((mountChat) => [...mountChat, newItem]);
+          console.log("data.chat:", data.chat);
+
+          while ((match = regex.exec(data.chat)) !== null) {
+            const [, value1, value2, value3] = match;
+            chatValue.push([value1, value2, value3]);
+          }
+
+          setMountChat([]);
+
+          const groupedByDate = {};
+
+          console.log("chatValue:", chatValue);
+
+          chatValue.forEach((item) => {
+            const date = item[0].split(":")[1].trim(); // Extrai a data do primeiro elemento
+            if (!groupedByDate[date]) {
+              groupedByDate[date] = [];
             }
-            if (item.includes("Technician")) {
-              item = item.replace("Technician:", "").replace("[", "").replace("]", "");
-              const newItem = (
-                <div className="d-flex justify-content-start w-100 text-break">
-                  <p className="tChat2">{item}</p>
-                </div>
-              );
-              setMountChat((mountChat) => [...mountChat, newItem]);
-            }
-            if (item.includes("User")) {
-              item = item.replace("User:", "").replace("[", "").replace("]", "");
-              const newItem = (
-                <div className="d-flex justify-content-end w-100 text-break">
-                  <p className="uChat1">{item}</p>
-                </div>
-              );
-              setMountChat((mountChat) => [...mountChat, newItem]);
-            }
-            setChat(true);
+            groupedByDate[date].push(item);
           });
+
+          const renderGroupedItems = () => {
+            const groupedItems = [];
+            console.log("groupedByDate:", groupedByDate);
+            for (const date in groupedByDate) {
+              groupedItems.push(
+                <div key={date}>
+                  <div className="text-center d-flex justify-content-center text-break">
+                    <p className="pChat">{date}</p>
+                  </div>
+                  {groupedByDate[date].map((item, index) => {
+                    // Remover "User:" ou "Tech:" do início da string
+                    console.log("item[1]:", item[1]);
+                    var userOrTech = item[1];
+                    if (userOrTech.includes("System")) {
+                      userOrTech = userOrTech.replace("System:", "").trim();
+                      return (
+                        <div key={index}>
+                          <div className="text-center d-flex justify-content-center text-break">
+                            <div className="pChat">
+                              <p>{userOrTech + " " + item[2]}</p>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    } else if (userOrTech.includes("User")) {
+                      userOrTech = userOrTech.replace("User:", "").trim();
+                      return (
+                        <div key={index}>
+                          <DivFlex1 className="justify-content-end w-100 text-break position relative">
+                            <div className="uChat1 position-relative">
+                              <p>{userOrTech}</p>
+                              <PChatHourR className="position-absolute bottom-0 end-0">{item[2]}</PChatHourR>
+                            </div>
+                          </DivFlex1>
+                        </div>
+                      );
+                    } else {
+                      userOrTech = userOrTech.replace("Technician:", "").trim();
+                      return (
+                        <div key={index}>
+                          <DivFlex2 className="justify-content-start w-100 text-break position relative">
+                            <div className="uChat2 position-relative">
+                              <p>{userOrTech}</p>
+                              <PChatHourL className="position-absolute bottom-0 start-0">{item[2]}</PChatHourL>
+                            </div>
+                          </DivFlex2>
+                        </div>
+                      );
+                    }
+                  })}
+                </div>
+              );
+            }
+            return groupedItems;
+          };
+
+          setMountChat(renderGroupedItems());
+
+          setChat(true);
+
           aumentarCount();
         } else {
           const chatDiv = document.getElementById("chatDiv");
@@ -872,6 +927,19 @@ export default function History() {
   }
 
   function SendChat() {
+    var date = new Date();
+    function adicionaZero(numero) {
+      if (numero < 10) {
+        return "0" + numero;
+      }
+      return numero;
+    }
+    var day = date.getDate();
+    var month = date.getMonth() + 1;
+    var year = date.getFullYear();
+
+    var dataFormatada = adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
+    var horaFormatada = adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
     const input = document.getElementById("input-chat");
     input.value = "";
     if (textChat.length === 0) {
@@ -886,6 +954,8 @@ export default function History() {
       body: JSON.stringify({
         User: Data.name,
         chat: textChat,
+        hours: horaFormatada,
+        date: dataFormatada,
       }),
     })
       .then((response) => {
@@ -904,47 +974,88 @@ export default function History() {
 
   async function reloadChat({ data }) {
     if (data.chat !== null && data.chat !== undefined && data.chat !== "undefined") {
+      setCountChat(data.chat.length);
+      setFetchChat(true);
+
+      const regex = /\[\[([^[\]]+?)\],\[([^[\]]+?)\],\[([^[\]]+?)\]\]/g;
+
+      const chatValue = [];
+      let match;
+
+      while ((match = regex.exec(data.chat)) !== null) {
+        const [, value1, value2, value3] = match;
+        chatValue.push([value1, value2, value3]);
+      }
+
       setMountChat([]);
-      var arrayChat = data.chat.match(/\[.*?\]/g);
 
-      const chatDiv = document.getElementById("chatDiv");
+      const groupedByDate = {};
 
-      chatDiv.style.background = "transparent";
-
-      arrayChat.forEach(function (item) {
-        if (item.includes("System")) {
-          item = item.replace("System:", "").replace("[", "").replace("]", "");
-          const newItem = (
-            <div className="text-center d-flex justify-content-center text-break">
-              <p className="pChat">{item}</p>
-            </div>
-          );
-          setMountChat((mountChat) => [...mountChat, newItem]);
+      chatValue.forEach((item) => {
+        const date = item[0].split(":")[1].trim(); // Extrai a data do primeiro elemento
+        if (!groupedByDate[date]) {
+          groupedByDate[date] = [];
         }
-        if (item.includes("Technician")) {
-          item = item.replace("Technician:", "").replace("[", "").replace("]", "");
-          const newItem = (
-            <div className="d-flex justify-content-start w-100 text-break">
-              <p className="tChat2">{item}</p>
-            </div>
-          );
-          setMountChat((mountChat) => [...mountChat, newItem]);
-        }
-        if (item.includes("User")) {
-          item = item.replace("User:", "").replace("[", "").replace("]", "");
-          const newItem = (
-            <div className="d-flex justify-content-end w-100 text-break">
-              <p className="uChat1">{item}</p>
-            </div>
-          );
-          setMountChat((mountChat) => [...mountChat, newItem]);
-        }
-        setChat(true);
-
-        setBtnMore(true);
-
-        return mountChat;
+        groupedByDate[date].push(item);
       });
+
+      const renderGroupedItems = () => {
+        const groupedItems = [];
+        for (const date in groupedByDate) {
+          groupedItems.push(
+            <div key={date}>
+              <div className="text-center d-flex justify-content-center text-break">
+                <p className="pChat">{date}</p>
+              </div>
+              {groupedByDate[date].map((item, index) => {
+                // Remover "User:" ou "Tech:" do início da string
+                var userOrTech = item[1];
+                if (userOrTech.includes("System")) {
+                  userOrTech = userOrTech.replace("System:", "").trim();
+                  return (
+                    <div key={index}>
+                      <div className="text-center d-flex justify-content-center text-break">
+                        <div className="pChat">
+                          <p>{userOrTech + " " + item[2]}</p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                } else if (userOrTech.includes("User")) {
+                  userOrTech = userOrTech.replace("User:", "").trim();
+                  return (
+                    <div key={index}>
+                      <DivFlex1 className="justify-content-end w-100 text-break position relative">
+                        <div className="uChat1 position-relative">
+                          <p>{userOrTech}</p>
+                          <PChatHourR className="position-absolute bottom-0 end-0">{item[2]}</PChatHourR>
+                        </div>
+                      </DivFlex1>
+                    </div>
+                  );
+                } else {
+                  userOrTech = userOrTech.replace("Technician:", "").trim();
+                  return (
+                    <div key={index}>
+                      <DivFlex2 className="justify-content-start w-100 text-break position relative">
+                        <div className="uChat2 position-relative">
+                          <p>{userOrTech}</p>
+                          <PChatHourL className="position-absolute bottom-0 start-0">{item[2]}</PChatHourL>
+                        </div>
+                      </DivFlex2>
+                    </div>
+                  );
+                }
+              })}
+            </div>
+          );
+        }
+        return groupedItems;
+      };
+
+      setMountChat(renderGroupedItems());
+
+      setChat(true);
     } else {
       const chatDiv = document.getElementById("chatDiv");
       chatDiv.style.background = "#e9ecef";
@@ -1790,13 +1901,7 @@ export default function History() {
               </DivFile>
               <input type="text" value={"Tecnico responsavel: " + (ticketResponsible_Technician ? ticketResponsible_Technician : "Nenhum técnico atribuído")} className="form-control" disabled />
             </div>
-            <DivChat
-              id="chatDiv"
-              onMouseEnter={() => {
-                const chatDiv = document.getElementById("chatDiv");
-                chatDiv.scrollTop = chatDiv.scrollHeight;
-              }}
-            >
+            <DivChat id="chatDiv">
               {mountChat}
               {messageChat && (
                 <div className="w-100 h-100 d-flex justify-content-center align-items-center">

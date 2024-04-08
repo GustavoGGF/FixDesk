@@ -79,6 +79,7 @@
   text-align: justify;
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
+  min-width: 7%;
 }
 
 .uChat2 {
@@ -90,6 +91,7 @@
   text-align: justify;
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
+  min-width: 7%;
 }
 
 .showDP {
@@ -403,4 +405,8 @@
 
 .borderEquip {
   border: 2px solid #5fdd9d;
+}
+
+.none {
+  display: none !important;
 }

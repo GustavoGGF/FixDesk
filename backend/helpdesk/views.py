@@ -518,6 +518,8 @@ def ticket(request, id):
         current_responsible_technician = None
         responsible_technician = None
         status = None
+        date = None
+        hours = None
         try:
             body = loads(request.body)
 
@@ -525,7 +527,8 @@ def ticket(request, id):
                 try:
                     responsible_technician = body["responsible_technician"]
                     technician = body["technician"]
-
+                    date = body["date"]
+                    hours = body["hour"]
                     ticket = SupportTicket.objects.get(id=id)
 
                     current_responsible_technician = ticket.responsible_technician
@@ -538,9 +541,11 @@ def ticket(request, id):
                     ticket = SupportTicket.objects.get(id=id)
 
                     if ticket.chat == None:
-                        ticket.chat = f"[System:{technician} atendeu ao Chamado]"
+                        print("passou")
+                        ticket.chat = f"[[Date:{date}],[System:{technician} atendeu ao Chamado],[Hours:{hours}]]"
+                        print("aqui")
                     else:
-                        ticket.chat += f"[System:{technician} Transfereu o Chamado para {technician}]"
+                        ticket.chat += f",[[Date:{date}], [System:{technician} Transfereu o Chamado para {technician}], [Hours:{hours}]]"
 
                     ticket.responsible_technician = responsible_technician
 
@@ -550,13 +555,19 @@ def ticket(request, id):
 
                 except Exception as e:
                     print(e)
+                    str_err = str(e)
+                    return JsonResponse({"error": str_err}, status=410, safe=True)
 
             if "chat" in body:
                 if "technician" in body:
                     try:
                         chat = body["chat"]
+                        date = body["date"]
+                        hours = body["hours"]
                         ticket = SupportTicket.objects.get(id=id)
-                        ticket.chat += f"[Technician: {chat}]"
+                        ticket.chat += (
+                            f",[[Date:{date}],[Technician: {chat}],[Hours:{hours}]]"
+                        )
 
                         ticket.save()
 
@@ -568,8 +579,10 @@ def ticket(request, id):
 
                 if "User" in body:
                     chat = body["chat"]
+                    date = body["date"]
+                    hours = body["hours"]
                     ticket = SupportTicket.objects.get(id=id)
-                    ticket.chat += f"[User: {chat}]"
+                    ticket.chat += f",[[Date:{date}],[User: {chat}],[Hours:{hours}]]"
 
                     ticket.save()
 
@@ -580,7 +593,6 @@ def ticket(request, id):
                 technician = body["technician"]
                 ticket = SupportTicket.objects.get(id=id)
                 current_responsible_technician = ticket.responsible_technician
-                technician = technician.replace("ADM", "").strip()
 
                 if status == "close":
                     if current_responsible_technician != technician:
@@ -588,13 +600,13 @@ def ticket(request, id):
                             {"status": "invalid modify"}, status=304, safe=True
                         )
                     ticket.open = False
-                    ticket.chat += f"[System:{technician} Finalizou o Chamado]"
+                    ticket.chat += f",[System:{technician} Finalizou o Chamado]"
 
                     ticket.save()
 
                 elif status == "open":
                     ticket.open = True
-                    ticket.chat += f"[System:{technician} Reabriu o Chamado]"
+                    ticket.chat += f",[System:{technician} Reabriu o Chamado]"
                     ticket.responsible_technician = technician
 
                     ticket.save()

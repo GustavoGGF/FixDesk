@@ -56,6 +56,8 @@ export const BtnChat2 = styled.button`
   background-position: center;
   background-size: cover;
   position: relative;
+  background-color: transparent;
+  border: none;
 `;
 
 export const IMGFiles = styled.img`
@@ -306,4 +308,24 @@ export const PBloq = styled.p`
 export const DivCal = styled.div`
   display: flex;
   justify-content: center;
+`;
+
+export const PChatHourR = styled.div`
+  font-size: 0.7em;
+  margin-right: 1em;
+`;
+
+export const PChatHourL = styled.div`
+  font-size: 0.7em;
+  margin-left: 1em;
+`;
+
+export const DivFlex1 = styled.div`
+  display: flex;
+  justify-content: end !important;
+`;
+
+export const DivFlex2 = styled.div`
+  display: flex;
+  justify-content: start !important;
 `;
