@@ -1155,33 +1155,39 @@ export default function DashboardTI() {
     const select = document.getElementById("selectOcorrence");
     const option = select.options[select.selectedIndex].value;
 
-    if (option === "infra") {
-      setFakeSelect(false);
-      setProblemInfra(true);
-      setProblemSyst(false);
-      setProblemTicket(null);
-      setSectorTicket("Infraestrutura");
-      return getTicketFilterSector({ sector: "Infraestrutura" });
-    } else if (option === "system") {
-      setFakeSelect(false);
-      setProblemInfra(false);
-      setProblemSyst(true);
-      setProblemTicket(null);
-      setSectorTicket("Sistema");
-      return getTicketFilterSector({ sector: "Sistema" });
-    } else if (option === "null") {
-      setFakeSelect(true);
-      setProblemInfra(false);
-      setProblemSyst(false);
-      setProblemTicket(null);
-      return;
-    } else if (option === "all") {
-      setFakeSelect(true);
-      setProblemInfra(false);
-      setProblemSyst(false);
-      setSectorTicket("all");
-      setProblemTicket(null);
-      return getTicketFilterSector({ sector: "all" });
+    switch (option) {
+      default:
+        break;
+      case "null":
+        setFakeSelect(true);
+        setProblemInfra(false);
+        setProblemSyst(false);
+        setProblemTicket(null);
+        break;
+      case "infra":
+        setFakeSelect(false);
+        setProblemInfra(true);
+        setProblemSyst(false);
+        setProblemTicket(null);
+        setSectorTicket("Infraestrutura");
+        getTicketFilterSector({ sector: "Infraestrutura" });
+        break;
+      case "system":
+        setFakeSelect(false);
+        setProblemInfra(false);
+        setProblemSyst(true);
+        setProblemTicket(null);
+        setSectorTicket("Sistema");
+        getTicketFilterSector({ sector: "Sistema" });
+        break;
+      case "all":
+        setFakeSelect(true);
+        setProblemInfra(false);
+        setProblemSyst(false);
+        setSectorTicket("all");
+        setProblemTicket(null);
+        getTicketFilterSector({ sector: "all" });
+        break;
     }
   }
 
@@ -1206,19 +1212,22 @@ export default function DashboardTI() {
       })
       .then((data) => {
         setLoadingDash(false);
-        return setTickets(data.tickets);
+        setTickets(data.tickets);
       })
       .catch((err) => {
+        setMessageError(err);
+        setTypeError("FATAL ERROR");
+        setMessage(true);
         return console.log(err);
       });
   }
 
   function equipamentForUser() {
-    return setEquipamentForUser(true);
+    setEquipamentForUser(true);
   }
 
   function closeUpload() {
-    return setEquipamentForUser(false);
+    setEquipamentForUser(false);
   }
 
   function getTicketKey(event) {
@@ -1245,13 +1254,14 @@ export default function DashboardTI() {
       })
       .then((data) => {
         setLoadingDash(false);
-        return setTickets(data.tickets);
+        setTickets(data.tickets);
       })
       .catch((err) => {
+        setMessageError(err);
+        setTypeError("FATAL ERROR");
+        setMessage(true);
         return console.log(err);
       });
-
-    return;
   }
 
   function ticketOpenStatus() {
@@ -1296,8 +1306,6 @@ export default function DashboardTI() {
         setMessage(true);
         return console.log(err);
       });
-
-    return;
   }
 
   function ticketClose() {
@@ -1342,8 +1350,6 @@ export default function DashboardTI() {
         setMessage(true);
         return console.log(err);
       });
-
-    return;
   }
 
   function statusTicketAll() {
@@ -1388,8 +1394,6 @@ export default function DashboardTI() {
         setMessage(true);
         return console.log(err);
       });
-
-    return;
   }
 
   function changeProblemn() {
@@ -2108,14 +2112,17 @@ export default function DashboardTI() {
     const select = document.getElementById("select-internet");
     const option = select.options[select.selectedIndex].value;
 
-    if (option === "lib") {
-      setProblemn("Liberacao de site");
-      return;
-    } else if (option === "block") {
-      setProblemn("Bloqueio de site");
-      return;
-    } else if (option === "none") {
-      return;
+    switch (option) {
+      default:
+        break;
+      case "none":
+        break;
+      case "lib":
+        setProblemn("Liberacao de site");
+        break;
+      case "block":
+        setProblemn("Bloqueio de site");
+        break;
     }
   }
 
@@ -2123,14 +2130,17 @@ export default function DashboardTI() {
     const select = document.getElementById("select-folder");
     const option = select.options[select.selectedIndex].value;
 
-    if (option === "lib") {
-      setProblemn("Liberar pasta");
-      return;
-    } else if (option === "block") {
-      setProblemn("Bloquear pasta");
-      return;
-    } else if (option === "none") {
-      return;
+    switch (option) {
+      default:
+        break;
+      case "none":
+        break;
+      case "lib":
+        setProblemn("Liberar pasta");
+        break;
+      case "block":
+        setProblemn("Bloquear pasta");
+        break;
     }
   }
 
@@ -2138,20 +2148,23 @@ export default function DashboardTI() {
     const selectSAP = document.getElementById("select-sap");
     const optionSAP = selectSAP.options[selectSAP.selectedIndex].value;
 
-    if (optionSAP === "user") {
-      setProblemn("Criação/exclusão usuário");
-      return;
-    } else if (optionSAP === "access") {
-      setProblemn("Liberação/bloqueio de acessos");
-      return;
-    } else if (optionSAP === "quest") {
-      setProblemn("Dúvidas operacionais");
-      return;
-    } else if (optionSAP === "error") {
-      setProblemn("Correção de falhas");
-      return;
-    } else if (optionSAP === "none") {
-      return;
+    switch (optionSAP) {
+      default:
+        break;
+      case "none":
+        break;
+      case "user":
+        setProblemn("Criação/exclusão usuário");
+        break;
+      case "access":
+        setProblemn("Liberação/bloqueio de acessos");
+        break;
+      case "quest":
+        setProblemn("Dúvidas operacionais");
+        break;
+      case "error":
+        setProblemn("Correção de falhas");
+        break;
     }
   }
 
@@ -2159,20 +2172,23 @@ export default function DashboardTI() {
     const select_MBI = document.getElementById("select-mbi");
     const optionMBI = select_MBI.options[select_MBI.selectedIndex].value;
 
-    if (optionMBI === "user") {
-      setProblemn("Criação/exclusão usuário");
-      return;
-    } else if (optionMBI === "access") {
-      setProblemn("Liberação/bloqueio de acessos");
-      return;
-    } else if (optionMBI === "quest") {
-      setProblemn("Dúvidas operacionais");
-      return;
-    } else if (optionMBI === "error") {
-      setProblemn("Correção de falhas");
-      return;
-    } else if (optionMBI === "none") {
-      return;
+    switch (optionMBI) {
+      default:
+        break;
+      case "none":
+        break;
+      case "user":
+        setProblemn("Criação/exclusão usuário");
+        break;
+      case "access":
+        setProblemn("Liberação/bloqueio de acessos");
+        break;
+      case "quest":
+        setProblemn("Dúvidas operacionais");
+        break;
+      case "error":
+        setProblemn("Correção de falhas");
+        break;
     }
   }
 
@@ -2180,14 +2196,17 @@ export default function DashboardTI() {
     const selectOffice = document.getElementById("select-office");
     const optionOffice = selectOffice.options[selectOffice.selectedIndex].value;
 
-    if (optionOffice === "buy") {
-      setProblemn("Aquisição de software/licenciamento");
-      return;
-    } else if (optionOffice === "error") {
-      setProblemn("Correção de falhas");
-      return;
-    } else if (optionOffice === "none") {
-      return;
+    switch (optionOffice) {
+      default:
+        break;
+      case "none":
+        break;
+      case "buy":
+        setProblemn("Aquisição de software/licenciamento");
+        break;
+      case "error":
+        setProblemn("Correção de falhas");
+        break;
     }
   }
 
@@ -2195,14 +2214,17 @@ export default function DashboardTI() {
     const selectEng = document.getElementById("select-eng");
     const optionEng = selectEng.options[selectEng.selectedIndex].value;
 
-    if (optionEng === "buy") {
-      setProblemn("Aquisição de software/licenciamento");
-      return;
-    } else if (optionEng === "error") {
-      setProblemn("Correção de falhas");
-      return;
-    } else if (optionEng === "none") {
-      return;
+    switch (optionEng) {
+      default:
+        break;
+      case "none":
+        break;
+      case "buy":
+        setProblemn("Aquisição de software/licenciamento");
+        break;
+      case "error":
+        setProblemn("Correção de falhas");
+        break;
     }
   }
 
@@ -2267,10 +2289,10 @@ export default function DashboardTI() {
           return window.location.reload();
         }
       })
-      .then((data) => {
-        return data && window.location.reload();
-      })
       .catch((err) => {
+        setMessageError(err);
+        setTypeError("FATAL ERROR");
+        setMessage(true);
         return console.log(err);
       });
   }
@@ -2279,19 +2301,23 @@ export default function DashboardTI() {
     const selectSynch = document.getElementById("select-synch");
     const optionSynch = selectSynch.options[selectSynch.selectedIndex].value;
 
-    if (optionSynch === "user") {
-      setProblemn("Criação/exclusão usuário");
-      return;
-    } else if (optionSynch === "access") {
-      setProblemn("Liberação/bloqueio de acessos");
-      return;
-    } else if (optionSynch === "quest") {
-      setProblemn("Dúvidas operacionais");
-      return;
-    } else if (optionSynch === "error") {
-      setProblemn("Correção de falhas");
-    } else if (optionSynch === "none") {
-      return;
+    switch (optionSynch) {
+      default:
+        break;
+      case "none":
+        break;
+      case "user":
+        setProblemn("Criação/exclusão usuário");
+        break;
+      case "access":
+        setProblemn("Liberação/bloqueio de acessos");
+        break;
+      case "quest":
+        setProblemn("Dúvidas operacionais");
+        break;
+      case "error":
+        setProblemn("Correção de falhas");
+        break;
     }
   }
 

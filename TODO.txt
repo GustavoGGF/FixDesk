@@ -19,13 +19,14 @@ comentar código
 pdf dos chamados
 ]
 
-Login[]
+Login[funçaõ de criar usuario django asyncrono]
 
 HelpDesk[
 contrato comodato para os equipamentos
 ao enviar locagem de equipamento, se estiver alocado já, retornar com alocado cinza e pedir para ajustar data
 otimizar login, deixar rodando a criação de usuario enquanto autentica no
 remover Hours: do chat
+mesma função quando problema e ocorrencia forem iguais
 ]
 
 DashBoard[
@@ -57,6 +58,7 @@ arrumar arquivos anexados
 nome do arquivo na tela de ticket
 data e hora no chat
 otimizar login, deixar rod
+mesma função quando problema e ocorrencia forem iguais {mudar CHAMADO)
 ]
 
 Navbar[
