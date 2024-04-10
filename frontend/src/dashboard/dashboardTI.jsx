@@ -1568,12 +1568,13 @@ export default function DashboardTI() {
   }
 
   function moreTickets() {
-    fetch("moreTicket/", {
+    fetch("/helpdesk/moreTicket/", {
       method: "GET",
       headers: {
         Accept: "application/json",
         "Ticket-Current": countTicket,
         "ORDER-BY": orderby,
+        "Tech-Dash": "TI",
       },
     })
       .then((response) => {

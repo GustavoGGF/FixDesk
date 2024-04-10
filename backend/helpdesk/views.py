@@ -1380,21 +1380,28 @@ def moreTicket(request):
         ticket_data = None
         ticket_json = None
         try:
-            username = request.META.get("HTTP_USER_DATA")
             newCount = int(request.META.get("HTTP_TICKET_CURRENT"))
             count = count + newCount
 
             if "HTTP_ORDER_BY" in request.META:
                 order = request.META.get("HTTP_ORDER_BY")
-                if order == "-id":
-                    ticket_data = SupportTicket.objects.filter(
-                        ticketRequester=username
-                    ).order_by("-id")[:count]
+                if "HTTP_TECH_DASH" in request.META:
+                    if order == "-id":
+                        ticket_data = SupportTicket.objects.order_by("-id")[:count]
 
+                    else:
+                        ticket_data = SupportTicket.objects[:count]
                 else:
-                    ticket_data = SupportTicket.objects.filter(
-                        ticketRequester=username
-                    )[:count]
+                    username = request.META.get("HTTP_USER_DATA")
+                    if order == "-id":
+                        ticket_data = SupportTicket.objects.filter(
+                            ticketRequester=username
+                        ).order_by("-id")[:count]
+
+                    else:
+                        ticket_data = SupportTicket.objects.filter(
+                            ticketRequester=username
+                        )[:count]
 
             else:
                 ticket_data = SupportTicket.objects.filter(ticketRequester=username)[

@@ -13,7 +13,6 @@ from .models import Equipaments
 from datetime import date, datetime, timedelta
 from django.db.models import Q
 import calendar
-import pytz
 from magic import Magic
 import mimetypes
 from django.core.files.base import ContentFile
@@ -89,10 +88,7 @@ def getDashBoardPie(request, sector):
         if sector == "TI":
             boardpie = None
             tickets_data = None
-            count = None
-            openTicket = None
             opens = None
-            date_verify = None
             date_current = None
             diference = None
 

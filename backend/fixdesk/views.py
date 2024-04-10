@@ -11,6 +11,7 @@ from django.contrib.auth.models import User, Group
 from django.contrib.auth import login
 
 
+# Função que cria usuario no /admin
 def CreateOrVerifyUser(user, password, request, helpdesk, name_create_user):
     global Valid
 
@@ -96,6 +97,7 @@ def CreateOrVerifyUser(user, password, request, helpdesk, name_create_user):
         return JsonResponse({"status": "error"}, status=400, safe=True)
 
 
+# Função que acessar o AD
 @csrf_exempt
 def validation(request):
     if request.method == "GET":
@@ -249,17 +251,22 @@ def validation(request):
             name_create_user_ln = information["sn"]
             name_create_user = name_create_user_fn + " " + name_create_user_ln
 
-            groups = information["memberOf"]
+            # groups = information["memberOf"]
+
+            groups = information.get("memberOf", [])
+            helpdesk = None
 
             for item in groups:
                 if tech_user in item:
                     helpdesk = "User"
-            for item in groups:
-                if tech_ti in item:
+                    break  # Se encontrou, não precisa continuar procurando
+                elif tech_ti in item:
                     helpdesk = "Tecnico TI"
-            for item in groups:
-                if tech_leader in item:
+                    break  # Se encontrou, não precisa continuar procurando
+                elif tech_leader in item:
                     helpdesk = "Gestor"
+                    break  # Se encontrou, não precisa continuar procurando
+
             if "displayName" in information:
                 name = information["displayName"]
             else:
