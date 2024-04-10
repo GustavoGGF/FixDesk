@@ -409,3 +409,7 @@
 .none {
   display: none !important;
 }
+
+.upload-files {
+  margin: 0 auto;
+}

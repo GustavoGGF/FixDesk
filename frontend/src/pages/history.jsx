@@ -579,8 +579,6 @@ export default function History() {
           const chatValue = [];
           let match;
 
-          console.log("data.chat:", data.chat);
-
           while ((match = regex.exec(data.chat)) !== null) {
             const [, value1, value2, value3] = match;
             chatValue.push([value1, value2, value3]);
@@ -589,8 +587,6 @@ export default function History() {
           setMountChat([]);
 
           const groupedByDate = {};
-
-          console.log("chatValue:", chatValue);
 
           chatValue.forEach((item) => {
             const date = item[0].split(":")[1].trim(); // Extrai a data do primeiro elemento
@@ -602,7 +598,6 @@ export default function History() {
 
           const renderGroupedItems = () => {
             const groupedItems = [];
-            console.log("groupedByDate:", groupedByDate);
             for (const date in groupedByDate) {
               groupedItems.push(
                 <div key={date}>
@@ -611,7 +606,6 @@ export default function History() {
                   </div>
                   {groupedByDate[date].map((item, index) => {
                     // Remover "User:" ou "Tech:" do início da string
-                    console.log("item[1]:", item[1]);
                     var userOrTech = item[1];
                     var time = item[2];
                     time = time.replace("Hours:", "").trim();
@@ -779,7 +773,6 @@ export default function History() {
     btn2.style.backgroundColor = "transparent";
 
     tickets.forEach((ticket) => {
-      console.log(ticket);
       var date = new Date(ticket["start_date"]);
 
       var day = date.getDate();
@@ -1817,7 +1810,7 @@ export default function History() {
             Aberto
           </Button1>
           <button
-            className="btn btn-success"
+            className="btn"
             value="close"
             id="btnclose"
             onClick={() => {

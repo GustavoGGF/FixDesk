@@ -130,10 +130,10 @@ def validation(request):
             dominio = getenv("DOMAIN_NAME_HELPDESK")
 
             server1 = getenv("SERVER1")
-            server2 = getenv("SERVER2")
-            server3 = getenv("SERVER3")
+            # server2 = getenv("SERVER2")
+            # server3 = getenv("SERVER3")
 
-            ldap_servers = [server1, server2, server3]
+            # ldap_servers = [server1, server2, server3]
 
         except Exception as e:
             print(e)
@@ -144,34 +144,32 @@ def validation(request):
         avg_ping = None
         pingFormat = None
         server_pings = {}
-        min_ping_server = None
+        # min_ping_server = None
 
-        try:
-            for server in ldap_servers:
-                try:
-                    avg_ping = ping(server, unit="ms")
-                    pingFormat = "{:.2f}".format(avg_ping)
+        # try:
+        #     for server in ldap_servers:
+        #         try:
+        #             avg_ping = ping(server, unit="ms")
+        #             pingFormat = "{:.2f}".format(avg_ping)
 
-                    server_pings.append(server, pingFormat)
+        #             server_pings.append(server, pingFormat)
 
-                except:
-                    server_pings[server] = float("inf")
+        #         except:
+        #             server_pings[server] = float("inf")
 
-            min_ping_server = min(server_pings, key=lambda x: x[1])
+        #     min_ping_server = min(server_pings, key=lambda x: x[1])
 
-            print(min_ping_server)
-
-        except Exception as e:
-            erro = str(e)
-            print(erro, flush=True)
-            return JsonResponse({"status": "error"}, status=3)
+        # except Exception as e:
+        #     erro = str(e)
+        #     print(erro, flush=True)
+        #     return JsonResponse({"status": "error"}, status=3)
 
         server = None
         conn = None
         base_ldap = None
         response = None
         try:
-            server = min_ping_server
+            server = server1
 
             conn = Connection(
                 server,

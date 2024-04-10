@@ -56,11 +56,8 @@ export default function Helpdesk() {
   const [messageError, setMessageError] = useState("");
   const [respectiveTI, setRespectiveTI] = useState(false);
   const [respectiveArea, setRespectiveArea] = useState("");
-  const [sap, setSAP] = useState(false);
-  const [mbi, setMBI] = useState(false);
-  const [synch, setSynch] = useState(false);
-  const [office, setOffice] = useState(false);
-  const [eng, setEng] = useState(false);
+  const [sys, setSYS] = useState(false);
+  const [sys2, setSYS2] = useState(false);
   const [alocate, setAlocate] = useState(false);
   const [equipaments, setEquipaments] = useState();
   const [dashequipaments, setDashEquipaments] = useState("");
@@ -256,11 +253,8 @@ export default function Helpdesk() {
         setAlertVerify(false);
         setsector("Infraestrutura");
         setSystem(false);
-        setMBI(false);
-        setSAP(false);
-        setOffice(false);
-        setSynch(false);
-        setEng(false);
+        setSYS(false);
+        setSYS2(false);
         setAlocate(false);
         setDateEquip(false);
         break;
@@ -278,11 +272,8 @@ export default function Helpdesk() {
         setFolder(false);
         setsector("Sistema");
         setAlertVerify(false);
-        setMBI(false);
-        setSAP(false);
-        setSynch(false);
-        setOffice(false);
-        setEng(false);
+        setSYS(false);
+        setSYS2(false);
         setAlocate(false);
         setDateEquip(false);
         break;
@@ -299,11 +290,8 @@ export default function Helpdesk() {
         setInternet(false);
         setFolder(false);
         setsector("");
-        setMBI(false);
-        setSAP(false);
-        setSynch(false);
-        setOffice(false);
-        setEng(false);
+        setSYS(false);
+        setSYS2(false);
         setAlocate(false);
         setDateEquip(false);
     }
@@ -328,11 +316,8 @@ export default function Helpdesk() {
         setFolder(false);
         setOccurrence("Backup");
         setAlertVerify(false);
-        setSAP(false);
-        setMBI(false);
-        setSynch(false);
-        setOffice(false);
-        setEng(false);
+        setSYS(false);
+        setSYS2(false);
         setAlocate(false);
         setDateEquip(false);
         break;
@@ -348,11 +333,8 @@ export default function Helpdesk() {
         setFolder(false);
         setOccurrence("E-mail");
         setAlertVerify(false);
-        setSAP(false);
-        setMBI(false);
-        setSynch(false);
-        setOffice(false);
-        setEng(false);
+        setSYS(false);
+        setSYS2(false);
         setAlocate(false);
         setDateEquip(false);
         break;
@@ -369,11 +351,8 @@ export default function Helpdesk() {
         setAlertVerify(false);
         setAlocate(false);
         setOccurrence("Equipamento");
-        setSAP(false);
-        setMBI(false);
-        setSynch(false);
-        setOffice(false);
-        setEng(false);
+        setSYS(false);
+        setSYS2(false);
         setDateEquip(false);
         break;
       case "user":
@@ -389,11 +368,8 @@ export default function Helpdesk() {
         setAlertVerify(false);
         setAlocate(false);
         setOccurrence("Gerenciamento de Usuario");
-        setSAP(false);
-        setMBI(false);
-        setSynch(false);
-        setOffice(false);
-        setEng(false);
+        setSYS(false);
+        setSYS2(false);
         setDateEquip(false);
         break;
       case "internet":
@@ -410,11 +386,8 @@ export default function Helpdesk() {
         setAlocate(false);
         setDateEquip(false);
         setOccurrence("Internet");
-        setSAP(false);
-        setMBI(false);
-        setSynch(false);
-        setOffice(false);
-        setEng(false);
+        setSYS(false);
+        setSYS2(false);
         setDateEquip(false);
         break;
       case "folder":
@@ -431,11 +404,8 @@ export default function Helpdesk() {
         setAlocate(false);
         setDateEquip(false);
         setOccurrence("Permissão");
-        setSAP(false);
-        setMBI(false);
-        setSynch(false);
-        setOffice(false);
-        setEng(false);
+        setSYS(false);
+        setSYS2(false);
         setDateEquip(false);
         break;
       case "none":
@@ -448,19 +418,14 @@ export default function Helpdesk() {
         setFormDelUser(false);
         setInternet(false);
         setFolder(false);
-        setSAP(false);
-        setMBI(false);
-        setSynch(false);
-        setOffice(false);
-        setEng(false);
+        setSYS(false);
+        setSYS2(false);
         setAlocate(false);
         setDateEquip(false);
         break;
       case "sap":
-        setSAP(true);
-        setMBI(false);
-        setSynch(false);
-        setOffice(false);
+        setSYS(true);
+        setSYS2(false);
         setBackup(false);
         setAlert(false);
         setMail(false);
@@ -471,13 +436,11 @@ export default function Helpdesk() {
         setInternet(false);
         setFolder(false);
         setOccurrence("SAP");
-        setEng(false);
         setAlocate(false);
         setDateEquip(false);
         break;
       case "mbi":
-        setMBI(true);
-        setSAP(false);
+        setSYS(true);
         setBackup(false);
         setAlert(false);
         setMail(false);
@@ -488,16 +451,12 @@ export default function Helpdesk() {
         setInternet(false);
         setFolder(false);
         setOccurrence("MBI");
-        setSynch(false);
-        setOffice(false);
+        setSYS2(false);
         setAlocate(false);
-        setEng(false);
         setDateEquip(false);
         break;
       case "synch":
-        setSynch(true);
-        setMBI(false);
-        setSAP(false);
+        setSYS(true);
         setBackup(false);
         setAlert(false);
         setMail(false);
@@ -508,16 +467,13 @@ export default function Helpdesk() {
         setInternet(false);
         setFolder(false);
         setOccurrence("Synchro");
-        setOffice(false);
+        setSYS2(false);
         setAlocate(false);
-        setEng(false);
         setDateEquip(false);
         break;
       case "office":
-        setOffice(true);
-        setSynch(false);
-        setMBI(false);
-        setSAP(false);
+        setSYS2(true);
+        setSYS(false);
         setBackup(false);
         setAlert(false);
         setMail(false);
@@ -528,16 +484,12 @@ export default function Helpdesk() {
         setFormDelUser(false);
         setInternet(false);
         setFolder(false);
-        setEng(false);
         setOccurrence("Office");
         setDateEquip(false);
         break;
       case "eng":
-        setEng(true);
-        setOffice(false);
-        setSynch(false);
-        setMBI(false);
-        setSAP(false);
+        setSYS2(true);
+        setSYS(false);
         setBackup(false);
         setAlocate(false);
         setAlert(false);
@@ -554,11 +506,11 @@ export default function Helpdesk() {
     }
   }
 
-  function selectSynch() {
-    const selectSynch = document.getElementById("select-synch");
-    const optionSynch = selectSynch.options[selectSynch.selectedIndex].value;
+  function selectSys() {
+    const select = document.getElementById("select-synch");
+    const option = select.options[select.selectedIndex].value;
 
-    switch (optionSynch) {
+    switch (option) {
       default:
         break;
       case "user":
@@ -595,96 +547,6 @@ export default function Helpdesk() {
         break;
       case "none":
         setAlert(false);
-    }
-  }
-
-  function selectMBI() {
-    const select_MBI = document.getElementById("select-mbi");
-    const optionMBI = select_MBI.options[select_MBI.selectedIndex].value;
-
-    switch (optionMBI) {
-      default:
-        break;
-      case "user":
-        setAlert(true);
-        setMessagetitle("Caso de Criação/exclusão de usuários");
-        setMessageinfo1("1. Informar o usuário que deverá ser criado ou excluido");
-        setMessageinfo2("2. Informar os acessos que o mesmo poderá utilizar");
-        setProblemn("Criação/exclusão usuário");
-        setAlertVerify(false);
-        break;
-      case "access":
-        setAlert(true);
-        setMessagetitle("Caso de Liberação/bloqueio de acessos");
-        setMessageinfo1("1. Descreva o que deseja bloquear e/ou liberar");
-        setMessageinfo2("");
-        setProblemn("Liberação/bloqueio de acessos");
-        setAlertVerify(false);
-        break;
-      case "quest":
-        setAlert(true);
-        setMessagetitle("Caso de Dúvidas operacionais");
-        setMessageinfo1("1. Descreva o que deseja saber");
-        setMessageinfo2("");
-        setProblemn("Dúvidas operacionais");
-        setAlertVerify(false);
-        break;
-      case "error":
-        setAlert(true);
-        setMessagetitle("Caso de Correção de falhas");
-        setMessageinfo1("1. Informe o Erro");
-        setMessageinfo2("");
-        setProblemn("Correção de falhas");
-        setAlertVerify(false);
-        break;
-      case "none":
-        setAlert(false);
-        break;
-    }
-  }
-
-  function selectSAP() {
-    const selectSAP = document.getElementById("select-sap");
-    const optionSAP = selectSAP.options[selectSAP.selectedIndex].value;
-
-    switch (optionSAP) {
-      default:
-        break;
-      case "user":
-        setAlert(true);
-        setMessagetitle("Caso de Criação/exclusão de usuários");
-        setMessageinfo1("1. Informar o usuário que deverá ser criado ou excluido");
-        setMessageinfo2("2. Informar os acessos que o mesmo poderá utilizar");
-        setProblemn("Criação/exclusão usuário");
-        setAlertVerify(false);
-        break;
-      case "access":
-        setAlert(true);
-        setMessagetitle("Caso de Liberação/bloqueio de acessos");
-        setMessageinfo1("1. Descreva o que deseja bloquear e/ou liberar");
-        setMessageinfo2("");
-        setProblemn("Liberação/bloqueio de acessos");
-        setAlertVerify(false);
-        break;
-      case "quest":
-        setAlert(true);
-        setMessagetitle("Caso de Dúvidas operacionais");
-        setMessageinfo1("1. Descreva o que deseja saber");
-        setMessageinfo2("");
-        setProblemn("Dúvidas operacionais");
-        setAlertVerify(false);
-        break;
-      case "error":
-        setAlert(true);
-        setMessagetitle("Caso de Correção de falhas");
-        setMessageinfo1("1. Informe o Erro");
-        setMessageinfo2("");
-        setProblemn("Correção de falhas");
-        setAlertVerify(false);
-        break;
-      case "none":
-        setAlert(false);
-        break;
     }
   }
 
@@ -719,35 +581,6 @@ export default function Helpdesk() {
 
   function getObservation(event) {
     setObservation(event.target.value);
-  }
-
-  function selectEng() {
-    const selectEng = document.getElementById("select-eng");
-    const optionEng = selectEng.options[selectEng.selectedIndex].value;
-
-    switch (optionEng) {
-      default:
-        break;
-      case "buyt":
-        setAlert(true);
-        setMessagetitle("Aquisição de software/licenciamento");
-        setMessageinfo1("1. Informe para quem será a licença");
-        setMessageinfo2("");
-        setProblemn("Aquisição de software/licenciamento");
-        setAlertVerify(false);
-        break;
-      case "error":
-        setAlert(true);
-        setMessagetitle("Caso de Correção de falhas");
-        setMessageinfo1("1. Informe o Erro");
-        setMessageinfo2("");
-        setProblemn("Correção de falhas");
-        setAlertVerify(false);
-        break;
-      case "none":
-        setAlert(false);
-        break;
-    }
   }
 
   function selectBackup() {
@@ -1105,17 +938,6 @@ export default function Helpdesk() {
     var total_size = 0;
 
     if (filename.length > 0) {
-      formdataUser.append("ticketRequester", dataUser.name);
-      formdataUser.append("department", dataUser.department);
-      formdataUser.append("mail", dataUser.mail);
-      formdataUser.append("company", dataUser.company);
-      formdataUser.append("sector", sector);
-      formdataUser.append("occurrence", occurrence);
-      formdataUser.append("problemn", problemn);
-      formdataUser.append("observation", observation);
-      formdataUser.append("start_date", dataUserFormatada);
-      formdataUser.append("PID", dataUser.pid);
-      formdataUser.append("respective_area", respectiveArea);
       for (let i = 0; i < fileimg.length; i++) {
         const file = fileimg[i];
         total_size += file.size;
@@ -1129,17 +951,6 @@ export default function Helpdesk() {
         const dateFormated = `${year}-${month}-${day}`;
         NewDatesAlocate.push(dateFormated);
       }
-      formdataUser.append("ticketRequester", dataUser.name);
-      formdataUser.append("department", dataUser.departament);
-      formdataUser.append("mail", dataUser.mail);
-      formdataUser.append("company", dataUser.company);
-      formdataUser.append("sector", sector);
-      formdataUser.append("occurrence", occurrence);
-      formdataUser.append("problemn", problemn);
-      formdataUser.append("observation", observation);
-      formdataUser.append("start_date", dataUserFormatada);
-      formdataUser.append("PID", dataUser.pid);
-      formdataUser.append("respective_area", respectiveArea);
       formdataUser.append("id_equipament", equipamentSelected);
       formdataUser.append("days_alocated", NewDatesAlocate);
     } else if (problemn === "Criacao de usuario de rede") {
@@ -1191,18 +1002,6 @@ export default function Helpdesk() {
         setMessageError("Obigatório Informar o cargo!!!");
         return;
       }
-
-      formdataUser.append("ticketRequester", dataUser.name);
-      formdataUser.append("department", dataUser.departament);
-      formdataUser.append("mail", dataUser.mail);
-      formdataUser.append("company", dataUser.company);
-      formdataUser.append("sector", sector);
-      formdataUser.append("occurrence", occurrence);
-      formdataUser.append("problemn", problemn);
-      formdataUser.append("observation", observation);
-      formdataUser.append("start_date", dataUserFormatada);
-      formdataUser.append("PID", dataUser.pid);
-      formdataUser.append("respective_area", respectiveArea);
       formdataUser.append("new_user", newname);
       formdataUser.append("sector_new_user", sectornewuser);
       formdataUser.append("where_from", motivationContract);
@@ -1232,30 +1031,11 @@ export default function Helpdesk() {
         setMessageError("Obrigatório informar onde os dados devem ser salvos!!!");
         return;
       }
-      formdataUser.append("ticketRequester", dataUser.name);
-      formdataUser.append("department", dataUser.departament);
-      formdataUser.append("mail", dataUser.mail);
-      formdataUser.append("company", dataUser.company);
-      formdataUser.append("sector", sector);
-      formdataUser.append("occurrence", occurrence);
-      formdataUser.append("problemn", problemn);
-      formdataUser.append("observation", observation);
-      formdataUser.append("start_date", dataUserFormatada);
-      formdataUser.append("PID", dataUser.pid);
-      formdataUser.append("respective_area", respectiveArea);
       formdataUser.append("new_user", newname);
       formdataUser.append("mail_tranfer", maildelegation);
       formdataUser.append("old_files", dirsave);
       formdataUser.append("start_work_new_user", selectedDay);
     } else {
-      formdataUser.append("ticketRequester", dataUser.name);
-      formdataUser.append("department", dataUser.departament);
-      formdataUser.append("mail", dataUser.mail);
-      formdataUser.append("company", dataUser.company);
-      formdataUser.append("sector", sector);
-      formdataUser.append("occurrence", occurrence);
-      formdataUser.append("problemn", problemn);
-      formdataUser.append("observation", observation);
       formdataUser.append("start_date", dataUserFormatada);
       formdataUser.append("PID", dataUser.pid);
       formdataUser.append("respective_area", respectiveArea);
@@ -1266,6 +1046,23 @@ export default function Helpdesk() {
       setMessageError("Capacidade Máxima de Arquivos Anexado é de 10MB");
       return;
     }
+    formdataUser.append("ticketRequester", dataUser.name);
+    formdataUser.append("department", dataUser.department);
+    formdataUser.append("mail", dataUser.mail);
+    formdataUser.append("company", dataUser.company);
+    formdataUser.append("sector", sector);
+    formdataUser.append("occurrence", occurrence);
+    formdataUser.append("problemn", problemn);
+    if (observation.length < 2) {
+      setMessageError("Obrigatório Escrever Obversação conforme o chamado")
+      setTypeError("Falta de Dados")
+      setMessage(true)
+      return
+    }
+    formdataUser.append("observation", observation);
+    formdataUser.append("start_date", dataUserFormatada);
+    formdataUser.append("PID", dataUser.pid);
+    formdataUser.append("respective_area", respectiveArea);
     fetch("submitTicket/", {
       method: "POST",
       headers: {
@@ -1984,8 +1781,8 @@ export default function Helpdesk() {
               <option value="eng">Softwares de Engenharia</option>
             </Select>
           )}
-          {sap && (
-            <Select className="form-select mb-3" aria-label="Default select example" id="select-sap" onChange={selectSAP}>
+          {sys && (
+            <Select className="form-select mb-3" aria-label="Default select example" id="select-sap" onChange={selectSys}>
               <option value="none" disabled selected>
                 Selecione o Problema
               </option>
@@ -1995,39 +1792,8 @@ export default function Helpdesk() {
               <option value="error">Correção de falhas</option>
             </Select>
           )}
-          {mbi && (
-            <Select className="form-select mb-3" aria-label="Default select example" id="select-mbi" onChange={selectMBI}>
-              <option value="none" disabled selected>
-                Selecione o Problema
-              </option>
-              <option value="user">Criação/exclusão de usuários</option>
-              <option value="access">Liberação/bloqueio de acessos</option>
-              <option value="quest">Dúvidas operacionais</option>
-              <option value="error">Correção de falhas</option>
-            </Select>
-          )}
-          {synch && (
-            <Select className="form-select mb-3" aria-label="Default select example" id="select-synch" onChange={selectSynch}>
-              <option value="none" disabled selected>
-                Selecione o Problema
-              </option>
-              <option value="user">Criação/exclusão de usuários</option>
-              <option value="access">Liberação/bloqueio de acessos</option>
-              <option value="quest">Dúvidas operacionais</option>
-              <option value="error">Correção de falhas</option>
-            </Select>
-          )}
-          {office && (
+          {sys2 && (
             <Select className="form-select mb-3" aria-label="Default select example" id="select-office" onChange={selectOffice}>
-              <option value="none" disabled selected>
-                Selecione o Problema
-              </option>
-              <option value="buy">Aquisição de software/licenciamento</option>
-              <option value="error">Correção de falhas</option>
-            </Select>
-          )}
-          {eng && (
-            <Select className="form-select mb-3" aria-label="Default select example" id="select-eng" onChange={selectEng}>
               <option value="none" disabled selected>
                 Selecione o Problema
               </option>

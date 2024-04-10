@@ -122,7 +122,7 @@ export const ListFiles = styled.div`
 
 export const IMGClose = styled.img`
   margin: 1em;
-  width: 3em;
-  height: 3em;
+  width: 2em;
+  height: 2em;
   cursor: pointer;
 `;
