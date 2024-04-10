@@ -1,68 +1,68 @@
 Tudo[
-Usar HTTPS para criptografar a comunicação entre o navegador do usuário e o servidor.
-tema de fundo
-diagrama de como funciona (creately ver se é de graça)
-setinha para baixo do tema
-fechar abas to temas em configuração ao clicar fora
-colocar nomes em cada aba para facil identificação
-tela para reportar bug
-boas práticas de desenvolvimento
-z-index ao clicar em tema
-mudar icone pelo fixdesk
-ticket de: instalar programa, arquivo corrompido
-criar :root var colors para usar
-loading, simbolo lupatech se dissolver girar e voltar
-usar unverse io
-requirements.txt melhorar
-ao entrar em url errada redirecionar
-comentar código
-pdf dos chamados
+    Usar HTTPS para criptografar a comunicação entre o navegador do usuário e o servidor.
+    tema de fundo
+    diagrama de como funciona (creately ver se é de graça)
+    setinha para baixo do tema
+    fechar abas to temas em configuração ao clicar fora
+    colocar nomes em cada aba para facil identificação
+    tela para reportar bug
+    boas práticas de desenvolvimento
+    z-index ao clicar em tema
+    mudar icone pelo fixdesk
+    ticket de: instalar programa, arquivo corrompido
+    criar :root var colors para usar
+    loading, simbolo lupatech se dissolver girar e voltar
+    usar unverse io
+    requirements.txt melhorar
+    ao entrar em url errada redirecionar
+    comentar código
+    pdf dos chamados
 
 ]
 
 Login[]
 
 HelpDesk[
-contrato comodato para os equipamentos
-ao enviar locagem de equipamento, se estiver alocado já, retornar com alocado cinza e pedir para ajustar data
+    contrato comodato para os equipamentos
+    ao enviar locagem de equipamento, se estiver alocado já, retornar com alocado cinza e pedir para ajustar data
 ]
 
 DashBoard[
-modificar chamdo que não é seu
-ajustar fechar e reabrir chamado
-data no ticket do chamado
-mudar cores do status dos ticker deixar igual cor dos tickets
-hora no chamado
-imprimir chat pdf
-arrumar arquivos anexados
-nos filstros mostrar chamados que estão comigo
-nome do arquivo na tela de ticket
-data e hora no chat
-ao clicar na engrenagem do chamado aberto do TI quando clicar fora tem que fechar
-resetar ticker quando clicar em algum filtro
-botão de pegar mais tickets não está funcionando
-quando tiver sendo feito a montagem dos tickets na tela contar quantos tem em verificar se oculta ou mostra o botão de mostrar mais
-atualizar tickets e dashboardPie por minuto
-tela de carregamento abrindo ticket
-zerar os tickets ao selecionar um filtro
-trocar icone de X por lixeira nos novos arquivos dashboard
-fechar o chamado fecha a tela de enviar arquivos e limpa os arquivos
-ao incluir novos arquivos atualiza o chamado
-ao adicionar novos arquivos mostrar no chat
-deixar um blur na tela de cadastro de equipamento
-deixar botão de fechar tela de cadastro de equipamento menor
-deixar botão de fechar da tela de cadastro de equipamento fixo
-hora no chamado
-arrumar arquivos anexados
-nome do arquivo na tela de ticket
-data e hora no chat
-otimizar login, deixar rod
-mesma função quando problema e ocorrencia forem iguais {mudar CHAMADO)
-cabeçalho de chamados para modo Lista
-botão status todos deixar colorido
-mudar scroll de tudo da tela de cadastrode equip
-baixar pdf msm sem ter atentido
-ajustar descrição no pdf
+    modificar chamdo que não é seu
+    ajustar fechar e reabrir chamado
+    data no ticket do chamado
+    mudar cores do status dos ticker deixar igual cor dos tickets
+    hora no chamado
+    imprimir chat pdf
+    arrumar arquivos anexados
+    nos filstros mostrar chamados que estão comigo
+    nome do arquivo na tela de ticket
+    data e hora no chat
+    ao clicar na engrenagem do chamado aberto do TI quando clicar fora tem que fechar
+    resetar ticker quando clicar em algum filtro
+    botão de pegar mais tickets não está funcionando
+    quando tiver sendo feito a montagem dos tickets na tela contar quantos tem em verificar se oculta ou mostra o botão de mostrar mais
+    atualizar tickets e dashboardPie por minuto
+    tela de carregamento abrindo ticket
+    zerar os tickets ao selecionar um filtro
+    trocar icone de X por lixeira nos novos arquivos dashboard
+    fechar o chamado fecha a tela de enviar arquivos e limpa os arquivos
+    ao incluir novos arquivos atualiza o chamado
+    ao adicionar novos arquivos mostrar no chat
+    deixar um blur na tela de cadastro de equipamento
+    deixar botão de fechar tela de cadastro de equipamento menor
+    deixar botão de fechar da tela de cadastro de equipamento fixo
+    hora no chamado
+    arrumar arquivos anexados
+    nome do arquivo na tela de ticket
+    data e hora no chat
+    otimizar login, deixar rod
+    mesma função quando problema e ocorrencia forem iguais {mudar CHAMADO)
+    cabeçalho de chamados para modo Lista
+    botão status todos deixar colorido
+    mudar scroll de tudo da tela de cadastrode equip
+    baixar pdf msm sem ter atentido
+    ajustar descrição no pdf
 ]
 
 Navbar[
@@ -70,22 +70,22 @@ Navbar[
 ]
 
 History[
-imprimir chat pdf
-email de abertura de chamado e chamado finalizado
-resetar ticker quando clicar em algum filtro
-botão de pegar mais tickets não está funcionando
-quando tiver sendo feito a montagem dos tickets na tela contar quantos tem em verificar se oculta ou mostra o botão de mostrar mais
-tela de carregamento abrindo ticket
-zerar os tickets ao selecionar um filtro
-fechar o chamado fecha a tela de enviar arquivos e limpa os arquivos
-ao incluir novos arquivos atualiza o chamado
-ao adicionar novos arquivos mostrar no chat
-botão bugado
-quando não tem chamado aberto
-cabeçalho de chamados modo Lista
-botão status todos deixar colorido
-quanto descrição for maior que 100 caracteres, mostrar o botão de mostrar mais
-baixar pdf msm sem ter atentido
-ajustar descrição no pdf
+    imprimir chat pdf
+    email de abertura de chamado e chamado finalizado
+    resetar ticker quando clicar em algum filtro
+    botão de pegar mais tickets não está funcionando
+    quando tiver sendo feito a montagem dos tickets na tela contar quantos tem em verificar se oculta ou mostra o botão de mostrar mais
+    tela de carregamento abrindo ticket
+    zerar os tickets ao selecionar um filtro
+    fechar o chamado fecha a tela de enviar arquivos e limpa os arquivos
+    ao incluir novos arquivos atualiza o chamado
+    ao adicionar novos arquivos mostrar no chat
+    botão bugado
+    quando não tem chamado aberto
+    cabeçalho de chamados modo Lista
+    botão status todos deixar colorido
+    quanto descrição for maior que 100 caracteres, mostrar o botão de mostrar mais
+    baixar pdf msm sem ter atentido
+    ajustar descrição no pdf
 ]
 

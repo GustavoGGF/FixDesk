@@ -122,7 +122,6 @@ def submitTicket(request):
             problemn = request.POST.get("problemn")
             observation = request.POST.get("observation")
             start_date_str = request.POST.get("start_date")
-            print(start_date_str)
             start_date = datetime.strptime(start_date_str, "%Y-%m-%d %H:%M")
             pid = request.POST.get("PID")
 
@@ -199,8 +198,6 @@ def submitTicket(request):
 
                     if valid:
                         Ticket.save()
-
-                        print(file)
 
                         ticket_file = TicketFile(ticket=Ticket)
                         ticket_file.file.save(str(file), ContentFile(image_bytes))
@@ -423,8 +420,6 @@ def history(request):
                 {"status": "Invalid Credentials"}, status=402, safe=True
             )
 
-        print("passou pela autenticação")
-
         ticket_list = []
         ticket_data = None
         ticket_json = None
@@ -541,9 +536,7 @@ def ticket(request, id):
                     ticket = SupportTicket.objects.get(id=id)
 
                     if ticket.chat == None:
-                        print("passou")
                         ticket.chat = f"[[Date:{date}],[System:{technician} atendeu ao Chamado],[Hours:{hours}]]"
-                        print("aqui")
                     else:
                         ticket.chat += f",[[Date:{date}], [System:{technician} Transfereu o Chamado para {technician}], [Hours:{hours}]]"
 
@@ -608,7 +601,6 @@ def ticket(request, id):
 
                         ticket.save()
                     else:
-                        print("O nome não está contido no nome completo.")
                         return JsonResponse(
                             {"status": "invalid modify"}, status=304, safe=True
                         )
@@ -968,7 +960,7 @@ def ticket(request, id):
 
                     chats = None
                     chat_format = None
-                    if len(ticket.chat) >= 1:
+                    if ticket.chat != None:
                         try:
                             chats = ticket.chat
                             chat_format = r"\[([^]]*)\]"
@@ -1287,8 +1279,6 @@ def ticket(request, id):
 
             if t.equipament:
                 equipament_image = t.equipament.equipament
-
-                print(t.responsible_technician)
 
                 with equipament_image.open() as img:
                     pil_image = Image.open(img)
