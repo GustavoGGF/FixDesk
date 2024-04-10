@@ -1,5 +1,8 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useEffect, useState } from "react";
+import { DayPicker } from "react-day-picker";
+import ptBR from "date-fns/locale/pt";
+
 import Navbar from "../components/navbar";
 import { Div, DropdownConten, Dropdown, DropdownButton, DivDrop, P1, DivFilter, IMGConfig, DropBTN, DropContent2, DivModify, InputTicket, ZIndex } from "../styles/dashboardTIStyle";
 import Loading from "../components/loading";
@@ -75,124 +78,119 @@ import PDF from "../images/components/pdf.png";
 import Download from "../images/components/download.png";
 import Exclude from "../images/components/close.png";
 import DownTick from "../images/components/attachment.png";
-import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
-import ptBR from "date-fns/locale/pt";
 import Seeting from "../images/components/definicoes.png";
 
 export default function DashboardTI() {
   useEffect(() => {
-    document.title = "DashBoards";
-    const Theme = localStorage.getItem("Theme");
-    if (Theme === null) {
+    document.title = "DashBoard TI";
+    const theme = localStorage.getItem("Theme");
+    if (theme === null || theme === "black") {
       localStorage.setItem("Theme", "black");
       return ThemeBlack();
-    } else if (Theme === "black") {
-      return ThemeBlack();
-    } else if (Theme === "light") {
+    } else {
       return ThemeLight();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const [loading, SetLoading] = useState(true);
-  const [navbar, SetNavbar] = useState(false);
-  const [userData, SetUserData] = useState([]);
-  const [tickets, SetTickets] = useState([]);
-  const [token, SetToken] = useState("");
-  const [ticketNAME, SetTicketNAME] = useState("");
-  const [ticketDEPARTMENT, SetTicketDEPARTMENT] = useState("");
-  const [ticketMAIL, SetTicketMAIL] = useState("");
-  const [ticketCOMPANY, SetTicketCOMPANY] = useState("");
-  const [ticketSECTOR, SetTicketSECTOR] = useState("");
-  const [ticketOCCURRENCE, SetTicketOCCURRENCE] = useState("");
-  const [ticketPROBLEMN, SetTicketPROBLEMN] = useState("");
-  const [ticketOBSERVATION, SetTicketOBSERVATION] = useState("");
-  const [lifeTime, SetLifetime] = useState("");
-  const [ticketResponsible_Technician, SetTicketResponsible_Technician] = useState("");
-  const [ticketWindow, SetTicketWindow] = useState(false);
-  const [ticketID, SetTicketID] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [navbar, setNavbar] = useState(false);
+  const [userData, setUserData] = useState([]);
+  const [tickets, setTickets] = useState([]);
+  const [token, setToken] = useState("");
+  const [ticketNAME, setTicketNAME] = useState("");
+  const [ticketDEPARTMENT, setTicketDEPARTMENT] = useState("");
+  const [ticketMAIL, setTicketMAIL] = useState("");
+  const [ticketCOMPANY, setTicketCOMPANY] = useState("");
+  const [ticketSECTOR, setTicketSECTOR] = useState("");
+  const [ticketOCCURRENCE, setTicketOCCURRENCE] = useState("");
+  const [ticketPROBLEMN, setTicketPROBLEMN] = useState("");
+  const [ticketOBSERVATION, setTicketOBSERVATION] = useState("");
+  const [lifeTime, setLifetime] = useState("");
+  const [ticketResponsible_Technician, setTicketResponsible_Technician] = useState("");
+  const [ticketWindow, setTicketWindow] = useState(false);
+  const [ticketID, setTicketID] = useState("");
   const [mountChat, setMountChat] = useState([]);
   const [chat, setChat] = useState(true);
   const [selectedTech, setSelectedTech] = useState("");
-  const [techs, SetTechs] = useState([]);
-  const [messageChat, SetMessageChat] = useState(false);
-  const [typeError, SetTypeError] = useState("");
-  const [messageError, SetMessageError] = useState("");
-  const [textChat, SetTextChat] = useState("");
-  const [message, SetMessage] = useState(false);
-  const [dropdownBTN, SetDropDownBTN] = useState(false);
-  const [fetchchat, setFetchChat] = useState(false);
-  const [countchat, setCountChat] = useState();
-  const [initUpdateChat, SetInitUpdateChat] = useState();
-  const [fakeSelect, SetFakeSelect] = useState(true);
-  const [problemInfra, SetProblemInfra] = useState(false);
-  const [equipamentforuser, SetEquipamentForUser] = useState(false);
-  const [problemSyst, SetProblemSyst] = useState(false);
-  const [orderby, SetOrderBy] = useState(null);
-  const [countTicket, SetCountTicket] = useState(0);
-  const [loadingDash, SetLoadingDash] = useState(true);
-  const [problemTicket, SetProblemTicket] = useState(null);
-  const [ticketsDash, SetTicketsDash] = useState([]);
-  const [sectorTicket, SetSectorTicket] = useState(null);
-  const [ticketOpen, SetTicketOpen] = useState();
-  const [status, SetStatus] = useState("open");
-  const [btnmore, SetBtnMore] = useState(true);
-  const [fileticket, SetFileTicket] = useState([]);
-  const [imageurl, SetImageUrl] = useState();
-  const [imageopen, SetImageOpen] = useState(false);
-  const [uploadNewFiles, SetUploadNewFiles] = useState([]);
-  const [newFiles, SetNewFiles] = useState(false);
-  const [nameNWFiles, SetNameNWFiles] = useState();
-  const [classBlur, SetClassBlur] = useState("");
-  const [namenewuser, SetNameNewUser] = useState("");
-  const [sectornewuser, SetSectorNewUser] = useState("undefined");
-  const [wherefrom, SetWhereFrom] = useState("");
-  const [machinenewuser, SetMachineNewUser] = useState();
-  const [companynewuser, SetCompanyNewUser] = useState("");
-  const [softwarenewuser, SetSoftwareNewUser] = useState("");
-  const [costcenter, SetCostCenter] = useState("");
-  const [jobtitlenewuser, SetJobTitleNewUser] = useState("");
-  const [startworknewuser, SetStartWorkNewUser] = useState();
-  const [copyprofilenewuser, SetCopyProfileNewUser] = useState("");
-  const [mailtranfer, SetMailTranfer] = useState("");
-  const [oldfile, SetOldFiles] = useState("");
-  const [imageEquipament, SetImageEquipament] = useState();
-  const [equipamentLocate, SetEquipamentLocate] = useState("");
-  const [daysLocated, SetDaysLocated] = useState();
-  const [theme, SetTheme] = useState("");
-  const [themeFilter, SetThemeFilter] = useState("");
-  const [themeCard, SetThemeCard] = useState("");
-  const [modifyTicket, SetModifyTicket] = useState(false);
+  const [techs, setTechs] = useState([]);
+  const [messageChat, setMessageChat] = useState(false);
+  const [typeError, setTypeError] = useState("");
+  const [messageError, setMessageError] = useState("");
+  const [textChat, setTextChat] = useState("");
+  const [message, setMessage] = useState(false);
+  const [dropdownBTN, setDropDownBTN] = useState(false);
+  const [fetchChat, setFetchChat] = useState(false);
+  const [countChat, setCountChat] = useState();
+  const [initUpdateChat, setInitUpdateChat] = useState();
+  const [fakeSelect, setFakeSelect] = useState(true);
+  const [problemInfra, setProblemInfra] = useState(false);
+  const [equipamentforuser, setEquipamentForUser] = useState(false);
+  const [problemSyst, setProblemSyst] = useState(false);
+  const [orderby, setOrderBy] = useState(null);
+  const [countTicket, setCountTicket] = useState(0);
+  const [loadingDash, setLoadingDash] = useState(true);
+  const [problemTicket, setProblemTicket] = useState(null);
+  const [ticketsDash, setTicketsDash] = useState([]);
+  const [sectorTicket, setSectorTicket] = useState(null);
+  const [ticketOpen, setTicketOpen] = useState();
+  const [status, setStatus] = useState("open");
+  const [btnmore, setBtnMore] = useState(true);
+  const [fileticket, setFileTicket] = useState([]);
+  const [imageurl, setImageUrl] = useState();
+  const [imageopen, setImageOpen] = useState(false);
+  const [uploadNewFiles, setUploadNewFiles] = useState([]);
+  const [newFiles, setNewFiles] = useState(false);
+  const [nameNWFiles, setNameNWFiles] = useState();
+  const [classBlur, setClassBlur] = useState("");
+  const [namenewuser, setNameNewUser] = useState("");
+  const [sectornewuser, setSectorNewUser] = useState("undefined");
+  const [wherefrom, setWhereFrom] = useState("");
+  const [machinenewuser, setMachineNewUser] = useState();
+  const [companynewuser, setCompanyNewUser] = useState("");
+  const [softwarenewuser, setSoftwareNewUser] = useState("");
+  const [costcenter, setCostCenter] = useState("");
+  const [jobtitlenewuser, setJobTitleNewUser] = useState("");
+  const [startworknewuser, setStartWorkNewUser] = useState();
+  const [copyprofilenewuser, setCopyProfileNewUser] = useState("");
+  const [mailtranfer, setMailTranfer] = useState("");
+  const [oldfile, setOldFiles] = useState("");
+  const [imageEquipament, setImageEquipament] = useState();
+  const [equipamentLocate, setEquipamentLocate] = useState("");
+  const [daysLocated, setDaysLocated] = useState();
+  const [theme, setTheme] = useState("");
+  const [themeFilter, setThemeFilter] = useState("");
+  const [themeCard, setThemeCard] = useState("");
+  const [modifyTicket, setModifyTicket] = useState(false);
   const [infra, setInfra] = useState(false);
-  const [system, SetSystem] = useState(false);
+  const [system, setSystem] = useState(false);
   const [backup, setBackup] = useState(false);
   const [mail, setMail] = useState(false);
   const [equip, setEquip] = useState(false);
   const [internet, setInternet] = useState(false);
   const [folder, setFolder] = useState(false);
   const [sector, setsector] = useState("");
-  const [sap, SetSAP] = useState(false);
-  const [mbi, SetMBI] = useState(false);
-  const [synch, SetSynch] = useState(false);
-  const [office, SetOffice] = useState(false);
-  const [eng, SetEng] = useState(false);
+  const [sap, setSAP] = useState(false);
+  const [mbi, setMBI] = useState(false);
+  const [synch, setSynch] = useState(false);
+  const [office, setOffice] = useState(false);
+  const [eng, setEng] = useState(false);
   const [occurrence, setOccurrence] = useState("");
   const [problemn, setProblemn] = useState("");
-  const [fake, SetFake] = useState(true);
-  const [OcurrenceFake, SetOcurrenceFake] = useState(true);
-  const [dataModify, SetDataModify] = useState(true);
+  const [fake, setFake] = useState(true);
+  const [OcurrenceFake, setOcurrenceFake] = useState(true);
+  const [dataModify, setDataModify] = useState(true);
 
   function ThemeBlack() {
-    SetThemeFilter("");
-    SetThemeCard("");
-    return SetTheme("themeBlack");
+    setThemeFilter("");
+    setThemeCard("");
+    setTheme("themeBlack");
   }
 
   function ThemeLight() {
-    SetThemeCard("themeCardLight");
-    SetThemeFilter("themeFilterLight");
-    return SetTheme("themeLight");
+    setThemeCard("themeCardLight");
+    setThemeFilter("themeFilterLight");
+    setTheme("themeLight");
   }
 
   let count = 0;
@@ -204,16 +202,16 @@ export default function DashboardTI() {
   function aumentarCount() {
     count++;
 
-    SetInitUpdateChat(count);
+    setInitUpdateChat(count);
     if (timeoutId) {
       clearTimeout(timeoutId);
     }
-    return (timeoutId = setTimeout(aumentarCount, 10000)); // Chama a função novamente após 5 segundos
+    return (timeoutId = setTimeout(aumentarCount, 10000)); // Chama a função novamente após 10 segundos
   }
 
   useEffect(() => {
     const dataInfo = JSON.parse(localStorage.getItem("dataInfo"));
-    SetUserData(dataInfo.data);
+    setUserData(dataInfo.data);
     fetch("", {
       method: "POST",
       headers: { Accept: "application/json" },
@@ -222,11 +220,14 @@ export default function DashboardTI() {
         return response.json();
       })
       .then((data) => {
-        SetTechs(data.techs);
-        SetToken(data.token);
+        setTechs(data.techs);
+        setToken(data.token);
         return userData;
       })
       .catch((err) => {
+        setTypeError("FATAL ERROR");
+        setMessageError(err);
+        setMessage(true);
         return console.log(err);
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -234,8 +235,8 @@ export default function DashboardTI() {
 
   useEffect(() => {
     if (userData && Object.keys(userData).length > 0) {
-      SetNavbar(true);
-      SetDropDownBTN(true);
+      setNavbar(true);
+      setDropDownBTN(true);
       fetch("get_ticket_TI", {
         method: "GET",
         headers: { Accept: "application/json" },
@@ -244,13 +245,16 @@ export default function DashboardTI() {
           return response.json();
         })
         .then((data) => {
-          SetCountTicket(10);
-          SetOrderBy("-id");
+          setCountTicket(10);
+          setOrderBy("-id");
           const btn = document.getElementById("thenView");
           btn.style.backgroundColor = "#00B4D8";
-          return SetTickets(data.tickets);
+          setTickets(data.tickets);
         })
         .catch((err) => {
+          setTypeError("FATAL ERROR");
+          setMessageError(err);
+          setMessage(true);
           return console.log(err);
         });
     } else {
@@ -259,41 +263,60 @@ export default function DashboardTI() {
   }, [userData]);
 
   useEffect(() => {
+    // Verificar se existem tickets e se o local storage foi inicializado
     if (tickets && Object.keys(tickets).length > 0) {
+      // Obter o valor do local storage
       const selectView = localStorage.getItem("selectView");
-      if (selectView === null) {
-        localStorage.setItem("selectView", "card");
-        return viewCard();
-      } else if (selectView === "card") {
-        return viewCard();
+
+      // Verificar se o valor do local storage está definido
+      if (selectView === null || (selectView === "card" && selectView !== "list")) {
+        // Se não estiver definido ou se for um valor inválido, definir como "card"
+        viewCard();
       } else if (selectView === "list") {
-        return listCard();
+        // Se for "list", ativar a função de lista
+        listCard();
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tickets]);
 
   function viewCard() {
-    SetTicketsDash([]);
-    SetLoading(false);
-    SetNavbar(true);
+    // Limpar o estado e preparar o ambiente
+    setTicketsDash([]);
+    setLoading(false);
+    setNavbar(true);
 
+    // Definir o tipo de visualização como "card" no local storage
     localStorage.setItem("selectView", "card");
 
+    // Estilizar os botões de seleção de visualização
     const btn = document.getElementById("selectView-Card");
     btn.style.backgroundColor = "#00B4D8";
 
     const btn2 = document.getElementById("selectView-List");
     btn2.style.backgroundColor = "transparent";
 
+    // Mapear os tickets para elementos de cartão
     tickets.forEach((ticket) => {
+      // Calcular a data formatada
       var date = new Date(ticket["start_date"]);
-
       var day = date.getDate();
       var month = date.getMonth() + 1;
       var year = date.getFullYear();
-      var newDate = day + "/" + month + "/" + year;
 
+      function adicionaZero(numero) {
+        if (numero < 10) {
+          return "0" + numero;
+        }
+        return numero;
+      }
+
+      var dataFormatada = adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
+      var horaFormatada = adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
+
+      const newDate = dataFormatada + " " + horaFormatada;
+
+      // Determinar a classe de borda com base no estado do ticket
       if (ticket["open"] === false) {
         colorBorder = "ticektClose";
       } else if (ticket["open"] === true && ticket["responsible_technician"] === null) {
@@ -314,6 +337,7 @@ export default function DashboardTI() {
 
       const Div = (
         <DivCard
+          key={ticket["id"]}
           className={`animate__animated animate__zoomInDown ${colorBorder} ${themeCard}`}
           onClick={() => {
             helpdeskPage({ id: ticket["id"] });
@@ -327,36 +351,51 @@ export default function DashboardTI() {
         </DivCard>
       );
 
-      SetTicketsDash((ticketsDash) => [...ticketsDash, Div]);
+      setTicketsDash((ticketsDash) => [...ticketsDash, Div]);
       const dash = document.getElementById("dashboard");
       dash.classList.add("dashCard");
 
-      SetLoadingDash(false);
-      return ticketsDash;
+      setLoadingDash(false);
     });
   }
 
   function listCard() {
-    SetTicketsDash([]);
-    SetNavbar(true);
-    SetLoading(false);
+    // Limpar o estado e preparar o ambiente
+    setTicketsDash([]);
+    setNavbar(true);
+    setLoading(false);
 
+    // Definir o tipo de visualização como "list" no local storage
     localStorage.setItem("selectView", "list");
 
+    // Estilizar os botões de seleção de visualização
     const btn = document.getElementById("selectView-List");
     btn.style.backgroundColor = "#00B4D8";
 
     const btn2 = document.getElementById("selectView-Card");
     btn2.style.backgroundColor = "transparent";
 
+    // Mapear os tickets para elementos de lista
     tickets.forEach((ticket) => {
+      // Calcular a data formatada
       var date = new Date(ticket["start_date"]);
-
       var day = date.getDate();
       var month = date.getMonth() + 1;
       var year = date.getFullYear();
-      var newDate = day + "/" + month + "/" + year;
 
+      function adicionaZero(numero) {
+        if (numero < 10) {
+          return "0" + numero;
+        }
+        return numero;
+      }
+
+      var dataFormatada = adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
+      var horaFormatada = adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
+
+      const newDate = dataFormatada + " " + horaFormatada;
+
+      // Determinar a classe de borda com base no estado do ticket
       if (ticket["open"] === false) {
         colorBorder = "ticektCloseList";
       } else if (ticket["open"] === true && ticket["responsible_technician"] === null) {
@@ -377,6 +416,7 @@ export default function DashboardTI() {
 
       const Div = (
         <DivList
+          key={ticket["id"]}
           className={`animate__animated animate__backInUp ${colorBorder}`}
           onClick={() => {
             helpdeskPage({ id: ticket["id"] });
@@ -390,17 +430,16 @@ export default function DashboardTI() {
         </DivList>
       );
 
-      SetTicketsDash((ticketsDash) => [...ticketsDash, Div]);
+      setTicketsDash((ticketsDash) => [...ticketsDash, Div]);
       const dash = document.getElementById("dashboard");
       dash.classList.add("dashCard");
 
-      SetLoadingDash(false);
-      return ticketsDash;
+      setLoadingDash(false);
     });
   }
 
   function openImage() {
-    return SetImageOpen(true);
+    setImageOpen(true);
   }
 
   function helpdeskPage({ id }) {
@@ -415,12 +454,12 @@ export default function DashboardTI() {
         return response.json();
       })
       .then((dataBack) => {
-        SetClassBlur("addBlur");
+        setClassBlur("addBlur");
         const dash = document.getElementById("dashboard");
         dash.style.filter = "blur(3px)";
         const data = dataBack.data[0];
         setSelectedTech("");
-        SetMessageChat(false);
+        setMessageChat(false);
         setMountChat([]);
         const start_date = new Date(data.start_date);
 
@@ -430,35 +469,35 @@ export default function DashboardTI() {
 
         var lifetime = Math.floor(calcDate / (1000 * 60 * 60 * 24));
 
-        SetTicketNAME(data.ticketRequester);
-        SetTicketDEPARTMENT(data.department);
-        SetTicketMAIL(data.mail);
-        SetTicketCOMPANY(data.company);
-        SetTicketSECTOR(data.sector);
-        SetTicketOCCURRENCE(data.occurrence);
-        SetTicketPROBLEMN(data.problemn);
-        SetTicketOBSERVATION(data.observation);
-        SetLifetime(lifetime);
-        SetTicketResponsible_Technician(data.responsible_technician);
-        SetTicketID(data.id);
-        SetTicketOpen(data.open);
-        SetNameNewUser(data.name_new_user);
+        setTicketNAME(data.ticketRequester);
+        setTicketDEPARTMENT(data.department);
+        setTicketMAIL(data.mail);
+        setTicketCOMPANY(data.company);
+        setTicketSECTOR(data.sector);
+        setTicketOCCURRENCE(data.occurrence);
+        setTicketPROBLEMN(data.problemn);
+        setTicketOBSERVATION(data.observation);
+        setLifetime(lifetime);
+        setTicketResponsible_Technician(data.responsible_technician);
+        setTicketID(data.id);
+        setTicketOpen(data.open);
+        setNameNewUser(data.name_new_user);
         if (data.sector_new_user.length > 1) {
-          SetSectorNewUser(data.sector_new_user);
+          setSectorNewUser(data.sector_new_user);
         } else {
-          SetSectorNewUser("undefined");
+          setSectorNewUser("undefined");
         }
-        SetWhereFrom(data.where_from);
-        SetMachineNewUser(data.machine_new_user);
-        SetCompanyNewUser(data.company_new_user);
-        SetSoftwareNewUser(data.software_new_user);
-        SetCostCenter(data.cost_center);
-        SetJobTitleNewUser(data.job_title_new_user);
+        setWhereFrom(data.where_from);
+        setMachineNewUser(data.machine_new_user);
+        setCompanyNewUser(data.company_new_user);
+        setSoftwareNewUser(data.software_new_user);
+        setCostCenter(data.cost_center);
+        setJobTitleNewUser(data.job_title_new_user);
         var nwdate = new Date(data.start_work_new_user);
-        SetStartWorkNewUser(nwdate);
-        SetCopyProfileNewUser(data.copy_profile_new_user);
-        SetMailTranfer(data.mail_tranfer);
-        SetOldFiles(data.old_files);
+        setStartWorkNewUser(nwdate);
+        setCopyProfileNewUser(data.copy_profile_new_user);
+        setMailTranfer(data.mail_tranfer);
+        setOldFiles(data.old_files);
 
         if (data.equipament["image"] !== undefined) {
           const Div = (
@@ -468,15 +507,15 @@ export default function DashboardTI() {
             </DivAlocate>
           );
 
-          SetImageEquipament(Div);
-          SetEquipamentLocate(data.equipament["company"]);
+          setImageEquipament(Div);
+          setEquipamentLocate(data.equipament["company"]);
 
           for (let NWdate of data.days_alocated) {
             var date = new Date(NWdate);
             daysLCT.push(date);
           }
 
-          SetDaysLocated(daysLCT);
+          setDaysLocated(daysLCT);
 
           const calendar = document.getElementById("calendarALT");
           calendar.classList.add("AdjustWid");
@@ -492,7 +531,7 @@ export default function DashboardTI() {
               const contentFileMail = data.content_file[i];
               const nameFileMail = data.name_file[i];
               const Div = (
-                <DivOnBoardFile className="position-relative">
+                <DivOnBoardFile key={nameFileMail} className="position-relative">
                   <IMGFiles src={Mail} alt="" />
                   <ImageFile
                     className="position-absolute bottom-0 start-50 translate-middle-x"
@@ -515,12 +554,12 @@ export default function DashboardTI() {
                   />
                 </DivOnBoardFile>
               );
-              SetFileTicket((fileticket) => [...fileticket, Div]);
+              setFileTicket((fileticket) => [...fileticket, Div]);
             } else if (file === "excel") {
               const ContentFileExcel = data.content_file[i];
               const NameFileExcel = data.name_file[i];
               const Div = (
-                <DivOnBoardFile className="position-relative">
+                <DivOnBoardFile key={NameFileExcel} className="position-relative">
                   <IMGFiles src={XLS} alt="" />
                   <ImageFile
                     className="position-absolute bottom-0 start-50 translate-middle-x"
@@ -543,12 +582,12 @@ export default function DashboardTI() {
                   />
                 </DivOnBoardFile>
               );
-              SetFileTicket((fileticket) => [...fileticket, Div]);
+              setFileTicket((fileticket) => [...fileticket, Div]);
             } else if (file === "zip") {
               const ContentFileZip = data.content_file[i];
               const NameFileZip = data.name_file[i];
               const Div = (
-                <DivOnBoardFile className="position-relative">
+                <DivOnBoardFile key={NameFileZip} className="position-relative">
                   <IMGFiles src={ZIP} alt="" />
                   <ImageFile
                     className="position-absolute bottom-0 start-50 translate-middle-x"
@@ -571,12 +610,12 @@ export default function DashboardTI() {
                   />
                 </DivOnBoardFile>
               );
-              SetFileTicket((fileticket) => [...fileticket, Div]);
+              setFileTicket((fileticket) => [...fileticket, Div]);
             } else if (file === "txt") {
               const ContentFileTXT = data.content_file[i];
               const NameFileTXT = data.name_file[i];
               const Div = (
-                <DivOnBoardFile className="position-relative">
+                <DivOnBoardFile key={NameFileTXT} className="position-relative">
                   <IMGFiles src={TXT} alt="" />
                   <ImageFile
                     className="position-absolute bottom-0 start-50 translate-middle-x"
@@ -599,12 +638,12 @@ export default function DashboardTI() {
                   />
                 </DivOnBoardFile>
               );
-              SetFileTicket((fileticket) => [...fileticket, Div]);
+              setFileTicket((fileticket) => [...fileticket, Div]);
             } else if (file === "word") {
               const ContentFileWord = data.content_file[i];
               const NameFileWord = data.name_file[i];
               const Div = (
-                <DivOnBoardFile className="position-relative">
+                <DivOnBoardFile key={NameFileWord} className="position-relative">
                   <IMGFiles src={WORD} alt="" />
                   <ImageFile
                     className="position-absolute bottom-0 start-50 translate-middle-x"
@@ -627,12 +666,12 @@ export default function DashboardTI() {
                   />
                 </DivOnBoardFile>
               );
-              SetFileTicket((fileticket) => [...fileticket, Div]);
+              setFileTicket((fileticket) => [...fileticket, Div]);
             } else if (file === "pdf") {
               const ContentFilePDF = data.content_file[i];
               const NameFilePDF = data.name_file[i];
               const Div = (
-                <DivOnBoardFile className="position-relative">
+                <DivOnBoardFile key={NameFilePDF} className="position-relative">
                   <IMGFiles src={PDF} alt="" />
                   <ImageFile
                     className="position-absolute bottom-0 start-50 translate-middle-x"
@@ -655,15 +694,16 @@ export default function DashboardTI() {
                   />
                 </DivOnBoardFile>
               );
-              SetFileTicket((fileticket) => [...fileticket, Div]);
+              setFileTicket((fileticket) => [...fileticket, Div]);
             } else if (typeof file === "object") {
               const image = file.image;
+              const nameImage = image.name;
               const Div = (
-                <DivOnBoardFile className="position-relative">
+                <DivOnBoardFile key={nameImage} className="position-relative">
                   <IMGFiles
                     src={`data:image/jpeg;base64,${file.image}`}
                     onClick={() => {
-                      SetImageUrl(`data:image/jpeg;base64,${image}`);
+                      setImageUrl(`data:image/jpeg;base64,${image}`);
                       openImage();
                     }}
                     alt=""
@@ -675,14 +715,14 @@ export default function DashboardTI() {
                     onClick={() => {
                       const link = document.createElement("a");
                       link.href = `data:image/jpeg;base64,${image}`;
-                      link.download = "nome-do-arquivo.jpg";
+                      link.download = nameImage;
                       link.click();
                       link.remove();
                     }}
                   />
                 </DivOnBoardFile>
               );
-              SetFileTicket((fileticket) => [...fileticket, Div]);
+              setFileTicket((fileticket) => [...fileticket, Div]);
             }
           }
         }
@@ -723,6 +763,9 @@ export default function DashboardTI() {
                   {groupedByDate[date].map((item, index) => {
                     // Remover "User:" ou "Tech:" do início da string
                     var userOrTech = item[1];
+                    var time = item[2];
+                    time = time.replace("Hours:", "").trim();
+                    console.log(time);
                     const key = `${date}-${index}`;
                     if (userOrTech.includes("System")) {
                       userOrTech = userOrTech.replace("System:", "").trim();
@@ -730,7 +773,7 @@ export default function DashboardTI() {
                         <div key={index}>
                           <div className="text-center d-flex justify-content-center text-break">
                             <div className="pChat">
-                              <p>{userOrTech + " " + item[2]}</p>
+                              <p>{userOrTech + " " + time}</p>
                             </div>
                           </div>
                         </div>
@@ -742,7 +785,7 @@ export default function DashboardTI() {
                           <DivFlex1 className="w-100 text-break position relative">
                             <div className="uChat1 position-relative">
                               <p>{userOrTech}</p>
-                              <PChatHourR className="position-absolute bottom-0 end-0">{item[2]}</PChatHourR>
+                              <PChatHourR className="position-absolute bottom-0 end-0">{time}</PChatHourR>
                             </div>
                           </DivFlex1>
                         </div>
@@ -754,7 +797,7 @@ export default function DashboardTI() {
                           <DivFlex2 className="w-100 text-break position relative">
                             <div className="uChat2 position-relative">
                               <p>{userOrTech}</p>
-                              <PChatHourL className="position-absolute bottom-0 start-0">{item[2]}</PChatHourL>
+                              <PChatHourL className="position-absolute bottom-0 start-0">{time}</PChatHourL>
                             </div>
                           </DivFlex2>
                         </div>
@@ -794,19 +837,22 @@ export default function DashboardTI() {
           setChat(false);
         } else {
           setChat(false);
-          SetDataModify(false);
+          setDataModify(false);
         }
 
-        return SetTicketWindow(true);
+        setTicketWindow(true);
       })
       .catch((err) => {
+        setMessageError(err);
+        setTypeError("FATAL ERROR");
+        setMessage(true);
         return console.log(err);
       });
-    return SetTicketWindow(true);
+    setTicketWindow(true);
   }
 
   function imageclose() {
-    return SetImageOpen(false);
+    setImageOpen(false);
   }
 
   function downloadMail({ content, data, sliceSize = 512 }) {
@@ -831,13 +877,16 @@ export default function DashboardTI() {
       const blob = new Blob(byteArrays, { type: data });
       return blob;
     } catch (error) {
+      setMessageError(error);
+      setTypeError("FATAL ERROR");
+      setMessage(true);
       console.error("Erro ao converter para Blob:", error);
       return null;
     }
   }
 
   useEffect(() => {
-    if (fetchchat === true) {
+    if (fetchChat === true) {
       fetch("/helpdesk/update_chat/" + ticketID, {
         method: "GET",
         headers: { Accept: "application/json" },
@@ -847,42 +896,38 @@ export default function DashboardTI() {
         })
         .then((data) => {
           var newChat = parseInt(data.chat.length);
-          if (newChat > countchat) {
+          if (newChat > countChat) {
             setCountChat(newChat);
             reloadChat({ data: data });
           }
-          return;
         })
         .catch((err) => {
+          setMessageError(err);
+          setTypeError("FATAL ERROR");
+          setMessage(true);
           return console.log(err);
         });
-      return;
-    } else if (fetchchat === false) {
-      return;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initUpdateChat]);
 
   function Close_ticket() {
-    SetClassBlur("");
+    setClassBlur("");
     const dash = document.getElementById("dashboard");
     dash.style.filter = "blur(0)";
-    SetTicketWindow(false);
+    setTicketWindow(false);
     setFetchChat(false);
     count = 0;
     clearTimeout(timeoutId);
-    return;
   }
 
   function ChangeTechnician(event) {
     setSelectedTech(event.target.value);
-
-    return selectedTech;
   }
 
   function closeMessage() {
-    SetModifyTicket(false);
-    return SetMessageChat(false);
+    setModifyTicket(false);
+    setMessageChat(false);
   }
 
   useEffect(() => {
@@ -920,12 +965,15 @@ export default function DashboardTI() {
           if (response.status === 200) {
             return window.location.reload();
           } else if (response.status === 304) {
-            SetTypeError("Operação Inválida");
-            SetMessageError("O Chamado Já está com você");
-            return SetMessage(true);
+            setTypeError("Operação Inválida");
+            setMessageError("O Chamado Já está com você");
+            return setMessage(true);
           }
         })
         .catch((err) => {
+          setMessageError(err);
+          setTypeError("FATAL ERROR");
+          setMessage(true);
           return console.log(err);
         });
     }
@@ -935,13 +983,11 @@ export default function DashboardTI() {
   function NewChat(event) {
     const newText = event.target.value;
     if (event.key === "Enter") {
-      SetTextChat(newText);
+      setTextChat(newText);
       SendChat();
       event.preventDefault();
-      return;
     } else {
-      SetTextChat(newText);
-      return;
+      setTextChat(newText);
     }
   }
 
@@ -984,6 +1030,9 @@ export default function DashboardTI() {
         return reloadChat({ data: data });
       })
       .catch((err) => {
+        setMessageError(err);
+        setTypeError("FATAL ERROR");
+        setMessage(true);
         return console.log(err);
       });
   }
@@ -1026,13 +1075,16 @@ export default function DashboardTI() {
               {groupedByDate[date].map((item, index) => {
                 // Remover "User:" ou "Tech:" do início da string
                 var userOrTech = item[1];
+                var time = item[2];
+                time = time.replace("Hours:", "").trim();
+                console.log(time);
                 if (userOrTech.includes("System")) {
                   userOrTech = userOrTech.replace("System:", "").trim();
                   return (
                     <div key={index}>
                       <div className="text-center d-flex justify-content-center text-break">
                         <div className="pChat">
-                          <p>{userOrTech + " " + item[2]}</p>
+                          <p>{userOrTech + " " + time}</p>
                         </div>
                       </div>
                     </div>
@@ -1044,7 +1096,7 @@ export default function DashboardTI() {
                       <DivFlex1 className="w-100 text-break position relative">
                         <div className="uChat1 position-relative">
                           <p>{userOrTech}</p>
-                          <PChatHourR className="position-absolute bottom-0 end-0">{item[2]}</PChatHourR>
+                          <PChatHourR className="position-absolute bottom-0 end-0">{time}</PChatHourR>
                         </div>
                       </DivFlex1>
                     </div>
@@ -1056,7 +1108,7 @@ export default function DashboardTI() {
                       <DivFlex2 className="w-100 text-break position relative">
                         <div className="uChat2 position-relative">
                           <p>{userOrTech}</p>
-                          <PChatHourL className="position-absolute bottom-0 start-0">{item[2]}</PChatHourL>
+                          <PChatHourL className="position-absolute bottom-0 start-0">{time}</PChatHourL>
                         </div>
                       </DivFlex2>
                     </div>
@@ -1076,7 +1128,7 @@ export default function DashboardTI() {
   }
 
   function closeMessage2() {
-    return SetMessage(false);
+    return setMessage(false);
   }
 
   function dropdown() {
@@ -1104,39 +1156,39 @@ export default function DashboardTI() {
     const option = select.options[select.selectedIndex].value;
 
     if (option === "infra") {
-      SetFakeSelect(false);
-      SetProblemInfra(true);
-      SetProblemSyst(false);
-      SetProblemTicket(null);
-      SetSectorTicket("Infraestrutura");
+      setFakeSelect(false);
+      setProblemInfra(true);
+      setProblemSyst(false);
+      setProblemTicket(null);
+      setSectorTicket("Infraestrutura");
       return getTicketFilterSector({ sector: "Infraestrutura" });
     } else if (option === "system") {
-      SetFakeSelect(false);
-      SetProblemInfra(false);
-      SetProblemSyst(true);
-      SetProblemTicket(null);
-      SetSectorTicket("Sistema");
+      setFakeSelect(false);
+      setProblemInfra(false);
+      setProblemSyst(true);
+      setProblemTicket(null);
+      setSectorTicket("Sistema");
       return getTicketFilterSector({ sector: "Sistema" });
     } else if (option === "null") {
-      SetFakeSelect(true);
-      SetProblemInfra(false);
-      SetProblemSyst(false);
-      SetProblemTicket(null);
+      setFakeSelect(true);
+      setProblemInfra(false);
+      setProblemSyst(false);
+      setProblemTicket(null);
       return;
     } else if (option === "all") {
-      SetFakeSelect(true);
-      SetProblemInfra(false);
-      SetProblemSyst(false);
-      SetSectorTicket("all");
-      SetProblemTicket(null);
+      setFakeSelect(true);
+      setProblemInfra(false);
+      setProblemSyst(false);
+      setSectorTicket("all");
+      setProblemTicket(null);
       return getTicketFilterSector({ sector: "all" });
     }
   }
 
   function getTicketFilterSector({ sector }) {
-    SetTickets([]);
-    SetTicketsDash([]);
-    SetLoadingDash(true);
+    setTickets([]);
+    setTicketsDash([]);
+    setLoadingDash(true);
 
     fetch("getTicketFilter/", {
       method: "GET",
@@ -1153,8 +1205,8 @@ export default function DashboardTI() {
         return response.json();
       })
       .then((data) => {
-        SetLoadingDash(false);
-        return SetTickets(data.tickets);
+        setLoadingDash(false);
+        return setTickets(data.tickets);
       })
       .catch((err) => {
         return console.log(err);
@@ -1162,11 +1214,11 @@ export default function DashboardTI() {
   }
 
   function equipamentForUser() {
-    return SetEquipamentForUser(true);
+    return setEquipamentForUser(true);
   }
 
   function closeUpload() {
-    return SetEquipamentForUser(false);
+    return setEquipamentForUser(false);
   }
 
   function getTicketKey(event) {
@@ -1175,9 +1227,9 @@ export default function DashboardTI() {
     const select1 = document.getElementById("selectOcorrence");
     select1.value = null;
 
-    SetProblemSyst(false);
-    SetProblemInfra(false);
-    SetFakeSelect(true);
+    setProblemSyst(false);
+    setProblemInfra(false);
+    setFakeSelect(true);
 
     fetch("getTicketFilterWords/", {
       method: "GET",
@@ -1192,8 +1244,8 @@ export default function DashboardTI() {
         return response.json();
       })
       .then((data) => {
-        SetLoadingDash(false);
-        return SetTickets(data.tickets);
+        setLoadingDash(false);
+        return setTickets(data.tickets);
       })
       .catch((err) => {
         return console.log(err);
@@ -1203,7 +1255,7 @@ export default function DashboardTI() {
   }
 
   function ticketOpenStatus() {
-    SetTickets();
+    setTickets();
     const btn = document.getElementById("btnopen");
     btn.classList.add("btn-success");
     const btn2 = document.getElementById("btnclose");
@@ -1227,19 +1279,21 @@ export default function DashboardTI() {
       })
       .then((data) => {
         if (data.tickets.length === 0) {
-          SetMessage(true);
-          SetTypeError("Falta de dados");
-          SetMessageError("Nenhum ticket com esses Filtros");
-          SetBtnMore(false);
-          return;
+          setMessage(true);
+          setTypeError("Falta de dados");
+          setMessageError("Nenhum ticket com esses Filtros");
+          setBtnMore(false);
         } else {
-          SetBtnMore(true);
-          SetLoadingDash(false);
-          SetStatus("open");
-          return SetTickets(data.tickets);
+          setBtnMore(true);
+          setLoadingDash(false);
+          setStatus("open");
+          setTickets(data.tickets);
         }
       })
       .catch((err) => {
+        setMessageError(err);
+        setTypeError("FATAL ERROR");
+        setMessage(true);
         return console.log(err);
       });
 
@@ -1247,7 +1301,7 @@ export default function DashboardTI() {
   }
 
   function ticketClose() {
-    SetTickets([]);
+    setTickets([]);
     const btn = document.getElementById("btnopen");
     btn.classList.remove("btn-success");
     const btn2 = document.getElementById("btnclose");
@@ -1271,19 +1325,21 @@ export default function DashboardTI() {
       })
       .then((data) => {
         if (data.tickets.length === 0) {
-          SetMessage(true);
-          SetTypeError("Falta de dados");
-          SetMessageError("Nenhum ticket com esses Filtros");
-          SetBtnMore(false);
-          return;
+          setMessage(true);
+          setTypeError("Falta de dados");
+          setMessageError("Nenhum ticket com esses Filtros");
+          setBtnMore(false);
         } else {
-          SetBtnMore(true);
-          SetLoadingDash(false);
-          SetStatus("close");
-          return SetTickets(data.tickets);
+          setBtnMore(true);
+          setLoadingDash(false);
+          setStatus("close");
+          setTickets(data.tickets);
         }
       })
       .catch((err) => {
+        setMessageError(err);
+        setTypeError("FATAL ERROR");
+        setMessage(true);
         return console.log(err);
       });
 
@@ -1291,7 +1347,7 @@ export default function DashboardTI() {
   }
 
   function statusTicketAll() {
-    SetTickets([]);
+    setTickets([]);
     const btn = document.getElementById("btnopen");
     btn.classList.remove("btn-success");
     const btn2 = document.getElementById("btnclose");
@@ -1315,19 +1371,21 @@ export default function DashboardTI() {
       })
       .then((data) => {
         if (data.tickets.length === 0) {
-          SetMessage(true);
-          SetTypeError("Falta de dados");
-          SetMessageError("Nenhum ticket com esses Filtros");
-          SetBtnMore(false);
-          return;
+          setMessage(true);
+          setTypeError("Falta de dados");
+          setMessageError("Nenhum ticket com esses Filtros");
+          setBtnMore(false);
         } else {
-          SetBtnMore(true);
-          SetLoadingDash(false);
-          SetStatus("all");
-          return SetTickets(data.tickets);
+          setBtnMore(true);
+          setLoadingDash(false);
+          setStatus("all");
+          setTickets(data.tickets);
         }
       })
       .catch((err) => {
+        setMessageError(err);
+        setTypeError("FATAL ERROR");
+        setMessage(true);
         return console.log(err);
       });
 
@@ -1338,49 +1396,52 @@ export default function DashboardTI() {
     const select = document.getElementById("selectBo");
     const option = select.options[select.selectedIndex].value;
 
-    if (option === "backup") {
-      SetProblemTicket("Backup");
-      return getTicketFilterProblemn({ problemn: "Backup" });
-    } else if (option === "mail") {
-      SetProblemTicket("E-mail");
-      return getTicketFilterProblemn({ problemn: "E-mail" });
-    } else if (option === "equipamento") {
-      SetProblemTicket("Equipamento");
-      return getTicketFilterProblemn({ problemn: "Equipamento" });
-    } else if (option === "user") {
-      SetProblemTicket("Gerenciamento de Usuario");
-      return getTicketFilterProblemn({ problemn: "Gerenciamento de Usuario" });
-    } else if (option === "internet") {
-      SetProblemTicket("Internet");
-      return getTicketFilterProblemn({ problemn: "Internet" });
-    } else if (option === "permissao") {
-      SetProblemTicket("Permissão");
-      return getTicketFilterProblemn({ problemn: "Permissão" });
-    } else if (option === "all") {
-      SetProblemTicket("all");
-      return getTicketFilterProblemn({ problemn: "all" });
-    } else if (option === "sap") {
-      SetProblemTicket("SAP");
-      return getTicketFilterProblemn({ problemn: "SAP" });
-    } else if (option === "mbi") {
-      SetProblemTicket("MBI");
-      return getTicketFilterProblemn({ problemn: "MBI" });
-    } else if (option === "synchro") {
-      SetProblemTicket("Synchro");
-      return getTicketFilterProblemn({ problemn: "Synchro" });
-    } else if (option === "office") {
-      SetProblemTicket("Office");
-      return getTicketFilterProblemn({ problemn: "Office" });
-    } else if (option === "eng") {
-      SetProblemTicket("Softwares de Eng");
-      return getTicketFilterProblemn({ problemn: "Softwares de Eng" });
+    switch (option) {
+      default:
+        break;
+      case "backup":
+        setProblemTicket("Backup");
+        return getTicketFilterProblemn({ problemn: "Backup" });
+      case "mail":
+        setProblemTicket("E-mail");
+        return getTicketFilterProblemn({ problemn: "E-mail" });
+      case "equipamento":
+        setProblemTicket("Equipamento");
+        return getTicketFilterProblemn({ problemn: "Equipamento" });
+      case "user":
+        setProblemTicket("Gerenciamento de Usuario");
+        return getTicketFilterProblemn({ problemn: "Gerenciamento de Usuario" });
+      case "internet":
+        setProblemTicket("Internet");
+        return getTicketFilterProblemn({ problemn: "Internet" });
+      case "permissao":
+        setProblemTicket("Permissão");
+        return getTicketFilterProblemn({ problemn: "Permissão" });
+      case "all":
+        setProblemTicket("all");
+        return getTicketFilterProblemn({ problemn: "all" });
+      case "sap":
+        setProblemTicket("SAP");
+        return getTicketFilterProblemn({ problemn: "SAP" });
+      case "mbi":
+        setProblemTicket("MBI");
+        return getTicketFilterProblemn({ problemn: "MBI" });
+      case "synchro":
+        setProblemTicket("Synchro");
+        return getTicketFilterProblemn({ problemn: "Synchro" });
+      case "office":
+        setProblemTicket("Office");
+        return getTicketFilterProblemn({ problemn: "Office" });
+      case "eng":
+        setProblemTicket("Softwares de Eng");
+        return getTicketFilterProblemn({ problemn: "Softwares de Eng" });
     }
   }
 
   function getTicketFilterProblemn({ problemn }) {
-    SetTickets([]);
-    SetTicketsDash([]);
-    SetLoadingDash(true);
+    setTickets([]);
+    setTicketsDash([]);
+    setLoadingDash(true);
 
     fetch("getTicketFilter/", {
       method: "GET",
@@ -1397,35 +1458,40 @@ export default function DashboardTI() {
         return response.json();
       })
       .then((data) => {
-        SetLoadingDash(false);
-        return SetTickets(data.tickets);
+        setLoadingDash(false);
+        setTickets(data.tickets);
       })
       .catch((err) => {
+        setMessageError(err);
+        setTypeError("FATAL ERROR");
+        setMessage(true);
         return console.log(err);
       });
   }
 
   function selectOrder() {
-    SetTickets([]);
-    SetTicketsDash([]);
+    setTickets([]);
+    setTicketsDash([]);
     const select = document.getElementById("select-order");
     const option = select.options[select.selectedIndex].value;
 
-    if (option === "recent") {
-      getTicketFilterOrderTime({ order: "-id" });
-      SetOrderBy("-id");
-      return;
-    } else if (option === "ancient") {
-      getTicketFilterOrderTime({ order: "id" });
-      SetOrderBy("id");
-      return;
+    switch (option) {
+      default:
+        break;
+      case "recent":
+        getTicketFilterOrderTime({ order: "-id" });
+        setOrderBy("-id");
+        break;
+      case "ancient":
+        getTicketFilterOrderTime({ order: "id" });
+        setOrderBy("id");
+        break;
     }
-    return;
   }
 
   function getTicketFilterOrderTime({ order }) {
-    SetTickets([]);
-    SetTicketsDash([]);
+    setTickets([]);
+    setTicketsDash([]);
     fetch("getTicketFilter/", {
       method: "GET",
       headers: {
@@ -1441,18 +1507,21 @@ export default function DashboardTI() {
         return response.json();
       })
       .then((data) => {
-        SetLoadingDash(false);
-        return SetTickets(data.tickets);
+        setLoadingDash(false);
+        setTickets(data.tickets);
       })
       .catch((err) => {
+        setMessageError(err);
+        setTypeError("FATAL ERROR");
+        setMessage(true);
         return console.log(err);
       });
   }
 
   function getTicketFilter({ id, quantity }) {
-    SetTickets([]);
-    SetTicketsDash([]);
-    SetLoadingDash(true);
+    setTickets([]);
+    setTicketsDash([]);
+    setLoadingDash(true);
     const btn1 = document.getElementById("fiveView");
     btn1.style.backgroundColor = "transparent";
 
@@ -1483,10 +1552,13 @@ export default function DashboardTI() {
         return response.json();
       })
       .then((data) => {
-        SetLoadingDash(false);
-        return SetTickets(data.tickets);
+        setLoadingDash(false);
+        setTickets(data.tickets);
       })
       .catch((err) => {
+        setMessageError(err);
+        setTypeError("FATAL ERROR");
+        setMessage(true);
         return console.log(err);
       });
   }
@@ -1504,16 +1576,31 @@ export default function DashboardTI() {
         return response.json();
       })
       .then((data) => {
-        SetCountTicket(data.count);
-        SetTickets(data.tickets);
-        return countTicket;
+        setCountTicket(data.count);
+        setTickets(data.tickets);
       })
       .catch((err) => {
+        setMessageError(err);
+        setTypeError("FATAL ERROR");
+        setMessage(true);
         return console.log(err);
       });
   }
 
   function closeTicket() {
+    var date = new Date();
+    function adicionaZero(numero) {
+      if (numero < 10) {
+        return "0" + numero;
+      }
+      return numero;
+    }
+    var day = date.getDate();
+    var month = date.getMonth() + 1;
+    var year = date.getFullYear();
+
+    var dataFormatada = adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
+    var horaFormatada = adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
     fetch("/helpdesk/ticket/" + ticketID, {
       method: "POST",
       headers: {
@@ -1523,26 +1610,45 @@ export default function DashboardTI() {
       body: JSON.stringify({
         technician: userData.name,
         status: "close",
+        hours: horaFormatada,
+        date: dataFormatada,
       }),
     })
       .then((response) => {
         if (response.status === 304) {
-          SetMessage(true);
-          SetMessageError("Ticket não percetence a você");
-          SetTypeError("Permissão Negada");
-          return;
+          setMessage(true);
+          setMessageError("Ticket não percetence a você");
+          setTypeError("Permissão Negada");
+        } else if (response.status === 200) {
+          return window.location.reload();
         }
         return response.json();
       })
       .then((data) => {
-        return window.location.reload();
+        return;
       })
       .catch((err) => {
+        setMessageError(err);
+        setTypeError("FATAL ERROR");
+        setMessage(true);
         return console.log(err);
       });
   }
 
   function reopenTicket() {
+    var date = new Date();
+    function adicionaZero(numero) {
+      if (numero < 10) {
+        return "0" + numero;
+      }
+      return numero;
+    }
+    var day = date.getDate();
+    var month = date.getMonth() + 1;
+    var year = date.getFullYear();
+
+    var dataFormatada = adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
+    var horaFormatada = adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
     fetch("/helpdesk/ticket/" + ticketID, {
       method: "POST",
       headers: {
@@ -1552,14 +1658,15 @@ export default function DashboardTI() {
       body: JSON.stringify({
         technician: userData.name,
         status: "open",
+        hours: horaFormatada,
+        date: dataFormatada,
       }),
     })
       .then((response) => {
         if (response.status === 304) {
-          SetMessage(true);
-          SetMessageError("Ticket não percetence a você");
-          SetTypeError("Permissão Negada");
-          return;
+          setMessage(true);
+          setMessageError("Ticket não percetence a você");
+          setTypeError("Permissão Negada");
         }
         return response.json();
       })
@@ -1567,6 +1674,9 @@ export default function DashboardTI() {
         return window.location.reload();
       })
       .catch((err) => {
+        setMessageError(err);
+        setTypeError("FATAL ERROR");
+        setMessage(true);
         return console.log(err);
       });
   }
@@ -1574,7 +1684,7 @@ export default function DashboardTI() {
   function UploadNewFiles(evt) {
     UpNwfile.push(evt.target.files);
     for (let i = 0; i < UpNwfile.length; i++) {
-      SetUploadNewFiles((uploadNewFiles) => [...uploadNewFiles, UpNwfile[i]]);
+      setUploadNewFiles((uploadNewFiles) => [...uploadNewFiles, UpNwfile[i]]);
     }
     return;
   }
@@ -1588,7 +1698,7 @@ export default function DashboardTI() {
         const file = fileNM[i];
 
         paragraphs.push(
-          <div className="d-flex w-100 justify-content-center">
+          <div key={file.name} className="d-flex w-100 justify-content-center">
             <DivNameFile key={i}>
               <PNWFile>{file.name}</PNWFile>
             </DivNameFile>
@@ -1607,7 +1717,7 @@ export default function DashboardTI() {
 
                   const newFileList = dataTransfer.files;
 
-                  SetUploadNewFiles([newFileList]);
+                  setUploadNewFiles([newFileList]);
                 }}
               >
                 <ImgFile src={Exclude} alt="Excluir arquivo" />
@@ -1617,19 +1727,16 @@ export default function DashboardTI() {
         );
       }
 
-      SetNameNWFiles(paragraphs);
+      setNameNWFiles(paragraphs);
 
-      SetNewFiles(true);
-      return;
+      setNewFiles(true);
     }
-    return;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [uploadNewFiles]);
 
   function closeNWFiles() {
-    SetUploadNewFiles("");
-    SetNewFiles(false);
-    return;
+    setUploadNewFiles("");
+    setNewFiles(false);
   }
 
   function submitNewFiles() {
@@ -1652,6 +1759,9 @@ export default function DashboardTI() {
         return window.location.reload();
       })
       .catch((err) => {
+        setMessageError(err);
+        setTypeError("FATAL ERROR");
+        setMessage(true);
         return console.log(err);
       });
   }
@@ -1683,6 +1793,9 @@ export default function DashboardTI() {
         document.body.removeChild(a);
       })
       .catch((err) => {
+        setMessageError(err);
+        setTypeError("FATAL ERROR");
+        setMessage(true);
         return console.log(err);
       });
   }
@@ -1693,15 +1806,13 @@ export default function DashboardTI() {
       (event.target.id === "imd" && document.getElementById("dropcont").classList.contains("visually-hidden"))
     ) {
       document.getElementById("dropcont").classList.remove("visually-hidden");
-      return;
     } else {
       document.getElementById("dropcont").classList.add("visually-hidden");
-      return;
     }
   }
 
   function TicketModify() {
-    SetModifyTicket(true);
+    setModifyTicket(true);
   }
 
   function handleSelect() {
@@ -1709,57 +1820,60 @@ export default function DashboardTI() {
 
     const option = select.options[select.selectedIndex].value;
 
-    if (option === "infra") {
-      setInfra(true);
-      setBackup(false);
-      setMail(false);
-      setEquip(false);
-      setInternet(false);
-      setFolder(false);
-      setsector("Infraestrutura");
-      SetSystem(false);
-      SetMBI(false);
-      SetSAP(false);
-      SetOffice(false);
-      SetSynch(false);
-      SetEng(false);
-      SetFake(true);
-      SetOcurrenceFake(false);
-      return;
-    } else if (option === "sistema") {
-      SetSystem(true);
-      setInfra(false);
-      setBackup(false);
-      setMail(false);
-      setEquip(false);
-      setInternet(false);
-      setFolder(false);
-      setsector("Sistema");
-      SetMBI(false);
-      SetSAP(false);
-      SetSynch(false);
-      SetOffice(false);
-      SetEng(false);
-      SetFake(true);
-      SetOcurrenceFake(false);
-      return;
-    } else if (option === "none") {
-      setInfra(false);
-      SetSystem(false);
-      setBackup(false);
-      setMail(false);
-      setEquip(false);
-      setInternet(false);
-      setFolder(false);
-      setsector("");
-      SetMBI(false);
-      SetSAP(false);
-      SetSynch(false);
-      SetOffice(false);
-      SetEng(false);
-      SetFake(true);
-      SetOcurrenceFake(true);
-      return;
+    switch (option) {
+      default:
+        break;
+      case "infra":
+        setInfra(true);
+        setBackup(false);
+        setMail(false);
+        setEquip(false);
+        setInternet(false);
+        setFolder(false);
+        setsector("Infraestrutura");
+        setSystem(false);
+        setMBI(false);
+        setSAP(false);
+        setOffice(false);
+        setSynch(false);
+        setEng(false);
+        setFake(true);
+        setOcurrenceFake(false);
+        break;
+      case "sistema":
+        setSystem(true);
+        setInfra(false);
+        setBackup(false);
+        setMail(false);
+        setEquip(false);
+        setInternet(false);
+        setFolder(false);
+        setsector("Sistema");
+        setMBI(false);
+        setSAP(false);
+        setSynch(false);
+        setOffice(false);
+        setEng(false);
+        setFake(true);
+        setOcurrenceFake(false);
+        break;
+      case "none":
+        setInfra(false);
+        setSystem(false);
+        setBackup(false);
+        setMail(false);
+        setEquip(false);
+        setInternet(false);
+        setFolder(false);
+        setsector("");
+        setMBI(false);
+        setSAP(false);
+        setSynch(false);
+        setOffice(false);
+        setEng(false);
+        setFake(true);
+        setOcurrenceFake(true);
+        break;
     }
   }
 
@@ -1768,159 +1882,162 @@ export default function DashboardTI() {
 
     const option = select.options[select.selectedIndex].value;
 
-    if (option === "backup") {
-      setBackup(true);
-      setMail(false);
-      setEquip(false);
-      setInternet(false);
-      setFolder(false);
-      setOccurrence("Backup");
-      SetSAP(false);
-      SetMBI(false);
-      SetSynch(false);
-      SetOffice(false);
-      SetEng(false);
-      SetFake(false);
-      return;
-    } else if (option === "mail") {
-      setMail(true);
-      setBackup(false);
-      setEquip(false);
-      setInternet(false);
-      setFolder(false);
-      setOccurrence("E-mail");
-      SetSAP(false);
-      SetMBI(false);
-      SetSynch(false);
-      SetOffice(false);
-      SetEng(false);
-      SetFake(false);
-      return;
-    } else if (option === "equip") {
-      setEquip(true);
-      setBackup(false);
-      setMail(false);
-      setInternet(false);
-      setFolder(false);
-      setOccurrence("Equipamento");
-      SetSAP(false);
-      SetMBI(false);
-      SetSynch(false);
-      SetOffice(false);
-      SetEng(false);
-      SetFake(false);
-      return;
-    } else if (option === "internet") {
-      setInternet(true);
-      setBackup(false);
-      setMail(false);
-      setEquip(false);
-      setFolder(false);
-      setOccurrence("Internet");
-      SetSAP(false);
-      SetMBI(false);
-      SetSynch(false);
-      SetOffice(false);
-      SetEng(false);
-      SetFake(false);
-      return;
-    } else if (option === "folder") {
-      setFolder(true);
-      setBackup(false);
-      setMail(false);
-      setEquip(false);
-      setInternet(false);
-      setOccurrence("Permissão");
-      SetSAP(false);
-      SetMBI(false);
-      SetSynch(false);
-      SetOffice(false);
-      SetEng(false);
-      SetFake(false);
-      return;
-    } else if (option === "none") {
-      setBackup(false);
-      setMail(false);
-      setEquip(false);
-      SetFake(true);
-      setInternet(false);
-      setFolder(false);
-      SetSAP(false);
-      SetMBI(false);
-      SetSynch(false);
-      SetOffice(false);
-      SetEng(false);
-      return;
-    } else if (option === "sap") {
-      SetSAP(true);
-      SetMBI(false);
-      SetSynch(false);
-      SetOffice(false);
-      setBackup(false);
-      setMail(false);
-      setEquip(false);
-      setInternet(false);
-      setFolder(false);
-      setOccurrence("SAP");
-      SetEng(false);
-      SetFake(false);
-      return;
-    } else if (option === "mbi") {
-      SetMBI(true);
-      SetSAP(false);
-      setBackup(false);
-      setMail(false);
-      setEquip(false);
-      setInternet(false);
-      setFolder(false);
-      setOccurrence("MBI");
-      SetSynch(false);
-      SetOffice(false);
-      SetEng(false);
-      SetFake(false);
-      return;
-    } else if (option === "synch") {
-      SetFake(false);
-      SetSynch(true);
-      SetMBI(false);
-      SetSAP(false);
-      setBackup(false);
-      setMail(false);
-      setEquip(false);
-      setInternet(false);
-      setFolder(false);
-      setOccurrence("Synchro");
-      SetOffice(false);
-      SetEng(false);
-      return;
-    } else if (option === "office") {
-      SetFake(false);
-      SetOffice(true);
-      SetSynch(false);
-      SetMBI(false);
-      SetSAP(false);
-      setBackup(false);
-      setMail(false);
-      setEquip(false);
-      setInternet(false);
-      setFolder(false);
-      SetEng(false);
-      setOccurrence("Office");
-      return;
-    } else if (option === "eng") {
-      SetFake(false);
-      SetEng(true);
-      SetOffice(false);
-      SetSynch(false);
-      SetMBI(false);
-      SetSAP(false);
-      setBackup(false);
-      setMail(false);
-      setEquip(false);
-      setInternet(false);
-      setFolder(false);
-      setOccurrence("Softwares de Eng");
-      return;
+    switch (option) {
+      default:
+        break;
+      case "backup":
+        setBackup(true);
+        setMail(false);
+        setEquip(false);
+        setInternet(false);
+        setFolder(false);
+        setOccurrence("Backup");
+        setSAP(false);
+        setMBI(false);
+        setSynch(false);
+        setOffice(false);
+        setEng(false);
+        setFake(false);
+        break;
+      case "mail":
+        setMail(true);
+        setBackup(false);
+        setEquip(false);
+        setInternet(false);
+        setFolder(false);
+        setOccurrence("E-mail");
+        setSAP(false);
+        setMBI(false);
+        setSynch(false);
+        setOffice(false);
+        setEng(false);
+        setFake(false);
+        break;
+      case "equip":
+        setEquip(true);
+        setBackup(false);
+        setMail(false);
+        setInternet(false);
+        setFolder(false);
+        setOccurrence("Equipamento");
+        setSAP(false);
+        setMBI(false);
+        setSynch(false);
+        setOffice(false);
+        setEng(false);
+        setFake(false);
+        break;
+      case "internet":
+        setInternet(true);
+        setBackup(false);
+        setMail(false);
+        setEquip(false);
+        setFolder(false);
+        setOccurrence("Internet");
+        setSAP(false);
+        setMBI(false);
+        setSynch(false);
+        setOffice(false);
+        setEng(false);
+        setFake(false);
+        break;
+      case "folder":
+        setFolder(true);
+        setBackup(false);
+        setMail(false);
+        setEquip(false);
+        setInternet(false);
+        setOccurrence("Permissão");
+        setSAP(false);
+        setMBI(false);
+        setSynch(false);
+        setOffice(false);
+        setEng(false);
+        setFake(false);
+        break;
+      case "none":
+        setBackup(false);
+        setMail(false);
+        setEquip(false);
+        setFake(true);
+        setInternet(false);
+        setFolder(false);
+        setSAP(false);
+        setMBI(false);
+        setSynch(false);
+        setOffice(false);
+        setEng(false);
+        break;
+      case "sap":
+        setSAP(true);
+        setMBI(false);
+        setSynch(false);
+        setOffice(false);
+        setBackup(false);
+        setMail(false);
+        setEquip(false);
+        setInternet(false);
+        setFolder(false);
+        setOccurrence("SAP");
+        setEng(false);
+        setFake(false);
+        break;
+      case "mbi":
+        setMBI(true);
+        setSAP(false);
+        setBackup(false);
+        setMail(false);
+        setEquip(false);
+        setInternet(false);
+        setFolder(false);
+        setOccurrence("MBI");
+        setSynch(false);
+        setOffice(false);
+        setEng(false);
+        setFake(false);
+        break;
+      case "synch":
+        setFake(false);
+        setSynch(true);
+        setMBI(false);
+        setSAP(false);
+        setBackup(false);
+        setMail(false);
+        setEquip(false);
+        setInternet(false);
+        setFolder(false);
+        setOccurrence("Synchro");
+        setOffice(false);
+        setEng(false);
+        break;
+      case "office":
+        setFake(false);
+        setOffice(true);
+        setSynch(false);
+        setMBI(false);
+        setSAP(false);
+        setBackup(false);
+        setMail(false);
+        setEquip(false);
+        setInternet(false);
+        setFolder(false);
+        setEng(false);
+        setOccurrence("Office");
+        break;
+      case "eng":
+        setFake(false);
+        setEng(true);
+        setOffice(false);
+        setSynch(false);
+        setMBI(false);
+        setSAP(false);
+        setBackup(false);
+        setMail(false);
+        setEquip(false);
+        setInternet(false);
+        setFolder(false);
+        setOccurrence("Softwares de Eng");
+        break;
     }
   }
 
@@ -1928,14 +2045,17 @@ export default function DashboardTI() {
     const selectBackup = document.getElementById("select-backup");
     const optionBackup = selectBackup.options[selectBackup.selectedIndex].value;
 
-    if (optionBackup === "pasta") {
-      setProblemn("Restaurar pasta");
-      return;
-    } else if (optionBackup === "mail") {
-      setProblemn("Restaurar e-mail");
-      return;
-    } else if (optionBackup === "none") {
-      return;
+    switch (optionBackup) {
+      case "pasta":
+        setProblemn("Restaurar pasta");
+        break;
+      default:
+        break;
+      case "mail":
+        setProblemn("Restaurar e-mail");
+        break;
+      case "none":
+        break;
     }
   }
 
@@ -1943,15 +2063,17 @@ export default function DashboardTI() {
     const selectMail = document.getElementById("select-mail");
     const optionMail = selectMail.options[selectMail.selectedIndex].value;
 
-    if (optionMail === "maxcap") {
-      setProblemn("Aumentar capacidade de e-mail");
-      return;
-    } else if (optionMail === "conect") {
-      setProblemn("Problema com conexão");
-
-      return;
-    } else if (optionMail === "none") {
-      return;
+    switch (optionMail) {
+      default:
+        break;
+      case "maxcap":
+        setProblemn("Aumentar capacidade de e-mail");
+        break;
+      case "conect":
+        setProblemn("Problema com conexão");
+        break;
+      case "none":
+        break;
     }
   }
 
@@ -1959,23 +2081,26 @@ export default function DashboardTI() {
     const selectEquip = document.getElementById("select-equip");
     const optionEquip = selectEquip.options[selectEquip.selectedIndex].value;
 
-    if (optionEquip === "off") {
-      setProblemn("Equipamento não liga");
-      return;
-    } else if (optionEquip === "printer") {
-      setProblemn("Problema com a impressora");
-      return;
-    } else if (optionEquip === "roaming") {
-      setProblemn("Mudanca de local de trabalho");
-      return;
-    } else if (optionEquip === "usb") {
-      setProblemn("USB");
-      return;
-    } else if (optionEquip === "none") {
-      return;
-    } else if (optionEquip === "change") {
-      setProblemn("Trocar Equipamento");
-      return;
+    switch (optionEquip) {
+      default:
+        break;
+      case "none":
+        break;
+      case "off":
+        setProblemn("Equipamento não liga");
+        break;
+      case "printer":
+        setProblemn("Problema com a impressora");
+        break;
+      case "roaming":
+        setProblemn("Mudanca de local de trabalho");
+        break;
+      case "usb":
+        setProblemn("USB");
+        break;
+      case "change":
+        setProblemn("Trocar Equipamento");
+        break;
     }
   }
 
@@ -2082,20 +2207,33 @@ export default function DashboardTI() {
   }
 
   function uploadModify() {
+    var date = new Date();
+    function adicionaZero(numero) {
+      if (numero < 10) {
+        return "0" + numero;
+      }
+      return numero;
+    }
+    var day = date.getDate();
+    var month = date.getMonth() + 1;
+    var year = date.getFullYear();
+
+    var dataFormatada = adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
+    var horaFormatada = adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
     if (sector.length < 1) {
-      SetMessage(true);
-      SetTypeError("Dados Insuficientes");
-      SetMessageError("Obrigatório Informar o Setor Responsavel");
+      setMessage(true);
+      setTypeError("Dados Insuficientes");
+      setMessageError("Obrigatório Informar o Setor Responsavel");
       return;
     } else if (occurrence.length < 1) {
-      SetMessage(true);
-      SetTypeError("Dados Insuficientes");
-      SetMessageError("Obrigatório Informar a Ocorrência");
+      setMessage(true);
+      setTypeError("Dados Insuficientes");
+      setMessageError("Obrigatório Informar a Ocorrência");
       return;
     } else if (problemn.length < 1) {
-      SetMessage(true);
-      SetTypeError("Dados Insuficientes");
-      SetMessageError("Obrigatório Informar o Problema");
+      setMessage(true);
+      setTypeError("Dados Insuficientes");
+      setMessageError("Obrigatório Informar o Problema");
       return;
     }
 
@@ -2113,15 +2251,17 @@ export default function DashboardTI() {
         OldOccurrence: ticketOCCURRENCE,
         OldProblemn: ticketPROBLEMN,
         problemn: problemn,
+        hours: horaFormatada,
+        date: dataFormatada,
       }),
     })
       .then((response) => {
         response.json();
 
         if (response.status === 402) {
-          SetMessage(true);
-          SetTypeError("Erro de Dados");
-          SetMessageError("Modificação Identica ao chamado atual Cancelada");
+          setMessage(true);
+          setTypeError("Erro de Dados");
+          setMessageError("Modificação Identica ao chamado atual Cancelada");
           return;
         } else if (response.status === 200) {
           return window.location.reload();
@@ -2156,7 +2296,7 @@ export default function DashboardTI() {
   }
 
   function closeModify() {
-    SetModifyTicket(false);
+    setModifyTicket(false);
   }
 
   return (
@@ -2263,7 +2403,7 @@ export default function DashboardTI() {
             className="btn"
             id="fiveView"
             onClick={() => {
-              SetCountTicket(5);
+              setCountTicket(5);
               getTicketFilter({ id: "fiveView", quantity: 5 });
             }}
           >
@@ -2274,7 +2414,7 @@ export default function DashboardTI() {
             className="btn"
             id="thenView"
             onClick={() => {
-              SetCountTicket(10);
+              setCountTicket(10);
               getTicketFilter({ id: "thenView", quantity: 10 });
             }}
           >
@@ -2285,7 +2425,7 @@ export default function DashboardTI() {
             className="btn"
             id="fiftyView"
             onClick={() => {
-              SetCountTicket(50);
+              setCountTicket(50);
               getTicketFilter({ id: "fiftyView", quantity: 50 });
             }}
           >
@@ -2296,7 +2436,7 @@ export default function DashboardTI() {
             className="btn"
             id="allView"
             onClick={() => {
-              SetCountTicket(100000);
+              setCountTicket(100000);
               getTicketFilter({ id: "allView", quantity: 100000 });
             }}
           >

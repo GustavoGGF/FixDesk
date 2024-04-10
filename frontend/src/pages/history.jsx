@@ -613,13 +613,15 @@ export default function History() {
                     // Remover "User:" ou "Tech:" do início da string
                     console.log("item[1]:", item[1]);
                     var userOrTech = item[1];
+                    var time = item[2];
+                    time = time.replace("Hours:", "").trim();
                     if (userOrTech.includes("System")) {
                       userOrTech = userOrTech.replace("System:", "").trim();
                       return (
                         <div key={index}>
                           <div className="text-center d-flex justify-content-center text-break">
                             <div className="pChat">
-                              <p>{userOrTech + " " + item[2]}</p>
+                              <p>{userOrTech + " " + time}</p>
                             </div>
                           </div>
                         </div>
@@ -631,7 +633,7 @@ export default function History() {
                           <DivFlex1 className="justify-content-end w-100 text-break position relative">
                             <div className="uChat1 position-relative">
                               <p>{userOrTech}</p>
-                              <PChatHourR className="position-absolute bottom-0 end-0">{item[2]}</PChatHourR>
+                              <PChatHourR className="position-absolute bottom-0 end-0">{time}</PChatHourR>
                             </div>
                           </DivFlex1>
                         </div>
@@ -643,7 +645,7 @@ export default function History() {
                           <DivFlex2 className="justify-content-start w-100 text-break position relative">
                             <div className="uChat2 position-relative">
                               <p>{userOrTech}</p>
-                              <PChatHourL className="position-absolute bottom-0 start-0">{item[2]}</PChatHourL>
+                              <PChatHourL className="position-absolute bottom-0 start-0">{time}</PChatHourL>
                             </div>
                           </DivFlex2>
                         </div>
@@ -859,7 +861,18 @@ export default function History() {
       var day = date.getDate();
       var month = date.getMonth() + 1;
       var year = date.getFullYear();
-      var newDate = day + "/" + month + "/" + year;
+
+      function adicionaZero(numero) {
+        if (numero < 10) {
+          return "0" + numero;
+        }
+        return numero;
+      }
+
+      var dataFormatada = adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
+      var horaFormatada = adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
+
+      const newDate = dataFormatada + " " + horaFormatada;
 
       if (ticket["open"] === false) {
         colorBorder = "ticektCloseList";
@@ -1010,13 +1023,15 @@ export default function History() {
               {groupedByDate[date].map((item, index) => {
                 // Remover "User:" ou "Tech:" do início da string
                 var userOrTech = item[1];
+                var time = item[2];
+                time = time.replace("Hours:", "").trim();
                 if (userOrTech.includes("System")) {
                   userOrTech = userOrTech.replace("System:", "").trim();
                   return (
                     <div key={index}>
                       <div className="text-center d-flex justify-content-center text-break">
                         <div className="pChat">
-                          <p>{userOrTech + " " + item[2]}</p>
+                          <p>{userOrTech + " " + time}</p>
                         </div>
                       </div>
                     </div>
@@ -1028,7 +1043,7 @@ export default function History() {
                       <DivFlex1 className="justify-content-end w-100 text-break position relative">
                         <div className="uChat1 position-relative">
                           <p>{userOrTech}</p>
-                          <PChatHourR className="position-absolute bottom-0 end-0">{item[2]}</PChatHourR>
+                          <PChatHourR className="position-absolute bottom-0 end-0">{time}</PChatHourR>
                         </div>
                       </DivFlex1>
                     </div>
@@ -1040,7 +1055,7 @@ export default function History() {
                       <DivFlex2 className="justify-content-start w-100 text-break position relative">
                         <div className="uChat2 position-relative">
                           <p>{userOrTech}</p>
-                          <PChatHourL className="position-absolute bottom-0 start-0">{item[2]}</PChatHourL>
+                          <PChatHourL className="position-absolute bottom-0 start-0">{time}</PChatHourL>
                         </div>
                       </DivFlex2>
                     </div>

@@ -591,23 +591,31 @@ def ticket(request, id):
             if "status" in body:
                 status = body["status"]
                 technician = body["technician"]
+                date = body["date"]
+                hours = body["hours"]
                 ticket = SupportTicket.objects.get(id=id)
                 current_responsible_technician = ticket.responsible_technician
 
                 if status == "close":
-                    if current_responsible_technician != technician:
+                    partes_nome_pesquisa = current_responsible_technician.split()
+                    presente = all(
+                        parte in technician for parte in partes_nome_pesquisa
+                    )
+
+                    if presente:
+                        ticket.open = False
+                        ticket.chat += f",[[Date:{date}],[System: {technician} Finalizou o Chamado],[Hours:{hours}]]"
+
+                        ticket.save()
+                    else:
+                        print("O nome não está contido no nome completo.")
                         return JsonResponse(
                             {"status": "invalid modify"}, status=304, safe=True
                         )
-                    ticket.open = False
-                    ticket.chat += f",[System:{technician} Finalizou o Chamado]"
-
-                    ticket.save()
 
                 elif status == "open":
                     ticket.open = True
-                    ticket.chat += f",[System:{technician} Reabriu o Chamado]"
-                    ticket.responsible_technician = technician
+                    ticket.chat += f",[[Date:{date}],[System: {technician} Reabriu e atendeu o Chamado],[Hours:{hours}]]"
 
                     ticket.save()
 
@@ -1047,12 +1055,14 @@ def ticket(request, id):
                     tech = body["tech"]
                     newSector = body["sector"]
                     oldSector = body["OldSector"]
+                    date = body["date"]
+                    hours = body["hours"]
                     ticket = SupportTicket.objects.get(id=id)
 
                     if newSector == oldSector:
                         pass
                     else:
-                        ticket.chat += f"[System:{tech} Mudou o Setor responsavel para {newSector}]"
+                        ticket.chat += f",[[Date:{date}],[System: {tech} Mudou o Setor responsavel para {newSector}],[Hours:{hours}]]"
                         ticket.sector = newSector
 
                     newOccurrence = body["occurrence"]
@@ -1061,9 +1071,7 @@ def ticket(request, id):
                     if newOccurrence == oldOccurrence:
                         pass
                     else:
-                        ticket.chat += (
-                            f"[System:{tech} Mudou a Ocorrência para {newOccurrence}]"
-                        )
+                        ticket.chat += f",[[Date:{date}],[System: {tech} Mudou a Ocorrência para {newOccurrence}],[Hours:{hours}]]"
                         ticket.occurrence = newOccurrence
 
                     newProblemn = body["problemn"]
@@ -1074,9 +1082,7 @@ def ticket(request, id):
                             {"status": "invalid modify"}, status=402, safe=True
                         )
                     else:
-                        ticket.chat += (
-                            f"[System:{tech} Mudou o Problema para {newProblemn}]"
-                        )
+                        ticket.chat += f",[[Date:{date}],[System: {tech} Mudou o Problema para {newProblemn}],[Hours:{hours}]]"
                         ticket.problemn = newProblemn
 
                         ticket.save()

@@ -25,6 +25,7 @@ HelpDesk[
 contrato comodato para os equipamentos
 ao enviar locagem de equipamento, se estiver alocado já, retornar com alocado cinza e pedir para ajustar data
 otimizar login, deixar rodando a criação de usuario enquanto autentica no
+remover Hours: do chat
 ]
 
 DashBoard[
@@ -55,6 +56,7 @@ hora no chamado
 arrumar arquivos anexados
 nome do arquivo na tela de ticket
 data e hora no chat
+otimizar login, deixar rod
 ]
 
 Navbar[
@@ -72,5 +74,7 @@ zerar os tickets ao selecionar um filtro
 fechar o chamado fecha a tela de enviar arquivos e limpa os arquivos
 ao incluir novos arquivos atualiza o chamado
 ao adicionar novos arquivos mostrar no chat
+botão bugado
+quando não tem chamado aberto
 ]
 
