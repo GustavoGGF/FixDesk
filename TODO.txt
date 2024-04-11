@@ -70,7 +70,6 @@ Navbar[
 ]
 
 History[
-    imprimir chat pdf
     email de abertura de chamado e chamado finalizado
     resetar ticker quando clicar em algum filtro
     botão de pegar mais tickets não está funcionando

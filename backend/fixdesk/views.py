@@ -89,6 +89,8 @@ def CreateOrVerifyUser(user, password, request, helpdesk, name_create_user):
     try:
         if not group_user:
             return Valid
+        else:
+            return JsonResponse({"status": "Error"}, status=425, safe=True)
         if userAuthentic:
             return login(request, userAuthentic)
 
@@ -264,6 +266,12 @@ def validation(request):
                 elif tech_leader in item:
                     helpdesk = "Gestor"
                     break  # Se encontrou, não precisa continuar procurando
+            task = Thread(
+                target=CreateOrVerifyUser,
+                args=(user, password, request, helpdesk, name_create_user),
+            )
+
+            task.start()
 
             if "displayName" in information:
                 name = information["displayName"]
@@ -289,18 +297,6 @@ def validation(request):
                 pid = information["employeeID"]
             else:
                 pid = ""
-
-            task = Thread(
-                target=CreateOrVerifyUser,
-                args=(user, password, request, helpdesk, name_create_user),
-            )
-
-            task.start()
-
-            task.join()
-
-            if not Valid:
-                return JsonResponse({"status": "Error"}, status=425, safe=True)
 
         except Exception as e:
             print(e)
