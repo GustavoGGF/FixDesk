@@ -20,7 +20,7 @@ Tudo[
 
 ]
 
-Login[]
+Login[icone lupatech com tema branco]
 
 HelpDesk[
     contrato comodato para os equipamentos

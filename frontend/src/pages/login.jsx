@@ -240,7 +240,6 @@ export default function Login() {
         >
           {version}
         </H5>
-        a
         {notify && (
           <Notification
             onClick={() => {
