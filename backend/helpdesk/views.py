@@ -1,3 +1,7 @@
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+import smtplib
+from threading import Thread
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt, requires_csrf_token
 from django.http import JsonResponse
@@ -23,6 +27,38 @@ import mimetypes
 from django.core.files.base import ContentFile
 from fpdf import FPDF
 import re
+
+
+def sendMail(mail, msg):
+    try:
+        # Configurações do servidor de e-mail SMTP
+        smtp_host = getenv("SERVER_SMTP")
+        smtp_port = getenv("SMPT_PORT")
+        mail_address = getenv("MAIL_FIXDESK")
+        mail_user = mail
+
+        # Criar objeto de mensagem
+        msg = MIMEMultipart()
+        msg["From"] = mail_address
+        msg["To"] = mail_user
+        msg["Subject"] = f"Finalizamento do chamado {ticket.id}"
+
+        # Corpo da mensagem
+        msg.attach(MIMEText(msg))
+
+        # Iniciar conexão SMTP
+        server_smtp = smtplib.SMTP(smtp_host, smtp_port)
+        server_smtp.starttls()
+
+        # Enviar e-mail
+        text_mail = msg.as_string()
+        server_smtp.sendmail(mail_address, mail_user, text_mail)
+
+        # Fechar conexão
+        server_smtp.quit()
+
+    except Exception as e:
+        print(e)
 
 
 # Create your views here.
@@ -78,11 +114,11 @@ def firstView(request):
                 Back_Tech = getenv("DJANGO_GROUP_TECH")
                 Back_Leader = getenv("DJANGO_GROUP_LEADER")
                 User = request.user
-                if User.groups.filter(name=Back_User):
-                    return render(request, "index.html", {})
-                elif User.groups.filter(name=Back_Tech):
-                    return render(request, "index.html", {})
-                elif User.groups.filter(name=Back_Leader):
+                if (
+                    User.groups.filter(name=Back_User)
+                    or User.groups.filter(name=Back_Tech)
+                    or User.groups.filter(name=Back_Leader)
+                ):
                     return render(request, "index.html", {})
                 else:
                     return redirect("/login")
@@ -588,6 +624,7 @@ def ticket(request, id):
                 hours = body["hours"]
                 ticket = SupportTicket.objects.get(id=id)
                 current_responsible_technician = ticket.responsible_technician
+                msg = ""
 
                 if status == "close":
                     partes_nome_pesquisa = current_responsible_technician.split()
@@ -600,6 +637,17 @@ def ticket(request, id):
                         ticket.chat += f",[[Date:{date}],[System: {technician} Finalizou o Chamado],[Hours:{hours}]]"
 
                         ticket.save()
+
+                        mail = body["mail"]
+                        msg = f"{technician} Finalizou o Chamado", "plain"
+
+                        task = Thread(
+                            target=sendMail,
+                            args=(mail, msg),
+                        )
+
+                        task.start()
+
                     else:
                         return JsonResponse(
                             {"status": "invalid modify"}, status=304, safe=True
@@ -610,6 +658,16 @@ def ticket(request, id):
                     ticket.chat += f",[[Date:{date}],[System: {technician} Reabriu e atendeu o Chamado],[Hours:{hours}]]"
 
                     ticket.save()
+
+                    mail = body["mail"]
+                    msg = f"{technician} Reabriu o Chamado", "plain"
+
+                    task = Thread(
+                        target=sendMail,
+                        args=(mail, msg),
+                    )
+
+                    task.start()
 
                 return JsonResponse({"status": "ok"}, status=200, safe=True)
 

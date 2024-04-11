@@ -1,3 +1,4 @@
+import time
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from dotenv import load_dotenv
@@ -57,6 +58,7 @@ def CreateOrVerifyUser(user, password, request, helpdesk, name_create_user):
             group_user.save()
             group_tech.save()
             group_leader.save()
+            login(request, userAuthentic)
             Valid = True
         elif helpdesk == "Tecnico TI":
             userAuthentic.groups.add(group_tech)
@@ -65,6 +67,7 @@ def CreateOrVerifyUser(user, password, request, helpdesk, name_create_user):
             group_user.save()
             group_tech.save()
             group_leader.save()
+            login(request, userAuthentic)
             Valid = True
         elif helpdesk == "Gestor":
             userAuthentic.groups.add(group_leader)
@@ -73,6 +76,7 @@ def CreateOrVerifyUser(user, password, request, helpdesk, name_create_user):
             group_user.save()
             group_tech.save()
             group_leader.save()
+            login(request, userAuthentic)
             Valid = True
         else:
             userAuthentic.groups.remove(group_user)
@@ -82,18 +86,6 @@ def CreateOrVerifyUser(user, password, request, helpdesk, name_create_user):
             group_tech.save()
             group_leader.save()
             Valid = False
-    except Exception as e:
-        print(e)
-        return JsonResponse({"status": "error"}, status=400, safe=True)
-
-    try:
-        if not group_user:
-            return Valid
-        else:
-            return JsonResponse({"status": "Error"}, status=425, safe=True)
-        if userAuthentic:
-            return login(request, userAuthentic)
-
     except Exception as e:
         print(e)
         return JsonResponse({"status": "error"}, status=400, safe=True)
@@ -132,39 +124,12 @@ def validation(request):
             dominio = getenv("DOMAIN_NAME_HELPDESK")
 
             server1 = getenv("SERVER1")
-            # server2 = getenv("SERVER2")
-            # server3 = getenv("SERVER3")
-
-            # ldap_servers = [server1, server2, server3]
 
         except Exception as e:
             print(e)
             erro = str(e)
             print(erro, flush=True)
             return JsonResponse({"status": e}, status=2)
-
-        avg_ping = None
-        pingFormat = None
-        server_pings = {}
-        # min_ping_server = None
-
-        # try:
-        #     for server in ldap_servers:
-        #         try:
-        #             avg_ping = ping(server, unit="ms")
-        #             pingFormat = "{:.2f}".format(avg_ping)
-
-        #             server_pings.append(server, pingFormat)
-
-        #         except:
-        #             server_pings[server] = float("inf")
-
-        #     min_ping_server = min(server_pings, key=lambda x: x[1])
-
-        # except Exception as e:
-        #     erro = str(e)
-        #     print(erro, flush=True)
-        #     return JsonResponse({"status": "error"}, status=3)
 
         server = None
         conn = None
@@ -319,6 +284,11 @@ def validation(request):
                 "helpdesk": client.helpdesk,
                 "pid": client.pid,
             }
+
+            while not Valid:
+                if Valid:
+                    break
+                time.sleep(0.1)
 
             return JsonResponse({"data": client_data}, status=200, safe=True)
 

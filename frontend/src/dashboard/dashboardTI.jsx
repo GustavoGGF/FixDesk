@@ -1617,6 +1617,7 @@ export default function DashboardTI() {
         status: "close",
         hours: horaFormatada,
         date: dataFormatada,
+        mail: ticketMAIL,
       }),
     })
       .then((response) => {
@@ -1665,6 +1666,7 @@ export default function DashboardTI() {
         status: "open",
         hours: horaFormatada,
         date: dataFormatada,
+        mail: ticketMAIL,
       }),
     })
       .then((response) => {

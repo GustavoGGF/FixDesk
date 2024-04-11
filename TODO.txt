@@ -17,7 +17,12 @@ Tudo[
     ao entrar em url errada redirecionar
     comentar código
     pdf dos chamados
-
+    postfix = servidor smtp, pasta da config
+    docker = config
+    python = ativar
+    go lang
+    quando acbar o cookie do csrf mandar para login
+    link do chamado no email
 ]
 
 Login[icone lupatech com tema branco]
@@ -28,6 +33,7 @@ HelpDesk[
 ]
 
 DashBoard[
+    finalizar chamado dos outros
     modificar chamdo que não é seu
     ajustar fechar e reabrir chamado
     data no ticket do chamado
