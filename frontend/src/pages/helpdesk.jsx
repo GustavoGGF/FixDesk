@@ -507,43 +507,43 @@ export default function Helpdesk() {
   }
 
   function selectSys() {
-    const select = document.getElementById("select-synch");
+    const select = document.getElementById("select-sap");
     const option = select.options[select.selectedIndex].value;
 
     switch (option) {
       default:
         break;
       case "user":
-        setAlert(true);
         setMessagetitle("Caso de Criação/exclusão de usuários");
         setMessageinfo1("1. Informar o usuário que deverá ser criado ou excluido");
         setMessageinfo2("2. Informar os acessos que o mesmo poderá utilizar");
         setProblemn("Criação/exclusão usuário");
+        setAlert(true);
         setAlertVerify(false);
         break;
       case "access":
-        setAlert(true);
         setMessagetitle("Caso de Liberação/bloqueio de acessos");
         setMessageinfo1("1. Descreva o que deseja bloquear e/ou liberar");
         setMessageinfo2("");
         setProblemn("Liberação/bloqueio de acessos");
+        setAlert(true);
         setAlertVerify(false);
         break;
       case "quest":
-        setAlert(true);
         setMessagetitle("Caso de Dúvidas operacionais");
         setMessageinfo1("1. Descreva o que deseja saber");
         setMessageinfo2("");
         setProblemn("Dúvidas operacionais");
         setAlertVerify(false);
+        setAlert(true);
         break;
       case "error":
-        setAlert(true);
         setMessagetitle("Caso de Correção de falhas");
         setMessageinfo1("1. Informe o Erro");
         setMessageinfo2("");
         setProblemn("Correção de falhas");
         setAlertVerify(false);
+        setAlert(true);
         break;
       case "none":
         setAlert(false);
@@ -1054,10 +1054,10 @@ export default function Helpdesk() {
     formdataUser.append("occurrence", occurrence);
     formdataUser.append("problemn", problemn);
     if (observation.length < 2) {
-      setMessageError("Obrigatório Escrever Obversação conforme o chamado")
-      setTypeError("Falta de Dados")
-      setMessage(true)
-      return
+      setMessageError("Obrigatório Escrever Obversação conforme o chamado");
+      setTypeError("Falta de Dados");
+      setMessage(true);
+      return;
     }
     formdataUser.append("observation", observation);
     formdataUser.append("start_date", dataUserFormatada);
