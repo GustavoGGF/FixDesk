@@ -957,6 +957,7 @@ export default function DashboardTI() {
           technician: userData.name,
           date: dataFormatada,
           hour: horaFormatada,
+          mail: ticketMAIL,
         }),
       })
         .then((response) => {
@@ -1664,6 +1665,53 @@ export default function DashboardTI() {
       body: JSON.stringify({
         technician: userData.name,
         status: "open",
+        hours: horaFormatada,
+        date: dataFormatada,
+        mail: ticketMAIL,
+      }),
+    })
+      .then((response) => {
+        if (response.status === 304) {
+          setMessage(true);
+          setMessageError("Ticket não percetence a você");
+          setTypeError("Permissão Negada");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        return window.location.reload();
+      })
+      .catch((err) => {
+        setMessageError(err);
+        setTypeError("FATAL ERROR");
+        setMessage(true);
+        return console.log(err);
+      });
+  }
+
+  function stopTicket() {
+    var date = new Date();
+    function adicionaZero(numero) {
+      if (numero < 10) {
+        return "0" + numero;
+      }
+      return numero;
+    }
+    var day = date.getDate();
+    var month = date.getMonth() + 1;
+    var year = date.getFullYear();
+
+    var dataFormatada = adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
+    var horaFormatada = adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
+    fetch("/helpdesk/ticket/" + ticketID, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      body: JSON.stringify({
+        technician: userData.name,
+        status: "stop",
         hours: horaFormatada,
         date: dataFormatada,
         mail: ticketMAIL,
@@ -2552,6 +2600,15 @@ export default function DashboardTI() {
                     hidden={ticketOpen}
                   >
                     Reabrir
+                  </DropBTN>
+                  <DropBTN
+                    className="btn btn-primary w-100"
+                    onClick={() => {
+                      stopTicket();
+                    }}
+                    hidden={ticketOpen === true || false ? false : true}
+                  >
+                    Aguardar
                   </DropBTN>
                   <DropBTN className="btn btn-danger w-100" onClick={TicketModify}>
                     Modificar

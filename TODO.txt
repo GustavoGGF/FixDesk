@@ -28,6 +28,7 @@ Tudo[
 Login[icone lupatech com tema branco]
 
 HelpDesk[
+    abrir chamado softwares
     contrato comodato para os equipamentos
     ao enviar locagem de equipamento, se estiver alocado já, retornar com alocado cinza e pedir para ajustar data
 ]
@@ -69,6 +70,7 @@ DashBoard[
     mudar scroll de tudo da tela de cadastrode equip
     baixar pdf msm sem ter atentido
     ajustar descrição no pdf
+    clicar fora da engragem de modificação de chamado fecha a modificação
 ]
 
 Navbar[
@@ -92,5 +94,6 @@ History[
     quanto descrição for maior que 100 caracteres, mostrar o botão de mostrar mais
     baixar pdf msm sem ter atentido
     ajustar descrição no pdf
+    clicar fora da engragem de modificação de chamado fecha a modificação
 ]
 

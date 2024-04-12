@@ -29,22 +29,27 @@ from fpdf import FPDF
 import re
 
 
-def sendMail(mail, msg):
+def sendMail(mail, msgm1, msgm2):
+    smtp_host = None
+    smtp_port = None
+    mail_address = None
+    msg = None
+    server_smtp = None
+    text_mail = None
     try:
         # Configurações do servidor de e-mail SMTP
         smtp_host = getenv("SERVER_SMTP")
         smtp_port = getenv("SMPT_PORT")
         mail_address = getenv("MAIL_FIXDESK")
-        mail_user = mail
 
         # Criar objeto de mensagem
         msg = MIMEMultipart()
         msg["From"] = mail_address
-        msg["To"] = mail_user
-        msg["Subject"] = f"Finalizamento do chamado {ticket.id}"
+        msg["To"] = mail
+        msg["Subject"] = msgm2
 
         # Corpo da mensagem
-        msg.attach(MIMEText(msg))
+        msg.attach(MIMEText(msgm1, "plain"))
 
         # Iniciar conexão SMTP
         server_smtp = smtplib.SMTP(smtp_host, smtp_port)
@@ -52,7 +57,7 @@ def sendMail(mail, msg):
 
         # Enviar e-mail
         text_mail = msg.as_string()
-        server_smtp.sendmail(mail_address, mail_user, text_mail)
+        server_smtp.sendmail(mail_address, mail, text_mail)
 
         # Fechar conexão
         server_smtp.quit()
@@ -569,10 +574,20 @@ def ticket(request, id):
                             {"status": "invalid modify"}, status=304, safe=True
                         )
 
-                    ticket = SupportTicket.objects.get(id=id)
-
                     if ticket.chat == None:
                         ticket.chat = f"[[Date:{date}],[System:{technician} atendeu ao Chamado],[Hours:{hours}]]"
+
+                        mail = body["mail"]
+                        msg = f"{technician} atendeu ao Chamado"
+                        msg2 = f"Atendimento do Chamado {ticket.id}"
+
+                        task = Thread(
+                            target=sendMail,
+                            args=(mail, msg, msg2),
+                        )
+
+                        task.start()
+
                     else:
                         ticket.chat += f",[[Date:{date}], [System:{technician} Transfereu o Chamado para {technician}], [Hours:{hours}]]"
 
@@ -639,11 +654,12 @@ def ticket(request, id):
                         ticket.save()
 
                         mail = body["mail"]
-                        msg = f"{technician} Finalizou o Chamado", "plain"
+                        msg = f"{technician} Finalizou o Chamado"
+                        msg2 = f"Finalizamento do chamado {ticket.id}"
 
                         task = Thread(
                             target=sendMail,
-                            args=(mail, msg),
+                            args=(mail, msg, msg2),
                         )
 
                         task.start()
@@ -660,14 +676,43 @@ def ticket(request, id):
                     ticket.save()
 
                     mail = body["mail"]
-                    msg = f"{technician} Reabriu o Chamado", "plain"
+                    msg = f"{technician} Reabriu o Chamado"
+                    msg2 = f"Reabertura do chamado {ticket.id}"
 
                     task = Thread(
                         target=sendMail,
-                        args=(mail, msg),
+                        args=(mail, msg, msg2),
                     )
 
                     task.start()
+
+                elif status == "open":
+                    partes_nome_pesquisa = current_responsible_technician.split()
+                    presente = all(
+                        parte in technician for parte in partes_nome_pesquisa
+                    )
+
+                    if presente:
+                        ticket.open = None
+                        ticket.chat += f",[[Date:{date}],[System: {technician} Deixou esse chamado em aguardo],[Hours:{hours}]]"
+
+                        ticket.save()
+
+                        mail = body["mail"]
+                        msg = f"{technician} Deixou esse chamado em aguardo"
+                        msg2 = f"Chamado {ticket.d} em aguardo"
+
+                        task = Thread(
+                            target=sendMail,
+                            args=(mail, msg, msg2),
+                        )
+
+                        task.start()
+
+                    else:
+                        return JsonResponse(
+                            {"status": "invalid modify"}, status=304, safe=True
+                        )
 
                 return JsonResponse({"status": "ok"}, status=200, safe=True)
 

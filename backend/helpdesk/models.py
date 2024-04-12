@@ -2,6 +2,7 @@ from django.db import models
 from dashboards.models import Equipaments
 from os.path import join
 
+
 def support_ticket_file_path(instance, filename):
     return join("uploads", str(instance.ticket.id), filename)
 
@@ -23,7 +24,7 @@ class SupportTicket(models.Model):
     )
     id = models.AutoField(primary_key=True)
     PID = models.IntegerField(null=False, blank=False)
-    open = models.BooleanField(default=True)
+    open = models.BooleanField(default=True, null=True)
     chat = models.TextField(max_length=10000, blank=True, null=True)
     equipament = models.ForeignKey(
         Equipaments, blank=True, null=True, on_delete=models.SET_NULL
