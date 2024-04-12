@@ -199,6 +199,7 @@ def submitTicket(request):
                 observation=observation,
                 start_date=start_date,
                 PID=pid,
+                open=True,
             )
 
             images = request.FILES.getlist("image")
@@ -298,6 +299,7 @@ def submitTicket(request):
                     PID=pid,
                     equipament=equipament,
                     date_alocate=days,
+                    open=True,
                 )
 
                 Ticket.save()
@@ -359,6 +361,7 @@ def submitTicket(request):
                     job_title_new_user=job_title_new_user,
                     start_work_new_user=start_work_new_user,
                     copy_profile_new_user=copy_profile_new_user,
+                    open=True,
                 )
 
                 Ticket.save()
@@ -395,6 +398,7 @@ def submitTicket(request):
                     mail_tranfer=mail_tranfer,
                     old_files=old_files,
                     start_work_new_user=start_work_new_user,
+                    open=True,
                 )
 
                 Ticket.save()
@@ -419,6 +423,7 @@ def submitTicket(request):
                     observation=observation,
                     start_date=start_date,
                     PID=pid,
+                    open=True,
                 )
 
                 Ticket.save()
@@ -686,7 +691,7 @@ def ticket(request, id):
 
                     task.start()
 
-                elif status == "open":
+                elif status == "stop":
                     partes_nome_pesquisa = current_responsible_technician.split()
                     presente = all(
                         parte in technician for parte in partes_nome_pesquisa
@@ -700,7 +705,7 @@ def ticket(request, id):
 
                         mail = body["mail"]
                         msg = f"{technician} Deixou esse chamado em aguardo"
-                        msg2 = f"Chamado {ticket.d} em aguardo"
+                        msg2 = f"Chamado {ticket.id} em aguardo"
 
                         task = Thread(
                             target=sendMail,

@@ -333,7 +333,11 @@ export default function DashboardTI() {
         }
       } else if (ticket["open"] === true && ticket["responsible_technician"] !== null) {
         colorBorder = "ticektOpenInView";
+      } else if (ticket["open"] === null) {
+        colorBorder = "ticketStop";
       }
+
+      console.log(ticket["open"]);
 
       const Div = (
         <DivCard
@@ -412,6 +416,8 @@ export default function DashboardTI() {
         }
       } else if (ticket["open"] === true && ticket["responsible_technician"] !== null) {
         colorBorder = "ticektOpenInViewList";
+      } else if (ticket["open"] === null) {
+        colorBorder = "ticketStop";
       }
 
       const Div = (
@@ -1327,6 +1333,52 @@ export default function DashboardTI() {
         "Problemn-Ticket": problemTicket,
         "Sector-Ticket": sectorTicket,
         "Status-Request": "close",
+      },
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        if (data.tickets.length === 0) {
+          setMessage(true);
+          setTypeError("Falta de dados");
+          setMessageError("Nenhum ticket com esses Filtros");
+          setBtnMore(false);
+        } else {
+          setBtnMore(true);
+          setLoadingDash(false);
+          setStatus("close");
+          setTickets(data.tickets);
+        }
+      })
+      .catch((err) => {
+        setMessageError(err);
+        setTypeError("FATAL ERROR");
+        setMessage(true);
+        return console.log(err);
+      });
+  }
+
+  function ticketStop() {
+    setTickets([]);
+    const btn = document.getElementById("btnopen");
+    btn.classList.remove("btn-success");
+    const btn2 = document.getElementById("btnclose");
+    btn2.classList.remove("btn-warning");
+    const btn3 = document.getElementById("btnstop");
+    btn3.classList.add("btn-light");
+    const btn4 = document.getElementById("btnall");
+    btn4.classList.remove("btn-info");
+
+    fetch("getTicketFilterStatus/", {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Order-By": orderby,
+        "Quantity-tickets": countTicket,
+        "Problemn-Ticket": problemTicket,
+        "Sector-Ticket": sectorTicket,
+        "Status-Request": "stop",
       },
     })
       .then((response) => {
@@ -2550,6 +2602,16 @@ export default function DashboardTI() {
             }}
           >
             Fechado
+          </button>
+          <button
+            className="btn btn-light"
+            value="close"
+            id="btnstop"
+            onClick={() => {
+              ticketStop();
+            }}
+          >
+            Aguardo
           </button>
           <Button2
             className="btn"

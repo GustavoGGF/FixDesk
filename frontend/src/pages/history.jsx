@@ -807,6 +807,8 @@ export default function History() {
         }
       } else if (ticket["open"] === true && ticket["responsible_technician"] !== null) {
         colorBorder = "ticektOpenInView";
+      } else if (ticket["open"] === null) {
+        colorBorder = "ticketStop";
       }
 
       const Div = (
@@ -883,6 +885,8 @@ export default function History() {
         }
       } else if (ticket["open"] === true && ticket["responsible_technician"] !== null) {
         colorBorder = "ticektOpenInViewList";
+      } else if (ticket["open"] === null) {
+        colorBorder = "ticketStop";
       }
 
       const Div = (

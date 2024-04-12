@@ -741,6 +741,10 @@ def getTicketFilterStatus(request):
                     ticket_data = SupportTicket.objects.filter(open=False).order_by(
                         "-id"
                     )[:Quantity_tickets]
+                elif Status == "stop":
+                    ticket_data = SupportTicket.objects.filter(open=None).order_by(
+                        "-id"
+                    )[:Quantity_tickets]
                 elif Status == "all":
                     ticket_data = SupportTicket.objects.filter().order_by("-id")[
                         :Quantity_tickets
@@ -748,6 +752,10 @@ def getTicketFilterStatus(request):
             else:
                 if Status == "open":
                     ticket_data = SupportTicket.objects.filter(open=True)[
+                        :Quantity_tickets
+                    ]
+                elif Status == "stop":
+                    ticket_data = SupportTicket.objects.filter(open=None)[
                         :Quantity_tickets
                     ]
                 elif Status == "close":

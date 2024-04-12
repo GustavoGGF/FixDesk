@@ -24,7 +24,7 @@ class SupportTicket(models.Model):
     )
     id = models.AutoField(primary_key=True)
     PID = models.IntegerField(null=False, blank=False)
-    open = models.BooleanField(default=True, null=True)
+    open = models.BooleanField(null=True, blank=False)
     chat = models.TextField(max_length=10000, blank=True, null=True)
     equipament = models.ForeignKey(
         Equipaments, blank=True, null=True, on_delete=models.SET_NULL
