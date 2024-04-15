@@ -917,6 +917,7 @@ export default function DashboardTI() {
 
   function Close_ticket() {
     setClassBlur("");
+    setModifyTicket(false);
     const dash = document.getElementById("dashboard");
     dash.style.filter = "blur(0)";
     setTicketWindow(false);
@@ -2399,7 +2400,12 @@ export default function DashboardTI() {
       .then((response) => {
         response.json();
 
-        if (response.status === 402) {
+        if (response.status === 304) {
+          setMessage(true);
+          setTypeError("Operação Inválida");
+          setMessageError("Chamado não pertence a você");
+          return;
+        } else if (response.status === 402) {
           setMessage(true);
           setTypeError("Erro de Dados");
           setMessageError("Modificação Identica ao chamado atual Cancelada");

@@ -34,9 +34,6 @@ HelpDesk[
 ]
 
 DashBoard[
-    modificar chamdo que não é seu
-    ajustar fechar e reabrir chamado
-    data no ticket do chamado
     mudar cores do status dos ticker deixar igual cor dos tickets
     hora no chamado
     imprimir chat pdf
@@ -72,6 +69,7 @@ DashBoard[
     clicar fora da engragem de modificação de chamado fecha a modificação
     cores filtro status igual aos tickets
     se tecnico não for o responsavel pelo chamado não fazer fetch no chat
+    botão de fechar na tela de modificação de chamado
 ]
 
 Navbar[

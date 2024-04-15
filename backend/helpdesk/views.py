@@ -1164,6 +1164,8 @@ def ticket(request, id):
 
                     if newSector == oldSector:
                         pass
+                    if ticket.chat == None:
+                        return JsonResponse({}, status=304, safe=True)
                     else:
                         ticket.chat += f",[[Date:{date}],[System: {tech} Mudou o Setor responsavel para {newSector}],[Hours:{hours}]]"
                         ticket.sector = newSector
