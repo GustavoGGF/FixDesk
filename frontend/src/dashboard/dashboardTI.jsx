@@ -1273,11 +1273,11 @@ export default function DashboardTI() {
   function ticketOpenStatus() {
     setTickets();
     const btn = document.getElementById("btnopen");
-    btn.classList.add("btn-success");
+    btn.classList.add("btn-open");
     const btn2 = document.getElementById("btnclose");
-    btn2.classList.remove("btn-warning");
+    btn2.classList.remove("btn-success");
     const btn3 = document.getElementById("btnall");
-    btn3.classList.remove("btn-info");
+    btn3.classList.remove("btn-all");
 
     fetch("getTicketFilterStatus/", {
       method: "GET",
@@ -1317,11 +1317,11 @@ export default function DashboardTI() {
   function ticketClose() {
     setTickets([]);
     const btn = document.getElementById("btnopen");
-    btn.classList.remove("btn-success");
+    btn.classList.remove("btn-open");
     const btn2 = document.getElementById("btnclose");
-    btn2.classList.add("btn-warning");
+    btn2.classList.add("btn-success");
     const btn3 = document.getElementById("btnall");
-    btn3.classList.remove("btn-info");
+    btn3.classList.remove("btn-all");
 
     fetch("getTicketFilterStatus/", {
       method: "GET",
@@ -1361,13 +1361,13 @@ export default function DashboardTI() {
   function ticketStop() {
     setTickets([]);
     const btn = document.getElementById("btnopen");
-    btn.classList.remove("btn-success");
+    btn.classList.remove("btn-open");
     const btn2 = document.getElementById("btnclose");
-    btn2.classList.remove("btn-warning");
+    btn2.classList.remove("btn-success");
     const btn3 = document.getElementById("btnstop");
     btn3.classList.add("btn-light");
     const btn4 = document.getElementById("btnall");
-    btn4.classList.remove("btn-info");
+    btn4.classList.remove("btn-all");
 
     fetch("getTicketFilterStatus/", {
       method: "GET",
@@ -1407,11 +1407,11 @@ export default function DashboardTI() {
   function statusTicketAll() {
     setTickets([]);
     const btn = document.getElementById("btnopen");
-    btn.classList.remove("btn-success");
+    btn.classList.remove("btn-open");
     const btn2 = document.getElementById("btnclose");
-    btn2.classList.remove("btn-warning");
+    btn2.classList.remove("btn-success");
     const btn3 = document.getElementById("btnall");
-    btn3.classList.add("btn-info");
+    btn3.classList.add("btn-all");
 
     fetch("getTicketFilterStatus/", {
       method: "GET",
@@ -2607,7 +2607,7 @@ export default function DashboardTI() {
         <DivSelectView className="mt-3">
           <PSelectView className="position-absolute top-0 start-0 translate-middle">Status</PSelectView>
           <Button1
-            className="btn btn-success"
+            className="btn btn-open"
             id="btnopen"
             onClick={() => {
               ticketOpenStatus();
@@ -2626,7 +2626,7 @@ export default function DashboardTI() {
             Fechado
           </button>
           <button
-            className="btn btn-light"
+            className="btn"
             value="close"
             id="btnstop"
             onClick={() => {

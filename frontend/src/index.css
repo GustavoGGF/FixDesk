@@ -426,3 +426,49 @@
 .upload-files {
   margin: 0 auto;
 }
+
+.btn-open {
+  animation: gradientAnimation 10s infinite alternate ease-in-out;
+}
+
+.btn-all {
+  animation: gradientAnimation2 10s infinite alternate ease-in-out;
+}
+
+@keyframes gradientAnimation {
+  0% {
+    background-color: #ddce15;
+    transition: 0.3s;
+  }
+  30% {
+    background-color: #00b4d8;
+    transition: 0.3s;
+  }
+  60% {
+    background-color: #ddce15;
+    transition: 0.3s;
+  }
+  100% {
+    background-color: #00b4d8;
+    transition: 0.3s;
+  }
+}
+
+@keyframes gradientAnimation2 {
+  0% {
+    background-color: #ddce15;
+    transition: 0.3s;
+  }
+  30% {
+    background-color: #00b4d8;
+    transition: 0.3s;
+  }
+  60% {
+    background-color: #d2d6d9;
+    transition: 0.3s;
+  }
+  100% {
+    background-color: #228b22;
+    transition: 0.3s;
+  }
+}

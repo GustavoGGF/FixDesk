@@ -1,11 +1,8 @@
 Tudo[
     Usar HTTPS para criptografar a comunicação entre o navegador do usuário e o servidor.
     tema de fundo
-    setinha para baixo do tema
-    fechar abas to temas em configuração ao clicar fora
     colocar nomes em cada aba para facil identificação
     tela para reportar bug
-    boas práticas de desenvolvimento
     z-index ao clicar em tema
     mudar icone pelo fixdesk
     ticket de: instalar programa, arquivo corrompido
@@ -25,7 +22,7 @@ Tudo[
     try catch codigo todo
 ]
 
-Login[icone lupatech com tema branco]
+Login[icone lupatech]
 
 HelpDesk[
     abrir chamado softwares
@@ -74,6 +71,8 @@ DashBoard[
 
 Navbar[
     Link do icone
+        setinha para baixo do tema
+        fechar abas to temas em configuração ao clicar fora
 ]
 
 History[
@@ -92,5 +91,6 @@ History[
     baixar pdf msm sem ter atentido
     ajustar descrição no pdf
     clicar fora da engragem de modificação de chamado fecha a modificação
+    cores status ticket
 ]
 
