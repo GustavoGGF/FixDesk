@@ -337,8 +337,6 @@ export default function DashboardTI() {
         colorBorder = "ticketStop";
       }
 
-      console.log(ticket["open"]);
-
       const Div = (
         <DivCard
           key={ticket["id"]}
@@ -771,7 +769,7 @@ export default function DashboardTI() {
                     var userOrTech = item[1];
                     var time = item[2];
                     time = time.replace("Hours:", "").trim();
-                    console.log(time);
+
                     const key = `${date}-${index}`;
                     if (userOrTech.includes("System")) {
                       userOrTech = userOrTech.replace("System:", "").trim();
@@ -1659,6 +1657,7 @@ export default function DashboardTI() {
 
     var dataFormatada = adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
     var horaFormatada = adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
+    setMessage(false);
     fetch("/helpdesk/ticket/" + ticketID, {
       method: "POST",
       headers: {
@@ -1674,20 +1673,26 @@ export default function DashboardTI() {
       }),
     })
       .then((response) => {
+        console.log(response.status);
         if (response.status === 304) {
-          setMessage(true);
           setMessageError("Ticket não percetence a você");
           setTypeError("Permissão Negada");
-        } else if (response.status === 200) {
-          return window.location.reload();
+          setMessage(true);
+          return;
         }
-        return response.json();
+
+        if (response.status === 200) {
+          return window.location.reload();
+        } else {
+          return response.json();
+        }
       })
       .then((data) => {
+        console.log("return data");
         return;
       })
       .catch((err) => {
-        setMessageError(err);
+        setMessageError("Erro ao finalizar o Ticket");
         setTypeError("FATAL ERROR");
         setMessage(true);
         return console.log(err);
@@ -1727,14 +1732,17 @@ export default function DashboardTI() {
           setMessage(true);
           setMessageError("Ticket não percetence a você");
           setTypeError("Permissão Negada");
+        } else if (response.status === 200) {
+          window.location.reload();
+        } else {
+          return response.json();
         }
-        return response.json();
       })
       .then((data) => {
-        return window.location.reload();
+        return console.log(data);
       })
       .catch((err) => {
-        setMessageError(err);
+        setMessageError("Erro ao finalizar o Chamado");
         setTypeError("FATAL ERROR");
         setMessage(true);
         return console.log(err);
@@ -1770,18 +1778,26 @@ export default function DashboardTI() {
       }),
     })
       .then((response) => {
+        console.log(response.status);
         if (response.status === 304) {
-          setMessage(true);
           setMessageError("Ticket não percetence a você");
           setTypeError("Permissão Negada");
+          setMessage(true);
+          return;
         }
-        return response.json();
+
+        if (response.status === 200) {
+          return window.location.reload();
+        } else {
+          return response.json();
+        }
       })
       .then((data) => {
-        return window.location.reload();
+        console.log("return data");
+        return;
       })
       .catch((err) => {
-        setMessageError(err);
+        setMessageError("Erro ao finalizar o Ticket");
         setTypeError("FATAL ERROR");
         setMessage(true);
         return console.log(err);

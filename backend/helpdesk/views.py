@@ -647,6 +647,9 @@ def ticket(request, id):
                 msg = ""
 
                 if status == "close":
+                    if current_responsible_technician == None:
+                        return JsonResponse({}, safe=True, status=304)
+
                     partes_nome_pesquisa = current_responsible_technician.split()
                     presente = all(
                         parte in technician for parte in partes_nome_pesquisa
@@ -670,9 +673,7 @@ def ticket(request, id):
                         task.start()
 
                     else:
-                        return JsonResponse(
-                            {"status": "invalid modify"}, status=304, safe=True
-                        )
+                        return JsonResponse({}, status=304, safe=True)
 
                 elif status == "open":
                     ticket.open = True
@@ -692,6 +693,8 @@ def ticket(request, id):
                     task.start()
 
                 elif status == "stop":
+                    if current_responsible_technician == None:
+                        return JsonResponse({}, safe=True, status=304)
                     partes_nome_pesquisa = current_responsible_technician.split()
                     presente = all(
                         parte in technician for parte in partes_nome_pesquisa
@@ -716,7 +719,7 @@ def ticket(request, id):
 
                     else:
                         return JsonResponse(
-                            {"status": "invalid modify"}, status=304, safe=True
+                            {"status": "invalid modify"}, status=303, safe=True
                         )
 
                 return JsonResponse({"status": "ok"}, status=200, safe=True)

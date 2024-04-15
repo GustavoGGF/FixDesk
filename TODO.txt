@@ -1,7 +1,6 @@
 Tudo[
     Usar HTTPS para criptografar a comunicação entre o navegador do usuário e o servidor.
     tema de fundo
-    diagrama de como funciona (creately ver se é de graça)
     setinha para baixo do tema
     fechar abas to temas em configuração ao clicar fora
     colocar nomes em cada aba para facil identificação
@@ -23,6 +22,7 @@ Tudo[
     go lang
     quando acbar o cookie do csrf mandar para login
     link do chamado no email
+    try catch codigo todo
 ]
 
 Login[icone lupatech com tema branco]
@@ -34,7 +34,6 @@ HelpDesk[
 ]
 
 DashBoard[
-    finalizar chamado dos outros
     modificar chamdo que não é seu
     ajustar fechar e reabrir chamado
     data no ticket do chamado
@@ -71,6 +70,8 @@ DashBoard[
     baixar pdf msm sem ter atentido
     ajustar descrição no pdf
     clicar fora da engragem de modificação de chamado fecha a modificação
+    cores filtro status igual aos tickets
+    se tecnico não for o responsavel pelo chamado não fazer fetch no chat
 ]
 
 Navbar[
@@ -78,9 +79,7 @@ Navbar[
 ]
 
 History[
-    email de abertura de chamado e chamado finalizado
     resetar ticker quando clicar em algum filtro
-    botão de pegar mais tickets não está funcionando
     quando tiver sendo feito a montagem dos tickets na tela contar quantos tem em verificar se oculta ou mostra o botão de mostrar mais
     tela de carregamento abrindo ticket
     zerar os tickets ao selecionar um filtro
