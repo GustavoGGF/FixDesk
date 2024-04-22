@@ -149,3 +149,25 @@ export const InputTicket = styled.input`
 export const ZIndex = styled.div`
   z-index: 100000 !important;
 `;
+
+export const DivDetaisl = styled.div`
+  z-index: 1000 !important;
+  width: 30%;
+  height: 70%;
+  background-color: var(--white);
+  border-radius: 3%;
+  padding: 0.3em;
+  display: flex;
+  flex-direction: column;
+`;
+
+export const DivChatDetails = styled.div`
+  display: flex;
+  width: 100%;
+  padding: 0.3em;
+`;
+
+export const ImgSend = styled.img`
+  width: 2em;
+  cursor: pointer;
+`;

@@ -52,4 +52,5 @@ urlpatterns = [
         views.upload_new_files,
         name="central-upload-new-files",
     ),
+    path("details/<int:id>", views.detailsChat, name="central-details-chat"),
 ]

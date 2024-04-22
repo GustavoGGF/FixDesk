@@ -856,3 +856,38 @@ def upload_new_files(request, id):
             return JsonResponse({"status": "ok"}, status=200, safe=True)
         except Exception as e:
             print(e)
+
+
+@login_required(login_url="/login")
+def detailsChat(request, id):
+    if request.method == "GET":
+        UserFront = None
+        user = None
+        groups = None
+        group1 = None
+        ticket = None
+        details = ""
+        try:
+            UserFront = request.user
+            group1 = getenv("DJANGO_GROUP_TECH")
+            group2 = getenv("DJANGO_GROUP_LEADER")
+
+            user = User.objects.get(username=UserFront)
+
+            groups = user.groups.all()
+
+            for group in groups:
+                if group.name != group1 and group.name != group2:
+                    return redirect("/helpdesk")
+
+            ticket = SupportTicket.objects.get(id=id)
+
+            details = ticket.details
+
+            return JsonResponse({"details": details}, status=200, safe=True)
+
+        except Exception as e:
+            print(e)
+        return
+    if request.method == "POST":
+        return

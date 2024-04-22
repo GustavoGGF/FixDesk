@@ -1197,6 +1197,31 @@ def ticket(request, id):
                     print(e)
                     return
 
+            if "HTTP_TECH_DETAILS" in request.META:
+                detailsChat = None
+                ticket = None
+                chat = None
+                date = None
+                hours = None
+                try:
+                    detailsChat = body["chat"]
+                    ticket = SupportTicket.objects.get(id=id)
+                    date = body["date"]
+                    hours = body["hours"]
+
+                    if ticket.details == None:
+                        ticket.details = f",[[Date:{date}],[{request.user.first_name} {request.user.last_name}: {detailsChat}],[Hours:{hours}]]"
+                    else:
+                        ticket.details += f",[[Date:{date}],[{request.user.first_name} {request.user.last_name}: {detailsChat}],[Hours:{hours}]]"
+
+                    ticket.save()
+
+                    chat = ticket.details
+
+                    return JsonResponse({"chat": chat}, status=200, safe=True)
+                except Exception as e:
+                    return print(e)
+
         except Exception as e:
             print(e)
             return

@@ -1,10 +1,27 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { DayPicker } from "react-day-picker";
 import ptBR from "date-fns/locale/pt";
 
 import Navbar from "../components/navbar";
-import { Div, DropdownConten, Dropdown, DropdownButton, DivDrop, P1, DivFilter, IMGConfig, DropBTN, DropContent2, DivModify, InputTicket, ZIndex } from "../styles/dashboardTIStyle";
+import {
+  Div,
+  DropdownConten,
+  Dropdown,
+  DropdownButton,
+  DivDrop,
+  P1,
+  DivFilter,
+  IMGConfig,
+  DropBTN,
+  DropContent2,
+  DivModify,
+  InputTicket,
+  ZIndex,
+  DivDetaisl,
+  DivChatDetails,
+  ImgSend,
+} from "../styles/dashboardTIStyle";
 import Loading from "../components/loading";
 import DashBoardPie from "../components/dashboardPie";
 import {
@@ -80,6 +97,7 @@ import Exclude from "../images/components/close.png";
 import DownTick from "../images/components/attachment.png";
 import "react-day-picker/dist/style.css";
 import Seeting from "../images/components/definicoes.png";
+import Send from "../images/components/enviar.png";
 
 export default function DashboardTI() {
   useEffect(() => {
@@ -180,6 +198,12 @@ export default function DashboardTI() {
   const [fake, setFake] = useState(true);
   const [OcurrenceFake, setOcurrenceFake] = useState(true);
   const [dataModify, setDataModify] = useState(true);
+  const [techDetails, setTechDetails] = useState(false);
+  const [detailsChat, setDetailsChat] = useState("");
+  const [mountDetails, setMountDetails] = useState("");
+  const [loadingChat, setLoadingChat] = useState(false);
+
+  const inputRef = useRef(null);
 
   function ThemeBlack() {
     setThemeFilter("");
@@ -924,6 +948,7 @@ export default function DashboardTI() {
     setFetchChat(false);
     count = 0;
     clearTimeout(timeoutId);
+    setTechDetails(false);
   }
 
   function ChangeTechnician(event) {
@@ -994,6 +1019,115 @@ export default function DashboardTI() {
       event.preventDefault();
     } else {
       setTextChat(newText);
+    }
+  }
+
+  function NewChatDetails(event) {
+    const newText = event.target.value;
+    if (event.key === "Enter") {
+      setDetailsChat(newText);
+      SendDetails();
+      event.preventDefault();
+    } else {
+      setDetailsChat(newText);
+    }
+  }
+
+  function SendDetails() {
+    var date = new Date();
+    function adicionaZero(numero) {
+      if (numero < 10) {
+        return "0" + numero;
+      }
+      return numero;
+    }
+    var day = date.getDate();
+    var month = date.getMonth() + 1;
+    var year = date.getFullYear();
+
+    var dataFormatada = adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
+    var horaFormatada = adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
+
+    inputRef.current.value = "";
+
+    fetch("/helpdesk/ticket/" + ticketID, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-CSRFToken": token, "Tech-Details": "ok" },
+      body: JSON.stringify({ chat: detailsChat, date: dataFormatada, hours: horaFormatada }),
+    })
+      .then((response) => {
+        const status = response.status;
+        if (status === 200) {
+          return response.json();
+        }
+        return response.json();
+      })
+      .then((data) => {
+        MountChatDetails(data.chat);
+      })
+      .catch((err) => {
+        return console.log(err);
+      });
+  }
+
+  function MountChatDetails(chat) {
+    setTechDetails(true);
+    setLoadingChat(true);
+    if (chat !== null && chat !== undefined && chat !== "undefined") {
+      const regex = /\[\[([^[\]]+?)\],\[([^[\]]+?)\],\[([^[\]]+?)\]\]/g;
+
+      const chatValue = [];
+      let match;
+
+      while ((match = regex.exec(chat)) !== null) {
+        const [, value1, value2, value3] = match;
+        chatValue.push([value1, value2, value3]);
+      }
+
+      setMountChat([]);
+
+      const groupedByDate = {};
+
+      chatValue.forEach((item) => {
+        const date = item[0].split(":")[1].trim(); // Extrai a data do primeiro elemento
+        if (!groupedByDate[date]) {
+          groupedByDate[date] = [];
+        }
+        groupedByDate[date].push(item);
+      });
+
+      const renderGroupedItems = () => {
+        const groupedItems = [];
+        for (const date in groupedByDate) {
+          groupedItems.push(
+            <div key={date}>
+              <div className="text-center d-flex justify-content-center text-break">
+                <p className="pChat">{date}</p>
+              </div>
+              {groupedByDate[date].map((item, index) => {
+                // Remover "User:" ou "Tech:" do início da string
+                var chat = item[1];
+                var time = item[2];
+                time = time.replace("Hours:", "").trim();
+
+                return (
+                  <div key={index}>
+                    <DivFlex2 className="w-100 text-break position relative">
+                      <div className="uChat2 position-relative">
+                        <p>{chat}</p>
+                        <PChatHourL className="position-absolute bottom-0 start-0">{time}</PChatHourL>
+                      </div>
+                    </DivFlex2>
+                  </div>
+                );
+              })}
+            </div>
+          );
+        }
+        setLoadingChat(false);
+        return groupedItems;
+      };
+      setMountDetails(renderGroupedItems());
     }
   }
 
@@ -1939,6 +2073,24 @@ export default function DashboardTI() {
     setModifyTicket(true);
   }
 
+  function TechDetails() {
+    fetch("details/" + ticketID, { method: "GET", headers: { Accept: "application/json" } })
+      .then((response) => {
+        const status = response.status;
+        if (status === 200) {
+          return response.json();
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log(data);
+        MountChatDetails(data.details);
+      })
+      .catch((err) => {
+        return console.log(err);
+      });
+  }
+
   function handleSelect() {
     const select = document.getElementById("select-Form");
 
@@ -2450,6 +2602,10 @@ export default function DashboardTI() {
     setModifyTicket(false);
   }
 
+  function closeDetails() {
+    setTechDetails(false);
+  }
+
   return (
     <Div className={`position-relative ${theme}`}>
       {navbar && (
@@ -2696,6 +2852,9 @@ export default function DashboardTI() {
                   </DropBTN>
                   <DropBTN className="btn btn-danger w-100" onClick={TicketModify}>
                     Modificar
+                  </DropBTN>
+                  <DropBTN className="btn btn-danger w-100" onClick={TechDetails}>
+                    Detalhes Tecnicos
                   </DropBTN>
                   <select className="form-select" onChange={ChangeTechnician} value={selectedTech} hidden={ticketOpen === true ? false : true}>
                     <option key={0} value="" disabled>
@@ -3007,6 +3166,32 @@ export default function DashboardTI() {
             </>
           )}
         </DivModify>
+      )}
+      {techDetails && (
+        <DivDetaisl className="position-fixed top-50 start-50 translate-middle">
+          <div className="d-flex">
+            <div className="w-100 justify-content-center">
+              <h2 className="text-center">Detalhes tecnicos</h2>
+            </div>
+            <div>
+              <button onClick={closeDetails}>X</button>
+            </div>
+          </div>
+          <div className="overflow-y-auto w-100 h-100 position relative">
+            {loadingChat && (
+              <div className="position-absolute top-50 start-50 translate-middle">
+                <Loading />
+              </div>
+            )}
+            {mountDetails}
+          </div>
+          <div>
+            <DivChatDetails>
+              <input className="w-100 form-control" type="text" onKeyUp={NewChatDetails} ref={inputRef} />
+              <ImgSend className="img-fluid" src={Send} alt="" onClick={SendDetails} />
+            </DivChatDetails>
+          </div>
+        </DivDetaisl>
       )}
     </Div>
   );

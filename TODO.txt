@@ -6,7 +6,6 @@ Tudo[
     z-index ao clicar em tema
     mudar icone pelo fixdesk
     ticket de: instalar programa, arquivo corrompido
-    criar :root var colors para usar
     loading, simbolo lupatech se dissolver girar e voltar
     usar unverse io
     requirements.txt melhorar
@@ -20,12 +19,12 @@ Tudo[
     quando acbar o cookie do csrf mandar para login
     link do chamado no email
     try catch codigo todo
+    squedule sobre FIxDesk no servidor
 ]
 
 Login[icone lupatech]
 
 HelpDesk[
-    abrir chamado softwares
     contrato comodato para os equipamentos
     ao enviar locagem de equipamento, se estiver alocado já, retornar com alocado cinza e pedir para ajustar data
 ]

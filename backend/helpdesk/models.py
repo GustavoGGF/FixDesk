@@ -42,6 +42,7 @@ class SupportTicket(models.Model):
     copy_profile_new_user = models.TextField(max_length=50, blank=True, null=False)
     mail_tranfer = models.TextField(max_length=30, blank=True, null=False)
     old_files = models.TextField(max_length=400, blank=True, null=False)
+    details = models.TextField(max_length=1000, blank=True, null=True)
 
     def __str__(self):
         return str(self.id)
