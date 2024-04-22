@@ -1,4 +1,6 @@
+/* eslint-disable no-unused-vars */
 import styled from "styled-components";
+import lugrasimo from "../styles/fonts/Lugrasimo-Regular.ttf";
 
 export const Div = styled.div`
   height: 100vh !important;
@@ -94,4 +96,10 @@ export const InputFile = styled.input`
   top: 0;
   left: 0;
   cursor: pointer;
+`;
+
+export const TitlePage = styled.h2`
+  font-size: 2.3em;
+  font-weight: bold;
+  font-family: "Lugrasimo", cursive;
 `;

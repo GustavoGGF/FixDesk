@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import NavBar from "../components/navbar";
 import "../styles/bootstrap/css/bootstrap.css";
-import { Div, Form, Input, Input2, Select, Div2, Calendar, Textarea, ImageEquip, DivEquip, InputRadio, PNameFile, DivNameFile, ImgFile, BtnFile, InputFile } from "../styles/helpdeskStyle";
+import { Div, Form, Input, Input2, Select, Div2, Calendar, Textarea, ImageEquip, DivEquip, InputRadio, PNameFile, DivNameFile, ImgFile, BtnFile, InputFile, TitlePage } from "../styles/helpdeskStyle";
 import { DivUpload, HeaderFiles, PFiles, IMGFile, Span1, Span2, BodyFiles, PFiles2, B1, InputFiles, IMGFile2, FooterFiles, Divider, Span3, ListFiles } from "../styles/Equipment_RegistrationStyle";
 import { DayPicker } from "react-day-picker";
 import ptBR from "date-fns/locale/pt";
@@ -1494,6 +1494,7 @@ export default function Helpdesk() {
       )}
       {dashboard && (
         <Form className={`mx-auto d-flex flex-column align-items-center justify-content-around ${themeTicket}`}>
+          <TitlePage>Criação de Chamados</TitlePage>
           <div className="mb-3">
             <input type="hidden" name="_csrf" value={csrfToken} />
             <label htmlFor="nameInput" className="form-label">

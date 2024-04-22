@@ -73,7 +73,7 @@ import {
   PChatHourL,
 } from "../styles/historyStyle";
 import { DropDown } from "../styles/navbarStyle.js";
-import { DivNameFile, BtnFile, ImgFile, Select } from "../styles/helpdeskStyle.js";
+import { DivNameFile, BtnFile, ImgFile, Select, TitlePage } from "../styles/helpdeskStyle.js";
 import CloseIMG from "../images/components/close.png";
 import Message from "../components/message";
 import "../styles/bootstrap/css/bootstrap.css";
@@ -2630,6 +2630,7 @@ export default function DashboardTI() {
           </Dropdown>
         </DivDrop>
       )}
+      <TitlePage className="text-center text-light mt-3">Central de Gerenciamento de Chamados TI</TitlePage>
       <div className={`d-flex flex-column justify-content-center w-100 ${classBlur}`}>
         <div className="d-flex justify-content-center w-100">
           <DashBoardPie sector={"TI"} />

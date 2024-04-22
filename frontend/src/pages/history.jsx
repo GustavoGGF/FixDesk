@@ -51,7 +51,7 @@ import {
   DivFlex1,
   DivFlex2,
 } from "../styles/historyStyle";
-import { DivNameFile, BtnFile, ImgFile } from "../styles/helpdeskStyle";
+import { DivNameFile, BtnFile, ImgFile, TitlePage } from "../styles/helpdeskStyle";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import Message from "../components/message";
@@ -1680,6 +1680,7 @@ export default function History() {
           <Message TypeError={typeError} MessageError={messageError} CloseMessage={closeMessage} />
         </div>
       )}
+      <TitlePage className="text-center text-light mt-3">Historico de Chamados</TitlePage>
       <DivFilter className={`${blurNav} ${themeFilter}`}>
         <div className="form-floating">
           <Input1 type="text" className="form-control" id="floatingInput" onKeyDown={getTicketKey} />

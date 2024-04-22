@@ -1,7 +1,6 @@
 Tudo[
     Usar HTTPS para criptografar a comunicação entre o navegador do usuário e o servidor.
     tema de fundo
-    colocar nomes em cada aba para facil identificação
     tela para reportar bug
     z-index ao clicar em tema
     mudar icone pelo fixdesk
@@ -20,6 +19,7 @@ Tudo[
     link do chamado no email
     try catch codigo todo
     squedule sobre FIxDesk no servidor
+    redirecikonamento para quando acessar url não existente
 ]
 
 Login[icone lupatech]
