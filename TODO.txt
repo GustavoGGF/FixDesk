@@ -1,8 +1,7 @@
-Tudo[
+All Site[
     Usar HTTPS para criptografar a comunicação entre o navegador do usuário e o servidor.
     tema de fundo
     tela para reportar bug
-    z-index ao clicar em tema
     mudar icone pelo fixdesk
     ticket de: instalar programa, arquivo corrompido
     loading, simbolo lupatech se dissolver girar e voltar
@@ -68,11 +67,16 @@ DashBoard[
     botão de fechar na tela de modificação de chamado
 ]
 
-Navbar[
-    Link do icone
+Navbar{
+    icon_FixDesk:{
+        "Link no FixDesk"
+    }
+    Tema:{
+        "Ao fechar tema fechar a opção de claro e escuro"
+    }
         setinha para baixo do tema
         fechar abas to temas em configuração ao clicar fora
-]
+}
 
 History[
     resetar ticker quando clicar em algum filtro
