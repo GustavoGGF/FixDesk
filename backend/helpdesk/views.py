@@ -1069,14 +1069,14 @@ def ticket(request, id):
                             align="L",
                         )
 
-                    chats = None
-                    chat_format = None
+                    chat = None
+                    current_date = None
+                    chat_dicts = None
                     if ticket.chat != None:
                         try:
-                            chats = ticket.chat
-                            chat_format = r"\[([^]]*)\]"
+                            chat = ticket.chat
 
-                            matchs = re.findall(chat_format, chats)
+                            chat_dicts = convert_to_dict(chat)
 
                             pdf.add_page()
 
@@ -1088,51 +1088,66 @@ def ticket(request, id):
                                 align="C",
                             )
 
-                            for chat in matchs:
-                                if "System" in chat:
-                                    chat = (
-                                        chat.replace("System:", "")
-                                        .replace("[", "")
-                                        .replace("]", "")
-                                    )
+                            for i in range(0, len(chat_dicts), 3):
+                                group = chat_dicts[i : i + 3]
+                                try:
+                                    entry_date = None
+                                    system_msg = ""
+                                    technician_msg = ""
+                                    user_msg = ""
+                                    entry_hour = ""
+                                    for entry in group:
+                                        if "Date" in entry:
+                                            entry_date = entry["Date"]
+                                        if "System" in entry:
+                                            system_msg = entry["System"]
+                                        if "Technician" in entry:
+                                            technician_msg = entry["Technician"]
+                                        if "User" in entry:
+                                            user_msg = entry["User"]
+                                        if "Hours" in entry:
+                                            entry_hour = entry["Hours"]
 
-                                    pdf.cell(
-                                        200,
-                                        10,
-                                        txt=chat,
-                                        ln=True,
-                                        align="C",
-                                    )
+                                        # Verifica se a data é diferente da atual
+                                    if entry_date != current_date:
+                                            current_date = entry_date
+                                            # Adiciona a data como uma célula centralizada
+                                            pdf.cell(
+                                                200,
+                                                10,
+                                                txt=current_date,
+                                                ln=True,
+                                                align="C",
+                                            )
 
-                                if "Technician" in chat:
-                                    chat = (
-                                        chat.replace("Technician:", "")
-                                        .replace("[", "")
-                                        .replace("]", "")
-                                    )
+                                            # Adiciona os registros de sistema, técnico e usuário com seus respectivos horários
+                                    if system_msg:
+                                            pdf.cell(
+                                                200,
+                                                10,
+                                                txt=f"{system_msg} - {entry_hour}",
+                                                ln=True,
+                                                align="C",
+                                            )
+                                    if technician_msg:
+                                            pdf.cell(
+                                                200,
+                                                10,
+                                                txt=f"{technician_msg} - {entry_hour}",
+                                                ln=True,
+                                                align="L",
+                                            )
+                                    if user_msg:
+                                            pdf.cell(
+                                                200,
+                                                10,
+                                                txt=f"{user_msg} - {entry_hour}",
+                                                ln=True,
+                                                align="R",
+                                            )
 
-                                    pdf.cell(
-                                        200,
-                                        10,
-                                        txt=chat,
-                                        ln=True,
-                                        align="L",
-                                    )
-
-                                if "User" in chat:
-                                    chat = (
-                                        chat.replace("User:", "")
-                                        .replace("[", "")
-                                        .replace("]", "")
-                                    )
-
-                                    pdf.cell(
-                                        200,
-                                        10,
-                                        txt=chat,
-                                        ln=True,
-                                        align="R",
-                                    )
+                                except Exception as e:
+                                    return print(e)
 
                         except Exception as e:
                             print(e)
@@ -1889,3 +1904,31 @@ def getTicketFilterStatus(request):
         return
     if request.method == "POST":
         return
+
+
+# Função para converter a lista de strings em uma lista de dicionários
+def convert_to_dict(chat_data):
+    if not chat_data:
+        return []
+
+    try:
+        pattern = r"\[([^:\[\]]+):([^,\]]+)"
+
+        # Encontrar todas as correspondências na string
+        matches = re.findall(pattern, chat_data)
+
+        # Inicializar o dicionário
+        dictionary = {}
+        dictionaries = []
+
+        # Adicionar as correspondências ao dicionário
+        for match in matches:
+            key = match[0]
+            value = match[1]
+            dictionary = {key: value}
+            dictionaries.append(dictionary)
+
+    except Exception as e:
+        return print(e)
+
+    return dictionaries

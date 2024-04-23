@@ -29,10 +29,9 @@ HelpDesk[
 ]
 
 DashBoard{
-    hora no chamado
     imprimir chat pdf
     arrumar arquivos anexados
-    nos filstros mostrar chamados que estão comigo
+    nos filstros mostrar chamados que estão comigo  
     nome do arquivo na tela de ticket
     data e hora no chat
     ao clicar na engrenagem do chamado aberto do TI quando clicar fora tem que fechar
@@ -64,6 +63,10 @@ DashBoard{
     cores filtro status igual aos tickets
     se tecnico não for o responsavel pelo chamado não fazer fetch no chat
     botão de fechar na tela de modificação de chamado
+    options_modify_ticket:{
+        "Fechar a engrenagem ao clicar fora"
+    },
+    tech_details:{"icone de fechar"}
 }
 
 Navbar{
