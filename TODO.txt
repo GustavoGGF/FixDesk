@@ -21,15 +21,14 @@ All Site[
     redirecikonamento para quando acessar url não existente
 ]
 
-Login[icone lupatech]
+Login{}
 
 HelpDesk[
     contrato comodato para os equipamentos
     ao enviar locagem de equipamento, se estiver alocado já, retornar com alocado cinza e pedir para ajustar data
 ]
 
-DashBoard[
-    mudar cores do status dos ticker deixar igual cor dos tickets
+DashBoard{
     hora no chamado
     imprimir chat pdf
     arrumar arquivos anexados
@@ -55,7 +54,7 @@ DashBoard[
     nome do arquivo na tela de ticket
     data e hora no chat
     otimizar login, deixar rod
-    mesma função quando problema e ocorrencia forem iguais {mudar CHAMADO)
+    mesma função quando problema e ocorrencia forem iguais {mudar CHAMADO}
     cabeçalho de chamados para modo Lista
     botão status todos deixar colorido
     mudar scroll de tudo da tela de cadastrode equip
@@ -65,7 +64,7 @@ DashBoard[
     cores filtro status igual aos tickets
     se tecnico não for o responsavel pelo chamado não fazer fetch no chat
     botão de fechar na tela de modificação de chamado
-]
+}
 
 Navbar{
     icon_FixDesk:{

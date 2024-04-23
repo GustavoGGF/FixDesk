@@ -209,7 +209,7 @@ export default function Login() {
           />
         </div>
       )}
-      <IMG src={Logo} alt="Logo da lupatech" className="position-absolute top-0 start-20 none animate__animated animate__slideInDown" />
+      <IMG src={Logo} alt="Logo da lupatech" className="position-absolute top-0 start-20 animate__animated animate__slideInDown" />
       {loginPage && (
         <div className="position-absolute top-50 start-50 translate-middle d-flex flex-column none animate__animated">
           <form action="" method="POST">

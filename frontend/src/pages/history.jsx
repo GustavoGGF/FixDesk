@@ -1452,11 +1452,13 @@ export default function History() {
     setTickets();
     setTicketsDash([]);
     const btn = document.getElementById("btnopen");
-    btn.classList.add("btn-success");
+    btn.classList.add("btn-open");
     const btn2 = document.getElementById("btnclose");
-    btn2.classList.remove("btn-warning");
-    const btn3 = document.getElementById("btnall");
-    btn3.classList.remove("btn-info");
+    btn2.classList.remove("btn-success");
+    const btn3 = document.getElementById("btnstop");
+    btn3.classList.remove("btn-light");
+    const btn4 = document.getElementById("btnall");
+    btn4.classList.remove("btn-all");
 
     fetch("/helpdesk/getTicketFilterStatus/", {
       method: "GET",
@@ -1501,11 +1503,13 @@ export default function History() {
     setTickets([]);
     setTicketsDash([]);
     const btn = document.getElementById("btnopen");
-    btn.classList.remove("btn-success");
+    btn.classList.remove("btn-open");
     const btn2 = document.getElementById("btnclose");
-    btn2.classList.add("btn-warning");
-    const btn3 = document.getElementById("btnall");
-    btn3.classList.remove("btn-info");
+    btn2.classList.add("btn-success");
+    const btn3 = document.getElementById("btnstop");
+    btn3.classList.remove("btn-light");
+    const btn4 = document.getElementById("btnall");
+    btn4.classList.remove("btn-all");
 
     fetch("/helpdesk/getTicketFilterStatus/", {
       method: "GET",
@@ -1546,15 +1550,64 @@ export default function History() {
     return;
   }
 
+  function ticketStop() {
+    setTickets([]);
+    const btn = document.getElementById("btnopen");
+    btn.classList.remove("btn-open");
+    const btn2 = document.getElementById("btnclose");
+    btn2.classList.remove("btn-success");
+    const btn3 = document.getElementById("btnstop");
+    btn3.classList.add("btn-light");
+    const btn4 = document.getElementById("btnall");
+    btn4.classList.remove("btn-all");
+
+    fetch("getTicketFilterStatus/", {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Data-User": Data.name,
+        "Order-By": orderby,
+        "Quantity-tickets": countTicket,
+        "Problemn-Ticket": problemTicket,
+        "Sector-Ticket": sectorTicket,
+        "Status-Request": "stop",
+      },
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        if (data.tickets.length === 0) {
+          setMessage(true);
+          setTypeError("Falta de dados");
+          setMessageError("Nenhum ticket com esses Filtros");
+          setBtnMore(false);
+        } else {
+          setBtnMore(true);
+          setLoadingDash(false);
+          setStatus("close");
+          setTickets(data.tickets);
+        }
+      })
+      .catch((err) => {
+        setMessageError(err);
+        setTypeError("FATAL ERROR");
+        setMessage(true);
+        return console.log(err);
+      });
+  }
+
   function statusTicketAll() {
     setTickets([]);
     setTicketsDash([]);
     const btn = document.getElementById("btnopen");
-    btn.classList.remove("btn-success");
+    btn.classList.remove("btn-open");
     const btn2 = document.getElementById("btnclose");
-    btn2.classList.remove("btn-warning");
-    const btn3 = document.getElementById("btnall");
-    btn3.classList.add("btn-info");
+    btn2.classList.remove("btn-success");
+    const btn3 = document.getElementById("btnstop");
+    btn3.classList.remove("btn-light");
+    const btn4 = document.getElementById("btnall");
+    btn4.classList.add("btn-all");
 
     fetch("/helpdesk/getTicketFilterStatus/", {
       method: "GET",
@@ -1806,7 +1859,7 @@ export default function History() {
         <DivSelectView className="mt-3">
           <PSelectView className="position-absolute top-0 start-0 translate-middle">Status</PSelectView>
           <Button1
-            className="btn btn-info"
+            className="btn btn-open"
             id="btnopen"
             onClick={() => {
               ticketOpen();
@@ -1823,6 +1876,16 @@ export default function History() {
             }}
           >
             Fechado
+          </button>
+          <button
+            className="btn"
+            value="close"
+            id="btnstop"
+            onClick={() => {
+              ticketStop();
+            }}
+          >
+            Aguardo
           </button>
           <Button2
             className="btn"

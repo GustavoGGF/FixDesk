@@ -1405,13 +1405,16 @@ export default function DashboardTI() {
   }
 
   function ticketOpenStatus() {
-    setTickets();
+    setTickets([]);
+    setTicketsDash([]);
     const btn = document.getElementById("btnopen");
     btn.classList.add("btn-open");
     const btn2 = document.getElementById("btnclose");
     btn2.classList.remove("btn-success");
-    const btn3 = document.getElementById("btnall");
-    btn3.classList.remove("btn-all");
+    const btn3 = document.getElementById("btnstop");
+    btn3.classList.remove("btn-light");
+    const btn4 = document.getElementById("btnall");
+    btn4.classList.remove("btn-all");
 
     fetch("getTicketFilterStatus/", {
       method: "GET",
@@ -1450,12 +1453,15 @@ export default function DashboardTI() {
 
   function ticketClose() {
     setTickets([]);
+    setTicketsDash([]);
     const btn = document.getElementById("btnopen");
     btn.classList.remove("btn-open");
     const btn2 = document.getElementById("btnclose");
     btn2.classList.add("btn-success");
-    const btn3 = document.getElementById("btnall");
-    btn3.classList.remove("btn-all");
+    const btn3 = document.getElementById("btnstop");
+    btn3.classList.remove("btn-light");
+    const btn4 = document.getElementById("btnall");
+    btn4.classList.remove("btn-all");
 
     fetch("getTicketFilterStatus/", {
       method: "GET",
@@ -1494,6 +1500,7 @@ export default function DashboardTI() {
 
   function ticketStop() {
     setTickets([]);
+    setTicketsDash([]);
     const btn = document.getElementById("btnopen");
     btn.classList.remove("btn-open");
     const btn2 = document.getElementById("btnclose");
@@ -1540,12 +1547,15 @@ export default function DashboardTI() {
 
   function statusTicketAll() {
     setTickets([]);
+    setTicketsDash([]);
     const btn = document.getElementById("btnopen");
     btn.classList.remove("btn-open");
     const btn2 = document.getElementById("btnclose");
     btn2.classList.remove("btn-success");
-    const btn3 = document.getElementById("btnall");
-    btn3.classList.add("btn-all");
+    const btn3 = document.getElementById("btnstop");
+    btn3.classList.remove("btn-light");
+    const btn4 = document.getElementById("btnall");
+    btn4.classList.add("btn-all");
 
     fetch("getTicketFilterStatus/", {
       method: "GET",
