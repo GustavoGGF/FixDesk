@@ -28,8 +28,6 @@ HelpDesk[
 ]
 
 DashBoard{
-    imprimir chat pdf
-    arrumar arquivos anexados
     nos filstros mostrar chamados que estão comigo  
     nome do arquivo na tela de ticket
     data e hora no chat

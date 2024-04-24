@@ -489,6 +489,7 @@ export default function DashboardTI() {
         setSelectedTech("");
         setMessageChat(false);
         setMountChat([]);
+        setFileTicket([]);
         const start_date = new Date(data.start_date);
 
         var CurrentDate = new Date();
