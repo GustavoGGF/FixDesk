@@ -58,6 +58,8 @@ export default function Helpdesk() {
   const [respectiveArea, setRespectiveArea] = useState("");
   const [sys, setSYS] = useState(false);
   const [sys2, setSYS2] = useState(false);
+  const [softAPP, setSoftAPP] = useState(false);
+  const [dadosCase, setDados] = useState(false);
   const [alocate, setAlocate] = useState(false);
   const [equipaments, setEquipaments] = useState();
   const [dashequipaments, setDashEquipaments] = useState("");
@@ -319,7 +321,9 @@ export default function Helpdesk() {
         setSYS(false);
         setSYS2(false);
         setAlocate(false);
+        setDados(false);
         setDateEquip(false);
+        setSoftAPP(false);
         break;
       case "mail":
         setMail(true);
@@ -337,6 +341,8 @@ export default function Helpdesk() {
         setSYS2(false);
         setAlocate(false);
         setDateEquip(false);
+        setDados(false);
+        setSoftAPP(false);
         break;
       case "equip":
         setEquip(true);
@@ -354,6 +360,8 @@ export default function Helpdesk() {
         setSYS(false);
         setSYS2(false);
         setDateEquip(false);
+        setDados(false);
+        setSoftAPP(false);
         break;
       case "user":
         setUser(true);
@@ -371,6 +379,8 @@ export default function Helpdesk() {
         setSYS(false);
         setSYS2(false);
         setDateEquip(false);
+        setDados(false);
+        setSoftAPP(false);
         break;
       case "internet":
         setInternet(true);
@@ -389,6 +399,8 @@ export default function Helpdesk() {
         setSYS(false);
         setSYS2(false);
         setDateEquip(false);
+        setDados(false);
+        setSoftAPP(false);
         break;
       case "folder":
         setFolder(true);
@@ -407,6 +419,8 @@ export default function Helpdesk() {
         setSYS(false);
         setSYS2(false);
         setDateEquip(false);
+        setDados(false);
+        setSoftAPP(false);
         break;
       case "none":
         setBackup(false);
@@ -422,6 +436,8 @@ export default function Helpdesk() {
         setSYS2(false);
         setAlocate(false);
         setDateEquip(false);
+        setDados(false);
+        setSoftAPP(false);
         break;
       case "sap":
         setSYS(true);
@@ -438,6 +454,8 @@ export default function Helpdesk() {
         setOccurrence("SAP");
         setAlocate(false);
         setDateEquip(false);
+        setDados(false);
+        setSoftAPP(false);
         break;
       case "mbi":
         setSYS(true);
@@ -454,6 +472,8 @@ export default function Helpdesk() {
         setSYS2(false);
         setAlocate(false);
         setDateEquip(false);
+        setDados(false);
+        setSoftAPP(false);
         break;
       case "synch":
         setSYS(true);
@@ -470,6 +490,8 @@ export default function Helpdesk() {
         setSYS2(false);
         setAlocate(false);
         setDateEquip(false);
+        setDados(false);
+        setSoftAPP(false);
         break;
       case "office":
         setSYS2(true);
@@ -486,6 +508,8 @@ export default function Helpdesk() {
         setFolder(false);
         setOccurrence("Office");
         setDateEquip(false);
+        setDados(false);
+        setSoftAPP(false);
         break;
       case "eng":
         setSYS2(true);
@@ -501,6 +525,44 @@ export default function Helpdesk() {
         setInternet(false);
         setFolder(false);
         setOccurrence("Softwares de Eng");
+        setDateEquip(false);
+        setDados(false);
+        setSoftAPP(false);
+        break;
+      case "soft":
+        setSoftAPP(true);
+        setSYS2(false);
+        setSYS(false);
+        setBackup(false);
+        setAlocate(false);
+        setAlert(false);
+        setMail(false);
+        setEquip(false);
+        setUser(false);
+        setFormNewUser(false);
+        setFormDelUser(false);
+        setInternet(false);
+        setFolder(false);
+        setOccurrence("Novo SoftWare");
+        setDateEquip(false);
+        setDados(false);
+        break;
+      case "dados":
+        setDados(true);
+        setSoftAPP(false);
+        setSYS2(false);
+        setSYS(false);
+        setBackup(false);
+        setAlocate(false);
+        setAlert(false);
+        setMail(false);
+        setEquip(false);
+        setUser(false);
+        setFormNewUser(false);
+        setFormDelUser(false);
+        setInternet(false);
+        setFolder(false);
+        setOccurrence("Integridade de Dados");
         setDateEquip(false);
         break;
     }
@@ -571,6 +633,48 @@ export default function Helpdesk() {
         setMessageinfo1("1. Informe o Erro");
         setMessageinfo2("");
         setProblemn("Correção de falhas");
+        setAlertVerify(false);
+        break;
+      case "none":
+        setAlert(false);
+        break;
+    }
+  }
+
+  function selectSoftAPP() {
+    const select = document.getElementById("select-soft");
+    const option = select.options[select.selectedIndex].value;
+
+    switch (option) {
+      default:
+        break;
+      case "install":
+        setAlert(true);
+        setMessagetitle("Instalação de Novo Software");
+        setMessageinfo1("1. Informar nome do Software");
+        setMessageinfo2("");
+        setProblemn("Instalação de Novo Software");
+        setAlertVerify(false);
+        break;
+      case "none":
+        setAlert(false);
+        break;
+    }
+  }
+
+  function selectDado() {
+    const selectOffice = document.getElementById("select-dado");
+    const optionOffice = selectOffice.options[selectOffice.selectedIndex].value;
+
+    switch (optionOffice) {
+      default:
+        break;
+      case "corrupted":
+        setAlert(true);
+        setMessagetitle("Arquivo Corrompido");
+        setMessageinfo1("1. Informar local deste arquivo ou Anexar o Mesmo");
+        setMessageinfo2("");
+        setProblemn("Arquivo Corrompido");
         setAlertVerify(false);
         break;
       case "none":
@@ -1546,6 +1650,8 @@ export default function Helpdesk() {
               {(dataUser.helpdesk === "Admin" || dataUser.helpdesk === "Gestor") && <option value="user">Gerenciamento de usuário</option>}
               <option value="internet">Internet</option>
               <option value="folder">Pasta</option>
+              <option value="soft">Software e Aplicativos</option>
+              <option value="dados">Integridade de Dados</option>
             </Select>
           )}
           {backup && (
@@ -1800,6 +1906,22 @@ export default function Helpdesk() {
               </option>
               <option value="buy">Aquisição de software/licenciamento</option>
               <option value="error">Correção de falhas</option>
+            </Select>
+          )}
+          {softAPP && (
+            <Select className="form-select mb-3" aria-label="Default select example" id="select-soft" onChange={selectSoftAPP}>
+              <option value="none" disabled selected>
+                Selecione o Problema
+              </option>
+              <option value="install">Instalação de Software Novo</option>
+            </Select>
+          )}
+          {dadosCase && (
+            <Select className="form-select mb-3" aria-label="Default select example" id="select-dado" onChange={selectDado}>
+              <option value="none" disabled selected>
+                Selecione o Problema
+              </option>
+              <option value="corrupted">Arquivo Corrompido</option>
             </Select>
           )}
           {alert && (

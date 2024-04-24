@@ -1,4 +1,4 @@
-All Site[
+All Site{
     Usar HTTPS para criptografar a comunicação entre o navegador do usuário e o servidor.
     tema de fundo
     tela para reportar bug
@@ -18,7 +18,10 @@ All Site[
     try catch codigo todo
     squedule sobre FIxDesk no servidor
     redirecikonamento para quando acessar url não existente
-]
+    "PDF":{
+        "ao baixar PDF Departamento fica como undefined"
+    }
+}
 
 Login{}
 
@@ -75,7 +78,6 @@ Navbar{
 }
 
 History[
-    resetar ticker quando clicar em algum filtro
     quando tiver sendo feito a montagem dos tickets na tela contar quantos tem em verificar se oculta ou mostra o botão de mostrar mais
     tela de carregamento abrindo ticket
     zerar os tickets ao selecionar um filtro
