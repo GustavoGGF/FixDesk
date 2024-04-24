@@ -94,7 +94,7 @@ export default function NavBar({ Name, JobTitle }) {
                 className="img-fluid"
                 alt=""
                 onClick={() => {
-                  return (window.location.href = "/hepdesk");
+                  return (window.location.href = "/helpdesk");
                 }}
               />
               <ALink className="navbar-brand" href="/helpdesk">

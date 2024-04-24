@@ -67,9 +67,6 @@ DashBoard{
 }
 
 Navbar{
-    icon_FixDesk:{
-        "Link no FixDesk"
-    }
     Tema:{
         "Ao fechar tema fechar a opção de claro e escuro"
     }
