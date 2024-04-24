@@ -1552,6 +1552,7 @@ export default function History() {
 
   function ticketStop() {
     setTickets([]);
+    setTickets([]);
     const btn = document.getElementById("btnopen");
     btn.classList.remove("btn-open");
     const btn2 = document.getElementById("btnclose");
@@ -1561,7 +1562,7 @@ export default function History() {
     const btn4 = document.getElementById("btnall");
     btn4.classList.remove("btn-all");
 
-    fetch("getTicketFilterStatus/", {
+    fetch("/helpdesk/getTicketFilterStatus/", {
       method: "GET",
       headers: {
         Accept: "application/json",

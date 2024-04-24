@@ -1110,41 +1110,41 @@ def ticket(request, id):
 
                                         # Verifica se a data é diferente da atual
                                     if entry_date != current_date:
-                                            current_date = entry_date
-                                            # Adiciona a data como uma célula centralizada
-                                            pdf.cell(
-                                                200,
-                                                10,
-                                                txt=current_date,
-                                                ln=True,
-                                                align="C",
-                                            )
+                                        current_date = entry_date
+                                        # Adiciona a data como uma célula centralizada
+                                        pdf.cell(
+                                            200,
+                                            10,
+                                            txt=current_date,
+                                            ln=True,
+                                            align="C",
+                                        )
 
-                                            # Adiciona os registros de sistema, técnico e usuário com seus respectivos horários
+                                        # Adiciona os registros de sistema, técnico e usuário com seus respectivos horários
                                     if system_msg:
-                                            pdf.cell(
-                                                200,
-                                                10,
-                                                txt=f"{system_msg} - {entry_hour}",
-                                                ln=True,
-                                                align="C",
-                                            )
+                                        pdf.cell(
+                                            200,
+                                            10,
+                                            txt=f"{system_msg} - {entry_hour}",
+                                            ln=True,
+                                            align="C",
+                                        )
                                     if technician_msg:
-                                            pdf.cell(
-                                                200,
-                                                10,
-                                                txt=f"{technician_msg} - {entry_hour}",
-                                                ln=True,
-                                                align="L",
-                                            )
+                                        pdf.cell(
+                                            200,
+                                            10,
+                                            txt=f"{technician_msg} - {entry_hour}",
+                                            ln=True,
+                                            align="L",
+                                        )
                                     if user_msg:
-                                            pdf.cell(
-                                                200,
-                                                10,
-                                                txt=f"{user_msg} - {entry_hour}",
-                                                ln=True,
-                                                align="R",
-                                            )
+                                        pdf.cell(
+                                            200,
+                                            10,
+                                            txt=f"{user_msg} - {entry_hour}",
+                                            ln=True,
+                                            align="R",
+                                        )
 
                                 except Exception as e:
                                     return print(e)
@@ -1860,6 +1860,10 @@ def getTicketFilterStatus(request):
                     ).order_by("-id")[:Quantity_tickets]
                 elif Status == "close":
                     ticket_data = SupportTicket.objects.filter(
+                        ticketRequester=username, open=None
+                    ).order_by("-id")[:Quantity_tickets]
+                elif Status == "stop":
+                    ticket_data = SupportTicket.objects.filter(
                         ticketRequester=username, open=False
                     ).order_by("-id")[:Quantity_tickets]
                 elif Status == "all":
@@ -1870,6 +1874,10 @@ def getTicketFilterStatus(request):
                 if Status == "open":
                     ticket_data = SupportTicket.objects.filter(
                         ticketRequester=username, open=True
+                    )[:Quantity_tickets]
+                if Status == "stop":
+                    ticket_data = SupportTicket.objects.filter(
+                        ticketRequester=username, open=None
                     )[:Quantity_tickets]
                 elif Status == "close":
                     ticket_data = SupportTicket.objects.filter(
