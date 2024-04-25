@@ -139,7 +139,7 @@ export default function History() {
   const [sectorTicket, setSectorTicket] = useState(null);
   const [problemSyst, setProblemSyst] = useState(false);
   const [status, setStatus] = useState("open");
-  const [btnmore, setBtnMore] = useState(true);
+  const [btnmore, setBtnMore] = useState(false);
   const [uploadNewFiles, setUploadNewFiles] = useState([]);
   const [nameNWFiles, setNameNWFiles] = useState();
   const [newFiles, setNewFiles] = useState(false);
@@ -772,7 +772,10 @@ export default function History() {
     const btn2 = document.getElementById("selectView-List");
     btn2.style.backgroundColor = "transparent";
 
+    var countTicket = 0;
+
     tickets.forEach((ticket) => {
+      countTicket += 1;
       var date = new Date(ticket["start_date"]);
 
       var day = date.getDate();
@@ -830,7 +833,9 @@ export default function History() {
       const dash = document.getElementById("dashboard");
       dash.classList.add("dashCard");
 
-      setBtnMore(true);
+      if (countTicket > 5) {
+        setBtnMore(true);
+      }
 
       setLoadingDash(false);
       return ticketsDash;
@@ -850,7 +855,10 @@ export default function History() {
     const btn2 = document.getElementById("selectView-Card");
     btn2.style.backgroundColor = "transparent";
 
+    var countTicket = 0;
+
     tickets.forEach((ticket) => {
+      countTicket += 1;
       var date = new Date(ticket["start_date"]);
 
       var day = date.getDate();
@@ -908,7 +916,9 @@ export default function History() {
       const dash = document.getElementById("dashboard");
       dash.classList.add("dashCard");
 
-      setBtnMore(true);
+      if (countTicket > 5) {
+        setBtnMore(true);
+      }
 
       setLoadingDash(false);
       return ticketsDash;
@@ -1235,7 +1245,6 @@ export default function History() {
           setBtnMore(false);
           return;
         } else {
-          setBtnMore(true);
           return setTickets(data.tickets);
         }
       })
@@ -1275,7 +1284,6 @@ export default function History() {
           setBtnMore(false);
           return;
         } else {
-          setBtnMore(true);
           setLoadingDash(false);
           return setTickets(data.tickets);
         }
@@ -1330,7 +1338,6 @@ export default function History() {
           setBtnMore(false);
           return;
         } else {
-          setBtnMore(true);
           setLoadingDash(false);
           return setTickets(data.tickets);
         }
@@ -1369,7 +1376,6 @@ export default function History() {
           setBtnMore(false);
           return;
         } else {
-          setBtnMore(true);
           setLoadingDash(false);
           return setTickets(data.tickets);
         }
@@ -1433,7 +1439,6 @@ export default function History() {
           setBtnMore(false);
           return;
         } else {
-          setBtnMore(true);
           setLoadingDash(false);
           return setTickets(data.tickets);
         }
@@ -1483,7 +1488,6 @@ export default function History() {
           setBtnMore(false);
           return;
         } else {
-          setBtnMore(true);
           setLoadingDash(false);
           setStatus("open");
           return setTickets(data.tickets);
@@ -1534,7 +1538,6 @@ export default function History() {
           setBtnMore(false);
           return;
         } else {
-          setBtnMore(true);
           setLoadingDash(false);
           setStatus("close");
           return setTickets(data.tickets);
@@ -1584,7 +1587,6 @@ export default function History() {
           setMessageError("Nenhum ticket com esses Filtros");
           setBtnMore(false);
         } else {
-          setBtnMore(true);
           setLoadingDash(false);
           setStatus("close");
           setTickets(data.tickets);
@@ -1633,7 +1635,6 @@ export default function History() {
           setBtnMore(false);
           return;
         } else {
-          setBtnMore(true);
           setLoadingDash(false);
           setStatus("all");
           return setTickets(data.tickets);

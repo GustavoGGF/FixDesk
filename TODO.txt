@@ -19,6 +19,7 @@ All Site{
     "PDF":{
         "ao baixar PDF Departamento fica como undefined"
     }
+    Good_Pratic{"use Ref no lugar document.get"}
 }
 
 Login{}
@@ -65,18 +66,16 @@ DashBoard{
     },
     tech_details:{"icone de fechar"}
     filter:{"Ajustar filtros"}
+    ticket:{"quando tiver sendo feito a montagem dos tickets na tela contar quantos tem em verificar se oculta ou mostra o botão de mostrar mais}
 }
 
 Navbar{
-    Tema:{
-        "Ao fechar tema fechar a opção de claro e escuro"
-    }
+    Tema:{}
         setinha para baixo do tema
         fechar abas to temas em configuração ao clicar fora
 }
 
 History[
-    quando tiver sendo feito a montagem dos tickets na tela contar quantos tem em verificar se oculta ou mostra o botão de mostrar mais
     tela de carregamento abrindo ticket
     zerar os tickets ao selecionar um filtro
     fechar o chamado fecha a tela de enviar arquivos e limpa os arquivos
