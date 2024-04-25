@@ -2,9 +2,7 @@ All Site{
     Usar HTTPS para criptografar a comunicação entre o navegador do usuário e o servidor.
     tema de fundo
     tela para reportar bug
-    ticket de: instalar programa, arquivo corrompido
     loading, simbolo lupatech se dissolver girar e voltar
-    usar unverse io
     requirements.txt melhorar
     ao entrar em url errada redirecionar
     comentar código

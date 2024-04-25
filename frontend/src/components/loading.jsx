@@ -1,10 +1,18 @@
 import React from "react";
-import { Div } from "../styles/loadingStyle";
+import { Loader, Cube } from "../styles/loading/loadingStyle";
+import "../styles/loading/loading.css";
 
 export default function Loading() {
   return (
-    <Div className="spinner-border text-success" role="status">
-      <span className="visually-hidden">Loading....</span>
-    </Div>
+    <Loader>
+      <Cube>
+        <div class="face"></div>
+        <div class="face"></div>
+        <div class="face"></div>
+        <div class="face"></div>
+        <div class="face"></div>
+        <div class="face"></div>
+      </Cube>
+    </Loader>
   );
 }
