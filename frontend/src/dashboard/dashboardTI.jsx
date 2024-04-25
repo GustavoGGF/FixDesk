@@ -1639,6 +1639,32 @@ export default function DashboardTI() {
     }
   }
 
+  function filterTechnician(event) {
+    setTickets([]);
+    setTicketsDash([]);
+    setLoadingDash(true);
+    fetch("get-ticket-filter-tech/", {
+      method: "GET",
+      headers: { Accept: "application/json", "Tech-Select": event.target.value },
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        setLoadingDash(false);
+        setTickets(data.tickets);
+        if (data.ticket.length < 1 || data.ticket == null) {
+          setMessageError("Esse Tecnico não possui Chamados")
+          setTypeError("Falta de Dados")
+          setMessage(true)
+        }
+        return;
+      })
+      .catch((err) => {
+        return console.log(err);
+      });
+  }
+
   function getTicketFilterProblemn({ problemn }) {
     setTickets([]);
     setTicketsDash([]);
@@ -2772,6 +2798,18 @@ export default function DashboardTI() {
             <ImgSelectView src={Card} clasName="img-fluid" alt="" />
           </button>
         </DivSelectView>
+        <DivSelectView>
+          <select className="form-select" onChange={filterTechnician}>
+            <option key={0} value="" selected disabled>
+              Tecnico Responsavel
+            </option>
+            {techs.map((tech, index) => (
+              <option key={index + 1} value={tech}>
+                {tech}
+              </option>
+            ))}
+          </select>
+        </DivSelectView>
         <DivSelectView className="mt-3">
           <PSelectView className="position-absolute top-0 start-0 translate-middle">Status</PSelectView>
           <Button1
@@ -2870,7 +2908,7 @@ export default function DashboardTI() {
                   </DropBTN>
                   <select className="form-select" onChange={ChangeTechnician} value={selectedTech} hidden={ticketOpen === true ? false : true}>
                     <option key={0} value="" disabled>
-                      Tranferir
+                      Transferir
                     </option>
                     {techs.map((tech, index) => (
                       <option key={index + 1} value={tech}>

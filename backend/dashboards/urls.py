@@ -53,4 +53,9 @@ urlpatterns = [
         name="central-upload-new-files",
     ),
     path("details/<int:id>", views.detailsChat, name="central-details-chat"),
+    path(
+        "get-ticket-filter-tech/",
+        views.getTicketFilterTech,
+        name="central-get-ticket-filter-tech",
+    ),
 ]

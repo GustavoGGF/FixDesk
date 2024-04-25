@@ -891,3 +891,34 @@ def detailsChat(request, id):
         return
     if request.method == "POST":
         return
+
+
+@login_required(login_url="/login")
+def getTicketFilterTech(request):
+    if request.method == "POST":
+        return
+    if request.method == "GET":
+        tech = None
+        ticket_data = None
+        try:
+            tech = request.META.get("HTTP_TECH_SELECT")
+            ticket_data = SupportTicket.objects.filter(responsible_technician=tech)
+        except Exception as e:
+            return print(e)
+
+        ticket_list = []
+        ticket_json = None
+        try:
+            for ticket in ticket_data:
+                ticket_json = serialize("json", [ticket])
+                ticket_list.append(ticket_json)
+
+            ticket_objects = []
+            for ticket in ticket_list:
+                ticket_data = loads(ticket)[0]["fields"]
+                ticket_data["id"] = loads(ticket)[0]["pk"]
+                ticket_objects.append(ticket_data)
+
+            return JsonResponse({"tickets": ticket_objects}, status=200, safe=True)
+        except Exception as e:
+            return print(e)

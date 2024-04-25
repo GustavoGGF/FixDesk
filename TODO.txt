@@ -65,6 +65,7 @@ DashBoard{
         "Fechar a engrenagem ao clicar fora"
     },
     tech_details:{"icone de fechar"}
+    filter:{"Ajustar filtros"}
 }
 
 Navbar{
@@ -91,5 +92,6 @@ History[
     ajustar descrição no pdf
     clicar fora da engragem de modificação de chamado fecha a modificação
     cores status ticket
+    filter:{"Ajustar filtros"}
 ]
 
