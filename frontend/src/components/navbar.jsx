@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React from "react";
+import React, { useRef } from "react";
 
 import { Div1, Logout, Img, ALink, SpanUser, CLose, BtnClose, H5, DropBTN, DropDown, DropContent, Arrow, DropContent2 } from "../styles/navbarStyle";
 
@@ -9,6 +9,9 @@ import Logo from "../images/logos/fixdesk.png";
 import ImgClose from "../images/components/close.png";
 import ArrowDown from "../images/components/caret-down-square.svg";
 export default function NavBar({ Name, JobTitle }) {
+  const themeOption = useRef(null);
+  const dropContent = useRef(null);
+
   document.getElementById("root").addEventListener("click", function (event) {
     if (
       event.target.id !== "btndrop" &&
@@ -22,6 +25,9 @@ export default function NavBar({ Name, JobTitle }) {
     ) {
       if (!document.getElementById("dropcontent").classList.contains("visually-hidden")) {
         document.getElementById("dropcontent").classList.add("visually-hidden");
+        if (themeOption.current) {
+          themeOption.current.classList.add("visually-hidden");
+        }
         return;
       } else {
         return;
@@ -46,7 +52,6 @@ export default function NavBar({ Name, JobTitle }) {
   }
 
   function DropD(event) {
-    console.log(event.target.id);
     if (
       (event.target.id === "btndrop" && document.getElementById("dropcontent").classList.contains("visually-hidden")) ||
       (event.target.id === "imgdrop" && document.getElementById("dropcontent").classList.contains("visually-hidden"))
@@ -57,8 +62,12 @@ export default function NavBar({ Name, JobTitle }) {
       (event.target.id === "btndrop" && !document.getElementById("dropcontent").classList.contains("visually-hidden")) ||
       (event.target.id === "imgdrop" && !document.getElementById("dropcontent").classList.contains("visually-hidden"))
     ) {
-      document.getElementById("dropcontent").classList.add("visually-hidden");
-      document.getElementById("dropcontent2").classList.add("visually-hidden");
+      if (dropContent.current) {
+        dropContent.current.classList.add("visually-hidden");
+      }
+      if (themeOption.current) {
+        themeOption.current.classList.add("visually-hidden");
+      }
       return;
     } else if (event.target.id === "btn1" && document.getElementById("dropcontent2").classList.contains("visually-hidden")) {
       document.getElementById("dropcontent2").classList.remove("visually-hidden");
@@ -157,12 +166,12 @@ export default function NavBar({ Name, JobTitle }) {
                       Configuração
                       <Arrow src={ArrowDown} alt="" id="imgdrop" />
                     </DropBTN>
-                    <DropContent className="visually-hidden" id="dropcontent">
+                    <DropContent className="visually-hidden" id="dropcontent" ref={dropContent}>
                       <DropDown id="dropdwn2">
                         <DropBTN className="btn btn-light" id="btn1" onClick={DropD}>
                           Tema
                         </DropBTN>
-                        <DropContent2 id="dropcontent2" className="visually-hidden">
+                        <DropContent2 id="dropcontent2" className="visually-hidden" ref={themeOption}>
                           <DropBTN className="btn btn-light" id="btn2" onClick={ThemeLight}>
                             Claro
                           </DropBTN>

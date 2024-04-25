@@ -29,7 +29,6 @@ HelpDesk[
 ]
 
 DashBoard{
-    nos filstros mostrar chamados que estão comigo  
     nome do arquivo na tela de ticket
     data e hora no chat
     ao clicar na engrenagem do chamado aberto do TI quando clicar fora tem que fechar
