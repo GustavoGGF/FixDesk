@@ -4,12 +4,12 @@
       "Upgrade1": "Usar HTTPS para criptografar a comunicação entre o navegador do usuário e o servidor",
       "Upgrade2": "Tema personalizado de fundo",
       "Upgrade3": "Tela reportar BUG/Melhoria",
-      "Upgrade4": "Ao entrar em url errada, redirecionar"
+      "Upgrade4": "Ao entrar em url errada, redirecionar",
+      "LCM": "link do chamado no email"
     },
     "HotFix's": {
       "HotFix2": "comentar código",
       "HotFix3": "quando acbar o cookie do csrf mandar para login",
-      "HotFix4": "link do chamado no email",
       "HotFix5": "try catch codigo todo",
       "HotFix6": "squedule sobre FIxDesk no servidor",
       "HitFix7": "ao baixar PDF Departamento fica como undefined"

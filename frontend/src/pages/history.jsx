@@ -528,7 +528,7 @@ export default function History() {
               setFileTicket((fileticket) => [...fileticket, Div]);
             } else if (typeof file === "object") {
               const image = file.image;
-              const nameFile = file.name_file[i];
+              const nameFile = data.name_file[i];
               const Div = (
                 <DivOnBoardFile className="position-relative">
                   <IMGFiles
