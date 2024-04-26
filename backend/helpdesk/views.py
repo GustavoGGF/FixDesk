@@ -1440,10 +1440,10 @@ def ticket(request, id):
 
                     pil_image.save(img_bytes, format="PNG")
 
-                    image_data = b64encode(img_bytes.getvalue()).decode("utf-8")
+                    image_equip = b64encode(img_bytes.getvalue()).decode("utf-8")
 
                 equipaments = {
-                    "image": image_data,
+                    "image": image_equip,
                     "model": t.equipament.model,
                     "company": t.equipament.company,
                 }

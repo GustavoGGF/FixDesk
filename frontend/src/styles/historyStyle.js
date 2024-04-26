@@ -68,6 +68,7 @@ export const IMGFiles = styled.img`
   &:hover {
     transform: scale(1.2);
   }
+  margin: 0 auto;
 `;
 
 export const InputFile = styled.input`
@@ -248,7 +249,9 @@ export const DivFile = styled.div`
   padding-right: 15px;
   padding-top: 7px;
   padding-bottom: 7px;
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
 `;
 
 export const ImageFile = styled.img`
@@ -257,8 +260,9 @@ export const ImageFile = styled.img`
 `;
 
 export const DivOnBoardFile = styled.div`
-  margin-left: 10px;
-  margin-right: 10px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
 `;
 
 export const DivNewFiles = styled.div`

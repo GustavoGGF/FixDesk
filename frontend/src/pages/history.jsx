@@ -385,186 +385,174 @@ export default function History() {
               const ContentFileExcel = data.content_file[i];
               const NameFileExcel = data.name_file[i];
               const Div = (
-                <div>
-                  <DivOnBoardFile className="position-relative">
-                    <IMGFiles src={XLS} alt="" />
-                    <ImageFile
-                      className="position-absolute bottom-0 start-50 translate-middle-x"
-                      src={Download}
-                      alt=""
-                      onClick={() => {
-                        const blob = downloadMail({
-                          data: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                          content: ContentFileExcel,
-                        });
+                <DivOnBoardFile className="position-relative">
+                  <IMGFiles src={XLS} alt="" />
+                  <ImageFile
+                    className="position-absolute bottom-0 start-50 translate-middle-x"
+                    src={Download}
+                    alt=""
+                    onClick={() => {
+                      const blob = downloadMail({
+                        data: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                        content: ContentFileExcel,
+                      });
 
-                        const url = window.URL.createObjectURL(blob);
-                        const a = document.createElement("a");
-                        a.href = url;
-                        a.download = NameFileExcel;
-                        document.body.appendChild(a);
-                        a.click();
-                        document.body.removeChild(a);
-                      }}
-                    />
-                  </DivOnBoardFile>
-                  <div>{NameFileExcel}</div>
-                </div>
+                      const url = window.URL.createObjectURL(blob);
+                      const a = document.createElement("a");
+                      a.href = url;
+                      a.download = NameFileExcel;
+                      document.body.appendChild(a);
+                      a.click();
+                      document.body.removeChild(a);
+                    }}
+                  />
+                  <p className="text-center text-break">{NameFileExcel}</p>
+                </DivOnBoardFile>
               );
               setFileTicket((fileticket) => [...fileticket, Div]);
             } else if (file === "zip") {
               const ContentFileZip = data.content_file[i];
               const NameFileZip = data.name_file[i];
               const Div = (
-                <div>
-                  <DivOnBoardFile className="position-relative">
-                    <IMGFiles src={ZIP} alt="" />
-                    <ImageFile
-                      className="position-absolute bottom-0 start-50 translate-middle-x"
-                      src={Download}
-                      alt=""
-                      onClick={() => {
-                        const blob = downloadMail({
-                          data: "application/zip",
-                          content: ContentFileZip,
-                        });
+                <DivOnBoardFile className="position-relative">
+                  <IMGFiles src={ZIP} alt="" />
+                  <ImageFile
+                    className="position-absolute bottom-0 start-50 translate-middle-x"
+                    src={Download}
+                    alt=""
+                    onClick={() => {
+                      const blob = downloadMail({
+                        data: "application/zip",
+                        content: ContentFileZip,
+                      });
 
-                        const url = window.URL.createObjectURL(blob);
-                        const a = document.createElement("a");
-                        a.href = url;
-                        a.download = NameFileZip;
-                        document.body.appendChild(a);
-                        a.click();
-                        document.body.removeChild(a);
-                      }}
-                    />
-                  </DivOnBoardFile>
-                  <div>{NameFileZip}</div>
-                </div>
+                      const url = window.URL.createObjectURL(blob);
+                      const a = document.createElement("a");
+                      a.href = url;
+                      a.download = NameFileZip;
+                      document.body.appendChild(a);
+                      a.click();
+                      document.body.removeChild(a);
+                    }}
+                  />
+                  <p className="text-center text-break">{NameFileZip}</p>
+                </DivOnBoardFile>
               );
               setFileTicket((fileticket) => [...fileticket, Div]);
             } else if (file === "txt") {
               const ContentFileTXT = data.content_file[i];
               const NameFileTXT = data.name_file[i];
               const Div = (
-                <div>
-                  <DivOnBoardFile className="position-relative">
-                    <IMGFiles src={TXT} alt="" />
-                    <ImageFile
-                      className="position-absolute bottom-0 start-50 translate-middle-x"
-                      src={Download}
-                      alt=""
-                      onClick={() => {
-                        const blob = downloadMail({
-                          data: "text/plain",
-                          content: ContentFileTXT,
-                        });
+                <DivOnBoardFile className="position-relative">
+                  <IMGFiles src={TXT} alt="" />
+                  <ImageFile
+                    className="position-absolute bottom-0 start-50 translate-middle-x"
+                    src={Download}
+                    alt=""
+                    onClick={() => {
+                      const blob = downloadMail({
+                        data: "text/plain",
+                        content: ContentFileTXT,
+                      });
 
-                        const url = window.URL.createObjectURL(blob);
-                        const a = document.createElement("a");
-                        a.href = url;
-                        a.download = NameFileTXT;
-                        document.body.appendChild(a);
-                        a.click();
-                        document.body.removeChild(a);
-                      }}
-                    />
-                  </DivOnBoardFile>
-                  <div>{NameFileTXT}</div>
-                </div>
+                      const url = window.URL.createObjectURL(blob);
+                      const a = document.createElement("a");
+                      a.href = url;
+                      a.download = NameFileTXT;
+                      document.body.appendChild(a);
+                      a.click();
+                      document.body.removeChild(a);
+                    }}
+                  />
+                  <p className="text-center text-break">{NameFileTXT}</p>
+                </DivOnBoardFile>
               );
               setFileTicket((fileticket) => [...fileticket, Div]);
             } else if (file === "word") {
               const ContentFileWord = data.content_file[i];
               const NameFileWord = data.name_file[i];
               const Div = (
-                <div>
-                  <DivOnBoardFile className="position-relative">
-                    <IMGFiles src={WORD} alt="" />
-                    <ImageFile
-                      className="position-absolute bottom-0 start-50 translate-middle-x"
-                      src={Download}
-                      alt=""
-                      onClick={() => {
-                        const blob = downloadMail({
-                          data: "application/pdf",
-                          content: ContentFileWord,
-                        });
+                <DivOnBoardFile className="position-relative">
+                  <IMGFiles src={WORD} alt="" />
+                  <ImageFile
+                    className="position-absolute bottom-0 start-50 translate-middle-x"
+                    src={Download}
+                    alt=""
+                    onClick={() => {
+                      const blob = downloadMail({
+                        data: "application/pdf",
+                        content: ContentFileWord,
+                      });
 
-                        const url = window.URL.createObjectURL(blob);
-                        const a = document.createElement("a");
-                        a.href = url;
-                        a.download = NameFileWord;
-                        document.body.appendChild(a);
-                        a.click();
-                        document.body.removeChild(a);
-                      }}
-                    />
-                  </DivOnBoardFile>
-                  <div>{NameFileWord}</div>
-                </div>
+                      const url = window.URL.createObjectURL(blob);
+                      const a = document.createElement("a");
+                      a.href = url;
+                      a.download = NameFileWord;
+                      document.body.appendChild(a);
+                      a.click();
+                      document.body.removeChild(a);
+                    }}
+                  />{" "}
+                  <p className="text-center text-break">{NameFileWord}</p>
+                </DivOnBoardFile>
               );
               setFileTicket((fileticket) => [...fileticket, Div]);
             } else if (file === "pdf") {
               const ContentFilePDF = data.content_file[i];
               const NameFilePDF = data.name_file[i];
               const Div = (
-                <div>
-                  <DivOnBoardFile className="position-relative">
-                    <IMGFiles src={PDF} alt="" />
-                    <ImageFile
-                      className="position-absolute bottom-0 start-50 translate-middle-x"
-                      src={Download}
-                      alt=""
-                      onClick={() => {
-                        const blob = downloadMail({
-                          data: "application/pdf",
-                          content: ContentFilePDF,
-                        });
+                <DivOnBoardFile className="position-relative">
+                  <IMGFiles src={PDF} alt="" />
+                  <ImageFile
+                    className="position-absolute bottom-0 start-50 translate-middle-x"
+                    src={Download}
+                    alt=""
+                    onClick={() => {
+                      const blob = downloadMail({
+                        data: "application/pdf",
+                        content: ContentFilePDF,
+                      });
 
-                        const url = window.URL.createObjectURL(blob);
-                        const a = document.createElement("a");
-                        a.href = url;
-                        a.download = NameFilePDF;
-                        document.body.appendChild(a);
-                        a.click();
-                        document.body.removeChild(a);
-                      }}
-                    />
-                  </DivOnBoardFile>
-                  <div>{NameFilePDF}</div>
-                </div>
+                      const url = window.URL.createObjectURL(blob);
+                      const a = document.createElement("a");
+                      a.href = url;
+                      a.download = NameFilePDF;
+                      document.body.appendChild(a);
+                      a.click();
+                      document.body.removeChild(a);
+                    }}
+                  />
+                  <p className="text-center text-break">{NameFilePDF}</p>
+                </DivOnBoardFile>
               );
               setFileTicket((fileticket) => [...fileticket, Div]);
             } else if (typeof file === "object") {
               const image = file.image;
               const nameFile = file.name_file[i];
               const Div = (
-                <div>
-                  <DivOnBoardFile className="position-relative">
-                    <IMGFiles
-                      src={`data:image/jpeg;base64,${file.image}`}
-                      onClick={() => {
-                        setImageUrl(`data:image/jpeg;base64,${image}`);
-                        openImage();
-                      }}
-                      alt=""
-                    />
-                    <ImageFile
-                      className="position-absolute bottom-0 start-50 translate-middle-x"
-                      src={Download}
-                      alt=""
-                      onClick={() => {
-                        const link = document.createElement("a");
-                        link.href = `data:image/jpeg;base64,${image}`;
-                        link.download = "nome-do-arquivo.jpg";
-                        link.click();
-                        link.remove();
-                      }}
-                    />
-                  </DivOnBoardFile>
-                  <div>{nameFile}</div>
-                </div>
+                <DivOnBoardFile className="position-relative">
+                  <IMGFiles
+                    src={`data:image/jpeg;base64,${file.image}`}
+                    onClick={() => {
+                      setImageUrl(`data:image/jpeg;base64,${image}`);
+                      openImage();
+                    }}
+                    alt=""
+                  />
+                  <ImageFile
+                    className="position-absolute bottom-0 start-50 translate-middle-x"
+                    src={Download}
+                    alt=""
+                    onClick={() => {
+                      const link = document.createElement("a");
+                      link.href = `data:image/jpeg;base64,${image}`;
+                      link.download = "nome-do-arquivo.jpg";
+                      link.click();
+                      link.remove();
+                    }}
+                  />
+                  <p className="text-center text-break">{nameFile}</p>
+                </DivOnBoardFile>
               );
               setFileTicket((fileticket) => [...fileticket, Div]);
             }

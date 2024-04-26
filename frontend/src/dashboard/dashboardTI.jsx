@@ -560,7 +560,7 @@ export default function DashboardTI() {
               const contentFileMail = data.content_file[i];
               const nameFileMail = data.name_file[i];
               const Div = (
-                <DivOnBoardFile key={nameFileMail} className="position-relative">
+                <DivOnBoardFile className="position-relative">
                   <IMGFiles src={Mail} alt="" />
                   <ImageFile
                     className="position-absolute bottom-0 start-50 translate-middle-x"
@@ -581,6 +581,7 @@ export default function DashboardTI() {
                       document.body.removeChild(a);
                     }}
                   />
+                  <p className="text-center text-break">{nameFileMail}</p>
                 </DivOnBoardFile>
               );
               setFileTicket((fileticket) => [...fileticket, Div]);
@@ -588,7 +589,7 @@ export default function DashboardTI() {
               const ContentFileExcel = data.content_file[i];
               const NameFileExcel = data.name_file[i];
               const Div = (
-                <DivOnBoardFile key={NameFileExcel} className="position-relative">
+                <DivOnBoardFile className="position-relative">
                   <IMGFiles src={XLS} alt="" />
                   <ImageFile
                     className="position-absolute bottom-0 start-50 translate-middle-x"
@@ -609,6 +610,7 @@ export default function DashboardTI() {
                       document.body.removeChild(a);
                     }}
                   />
+                  <p className="text-center text-break">{NameFileExcel}</p>
                 </DivOnBoardFile>
               );
               setFileTicket((fileticket) => [...fileticket, Div]);
@@ -616,7 +618,7 @@ export default function DashboardTI() {
               const ContentFileZip = data.content_file[i];
               const NameFileZip = data.name_file[i];
               const Div = (
-                <DivOnBoardFile key={NameFileZip} className="position-relative">
+                <DivOnBoardFile className="position-relative">
                   <IMGFiles src={ZIP} alt="" />
                   <ImageFile
                     className="position-absolute bottom-0 start-50 translate-middle-x"
@@ -637,6 +639,7 @@ export default function DashboardTI() {
                       document.body.removeChild(a);
                     }}
                   />
+                  <p className="text-center text-break">{NameFileZip}</p>
                 </DivOnBoardFile>
               );
               setFileTicket((fileticket) => [...fileticket, Div]);
@@ -644,7 +647,7 @@ export default function DashboardTI() {
               const ContentFileTXT = data.content_file[i];
               const NameFileTXT = data.name_file[i];
               const Div = (
-                <DivOnBoardFile key={NameFileTXT} className="position-relative">
+                <DivOnBoardFile className="position-relative">
                   <IMGFiles src={TXT} alt="" />
                   <ImageFile
                     className="position-absolute bottom-0 start-50 translate-middle-x"
@@ -665,6 +668,7 @@ export default function DashboardTI() {
                       document.body.removeChild(a);
                     }}
                   />
+                  <p className="text-center text-break">{NameFileTXT}</p>
                 </DivOnBoardFile>
               );
               setFileTicket((fileticket) => [...fileticket, Div]);
@@ -672,7 +676,7 @@ export default function DashboardTI() {
               const ContentFileWord = data.content_file[i];
               const NameFileWord = data.name_file[i];
               const Div = (
-                <DivOnBoardFile key={NameFileWord} className="position-relative">
+                <DivOnBoardFile className="position-relative">
                   <IMGFiles src={WORD} alt="" />
                   <ImageFile
                     className="position-absolute bottom-0 start-50 translate-middle-x"
@@ -693,6 +697,7 @@ export default function DashboardTI() {
                       document.body.removeChild(a);
                     }}
                   />
+                  <p className="text-center text-break">{NameFileWord}</p>
                 </DivOnBoardFile>
               );
               setFileTicket((fileticket) => [...fileticket, Div]);
@@ -700,12 +705,12 @@ export default function DashboardTI() {
               const ContentFilePDF = data.content_file[i];
               const NameFilePDF = data.name_file[i];
               const Div = (
-                <DivOnBoardFile key={NameFilePDF} className="position-relative">
+                <DivOnBoardFile className="position-relative">
                   <IMGFiles src={PDF} alt="" />
                   <ImageFile
-                    className="position-absolute bottom-0 start-50 translate-middle-x"
                     src={Download}
-                    alt=""
+                    className="position-absolute bottom-0 start-50 translate-middle-x"
+                    alt="botão de download"
                     onClick={() => {
                       const blob = downloadMail({
                         data: "application/pdf",
@@ -721,14 +726,15 @@ export default function DashboardTI() {
                       document.body.removeChild(a);
                     }}
                   />
+                  <p className="text-center text-break">{NameFilePDF}</p>
                 </DivOnBoardFile>
               );
               setFileTicket((fileticket) => [...fileticket, Div]);
             } else if (typeof file === "object") {
               const image = file.image;
-              const nameImage = image.name;
+              const nameImage = data.name_file[i];
               const Div = (
-                <DivOnBoardFile key={nameImage} className="position-relative">
+                <DivOnBoardFile className="position-relative">
                   <IMGFiles
                     src={`data:image/jpeg;base64,${file.image}`}
                     onClick={() => {
@@ -749,6 +755,7 @@ export default function DashboardTI() {
                       link.remove();
                     }}
                   />
+                  <p className="text-center text-break">{nameImage}</p>;
                 </DivOnBoardFile>
               );
               setFileTicket((fileticket) => [...fileticket, Div]);
@@ -1654,9 +1661,9 @@ export default function DashboardTI() {
         setLoadingDash(false);
         setTickets(data.tickets);
         if (data.ticket.length < 1 || data.ticket == null) {
-          setMessageError("Esse Tecnico não possui Chamados")
-          setTypeError("Falta de Dados")
-          setMessage(true)
+          setMessageError("Esse Tecnico não possui Chamados");
+          setTypeError("Falta de Dados");
+          setMessage(true);
         }
         return;
       })

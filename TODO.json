@@ -1,0 +1,75 @@
+{
+  "All Site": {
+    "Upgrades": {
+      "Upgrade1": "Usar HTTPS para criptografar a comunicação entre o navegador do usuário e o servidor",
+      "Upgrade2": "Tema personalizado de fundo",
+      "Upgrade3": "Tela reportar BUG/Melhoria",
+      "Upgrade4": "Ao entrar em url errada, redirecionar"
+    },
+    "HotFix's": {
+      "HotFix2": "comentar código",
+      "HotFix3": "quando acbar o cookie do csrf mandar para login",
+      "HotFix4": "link do chamado no email",
+      "HotFix5": "try catch codigo todo",
+      "HotFix6": "squedule sobre FIxDesk no servidor",
+      "HitFix7": "ao baixar PDF Departamento fica como undefined"
+    },
+    "Study Possibility": {
+      "FrameWork1": "fdpf2",
+      "FrameWork2": "defusedxml",
+      "FrameWork3": "distro",
+      "FrameWork4": "distlib",
+      "FrameWork5": "django-clearcache",
+      "FrameWork6": "filelock",
+      "FrameWork7": "httplib2"
+    },
+    "Good_Pratic": {
+      "Pratic1": "use Ref no lugar document.get"
+    }
+  },
+  "Login": {},
+  "HelpDesk": {
+    "Upgrade": {
+      "Upgrade1": "contrato comodato para os equipamentos"
+    },
+    "HotFix": {
+      "HotFix1": "ao enviar locagem de equipamento, se estiver alocado já, retornar com alocado cinza e pedir para ajustar data",
+      "File": "Após um alerta os arquivos anexados estão sumindo"
+    }
+  },
+  "History": {
+    "Upgrade": {
+      "Upgrade1": "ao adicionar novos arquivos mostrar no chat"
+    },
+    "HotFix": {
+      "HotFix1": "ajustar descrição no pdf",
+      "HotFix2": "Revisão todos os Filter",
+      "Animation file idea": "Quando estiver com o ticker aberto e tiver uma imagem, deixar cursor mouse e ao clicar ter animação da imagem subindo para tela e ajustar tela de visualização de imagem"
+    }
+  },
+  "Dashboard": {
+    "Upgrade": {
+      "Upgrade1": "nome do arquivo na tela de ticket",
+      "Upgrade2": "ao adicionar novos arquivos mostrar no chat",
+      "Upgrade3": "cabeçalho de chamados para modo Lista",
+      "Upgrade4": "fazer metodo para excluir usuario do banco de dados do django"
+    },
+    "HotFix": {
+      "HotFix1": "ao clicar na engrenagem do chamado aberto do TI quando clicar fora tem que fechar",
+      "HotFix2": "atualizar tickets e dashboardPie por minuto",
+      "HotFix3": "trocar icone de X por lixeira nos novos arquivos dashboard",
+      "HotFix4": "deixar botão de fechar tela de cadastro de equipamento menor",
+      "HotFix5": "mudar scroll de tudo da tela de cadastrode equip",
+      "HotFix6": "botão de fechar na tela de modificação de chamado",
+      "HotFix7": "ajustar descrição no pdf",
+      "HotFix8": "tech_details icone de fechar",
+      "HotFix9": "Revisão todos os Filter",
+      "Animation file idea": "Quando estiver com o ticker aberto e tiver uma imagem, deixar cursor mouse e ao clicar ter animação da imagem subindo para tela e ajustar tela de visualização de imagem"
+    }
+  },
+  "Navbar": {
+    "HotFix": {
+      "HotFix1": "setinha para baixo do tema"
+    }
+  }
+}
