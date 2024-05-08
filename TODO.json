@@ -5,11 +5,11 @@
       "Upgrade2": "Tema personalizado de fundo",
       "Upgrade3": "Tela reportar BUG/Melhoria",
       "Upgrade4": "Ao entrar em url errada, redirecionar",
-      "LCM": "link do chamado no email"
+      "LCM": "link do chamado no email",
+      "UCSLP": "quando acbar o cookie do csrf mandar para login"
     },
     "HotFix's": {
       "HotFix2": "comentar código",
-      "HotFix3": "quando acbar o cookie do csrf mandar para login",
       "HotFix5": "try catch codigo todo",
       "HotFix6": "squedule sobre FIxDesk no servidor",
       "HitFix7": "ao baixar PDF Departamento fica como undefined"

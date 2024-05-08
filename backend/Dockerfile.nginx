@@ -1,0 +1,9 @@
+# Use a imagem base do Python
+FROM nginx:latest
+
+#COPY ./static /usr/share/nginx/html/static
+
+RUN chown -R nginx:nginx /var/cache/nginx
+
+# Define the command to run your application
+ENTRYPOINT ["nginx", "-g", "daemon off;"]

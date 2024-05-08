@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import TemplateView
 from . import views
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 
 urlpatterns = [
@@ -13,3 +14,5 @@ urlpatterns = [
     path("helpdesk/", include("helpdesk.urls")),
     path("dashboard_TI/", include("dashboards.urls")),
 ]
+
+urlpatterns += staticfiles_urlpatterns()

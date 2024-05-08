@@ -1,0 +1,34 @@
+version: "3"
+
+services:
+  fixdesk:
+    build:
+      context: .
+      dockerfile: Dockerfile.django
+    ports:
+      - "8000:8000"
+    volumes:
+      - /node/FixDesk/backend:/FixDesk
+      - ./db.sqlite3:/node/FixDesk/backend/db.sqlite3
+      - ./static:/app/static
+    env_file:
+      - ../.env
+    networks:
+      - backend
+
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx
+    ports:
+      - "8080:8080"
+    depends_on:
+      - fixdesk
+    networks:
+      - backend
+    volumes:
+      - ./static:/var/www/html/static
+
+networks:
+  backend:
+    driver: bridge
