@@ -204,6 +204,7 @@ export default function DashboardTI() {
   const [loadingChat, setLoadingChat] = useState(false);
 
   const inputRef = useRef(null);
+  const sectionTicket = useRef(null);
 
   function ThemeBlack() {
     setThemeFilter("");
@@ -320,6 +321,9 @@ export default function DashboardTI() {
     const btn2 = document.getElementById("selectView-List");
     btn2.style.backgroundColor = "transparent";
 
+    sectionTicket.current.style.display = "flex";
+    sectionTicket.current.style.justifyContent = "center";
+
     // Mapear os tickets para elementos de cartão
     tickets.forEach((ticket) => {
       // Calcular a data formatada
@@ -400,6 +404,9 @@ export default function DashboardTI() {
 
     const btn2 = document.getElementById("selectView-Card");
     btn2.style.backgroundColor = "transparent";
+
+    sectionTicket.current.style.display = "block";
+    sectionTicket.current.style.justifyContent = "center";
 
     // Mapear os tickets para elementos de lista
     tickets.forEach((ticket) => {
@@ -2860,7 +2867,7 @@ export default function DashboardTI() {
           </Button2>
         </DivSelectView>
       </DivFilter>
-      <section id="dashboard">
+      <section ref={sectionTicket} id="dashboard">
         {loadingDash && (
           <div className="position-absolute top-50 start-50 translate-middle">
             <Loading />

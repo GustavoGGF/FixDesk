@@ -9,8 +9,6 @@ services:
       - "8000:8000"
     volumes:
       - /node/FixDesk/backend:/FixDesk
-      - ./db.sqlite3:/node/FixDesk/backend/db.sqlite3
-      - ./static:/app/static
     env_file:
       - ../.env
     networks:

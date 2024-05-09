@@ -12,7 +12,8 @@
       "HotFix2": "comentar código",
       "HotFix5": "try catch codigo todo",
       "HotFix6": "squedule sobre FIxDesk no servidor",
-      "HitFix7": "ao baixar PDF Departamento fica como undefined"
+      "HitFix7": "ao baixar PDF Departamento fica como undefined",
+      "NewDiagram": "Fazer novo diagrama com as novas mudanças de funcionando da ferramenta"
     },
     "Study Possibility": {
       "FrameWork1": "fdpf2",
@@ -52,7 +53,8 @@
       "Upgrade1": "nome do arquivo na tela de ticket",
       "Upgrade2": "ao adicionar novos arquivos mostrar no chat",
       "Upgrade3": "cabeçalho de chamados para modo Lista",
-      "Upgrade4": "fazer metodo para excluir usuario do banco de dados do django"
+      "Upgrade4": "fazer metodo para excluir usuario do banco de dados do django",
+      "DashboardPieLoadingData": "fazer busca de dados no dashboardPIE a cada 60 sec"
     },
     "HotFix": {
       "HotFix1": "ao clicar na engrenagem do chamado aberto do TI quando clicar fora tem que fechar",
