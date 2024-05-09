@@ -205,6 +205,19 @@ export default function DashboardTI() {
 
   const inputRef = useRef(null);
   const sectionTicket = useRef(null);
+  const thenView = useRef(null);
+  const selectViewCard = useRef(null);
+  const selectViewList = useRef(null);
+  const calendarALT = useRef(null);
+  const inputChat = useRef(null);
+  const myDropDown = useRef(null);
+  const selectOcorrence = useRef(null);
+  const btnOpen = useRef(null);
+  const selectSynchO = useRef(null);
+  const selectEngO = useRef(null);
+  const selectOfficeO = useRef(null);
+  const selectMBIO = useRef(null);
+  const selectSAPO = useRef(null);
 
   function ThemeBlack() {
     setThemeFilter("");
@@ -272,8 +285,7 @@ export default function DashboardTI() {
         .then((data) => {
           setCountTicket(10);
           setOrderBy("-id");
-          const btn = document.getElementById("thenView");
-          btn.style.backgroundColor = "#00B4D8";
+          thenView.current.style.backgroundColor = "#00B4D8";
           setTickets(data.tickets);
         })
         .catch((err) => {
@@ -315,11 +327,9 @@ export default function DashboardTI() {
     localStorage.setItem("selectView", "card");
 
     // Estilizar os botões de seleção de visualização
-    const btn = document.getElementById("selectView-Card");
-    btn.style.backgroundColor = "#00B4D8";
+    selectViewCard.current.style.backgroundColor = "#00B4D8";
 
-    const btn2 = document.getElementById("selectView-List");
-    btn2.style.backgroundColor = "transparent";
+    selectViewList.current.style.backgroundColor = "transparent";
 
     sectionTicket.current.style.display = "flex";
     sectionTicket.current.style.justifyContent = "center";
@@ -382,8 +392,7 @@ export default function DashboardTI() {
       );
 
       setTicketsDash((ticketsDash) => [...ticketsDash, Div]);
-      const dash = document.getElementById("dashboard");
-      dash.classList.add("dashCard");
+      sectionTicket.current.classList.add("dashCard");
 
       setLoadingDash(false);
     });
@@ -399,11 +408,9 @@ export default function DashboardTI() {
     localStorage.setItem("selectView", "list");
 
     // Estilizar os botões de seleção de visualização
-    const btn = document.getElementById("selectView-List");
-    btn.style.backgroundColor = "#00B4D8";
+    selectViewList.current.style.backgroundColor = "#00B4D8";
 
-    const btn2 = document.getElementById("selectView-Card");
-    btn2.style.backgroundColor = "transparent";
+    selectViewCard.current.style.backgroundColor = "transparent";
 
     sectionTicket.current.style.display = "block";
     sectionTicket.current.style.justifyContent = "center";
@@ -466,8 +473,7 @@ export default function DashboardTI() {
       );
 
       setTicketsDash((ticketsDash) => [...ticketsDash, Div]);
-      const dash = document.getElementById("dashboard");
-      dash.classList.add("dashCard");
+      sectionTicket.current.classList.add("dashCard");
 
       setLoadingDash(false);
     });
@@ -490,8 +496,7 @@ export default function DashboardTI() {
       })
       .then((dataBack) => {
         setClassBlur("addBlur");
-        const dash = document.getElementById("dashboard");
-        dash.style.filter = "blur(3px)";
+        sectionTicket.current.style.filter = "blur(3px)";
         const data = dataBack.data[0];
         setSelectedTech("");
         setMessageChat(false);
@@ -553,8 +558,7 @@ export default function DashboardTI() {
 
           setDaysLocated(daysLCT);
 
-          const calendar = document.getElementById("calendarALT");
-          calendar.classList.add("AdjustWid");
+          calendarALT.current.classList.add("AdjustWid");
         }
 
         var name_verify = userData.name;
@@ -957,8 +961,7 @@ export default function DashboardTI() {
   function Close_ticket() {
     setClassBlur("");
     setModifyTicket(false);
-    const dash = document.getElementById("dashboard");
-    dash.style.filter = "blur(0)";
+    sectionTicket.current.style.filter = "blur(0)";
     setTicketWindow(false);
     setFetchChat(false);
     count = 0;
@@ -1160,8 +1163,7 @@ export default function DashboardTI() {
 
     var dataFormatada = adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
     var horaFormatada = adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
-    const input = document.getElementById("input-chat");
-    input.value = "";
+    inputChat.current.value = "";
     if (textChat.length === 0) {
       return;
     }
@@ -1287,9 +1289,7 @@ export default function DashboardTI() {
   }
 
   function dropdown() {
-    const btn = document.getElementById("myDropdown");
-
-    return btn.classList.toggle("showDP");
+    return myDropDown.current.classList.toggle("showDP");
   }
 
   window.onclick = function (event) {
@@ -1307,8 +1307,7 @@ export default function DashboardTI() {
   };
 
   function enableProblem() {
-    const select = document.getElementById("selectOcorrence");
-    const option = select.options[select.selectedIndex].value;
+    const option = selectOcorrence.current.options[selectOcorrence.current.selectedIndex].value;
 
     switch (option) {
       default:
@@ -1388,8 +1387,7 @@ export default function DashboardTI() {
   function getTicketKey(event) {
     const newText = event.target.value;
 
-    const select1 = document.getElementById("selectOcorrence");
-    select1.value = null;
+    selectOcorrence.current.value = null;
 
     setProblemSyst(false);
     setProblemInfra(false);
@@ -1422,8 +1420,8 @@ export default function DashboardTI() {
   function ticketOpenStatus() {
     setTickets([]);
     setTicketsDash([]);
-    const btn = document.getElementById("btnopen");
-    btn.classList.add("btn-open");
+
+    btnOpen.current.classList.add("btn-open");
     const btn2 = document.getElementById("btnclose");
     btn2.classList.remove("btn-success");
     const btn3 = document.getElementById("btnstop");
@@ -1469,8 +1467,8 @@ export default function DashboardTI() {
   function ticketClose() {
     setTickets([]);
     setTicketsDash([]);
-    const btn = document.getElementById("btnopen");
-    btn.classList.remove("btn-open");
+
+    btnOpen.current.classList.remove("btn-open");
     const btn2 = document.getElementById("btnclose");
     btn2.classList.add("btn-success");
     const btn3 = document.getElementById("btnstop");
@@ -1516,8 +1514,8 @@ export default function DashboardTI() {
   function ticketStop() {
     setTickets([]);
     setTicketsDash([]);
-    const btn = document.getElementById("btnopen");
-    btn.classList.remove("btn-open");
+
+    btnOpen.current.classList.remove("btn-open");
     const btn2 = document.getElementById("btnclose");
     btn2.classList.remove("btn-success");
     const btn3 = document.getElementById("btnstop");
@@ -1563,8 +1561,8 @@ export default function DashboardTI() {
   function statusTicketAll() {
     setTickets([]);
     setTicketsDash([]);
-    const btn = document.getElementById("btnopen");
-    btn.classList.remove("btn-open");
+
+    btnOpen.current.classList.remove("btn-open");
     const btn2 = document.getElementById("btnclose");
     btn2.classList.remove("btn-success");
     const btn3 = document.getElementById("btnstop");
@@ -1766,8 +1764,7 @@ export default function DashboardTI() {
     const btn1 = document.getElementById("fiveView");
     btn1.style.backgroundColor = "transparent";
 
-    const btn2 = document.getElementById("thenView");
-    btn2.style.backgroundColor = "transparent";
+    thenView.current.style.backgroundColor = "transparent";
 
     const btn3 = document.getElementById("fiftyView");
     btn3.style.backgroundColor = "transparent";
@@ -2468,8 +2465,7 @@ export default function DashboardTI() {
   }
 
   function selectSAP() {
-    const selectSAP = document.getElementById("select-sap");
-    const optionSAP = selectSAP.options[selectSAP.selectedIndex].value;
+    const optionSAP = selectSAPO.current.options[selectSAPO.current.selectedIndex].value;
 
     switch (optionSAP) {
       default:
@@ -2492,8 +2488,7 @@ export default function DashboardTI() {
   }
 
   function selectMBI() {
-    const select_MBI = document.getElementById("select-mbi");
-    const optionMBI = select_MBI.options[select_MBI.selectedIndex].value;
+    const optionMBI = selectMBIO.current.options[selectMBIO.current.selectedIndex].value;
 
     switch (optionMBI) {
       default:
@@ -2516,8 +2511,7 @@ export default function DashboardTI() {
   }
 
   function selectOffice() {
-    const selectOffice = document.getElementById("select-office");
-    const optionOffice = selectOffice.options[selectOffice.selectedIndex].value;
+    const optionOffice = selectOfficeO.current.options[selectOfficeO.current.selectedIndex].value;
 
     switch (optionOffice) {
       default:
@@ -2534,8 +2528,7 @@ export default function DashboardTI() {
   }
 
   function selectEng() {
-    const selectEng = document.getElementById("select-eng");
-    const optionEng = selectEng.options[selectEng.selectedIndex].value;
+    const optionEng = selectEngO.current.options[selectEngO.current.selectedIndex].value;
 
     switch (optionEng) {
       default:
@@ -2626,8 +2619,7 @@ export default function DashboardTI() {
   }
 
   function selectSynch() {
-    const selectSynch = document.getElementById("select-synch");
-    const optionSynch = selectSynch.options[selectSynch.selectedIndex].value;
+    const optionSynch = selectSynchO.current.options[selectSynchO.current.selectedIndex].value;
 
     switch (optionSynch) {
       default:
@@ -2673,7 +2665,7 @@ export default function DashboardTI() {
         <DivDrop className={`position-absolute top-0 start-0 ${classBlur}`}>
           <Dropdown>
             <DropdownButton onClick={dropdown} className="dropbtn"></DropdownButton>
-            <DropdownConten id="myDropdown" className="dropdown-content">
+            <DropdownConten ref={myDropDown} className="dropdown-content">
               <P1 className="d-block" onClick={equipamentForUser}>
                 Adicionar Equipamento
               </P1>
@@ -2695,7 +2687,7 @@ export default function DashboardTI() {
           <Input1 type="text" className="form-control" id="floatingInput" onKeyDown={getTicketKey} />
           <label htmlFor="floatingInput">Ocorrência | Problema | Data...</label>
         </div>
-        <Select1 id="selectOcorrence" className="form-select" onChange={enableProblem}>
+        <Select1 ref={selectOcorrence} className="form-select" onChange={enableProblem}>
           <option value="null" selected disabled>
             Tipo de Ocorrência
           </option>
@@ -2771,7 +2763,7 @@ export default function DashboardTI() {
           </DivImages>
           <DivImages
             className="btn"
-            id="thenView"
+            ref={thenView}
             onClick={() => {
               setCountTicket(10);
               getTicketFilter({ id: "thenView", quantity: 10 });
@@ -2805,10 +2797,10 @@ export default function DashboardTI() {
         </DivContainerImages>
         <DivSelectView>
           <PSelectView className="position-absolute top-0 start-0 translate-middle">Modo de Visualização</PSelectView>
-          <button className="btn" id="selectView-List" onClick={listCard}>
+          <button className="btn" ref={selectViewList} onClick={listCard}>
             <ImgSelectView src={List} className="img-fluid" alt="" />
           </button>
-          <button className="btn" id="selectView-Card" onClick={viewCard}>
+          <button className="btn" ref={selectViewCard} onClick={viewCard}>
             <ImgSelectView src={Card} clasName="img-fluid" alt="" />
           </button>
         </DivSelectView>
@@ -2828,7 +2820,7 @@ export default function DashboardTI() {
           <PSelectView className="position-absolute top-0 start-0 translate-middle">Status</PSelectView>
           <Button1
             className="btn btn-open"
-            id="btnopen"
+            ref={btnOpen}
             onClick={() => {
               ticketOpenStatus();
             }}
@@ -2867,7 +2859,7 @@ export default function DashboardTI() {
           </Button2>
         </DivSelectView>
       </DivFilter>
-      <section ref={sectionTicket} id="dashboard">
+      <section ref={sectionTicket}>
         {loadingDash && (
           <div className="position-absolute top-50 start-50 translate-middle">
             <Loading />
@@ -2967,7 +2959,7 @@ export default function DashboardTI() {
                 {jobtitlenewuser.length > 1 ? "Funcionario iniciara as atividades dia:" : "Bloquear acesso a partir de:"}
               </PBloq>
               <DivCal hidden={jobtitlenewuser.length > 1 || mailtranfer.length > 1 ? false : true}>
-                <DayPicker id="calendarALT" fixedWeeks showOutsideDays selected={startworknewuser} className="cald" mode="single" />
+                <DayPicker ref={calendarALT} fixedWeeks showOutsideDays selected={startworknewuser} className="cald" mode="single" />
               </DivCal>
               <input type="text" value={"Copiar usuario de: " + copyprofilenewuser} className="form-control" disabled hidden={copyprofilenewuser.length > 1 ? false : true} />
               <DivINp hidden={imageEquipament === undefined}>
@@ -2978,7 +2970,7 @@ export default function DashboardTI() {
                 <Calendar className="d-flex flex-column">
                   <p className="text-center">Data de alocação</p>
                   <div>
-                    <DayPicker id="calendarALT" fixedWeeks showOutsideDays selected={daysLocated} mode="multiple" localte={ptBR} />
+                    <DayPicker ref={calendarALT} fixedWeeks showOutsideDays selected={daysLocated} mode="multiple" localte={ptBR} />
                   </div>
                 </Calendar>
               </DivINp>
@@ -3000,7 +2992,7 @@ export default function DashboardTI() {
             {chat && (
               <div className="w-100 d-flex">
                 <div className="w-100">
-                  <input className="form-control h-100 fs-5" type="text" onKeyUp={NewChat} id="input-chat" />
+                  <input className="form-control h-100 fs-5" type="text" onKeyUp={NewChat} ref={inputChat} />
                 </div>
                 <BtnChat2>
                   <InputFile className="w-100" type="file" multiple onInput={UploadNewFiles} />
@@ -3171,7 +3163,7 @@ export default function DashboardTI() {
                   </Select>
                 )}
                 {sap && (
-                  <Select className="form-select mb-3" aria-label="Default select example" id="select-sap" onChange={selectSAP}>
+                  <Select className="form-select mb-3" aria-label="Default select example" ref={selectSAPO} onChange={selectSAP}>
                     <option value="none" disabled selected>
                       Selecione o Problema
                     </option>
@@ -3182,7 +3174,7 @@ export default function DashboardTI() {
                   </Select>
                 )}
                 {mbi && (
-                  <Select className="form-select mb-3" aria-label="Default select example" id="select-mbi" onChange={selectMBI}>
+                  <Select className="form-select mb-3" aria-label="Default select example" ref={selectMBIO} onChange={selectMBI}>
                     <option value="none" disabled selected>
                       Selecione o Problema
                     </option>
@@ -3193,7 +3185,7 @@ export default function DashboardTI() {
                   </Select>
                 )}
                 {synch && (
-                  <Select className="form-select mb-3" aria-label="Default select example" id="select-synch" onChange={selectSynch}>
+                  <Select className="form-select mb-3" aria-label="Default select example" ref={selectSynchO} onChange={selectSynch}>
                     <option value="none" disabled selected>
                       Selecione o Problema
                     </option>
@@ -3204,7 +3196,7 @@ export default function DashboardTI() {
                   </Select>
                 )}
                 {office && (
-                  <Select className="form-select mb-3" aria-label="Default select example" id="select-office" onChange={selectOffice}>
+                  <Select className="form-select mb-3" aria-label="Default select example" ref={selectOfficeO} onChange={selectOffice}>
                     <option value="none" disabled selected>
                       Selecione o Problema
                     </option>
@@ -3213,7 +3205,7 @@ export default function DashboardTI() {
                   </Select>
                 )}
                 {eng && (
-                  <Select className="form-select mb-3" aria-label="Default select example" id="select-eng" onChange={selectEng}>
+                  <Select className="form-select mb-3" aria-label="Default select example" ref={selectEngO} onChange={selectEng}>
                     <option value="none" disabled selected>
                       Selecione o Problema
                     </option>
