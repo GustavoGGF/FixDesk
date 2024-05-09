@@ -1,17 +1,47 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
+/**
+ * Importação interna necessária para este componente.
+ * - React: permite a criação e manipulação de componentes React.
+ * - useRef: hook utilizado para criar uma referência mutable para elementos do DOM.
+ */
 import React, { useRef } from "react";
 
+/**
+ * Importações de elementos DOM necessárias para este componente, de arquivos CSS, JavaScript, e imagens necessárias para este componente.
+ * - Div1, Logout, Img, ALink, SpanUser, CLose, BtnClose, H5, DropBTN, DropDown, DropContent, Arrow, DropContent2:
+ * - importações de elementos DOM do módulo "../styles/navbarStyle".
+ * - "../styles/bootstrap/css/bootstrap.css": importação do arquivo CSS do Bootstrap.
+ * - "../styles/bootstrap/js/bootstrap.js": importação do arquivo JavaScript do Bootstrap.
+ * - Logo: importação da imagem "fixdesk.png" localizada em "../images/logos".
+ * - ImgClose: importação da imagem "close.png" localizada em "../images/components".
+ * - ArrowDown: importação da imagem "caret-down-square.svg" localizada em "../images/components".
+ */
 import { Div1, Logout, Img, ALink, SpanUser, CLose, BtnClose, H5, DropBTN, DropDown, DropContent, Arrow, DropContent2 } from "../styles/navbarStyle";
-
 import "../styles/bootstrap/css/bootstrap.css";
 import "../styles/bootstrap/js/bootstrap.js";
 import Logo from "../images/logos/fixdesk.png";
 import ImgClose from "../images/components/close.png";
 import ArrowDown from "../images/components/caret-down-square.svg";
+
+/**
+ * Componente responsável por exibir a barra de navegação do site e informações do usuário.
+ * @param {string} Name - Nome do usuário.
+ * @param {string} JobTitle - Cargo do usuário.
+ */
 export default function NavBar({ Name, JobTitle }) {
+  /**
+   * Variáveis de referência utilizadas para acessar elementos do DOM neste componente.
+   * - themeOption: referência ao elemento de opções de tema.
+   * - dropContent: referência ao elemento de conteúdo suspenso.
+   */
   const themeOption = useRef(null);
   const dropContent = useRef(null);
 
+  /**
+   * Evento de clique utilizado para ocultar ou exibir um elemento.
+   * - Este evento é adicionado ao elemento raiz da aplicação (id="root").
+   * - Verifica se o clique ocorreu fora de certos elementos específicos e oculta o elemento de conteúdo suspenso.
+   * - Se o elemento de conteúdo suspenso não estiver visível, ele é ocultado.
+   */
   document.getElementById("root").addEventListener("click", function (event) {
     if (
       event.target.id !== "btndrop" &&
@@ -23,8 +53,8 @@ export default function NavBar({ Name, JobTitle }) {
       event.target.id !== "btn1" &&
       event.target.id !== "dropdwn2"
     ) {
-      if (!document.getElementById("dropcontent").classList.contains("visually-hidden")) {
-        document.getElementById("dropcontent").classList.add("visually-hidden");
+      if (!dropContent.current.classList.contains("visually-hidden")) {
+        dropContent.current.classList.add("visually-hidden");
         if (themeOption.current) {
           themeOption.current.classList.add("visually-hidden");
         }
@@ -36,6 +66,11 @@ export default function NavBar({ Name, JobTitle }) {
     return;
   });
 
+  /**
+   * Função acionada ao clicar na aba de sair.
+   * - Realiza uma solicitação GET para sair do sistema.
+   * - Se a solicitação for bem-sucedida, a página é recarregada.
+   */
   function Exit() {
     fetch("/helpdesk/exit/", {
       method: "GET",
@@ -51,16 +86,17 @@ export default function NavBar({ Name, JobTitle }) {
       });
   }
 
+  /**
+   * Função utilizada para expandir as opções de configuração e escondê-las quando clicado fora.
+   * @param {Object} event - Evento de clique.
+   */
   function DropD(event) {
-    if (
-      (event.target.id === "btndrop" && document.getElementById("dropcontent").classList.contains("visually-hidden")) ||
-      (event.target.id === "imgdrop" && document.getElementById("dropcontent").classList.contains("visually-hidden"))
-    ) {
-      document.getElementById("dropcontent").classList.remove("visually-hidden");
+    if ((event.target.id === "btndrop" && dropContent.current.classList.contains("visually-hidden")) || (event.target.id === "imgdrop" && dropContent.current.classList.contains("visually-hidden"))) {
+      dropContent.current.classList.remove("visually-hidden");
       return;
     } else if (
-      (event.target.id === "btndrop" && !document.getElementById("dropcontent").classList.contains("visually-hidden")) ||
-      (event.target.id === "imgdrop" && !document.getElementById("dropcontent").classList.contains("visually-hidden"))
+      (event.target.id === "btndrop" && !dropContent.current.classList.contains("visually-hidden")) ||
+      (event.target.id === "imgdrop" && !dropContent.current.classList.contains("visually-hidden"))
     ) {
       if (dropContent.current) {
         dropContent.current.classList.add("visually-hidden");
@@ -69,23 +105,33 @@ export default function NavBar({ Name, JobTitle }) {
         themeOption.current.classList.add("visually-hidden");
       }
       return;
-    } else if (event.target.id === "btn1" && document.getElementById("dropcontent2").classList.contains("visually-hidden")) {
-      document.getElementById("dropcontent2").classList.remove("visually-hidden");
+    } else if (event.target.id === "btn1" && themeOption.current.classList.contains("visually-hidden")) {
+      themeOption.current.classList.remove("visually-hidden");
       return;
-    } else if (event.target.id === "btn1" && !document.getElementById("dropcontent2").classList.contains("visually-hidden")) {
-      document.getElementById("dropcontent2").classList.add("visually-hidden");
+    } else if (event.target.id === "btn1" && !themeOption.current.classList.contains("visually-hidden")) {
+      themeOption.current.classList.add("visually-hidden");
       return;
     }
 
     return;
   }
 
+  /**
+   * Função acionada ao selecionar o tema claro.
+   * - Armazena a escolha do tema no localStorage.
+   * - Recarrega a página para aplicar as alterações do tema.
+   */
   function ThemeLight() {
     localStorage.setItem("Theme", "light");
 
     return window.location.reload();
   }
 
+  /**
+   * Função acionada ao selecionar o tema escuro.
+   * - Armazena a escolha do tema no localStorage.
+   * - Recarrega a página para aplicar as alterações do tema.
+   */
   function ThemeBlack() {
     localStorage.setItem("Theme", "black");
 
@@ -155,23 +201,23 @@ export default function NavBar({ Name, JobTitle }) {
                     Dashboard
                   </a>
                 </li>
-                <li className="nav-item">
-                  <a className="nav-link btn btn-light pointer" aria-current="page" href="#">
+                {/* <li className="nav-item">
+                  <a className="nav-link btn btn-light pointer" aria-current="page" href="">
                     FAQ
                   </a>
-                </li>
+                </li> */}
                 <li className="nav-item">
                   <DropDown>
                     <DropBTN className="btn btn-light" onClick={DropD} id="btndrop">
                       Configuração
                       <Arrow src={ArrowDown} alt="" id="imgdrop" />
                     </DropBTN>
-                    <DropContent className="visually-hidden" id="dropcontent" ref={dropContent}>
+                    <DropContent className="visually-hidden" ref={dropContent}>
                       <DropDown id="dropdwn2">
                         <DropBTN className="btn btn-light" id="btn1" onClick={DropD}>
                           Tema
                         </DropBTN>
-                        <DropContent2 id="dropcontent2" className="visually-hidden" ref={themeOption}>
+                        <DropContent2 className="visually-hidden" ref={themeOption}>
                           <DropBTN className="btn btn-light" id="btn2" onClick={ThemeLight}>
                             Claro
                           </DropBTN>
