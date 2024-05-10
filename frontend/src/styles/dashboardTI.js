@@ -171,3 +171,13 @@ export const ImgSend = styled.img`
   width: 2em;
   cursor: pointer;
 `;
+
+export const TextObersavation = styled.textarea`
+  height: auto;
+  min-height: 0;
+  overflow-y: hidden;
+  resize: none;
+  background-color: #e9ecef;
+  color: #212529;
+  padding: 0.375rem 0.75rem;
+`;

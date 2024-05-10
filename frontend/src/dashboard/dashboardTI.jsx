@@ -21,7 +21,8 @@ import {
   DivDetaisl,
   DivChatDetails,
   ImgSend,
-} from "../styles/dashboardTIStyle";
+  TextObersavation,
+} from "../styles/dashboardTI.js";
 import Loading from "../components/loading";
 import DashBoardPie from "../components/dashboardPie";
 import {
@@ -123,7 +124,6 @@ export default function DashboardTI() {
   const [ticketSECTOR, setTicketSECTOR] = useState("");
   const [ticketOCCURRENCE, setTicketOCCURRENCE] = useState("");
   const [ticketPROBLEMN, setTicketPROBLEMN] = useState("");
-  const [ticketOBSERVATION, setTicketOBSERVATION] = useState("");
   const [lifeTime, setLifetime] = useState("");
   const [ticketResponsible_Technician, setTicketResponsible_Technician] = useState("");
   const [ticketWindow, setTicketWindow] = useState(false);
@@ -218,6 +218,20 @@ export default function DashboardTI() {
   const selectOfficeO = useRef(null);
   const selectMBIO = useRef(null);
   const selectSAPO = useRef(null);
+  const textareaRef = useRef(null);
+
+  useEffect(() => {
+    if (textareaRef.current && textareaRef.current.value !== null) {
+      resizeTextarea(textareaRef.current);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ticketWindow]);
+
+  function resizeTextarea(textarea) {
+    const lh = textarea.lineHeight;
+    const lines = textarea.value.split("\n").length;
+    textarea.style.height = lh * lines + "px";
+  }
 
   function ThemeBlack() {
     setThemeFilter("");
@@ -517,7 +531,7 @@ export default function DashboardTI() {
         setTicketSECTOR(data.sector);
         setTicketOCCURRENCE(data.occurrence);
         setTicketPROBLEMN(data.problemn);
-        setTicketOBSERVATION(data.observation);
+        textareaRef.current.value = "Observação: " + data.observation;
         setLifetime(lifetime);
         setTicketResponsible_Technician(data.responsible_technician);
         setTicketID(data.id);
@@ -1234,7 +1248,6 @@ export default function DashboardTI() {
                 var userOrTech = item[1];
                 var time = item[2];
                 time = time.replace("Hours:", "").trim();
-                console.log(time);
                 if (userOrTech.includes("System")) {
                   userOrTech = userOrTech.replace("System:", "").trim();
                   return (
@@ -2974,7 +2987,7 @@ export default function DashboardTI() {
                   </div>
                 </Calendar>
               </DivINp>
-              <input type="text" value={ticketOBSERVATION ? "Observação: " + ticketOBSERVATION : "Observação: "} className="form-control" disabled />
+              <TextObersavation ref={textareaRef} name="observation" className="autosize-textarea" disabled></TextObersavation>
               <input type="text" value={"tempo de vida do chamado: " + lifeTime + " dias"} className="form-control" disabled />
               <DivFile hidden={fileticket.length >= 1 ? false : true} className="w-100">
                 {fileticket}

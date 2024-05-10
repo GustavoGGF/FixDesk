@@ -31,7 +31,8 @@
   "Login": {},
   "HelpDesk": {
     "Upgrade": {
-      "Upgrade1": "contrato comodato para os equipamentos"
+      "Upgrade1": "contrato comodato para os equipamentos",
+      "NW_PRBL": "adicionar nova opção de chamado, problemas com software"
     },
     "HotFix": {
       "HotFix1": "ao enviar locagem de equipamento, se estiver alocado já, retornar com alocado cinza e pedir para ajustar data",

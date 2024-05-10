@@ -9,6 +9,7 @@ services:
       - "8000:8000"
     volumes:
       - /node/FixDesk/backend:/FixDesk
+
     env_file:
       - ../.env
     networks:
@@ -26,6 +27,7 @@ services:
       - backend
     volumes:
       - ./static:/var/www/html/static
+      - ../fixdesk.conf:/etc/nginx/site-available/fixdesk.conf
 
 networks:
   backend:

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Navbar from "../components/navbar";
 import Loading from "../components/loading";
 import {
@@ -71,6 +71,7 @@ import WORD from "../images/components/palavra.png";
 import PDF from "../images/components/pdf.png";
 import DownTick from "../images/components/attachment.png";
 import ptBR from "date-fns/locale/pt";
+import { TextObersavation } from "../styles/dashboardTI";
 
 export default function History() {
   useEffect(() => {
@@ -101,7 +102,6 @@ export default function History() {
   const [ticketSECTOR, setTicketSECTOR] = useState("");
   const [ticketOCCURRENCE, setTicketOCCURRENCE] = useState("");
   const [ticketPROBLEMN, setTicketPROBLEMN] = useState("");
-  const [ticketOBSERVATION, setTicketOBSERVATION] = useState("");
   const [lifeTime, setLifetime] = useState("");
   const [ticketResponsible_Technician, setTicketResponsible_Technician] = useState("");
   const [ticketID, setTicketID] = useState("");
@@ -153,6 +153,21 @@ export default function History() {
   let timeoutId;
   let daysLCT = [];
   let colorBorder = "";
+
+  const textareaRef = useRef(null);
+
+  useEffect(() => {
+    if (textareaRef.current && textareaRef.current.value !== null) {
+      resizeTextarea(textareaRef.current);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ticketWindow]);
+
+  function resizeTextarea(textarea) {
+    const lh = textarea.lineHeight;
+    const lines = textarea.value.split("\n").length;
+    textarea.style.height = lh * lines + "px";
+  }
 
   function ThemeBlack() {
     setThemeFilter("");
@@ -303,7 +318,7 @@ export default function History() {
         setTicketSECTOR(data.sector);
         setTicketOCCURRENCE(data.occurrence);
         setTicketPROBLEMN(data.problemn);
-        setTicketOBSERVATION(data.observation);
+        textareaRef.current.value = "Observação: " + data.observation;
         setLifetime(lifetime);
         setTicketResponsible_Technician(data.responsible_technician);
         setTicketID(data.id);
@@ -701,10 +716,14 @@ export default function History() {
           return response.json();
         })
         .then((data) => {
-          var newChat = parseInt(data.chat.length);
-          if (newChat > countchat) {
-            setCountChat(newChat);
-            reloadChat({ data: data });
+          if (data !== null || data !== undefined || data !== "undefined") {
+            var newChat = parseInt(data.chat.length);
+            if (newChat > countchat) {
+              setCountChat(newChat);
+              reloadChat({ data: data });
+            } else {
+              return;
+            }
           }
         })
         .catch((err) => {
@@ -1954,13 +1973,7 @@ export default function History() {
                   </div>
                 </Calendar>
               </DivINp>
-              <input
-                type="text"
-                value={ticketOBSERVATION ? "Observação: " + ticketOBSERVATION : "Observação: "}
-                className="form-control"
-                disabled
-                hidden={ticketOBSERVATION.length > 1 ? false : true}
-              />
+              <TextObersavation ref={textareaRef} name="observation" className="autosize-textarea" disabled></TextObersavation>
               <input type="text" value={"tempo de vida do chamado: " + lifeTime + " dias"} className="form-control" disabled />
               <DivFile hidden={fileticket.length >= 1 ? false : true} className="w-100">
                 {fileticket}
