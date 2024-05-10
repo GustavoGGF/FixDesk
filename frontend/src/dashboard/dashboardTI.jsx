@@ -1,8 +1,42 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
+/**
+ * Importações internas necessárias para este componente.
+ * - React, useEffect, useState, useRef: importações do React.
+ * - DayPicker: componente de seleção de data.
+ * - ptBR: localização em português brasileiro para o componente DayPicker.
+ * - "react-day-picker/dist/style.css": estilos CSS para o componente DayPicker.
+ */
 import React, { useEffect, useState, useRef } from "react";
 import { DayPicker } from "react-day-picker";
 import ptBR from "date-fns/locale/pt";
+import "react-day-picker/dist/style.css";
 
+/**
+ * Importações de elementos DOM, componentes e imagens necessárias para este componente.
+ * - Navbar: componente de barra de navegação.
+ * - Div, DropdownConten, Dropdown, DropdownButton, DivDrop, P1, DivFilter, IMGConfig, DropBTN, DropContent2, DivModify,
+ *   InputTicket, ZIndex, DivDetaisl, DivChatDetails, ImgSend, TextObersavation:
+ *   importações de elementos DOM do módulo "../styles/dashboardTI.js".
+ * - Loading: componente de carregamento.
+ * - DashBoardPie: componente de gráfico de pizza do painel de instrumentos.
+ * - TicketOpen, CloseBTN, Close, DivChat, BtnChat, PSelectView, PQuantity, DivSelectView, DivCard, H5Card, SpanCard,
+ *   DivList, SpanList, ImgSelectView, Input1, Select1, DivContainerImages, DivImages, IMGS1, Button1, Button2,
+ *   DivOnBoardFile, IMGFiles, ImageFile, DivFile, DivImageOpen, BtnOpen, ImageOpen, BtnChat2, InputFile, DivNewFiles,
+ *   DivHR, PNWFile, AdjustListFiles, ImgBTNCls, BtnNF, PBloq, DivINp, DivAlocate, IMGFiles2, Calendar, DivCal,
+ *   DivFlex1, DivFlex2, PChatHourR, PChatHourL:
+ *   importações de elementos DOM do módulo "../styles/historyStyle".
+ * - DropDown: importação de elementos DOM do módulo "../styles/navbarStyle.js".
+ * - DivNameFile, BtnFile, ImgFile, Select, TitlePage: importações de elementos DOM do módulo "../styles/helpdeskStyle.js".
+ * - CloseIMG: importação da imagem "close.png" localizada em "../images/components".
+ * - Message: componente de mensagem.
+ * - "../styles/bootstrap/css/bootstrap.css": importação do arquivo CSS do Bootstrap.
+ * - "../styles/bootstrap/js/bootstrap": importação do arquivo JavaScript do Bootstrap.
+ * - IMG1, IMG2, IMG3, IMG4: importações de imagens do painel de instrumentos.
+ * - Registration: componente de registro de equipamento.
+ * - List: importação da imagem "lista-de-itens.png" localizada em "../images/components".
+ * - Card: importação da imagem "identificacao.png" localizada em "../images/components".
+ * - DashboardBar: componente de barra do painel de instrumentos.
+ * - Mail, XLS, ZIP, TXT, WORD, PDF, Download, Exclude, DownTick, Seeting, Send: importações de imagens de componentes.
+ */
 import Navbar from "../components/navbar";
 import {
   Div,
@@ -96,10 +130,17 @@ import PDF from "../images/components/pdf.png";
 import Download from "../images/components/download.png";
 import Exclude from "../images/components/close.png";
 import DownTick from "../images/components/attachment.png";
-import "react-day-picker/dist/style.css";
 import Seeting from "../images/components/definicoes.png";
 import Send from "../images/components/enviar.png";
 
+/**
+ * Função para ajustar o tema com base na configuração de tema armazenada.
+ * - Utiliza o hook useEffect para executar a lógica uma vez após a renderização inicial.
+ * - Define o título da página como "DashBoard TI".
+ * - Verifica se há uma configuração de tema armazenada no localStorage.
+ *   - Se não houver configuração de tema ou se for "black", define o tema como "black" e chama a função ThemeBlack().
+ *   - Caso contrário, chama a função ThemeLight().
+ */
 export default function DashboardTI() {
   useEffect(() => {
     document.title = "DashBoard TI";
@@ -112,6 +153,9 @@ export default function DashboardTI() {
     }
   }, []);
 
+  /**
+   * Variáveis de estado para o componente DashboardTI.
+   */
   const [loading, setLoading] = useState(true);
   const [navbar, setNavbar] = useState(false);
   const [userData, setUserData] = useState([]);
@@ -203,6 +247,9 @@ export default function DashboardTI() {
   const [mountDetails, setMountDetails] = useState("");
   const [loadingChat, setLoadingChat] = useState(false);
 
+  /**
+   * Variáveis de referência para o componente DashboardTI.
+   */
   const inputRef = useRef(null);
   const sectionTicket = useRef(null);
   const thenView = useRef(null);
@@ -213,13 +260,33 @@ export default function DashboardTI() {
   const myDropDown = useRef(null);
   const selectOcorrence = useRef(null);
   const btnOpen = useRef(null);
+  const btnClose = useRef(null);
+  const btnStop = useRef(null);
+  const btnAll = useRef(null);
   const selectSynchO = useRef(null);
   const selectEngO = useRef(null);
   const selectOfficeO = useRef(null);
   const selectMBIO = useRef(null);
   const selectSAPO = useRef(null);
   const textareaRef = useRef(null);
+  const selectBo = useRef(null);
+  const selectOrderO = useRef(null);
+  const fiveView = useRef(null);
+  const fiftyView = useRef(null);
+  const allView = useRef(null);
+  const dropCont = useRef(null);
+  const selectForm = useRef(null);
+  const selectError = useRef(null);
+  const selectBackup0 = useRef(null);
+  const selectMail0 = useRef(null);
+  const selectEquip0 = useRef(null);
+  const selectInternet0 = useRef(null);
+  const selectFolder0 = useRef(null);
 
+  /**
+   * Função ativada quando a tela de ticket for ativada.
+   * Se o textarea tiver conteúdo, a função para ajustar o tamanho do textarea é ativada.
+   */
   useEffect(() => {
     if (textareaRef.current && textareaRef.current.value !== null) {
       resizeTextarea(textareaRef.current);
@@ -227,30 +294,50 @@ export default function DashboardTI() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ticketWindow]);
 
+  /**
+   * Função para ajustar o tamanho do textarea com base no conteúdo.
+   * @param {HTMLTextAreaElement} textarea - O elemento textarea para redimensionar.
+   */
   function resizeTextarea(textarea) {
     const lh = textarea.lineHeight;
     const lines = textarea.value.split("\n").length;
     textarea.style.height = lh * lines + "px";
   }
 
+  /**
+   * Função para alterar o tema da aplicação para o modo escuro.
+   * Limpa os filtros e estilos de cartões existentes e define o tema como "themeBlack".
+   */
   function ThemeBlack() {
     setThemeFilter("");
     setThemeCard("");
     setTheme("themeBlack");
   }
 
+  /**
+   * Função para alterar o tema da aplicação para o modo claro.
+   * Define os estilos de cartões e filtros como claros e define o tema como "themeLight".
+   */
   function ThemeLight() {
     setThemeCard("themeCardLight");
     setThemeFilter("themeFilterLight");
     setTheme("themeLight");
   }
 
-  let count = 0;
-  let timeoutId;
-  const UpNwfile = [];
-  let colorBorder = "";
-  let daysLCT = [];
+  // Declaração de variáveis para uso posterior no código.
+  let count = 0; // Variável para armazenar contagem.
+  let timeoutId; // Variável para armazenar identificador de tempo limite.
+  const UpNwfile = []; // Array para armazenar novos arquivos.
+  let colorBorder = ""; // Variável para armazenar cor da borda.
+  let daysLCT = []; // Array para armazenar dias de última modificação.
 
+  /**
+   * Função para aumentar o contador de atualização de conversas no chat do chamado ativo.
+   * Atualiza o estado com o novo valor de contagem.
+   * Limpa o identificador de tempo limite, se existir.
+   * Configura um novo identificador de tempo limite para chamar recursivamente esta função após 10 segundos.
+   * @returns O identificador de tempo limite para a próxima chamada da função.
+   */
   function aumentarCount() {
     count++;
 
@@ -261,6 +348,12 @@ export default function DashboardTI() {
     return (timeoutId = setTimeout(aumentarCount, 10000)); // Chama a função novamente após 10 segundos
   }
 
+  /**
+   * useEffect para carregar os dados do usuário armazenados localmente ao carregar a página.
+   * Faz uma solicitação ao backend para obter os nomes dos técnicos e o token CSRF.
+   * Define os dados dos técnicos e o token CSRF nos useState correspondentes.
+   * Em caso de erro, exibe uma mensagem de erro fatal.
+   */
   useEffect(() => {
     const dataInfo = JSON.parse(localStorage.getItem("dataInfo"));
     setUserData(dataInfo.data);
@@ -285,28 +378,40 @@ export default function DashboardTI() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  /**
+   * useEffect ativado quando os dados do usuário são alterados para buscar os chamados.
+   * Verifica se os dados do usuário estão disponíveis e não vazios.
+   * Define as flags de exibição da barra de navegação e do botão de menu suspenso como verdadeiras.
+   * Faz uma solicitação ao backend para obter os chamados de TI.
+   * Define os parâmetros de contagem, ordenação e estilo de visualização dos chamados.
+   * Define os chamados no estado correspondente.
+   * Em caso de erro, exibe uma mensagem de erro fatal.
+   */
   useEffect(() => {
     if (userData && Object.keys(userData).length > 0) {
-      setNavbar(true);
-      setDropDownBTN(true);
+      // Verifica se os dados do usuário estão disponíveis e não vazios.
+      setNavbar(true); // Define a flag de exibição da barra de navegação como verdadeira.
+      setDropDownBTN(true); // Define a flag de exibição do botão de menu suspenso como verdadeira.
       fetch("get_ticket_TI", {
+        // Faz uma solicitação ao backend para obter os chamados de TI.
         method: "GET",
         headers: { Accept: "application/json" },
       })
         .then((response) => {
-          return response.json();
+          return response.json(); // Converte a resposta para JSON.
         })
         .then((data) => {
-          setCountTicket(10);
-          setOrderBy("-id");
-          thenView.current.style.backgroundColor = "#00B4D8";
-          setTickets(data.tickets);
+          setCountTicket(10); // Define a contagem inicial de chamados como 10.
+          setOrderBy("-id"); // Define a ordenação inicial dos chamados.
+          thenView.current.style.backgroundColor = "#00B4D8"; // Define o estilo de visualização atual.
+          setTickets(data.tickets); // Define os chamados no estado correspondente.
         })
         .catch((err) => {
-          setTypeError("FATAL ERROR");
-          setMessageError(err);
-          setMessage(true);
-          return console.log(err);
+          // Trata erros.
+          setTypeError("FATAL ERROR"); // Define o tipo de erro como "FATAL ERROR".
+          setMessageError(err); // Define a mensagem de erro.
+          setMessage(true); // Define a flag de exibição de mensagem como verdadeira.
+          return console.log(err); // Registra o erro no console.
         });
     } else {
       return;
@@ -331,6 +436,9 @@ export default function DashboardTI() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tickets]);
 
+  /**
+   * Função para montar os chamados em forma de card.
+   */
   function viewCard() {
     // Limpar o estado e preparar o ambiente
     setTicketsDash([]);
@@ -342,51 +450,59 @@ export default function DashboardTI() {
 
     // Estilizar os botões de seleção de visualização
     selectViewCard.current.style.backgroundColor = "#00B4D8";
-
     selectViewList.current.style.backgroundColor = "transparent";
-
     sectionTicket.current.style.display = "flex";
     sectionTicket.current.style.justifyContent = "center";
 
     // Mapear os tickets para elementos de cartão
     tickets.forEach((ticket) => {
-      // Calcular a data formatada
-      var date = new Date(ticket["start_date"]);
-      var day = date.getDate();
-      var month = date.getMonth() + 1;
-      var year = date.getFullYear();
+      // Variáveis para montar a data dos chamados.
+      var date = new Date(ticket["start_date"]); // Obtém a data de início do chamado.
+      var day = date.getDate(); // Obtém o dia do mês.
+      var month = date.getMonth() + 1; // Obtém o mês (0 = janeiro, 1 = fevereiro, etc.) e adiciona 1 para corresponder ao formato convencional.
+      var year = date.getFullYear(); // Obtém o ano.
 
+      /**
+       * Função para adicionar um zero na frente do número caso seja menor que 10.
+       * @param {number} numero - O número a ser formatado.
+       * @returns {string} O número formatado com zero à esquerda, se necessário.
+       */
       function adicionaZero(numero) {
         if (numero < 10) {
-          return "0" + numero;
+          return "0" + numero; // Adiciona um zero à esquerda se o número for menor que 10.
         }
-        return numero;
+        return numero.toString(); // Retorna o número como string se não for menor que 10.
       }
 
+      // Variáveis que contêm data e hora formatadas utilizando a função adicionaZero.
       var dataFormatada = adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
       var horaFormatada = adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
 
-      const newDate = dataFormatada + " " + horaFormatada;
+      // Combinação da data e hora formatadas.
+      const newDate = dataFormatada + " " + horaFormatada; // Combina a data e a hora formatadas separadas por um espaço.
 
-      // Determinar a classe de borda com base no estado do ticket
+      // Ajuste da borda do ticket com base no estado do chamado.
       if (ticket["open"] === false) {
-        colorBorder = "ticektClose";
+        // Se o chamado não estiver aberto, ele foi finalizado.
+        colorBorder = "ticektClose"; // Define a borda como indicativa de chamado finalizado.
       } else if (ticket["open"] === true && ticket["responsible_technician"] === null) {
-        const currentDate = new Date();
-
-        const diferenceMilisecond = currentDate - date;
-
-        const diferenceDays = diferenceMilisecond / (1000 * 60 * 60 * 24);
-
-        if (diferenceDays >= 7) {
-          colorBorder = "ticketUrgent";
+        // Se o chamado estiver aberto e sem técnico responsável.
+        const currentDate = new Date(); // Obtém a data atual.
+        const differenceMilisecond = currentDate - date; // Calcula a diferença em milissegundos entre a data atual e a data de início do chamado.
+        const differenceDays = differenceMilisecond / (1000 * 60 * 60 * 24); // Converte a diferença para dias.
+        if (differenceDays >= 7) {
+          // Se o chamado estiver aberto há mais de 7 dias.
+          colorBorder = "ticketUrgent"; // Define a borda como indicativa de chamado urgente.
         } else {
-          colorBorder = "ticektOpenNotView";
+          // Se o chamado estiver aberto há menos de 7 dias.
+          colorBorder = "ticektOpenNotView"; // Define a borda como indicativa de chamado aberto, mas não visualizado.
         }
       } else if (ticket["open"] === true && ticket["responsible_technician"] !== null) {
-        colorBorder = "ticektOpenInView";
+        // Se o chamado estiver aberto e com técnico responsável.
+        colorBorder = "ticektOpenInView"; // Define a borda como indicativa de chamado aberto e em atendimento.
       } else if (ticket["open"] === null) {
-        colorBorder = "ticketStop";
+        // Se o estado do chamado for nulo.
+        colorBorder = "ticketStop"; // Define a borda como indicativa de chamado interrompido.
       }
 
       const Div = (
@@ -405,13 +521,15 @@ export default function DashboardTI() {
         </DivCard>
       );
 
-      setTicketsDash((ticketsDash) => [...ticketsDash, Div]);
-      sectionTicket.current.classList.add("dashCard");
-
-      setLoadingDash(false);
+      setTicketsDash((ticketsDash) => [...ticketsDash, Div]); // Adiciona o cartão ao array de chamados.
+      sectionTicket.current.classList.add("dashCard"); // Adiciona a classe "dashCard" ao elemento HTML.
+      setLoadingDash(false); // Define o estado de carregamento como falso.
     });
   }
 
+  /**
+   * Função para montar os chamados em forma de lista.
+   */
   function listCard() {
     // Limpar o estado e preparar o ambiente
     setTicketsDash([]);
@@ -423,51 +541,58 @@ export default function DashboardTI() {
 
     // Estilizar os botões de seleção de visualização
     selectViewList.current.style.backgroundColor = "#00B4D8";
-
     selectViewCard.current.style.backgroundColor = "transparent";
-
     sectionTicket.current.style.display = "block";
     sectionTicket.current.style.justifyContent = "center";
 
     // Mapear os tickets para elementos de lista
     tickets.forEach((ticket) => {
-      // Calcular a data formatada
-      var date = new Date(ticket["start_date"]);
-      var day = date.getDate();
-      var month = date.getMonth() + 1;
-      var year = date.getFullYear();
+      // Variáveis para montar a data dos chamados.
+      var date = new Date(ticket["start_date"]); // Obtém a data de início do chamado.
+      var day = date.getDate(); // Obtém o dia do mês.
+      var month = date.getMonth() + 1; // Obtém o mês (0 = janeiro, 1 = fevereiro, etc.) e adiciona 1 para corresponder ao formato convencional.
+      var year = date.getFullYear(); // Obtém o ano.
 
+      /**
+       * Função para adicionar um zero na frente do número caso seja menor que 10.
+       * @param {number} numero - O número a ser formatado.
+       * @returns {string} O número formatado com zero à esquerda, se necessário.
+       */
       function adicionaZero(numero) {
         if (numero < 10) {
-          return "0" + numero;
+          return "0" + numero; // Adiciona um zero à esquerda se o número for menor que 10.
         }
-        return numero;
+        return numero.toString(); // Retorna o número como string se não for menor que 10.
       }
 
+      // Variáveis que contêm data e hora formatadas utilizando a função adicionaZero.
       var dataFormatada = adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
       var horaFormatada = adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
 
-      const newDate = dataFormatada + " " + horaFormatada;
+      const newDate = dataFormatada + " " + horaFormatada; // Combina a data e a hora formatadas separadas por um espaço.
 
-      // Determinar a classe de borda com base no estado do ticket
+      // Ajuste da borda do ticket com base no estado do chamado.
       if (ticket["open"] === false) {
-        colorBorder = "ticektCloseList";
+        // Se o chamado não estiver aberto, ele foi finalizado.
+        colorBorder = "ticektClose"; // Define a borda como indicativa de chamado finalizado.
       } else if (ticket["open"] === true && ticket["responsible_technician"] === null) {
-        const currentDate = new Date();
-
-        const diferenceMilisecond = currentDate - date;
-
-        const diferenceDays = diferenceMilisecond / (1000 * 60 * 60 * 24);
-
-        if (diferenceDays >= 7) {
-          colorBorder = "ticketUrgentList";
+        // Se o chamado estiver aberto e sem técnico responsável.
+        const currentDate = new Date(); // Obtém a data atual.
+        const differenceMilisecond = currentDate - date; // Calcula a diferença em milissegundos entre a data atual e a data de início do chamado.
+        const differenceDays = differenceMilisecond / (1000 * 60 * 60 * 24); // Converte a diferença para dias.
+        if (differenceDays >= 7) {
+          // Se o chamado estiver aberto há mais de 7 dias.
+          colorBorder = "ticketUrgent"; // Define a borda como indicativa de chamado urgente.
         } else {
-          colorBorder = "ticektOpenNotViewList";
+          // Se o chamado estiver aberto há menos de 7 dias.
+          colorBorder = "ticektOpenNotView"; // Define a borda como indicativa de chamado aberto, mas não visualizado.
         }
       } else if (ticket["open"] === true && ticket["responsible_technician"] !== null) {
-        colorBorder = "ticektOpenInViewList";
+        // Se o chamado estiver aberto e com técnico responsável.
+        colorBorder = "ticektOpenInView"; // Define a borda como indicativa de chamado aberto e em atendimento.
       } else if (ticket["open"] === null) {
-        colorBorder = "ticketStop";
+        // Se o estado do chamado for nulo.
+        colorBorder = "ticketStop"; // Define a borda como indicativa de chamado interrompido.
       }
 
       const Div = (
@@ -486,17 +611,23 @@ export default function DashboardTI() {
         </DivList>
       );
 
-      setTicketsDash((ticketsDash) => [...ticketsDash, Div]);
-      sectionTicket.current.classList.add("dashCard");
-
-      setLoadingDash(false);
+      setTicketsDash((ticketsDash) => [...ticketsDash, Div]); // Adiciona o cartão ao array de chamados.
+      sectionTicket.current.classList.remove("dashCard"); // remove a classe "dashCard" ao elemento HTML.
+      setLoadingDash(false); // Define o estado de carregamento como falso.
     });
   }
 
+  /**
+   * Função para habilitar o DOM que mostrará a imagem clicada.
+   */
   function openImage() {
     setImageOpen(true);
   }
 
+  /**
+   * Função para buscar os dados do chamado selecionado.
+   * @param {object} id - O ID do chamado a ser buscado.
+   */
   function helpdeskPage({ id }) {
     fetch("/helpdesk/ticket/" + id, {
       method: "GET",
@@ -516,13 +647,12 @@ export default function DashboardTI() {
         setMessageChat(false);
         setMountChat([]);
         setFileTicket([]);
-        const start_date = new Date(data.start_date);
 
-        var CurrentDate = new Date();
-
-        var calcDate = CurrentDate - start_date;
-
-        var lifetime = Math.floor(calcDate / (1000 * 60 * 60 * 24));
+        // Calculando o tempo de vida do chamado.
+        const start_date = new Date(data.start_date); // Obtém a data de início do chamado.
+        const currentDate = new Date(); // Obtém a data atual.
+        const calcDate = currentDate - start_date; // Calcula a diferença em milissegundos entre as duas datas.
+        const lifetime = Math.floor(calcDate / (1000 * 60 * 60 * 24)); // Calcula o tempo de vida do chamado em dias.
 
         setTicketNAME(data.ticketRequester);
         setTicketDEPARTMENT(data.department);
@@ -554,36 +684,39 @@ export default function DashboardTI() {
         setMailTranfer(data.mail_tranfer);
         setOldFiles(data.old_files);
 
+        // Verifica se há um equipamento no chamado e gera-o na tela, se aplicável.
         if (data.equipament["image"] !== undefined) {
+          // Verifica se há uma imagem de equipamento definida.
           const Div = (
             <DivAlocate className="d-flex flex-column w-100 align-items-center">
               <p className="text-center">Modelo: {data.equipament["model"]}</p>
               <IMGFiles2 src={`data:image/jpeg;base64,${data.equipament["image"]}`} onClick={openImage} alt="" />
             </DivAlocate>
           );
-
-          setImageEquipament(Div);
-          setEquipamentLocate(data.equipament["company"]);
-
+          setImageEquipament(Div); // Define o equipamento com imagem no estado correspondente.
+          setEquipamentLocate(data.equipament["company"]); // Define a empresa do equipamento no estado correspondente.
           for (let NWdate of data.days_alocated) {
-            var date = new Date(NWdate);
-            daysLCT.push(date);
+            // Percorre as datas alocadas.
+            var date = new Date(NWdate); // Converte cada data para um objeto Date.
+            daysLCT.push(date); // Adiciona as datas ao array de dias localizados.
           }
-
-          setDaysLocated(daysLCT);
-
-          calendarALT.current.classList.add("AdjustWid");
+          setDaysLocated(daysLCT); // Define os dias localizados no estado correspondente.
+          calendarALT.current.classList.add("AdjustWid"); // Adiciona uma classe para ajustar a largura do calendário.
         }
 
         var name_verify = userData.name;
 
+        // Verifica se o ticket contém arquivos do tipo e-mail e gera a visualização correspondente, se aplicável.
         if (data.file.length >= 1) {
-          const files = data.file;
+          // Verifica se há arquivos no ticket.
+          const files = data.file; // Obtém a lista de arquivos.
           for (let i = 0; i < files.length; i++) {
-            var file = files[i];
+            // Itera sobre cada arquivo.
+            var file = files[i]; // Obtém o arquivo atual.
             if (file === "mail") {
-              const contentFileMail = data.content_file[i];
-              const nameFileMail = data.name_file[i];
+              // Verifica se o arquivo é do tipo e-mail.
+              const contentFileMail = data.content_file[i]; // Obtém o conteúdo do e-mail.
+              const nameFileMail = data.name_file[i]; // Obtém o nome do arquivo de e-mail.
               const Div = (
                 <DivOnBoardFile className="position-relative">
                   <IMGFiles src={Mail} alt="" />
@@ -609,7 +742,7 @@ export default function DashboardTI() {
                   <p className="text-center text-break">{nameFileMail}</p>
                 </DivOnBoardFile>
               );
-              setFileTicket((fileticket) => [...fileticket, Div]);
+              setFileTicket((fileticket) => [...fileticket, Div]); // Adiciona a visualização do arquivo ao estado correspondente.
             } else if (file === "excel") {
               const ContentFileExcel = data.content_file[i];
               const NameFileExcel = data.name_file[i];
@@ -1435,12 +1568,9 @@ export default function DashboardTI() {
     setTicketsDash([]);
 
     btnOpen.current.classList.add("btn-open");
-    const btn2 = document.getElementById("btnclose");
-    btn2.classList.remove("btn-success");
-    const btn3 = document.getElementById("btnstop");
-    btn3.classList.remove("btn-light");
-    const btn4 = document.getElementById("btnall");
-    btn4.classList.remove("btn-all");
+    btnClose.current.classList.remove("btn-success");
+    btnStop.current.classList.remove("btn-light");
+    btnAll.current.classList.remove("btn-all");
 
     fetch("getTicketFilterStatus/", {
       method: "GET",
@@ -1482,12 +1612,9 @@ export default function DashboardTI() {
     setTicketsDash([]);
 
     btnOpen.current.classList.remove("btn-open");
-    const btn2 = document.getElementById("btnclose");
-    btn2.classList.add("btn-success");
-    const btn3 = document.getElementById("btnstop");
-    btn3.classList.remove("btn-light");
-    const btn4 = document.getElementById("btnall");
-    btn4.classList.remove("btn-all");
+    btnClose.current.classList.add("btn-success");
+    btnStop.current.classList.remove("btn-light");
+    btnAll.current.classList.remove("btn-all");
 
     fetch("getTicketFilterStatus/", {
       method: "GET",
@@ -1529,12 +1656,9 @@ export default function DashboardTI() {
     setTicketsDash([]);
 
     btnOpen.current.classList.remove("btn-open");
-    const btn2 = document.getElementById("btnclose");
-    btn2.classList.remove("btn-success");
-    const btn3 = document.getElementById("btnstop");
-    btn3.classList.add("btn-light");
-    const btn4 = document.getElementById("btnall");
-    btn4.classList.remove("btn-all");
+    btnClose.current.classList.remove("btn-success");
+    btnStop.current.classList.add("btn-light");
+    btnAll.current.classList.remove("btn-all");
 
     fetch("getTicketFilterStatus/", {
       method: "GET",
@@ -1576,12 +1700,9 @@ export default function DashboardTI() {
     setTicketsDash([]);
 
     btnOpen.current.classList.remove("btn-open");
-    const btn2 = document.getElementById("btnclose");
-    btn2.classList.remove("btn-success");
-    const btn3 = document.getElementById("btnstop");
-    btn3.classList.remove("btn-light");
-    const btn4 = document.getElementById("btnall");
-    btn4.classList.add("btn-all");
+    btnClose.current.classList.remove("btn-success");
+    btnStop.current.classList.remove("btn-light");
+    btnAll.current.classList.add("btn-all");
 
     fetch("getTicketFilterStatus/", {
       method: "GET",
@@ -1619,8 +1740,7 @@ export default function DashboardTI() {
   }
 
   function changeProblemn() {
-    const select = document.getElementById("selectBo");
-    const option = select.options[select.selectedIndex].value;
+    const option = selectBo.current.options[selectBo.current.selectedIndex].value;
 
     switch (option) {
       default:
@@ -1724,8 +1844,7 @@ export default function DashboardTI() {
   function selectOrder() {
     setTickets([]);
     setTicketsDash([]);
-    const select = document.getElementById("select-order");
-    const option = select.options[select.selectedIndex].value;
+    const option = selectOrderO.current.options[selectOrderO.current.selectedIndex].value;
 
     switch (option) {
       default:
@@ -1770,23 +1889,17 @@ export default function DashboardTI() {
       });
   }
 
-  function getTicketFilter({ id, quantity }) {
+  function getTicketFilter({ quantity }) {
     setTickets([]);
     setTicketsDash([]);
     setLoadingDash(true);
-    const btn1 = document.getElementById("fiveView");
-    btn1.style.backgroundColor = "transparent";
+    fiveView.current.style.backgroundColor = "transparent";
 
     thenView.current.style.backgroundColor = "transparent";
 
-    const btn3 = document.getElementById("fiftyView");
-    btn3.style.backgroundColor = "transparent";
+    fiftyView.current.style.backgroundColor = "transparent";
 
-    const btn4 = document.getElementById("allView");
-    btn4.style.backgroundColor = "transparent";
-
-    const btn5 = document.getElementById(id);
-    btn5.style.backgroundColor = "#00B4D8";
+    allView.current.style.backgroundColor = "transparent";
 
     fetch("getTicketFilter/", {
       method: "GET",
@@ -2120,13 +2233,10 @@ export default function DashboardTI() {
   }
 
   function OpenConfig(event) {
-    if (
-      (event.target.id === "drp" && document.getElementById("dropcont").classList.contains("visually-hidden")) ||
-      (event.target.id === "imd" && document.getElementById("dropcont").classList.contains("visually-hidden"))
-    ) {
-      document.getElementById("dropcont").classList.remove("visually-hidden");
+    if ((event.target.id === "drp" && dropCont.current.classList.contains("visually-hidden")) || (event.target.id === "imd" && dropCont.current.classList.contains("visually-hidden"))) {
+      dropCont.current.classList.remove("visually-hidden");
     } else {
-      document.getElementById("dropcont").classList.add("visually-hidden");
+      dropCont.current.classList.add("visually-hidden");
     }
   }
 
@@ -2153,9 +2263,7 @@ export default function DashboardTI() {
   }
 
   function handleSelect() {
-    const select = document.getElementById("select-Form");
-
-    const option = select.options[select.selectedIndex].value;
+    const option = selectForm.current.options[selectForm.current.selectedIndex].value;
 
     switch (option) {
       default:
@@ -2215,9 +2323,7 @@ export default function DashboardTI() {
   }
 
   function selectProblem() {
-    const select = document.getElementById("select-error");
-
-    const option = select.options[select.selectedIndex].value;
+    const option = selectError.current.options[selectError.current.selectedIndex].value;
 
     switch (option) {
       default:
@@ -2379,8 +2485,7 @@ export default function DashboardTI() {
   }
 
   function selectBackup() {
-    const selectBackup = document.getElementById("select-backup");
-    const optionBackup = selectBackup.options[selectBackup.selectedIndex].value;
+    const optionBackup = selectBackup0.current.options[selectBackup0.current.selectedIndex].value;
 
     switch (optionBackup) {
       case "pasta":
@@ -2397,8 +2502,7 @@ export default function DashboardTI() {
   }
 
   function selectMail() {
-    const selectMail = document.getElementById("select-mail");
-    const optionMail = selectMail.options[selectMail.selectedIndex].value;
+    const optionMail = selectMail0.current.options[selectMail0.current.selectedIndex].value;
 
     switch (optionMail) {
       default:
@@ -2415,8 +2519,7 @@ export default function DashboardTI() {
   }
 
   function selectEquip() {
-    const selectEquip = document.getElementById("select-equip");
-    const optionEquip = selectEquip.options[selectEquip.selectedIndex].value;
+    const optionEquip = selectEquip0.current.options[selectEquip0.current.selectedIndex].value;
 
     switch (optionEquip) {
       default:
@@ -2442,8 +2545,7 @@ export default function DashboardTI() {
   }
 
   function selectInternet() {
-    const select = document.getElementById("select-internet");
-    const option = select.options[select.selectedIndex].value;
+    const option = selectInternet0.current.options[selectInternet0.current.selectedIndex].value;
 
     switch (option) {
       default:
@@ -2460,8 +2562,7 @@ export default function DashboardTI() {
   }
 
   function selectFolder() {
-    const select = document.getElementById("select-folder");
-    const option = select.options[select.selectedIndex].value;
+    const option = selectFolder0.current.options[selectFolder0.current.selectedIndex].value;
 
     switch (option) {
       default:
@@ -2715,7 +2816,7 @@ export default function DashboardTI() {
         )}
         {problemInfra && (
           <Select1
-            id="selectBo"
+            ref={selectBo}
             className="form-select"
             onChange={() => {
               changeProblemn();
@@ -2735,7 +2836,7 @@ export default function DashboardTI() {
         )}
         {problemSyst && (
           <Select1
-            id="selectBo"
+            ref={selectBo}
             className="form-select"
             onChange={() => {
               changeProblemn();
@@ -2752,7 +2853,7 @@ export default function DashboardTI() {
             <option value="all">Todos</option>
           </Select1>
         )}
-        <Select1 name="" id="select-order" className="form-select" onChange={selectOrder}>
+        <Select1 name="" ref={selectOrderO} className="form-select" onChange={selectOrder}>
           <option value="none" disabled>
             Ordernar
           </option>
@@ -2765,10 +2866,11 @@ export default function DashboardTI() {
           <PSelectView className="position-absolute top-0 start-0 translate-middle">Quantidade</PSelectView>
           <DivImages
             className="btn"
-            id="fiveView"
-            onClick={() => {
+            ref={fiveView}
+            onClick={async () => {
               setCountTicket(5);
-              getTicketFilter({ id: "fiveView", quantity: 5 });
+              await getTicketFilter({ quantity: 5 });
+              fiveView.current.style.backgroundColor = "#00B4D8";
             }}
           >
             <IMGS1 src={IMG1} alt="" />
@@ -2777,9 +2879,10 @@ export default function DashboardTI() {
           <DivImages
             className="btn"
             ref={thenView}
-            onClick={() => {
+            onClick={async () => {
               setCountTicket(10);
-              getTicketFilter({ id: "thenView", quantity: 10 });
+              await getTicketFilter({ quantity: 10 });
+              thenView.current.style.backgroundColor = "#00B4D8";
             }}
           >
             <IMGS1 src={IMG2} alt="" />
@@ -2787,10 +2890,11 @@ export default function DashboardTI() {
           </DivImages>
           <DivImages
             className="btn"
-            id="fiftyView"
-            onClick={() => {
+            ref={fiftyView}
+            onClick={async () => {
               setCountTicket(50);
-              getTicketFilter({ id: "fiftyView", quantity: 50 });
+              await getTicketFilter({ quantity: 50 });
+              fiftyView.current.style.backgroundColor = "#00B4D8";
             }}
           >
             <IMGS1 src={IMG3} alt="" />
@@ -2798,10 +2902,11 @@ export default function DashboardTI() {
           </DivImages>
           <DivImages
             className="btn"
-            id="allView"
-            onClick={() => {
+            ref={allView}
+            onClick={async () => {
               setCountTicket(100000);
-              getTicketFilter({ id: "allView", quantity: 100000 });
+              await getTicketFilter({ quantity: 100000 });
+              allView.current.style.backgroundColor = "#00B4D8";
             }}
           >
             <IMGS1 src={IMG4} alt="" />
@@ -2843,7 +2948,7 @@ export default function DashboardTI() {
           <button
             className="btn"
             value="close"
-            id="btnclose"
+            ref={btnClose}
             onClick={() => {
               ticketClose();
             }}
@@ -2853,7 +2958,7 @@ export default function DashboardTI() {
           <button
             className="btn"
             value="close"
-            id="btnstop"
+            ref={btnStop}
             onClick={() => {
               ticketStop();
             }}
@@ -2863,7 +2968,7 @@ export default function DashboardTI() {
           <Button2
             className="btn"
             value="all"
-            id="btnall"
+            ref={btnAll}
             onClick={() => {
               statusTicketAll();
             }}
@@ -2891,7 +2996,7 @@ export default function DashboardTI() {
                 <DropBTN id="drp" onClick={OpenConfig}>
                   <IMGConfig id="imd" src={Seeting} alt="" />
                 </DropBTN>
-                <DropContent2 id="dropcont" className="visually-hidden">
+                <DropContent2 ref={dropCont} className="visually-hidden">
                   <DropBTN
                     className="btn btn-success w-100"
                     onClick={() => {
@@ -3076,7 +3181,7 @@ export default function DashboardTI() {
               </div>
               <div className="d-flex justify-content-around">
                 <InputTicket type="text" value={`Setor: ${ticketSECTOR}`} disabled />
-                <Select className="form-select mb-3" aria-label="Default select example" id="select-Form" onChange={handleSelect}>
+                <Select className="form-select mb-3" aria-label="Default select example" ref={selectForm} onChange={handleSelect}>
                   <option value="none" disabled selected>
                     Selecione o Setor
                   </option>
@@ -3094,7 +3199,7 @@ export default function DashboardTI() {
                   </Select>
                 )}
                 {infra && (
-                  <Select className="form-select mb-3" aria-label="Default select example" id="select-error" onChange={selectProblem}>
+                  <Select className="form-select mb-3" aria-label="Default select example" ref={selectError} onChange={selectProblem}>
                     <option value="none" disabled selected>
                       Selecione a Ocorrência
                     </option>
@@ -3121,14 +3226,14 @@ export default function DashboardTI() {
               <div className="d-flex justify-content-around mt-3">
                 <InputTicket type="text" value={`Problema: ${ticketPROBLEMN}`} disabled />
                 {fake && (
-                  <Select className="form-select mb-3" aria-label="Default select example" id="select-backup" onChange={selectBackup}>
+                  <Select className="form-select mb-3" aria-label="Default select example">
                     <option value="none" disabled selected>
                       Selecione o problema ocorrido
                     </option>
                   </Select>
                 )}
                 {backup && (
-                  <Select className="form-select mb-3" aria-label="Default select example" id="select-backup" onChange={selectBackup}>
+                  <Select className="form-select mb-3" aria-label="Default select example" ref={selectBackup0} onChange={selectBackup}>
                     <option value="none" disabled selected>
                       Selecione o problema ocorrido
                     </option>
@@ -3137,7 +3242,7 @@ export default function DashboardTI() {
                   </Select>
                 )}
                 {mail && (
-                  <Select className="form-select mb-3" aria-label="Default select example" id="select-mail" onChange={selectMail}>
+                  <Select className="form-select mb-3" aria-label="Default select example" ref={selectMail0} onChange={selectMail}>
                     <option value="none" disabled selected>
                       Selecione o problema ocorrido
                     </option>
@@ -3146,7 +3251,7 @@ export default function DashboardTI() {
                   </Select>
                 )}
                 {equip && (
-                  <Select className="form-select mb-3" aria-label="Default select example" id="select-equip" onChange={selectEquip}>
+                  <Select className="form-select mb-3" aria-label="Default select example" ref={selectEquip0} onChange={selectEquip}>
                     <option value="none" disabled selected>
                       Selecione o problema ocorrido
                     </option>
@@ -3158,7 +3263,7 @@ export default function DashboardTI() {
                   </Select>
                 )}
                 {internet && (
-                  <Select className="form-select mb-3" aria-label="Default select example" id="select-internet" onChange={selectInternet}>
+                  <Select className="form-select mb-3" aria-label="Default select example" ref={selectInternet0} onChange={selectInternet}>
                     <option value="none" disabled selected>
                       Selecione o problema ocorrido
                     </option>
@@ -3167,7 +3272,7 @@ export default function DashboardTI() {
                   </Select>
                 )}
                 {folder && (
-                  <Select className="form-select mb-3" aria-label="Default select example" id="select-folder" onChange={selectFolder}>
+                  <Select className="form-select mb-3" aria-label="Default select example" ref={selectFolder0} onChange={selectFolder}>
                     <option value="none" disabled selected>
                       Selecione o problema ocorrido
                     </option>

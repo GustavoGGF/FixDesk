@@ -28,7 +28,7 @@ export default function Login() {
   }, []);
 
   // Definindo versão do Software
-  const version = "1.0";
+  const version = "1.0.1";
   const [notify, setNotify] = useState(true);
 
   // Essa função realiza uma verificação no armazenamento local do navegador para determinar se a versão
