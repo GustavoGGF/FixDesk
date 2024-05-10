@@ -1940,3 +1940,11 @@ def convert_to_dict(chat_data):
         return print(e)
 
     return dictionaries
+
+
+@login_required(login_url="/login")
+def describe(request):
+    if request.method == "POST":
+        return
+    if request.method == "GET":
+         return render(request, "index.html", {})

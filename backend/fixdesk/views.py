@@ -5,7 +5,6 @@ from dotenv import load_dotenv
 from django.shortcuts import redirect
 from json import loads
 from os import getenv
-from ping3 import ping
 from ldap3 import Connection, SAFE_SYNC, ALL_ATTRIBUTES
 from threading import Thread
 from django.contrib.auth.models import User, Group

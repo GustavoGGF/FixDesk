@@ -28,7 +28,7 @@ export default function Login() {
   }, []);
 
   // Definindo versão do Software
-  const version = "1.0.1";
+  const version = "1.1";
   const [notify, setNotify] = useState(true);
 
   // Essa função realiza uma verificação no armazenamento local do navegador para determinar se a versão
@@ -262,7 +262,7 @@ export default function Login() {
           </CloseBTN>
           <h3 className="text-center mb-5 mt-3 fw-bold">Notas de Atualizações</h3>
           <div className="d-flex flex-column">
-            <h6 className="fw-bold mb-2">Nota de Atualização 1.0.0 - 09/05</h6>
+            <h6 className="fw-bold mb-2">Nota de Atualização 1.0 - 09/05</h6>
             <p className="text-break">
               <b>Assunto</b>: Data de Lançamento da Ferramenta de Chamados FixDesk É com grande satisfação que anunciamos a data oficial de lançamento da nossa nova ferramenta de chamados, FixDesk.
               Após um período de desenvolvimento e testes rigorosos, estamos felizes em informar que o FixDesk estará disponível para uso a partir de 21/03/2024. Esta ferramenta revolucionária promete
@@ -271,7 +271,7 @@ export default function Login() {
             </p>
           </div>
           <div className="d-flex flex-column">
-            <h6 className="fw-bold mb-2">Nota de Atualização 1.0.1 - 10/05</h6>
+            <h6 className="fw-bold mb-2">Nota de Atualização 1.1 - 10/05</h6>
             <span className="text-break">
               <b>Assunto</b>: improvements (Melhorias, tanto de desempenho quanto visual)
               <p>Melhoria no campo de observação quando o ticket de chamado é aberto</p>
