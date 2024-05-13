@@ -8,8 +8,6 @@
       "UCSLP": "quando acbar o cookie do csrf mandar para login"
     },
     "HotFix's": {
-      "HotFix2": "comentar código",
-      "HotFix5": "try catch codigo todo",
       "HotFix6": "squedule sobre FIxDesk no servidor",
       "HitFix7": "ao baixar PDF Departamento fica como undefined",
       "NewDiagram": "Fazer novo diagrama com as novas mudanças de funcionando da ferramenta"
@@ -22,12 +20,13 @@
       "FrameWork5": "django-clearcache",
       "FrameWork6": "filelock",
       "FrameWork7": "httplib2"
-    },
-    "Good_Pratic": {
-      "Pratic1": "use Ref no lugar document.get"
     }
   },
-  "Login": {},
+  "Login": {
+    "HotFix's": {
+      "SHWUPD": "AJustar tela de updates"
+    }
+  },
   "HelpDesk": {
     "Upgrade": {
       "Upgrade1": "contrato comodato para os equipamentos",

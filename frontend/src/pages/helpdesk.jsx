@@ -197,7 +197,7 @@ export default function Helpdesk() {
 
         //upload more
         $(".importar").addEventListener("click", () => {
-          $("#list-files").innerHTML = "";
+          // $("#list-files").innerHTML = "";
           $("footer").classList.remove("hasFiles");
           $(".importar").classList.remove("active");
           setTimeout(() => {
@@ -991,9 +991,26 @@ export default function Helpdesk() {
     });
   }
 
+  /**
+   * Esta função é responsável por enviar um novo ticket de chamado.
+   *
+   * @param {Event} event - O evento associado ao envio do formulário ou à ação que aciona a função.
+   * @returns {void} - Esta função não retorna nada diretamente, mas realiza o envio do ticket de chamado.
+   */
   function submitTicket(event) {
     event.preventDefault();
-
+    /**
+     * Dentro da função 'submitTicket', são realizadas validações para verificar se determinados campos foram preenchidos antes de enviar o ticket de chamado.
+     * Se algum campo estiver vazio, um alerta é exibido indicando o problema específico.
+     *
+     * @param {String} respectiveArea - Uma String representando a área responsável pelo chamado.
+     * @param {String} sector - Uma String representando o tipo de ocorrência.
+     * @param {String} occurrence - Uma String representando o tipo de problema.
+     * @param {String} problemn - Uma String representando o problema específico.
+     * @param {String} setAlertVerify - Uma String para definir o estado do alerta de validação.
+     * @param {String} setMessagetitle - Uma String para definir o título da mensagem de alerta.
+     * @returns {void} - Esta função não retorna nada diretamente, mas exibe alertas se os campos necessários não forem preenchidos.
+     */
     if (respectiveArea.length === 0) {
       setAlertVerify(true);
       setMessagetitle("Selecione a Área Responsável pelo Chamado");
@@ -1017,10 +1034,10 @@ export default function Helpdesk() {
 
     // Obter o dia, mês e ano da dataUser atual
     var dataUserAtual = new Date();
-
     var dia = dataUserAtual.getDate();
     var mes = dataUserAtual.getMonth() + 1; // Os meses em JavaScript são indexados a partir de zero, por isso é necessário adicionar 1
     var ano = dataUserAtual.getFullYear();
+
     function adicionaZero(numero) {
       if (numero < 10) {
         return "0" + numero;
@@ -1034,11 +1051,17 @@ export default function Helpdesk() {
     // Formatando para dataUser BR
     var dataUserFormatada = ano + "-" + ("0" + mes).slice(-2) + "-" + ("0" + dia).slice(-2) + " " + horaFormatada;
 
+    /**
+     * Inicialização de variáveis dentro do escopo da função ou bloco de código.
+     *
+     * @type {string} Status - Variável para armazenar o status do ticket de chamado.
+     * @type {Array} NewDatesAlocate - Array vazio para armazenar novas datas alocadas.
+     * @type {FormData} formdataUser - Objeto FormData para coletar dados de formulário.
+     * @type {number} total_size - Variável para armazenar o tamanho total, inicializada com zero.
+     */
     let Status;
     let NewDatesAlocate = [];
-
     const formdataUser = new FormData();
-
     var total_size = 0;
 
     if (filename.length > 0) {
@@ -1147,11 +1170,11 @@ export default function Helpdesk() {
     if (total_size > 10 * 1024 * 1024) {
       setMessage(true);
       setTypeError("Capacidade Máxima Ultrapassada");
-      setMessageError("Capacidade Máxima de Arquivos Anexado é de 10MB");
+      setMessageError("Capacidade Máxima de Arquivos Anexado é de 20MB");
       return;
     }
     formdataUser.append("ticketRequester", dataUser.name);
-    formdataUser.append("department", dataUser.department);
+    formdataUser.append("department", dataUser.departament);
     formdataUser.append("mail", dataUser.mail);
     formdataUser.append("company", dataUser.company);
     formdataUser.append("sector", sector);
@@ -1279,11 +1302,10 @@ export default function Helpdesk() {
   }
 
   function inputManual(event) {
-    setInputDropControl(false);
+    // setInputDropControl(false);
     setInputManualControl(true);
 
     const files = event.target.files;
-    console.log(files);
 
     const fileList = Array.from(files);
     setArrayInput(fileList);
@@ -1341,6 +1363,7 @@ export default function Helpdesk() {
       setInputManualControl(false);
       return;
     }
+
     const updatedFiles = arrayInput.filter((_, index) => index !== indexToRemove);
     setArrayInput(updatedFiles);
 

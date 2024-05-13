@@ -724,7 +724,9 @@ def ticket(request, id):
 
                 return JsonResponse({"status": "ok"}, status=200, safe=True)
 
+            # Verifica se a chave 'HTTP_DOWNLOAD_TICKET' está presente nos metadados da requisição.
             if "HTTP_DOWNLOAD_TICKET" in request.META:
+                # Inicializa as variáveis para o ticket, o PDF, o objeto de dados, o formato de dados, o diretório e a empresa como nulos.
                 ticket = None
                 pdf = None
                 data_object = None
@@ -732,6 +734,7 @@ def ticket(request, id):
                 directory = None
                 company = None
                 pdf_base64 = None
+    
                 try:
                     ticket = SupportTicket.objects.get(id=id)
                     pdf = FPDF()
@@ -1940,11 +1943,3 @@ def convert_to_dict(chat_data):
         return print(e)
 
     return dictionaries
-
-
-@login_required(login_url="/login")
-def describe(request):
-    if request.method == "POST":
-        return
-    if request.method == "GET":
-         return render(request, "index.html", {})

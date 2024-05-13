@@ -744,8 +744,9 @@ export default function DashboardTI() {
               );
               setFileTicket((fileticket) => [...fileticket, Div]); // Adiciona a visualização do arquivo ao estado correspondente.
             } else if (file === "excel") {
-              const ContentFileExcel = data.content_file[i];
-              const NameFileExcel = data.name_file[i];
+              // Verifica se o arquivo é do tipo Excel.
+              const ContentFileExcel = data.content_file[i]; // Obtém o conteúdo do arquivo Excel.
+              const NameFileExcel = data.name_file[i]; // Obtém o nome do arquivo Excel.
               const Div = (
                 <DivOnBoardFile className="position-relative">
                   <IMGFiles src={XLS} alt="" />
@@ -771,10 +772,11 @@ export default function DashboardTI() {
                   <p className="text-center text-break">{NameFileExcel}</p>
                 </DivOnBoardFile>
               );
-              setFileTicket((fileticket) => [...fileticket, Div]);
+              setFileTicket((fileticket) => [...fileticket, Div]); // Adiciona a visualização do arquivo Excel ao estado correspondente.
             } else if (file === "zip") {
-              const ContentFileZip = data.content_file[i];
-              const NameFileZip = data.name_file[i];
+              // Verifica se o arquivo é do tipo ZIP.
+              const ContentFileZip = data.content_file[i]; // Obtém o conteúdo do arquivo ZIP.
+              const NameFileZip = data.name_file[i]; // Obtém o nome do arquivo ZIP.
               const Div = (
                 <DivOnBoardFile className="position-relative">
                   <IMGFiles src={ZIP} alt="" />
@@ -800,10 +802,11 @@ export default function DashboardTI() {
                   <p className="text-center text-break">{NameFileZip}</p>
                 </DivOnBoardFile>
               );
-              setFileTicket((fileticket) => [...fileticket, Div]);
+              setFileTicket((fileticket) => [...fileticket, Div]); // Adiciona a visualização do arquivo ZIP ao estado correspondente.
             } else if (file === "txt") {
-              const ContentFileTXT = data.content_file[i];
-              const NameFileTXT = data.name_file[i];
+              // Verifica se o arquivo é do tipo TXT.
+              const ContentFileTXT = data.content_file[i]; // Obtém o conteúdo do arquivo TXT.
+              const NameFileTXT = data.name_file[i]; // Obtém o nome do arquivo TXT.
               const Div = (
                 <DivOnBoardFile className="position-relative">
                   <IMGFiles src={TXT} alt="" />
@@ -829,10 +832,11 @@ export default function DashboardTI() {
                   <p className="text-center text-break">{NameFileTXT}</p>
                 </DivOnBoardFile>
               );
-              setFileTicket((fileticket) => [...fileticket, Div]);
+              setFileTicket((fileticket) => [...fileticket, Div]); // Adiciona a visualização do arquivo TXT ao estado correspondente.
             } else if (file === "word") {
-              const ContentFileWord = data.content_file[i];
-              const NameFileWord = data.name_file[i];
+              // Verifica se o arquivo é do tipo Word.
+              const ContentFileWord = data.content_file[i]; // Obtém o conteúdo do arquivo Word.
+              const NameFileWord = data.name_file[i]; // Obtém o nome do arquivo Word.
               const Div = (
                 <DivOnBoardFile className="position-relative">
                   <IMGFiles src={WORD} alt="" />
@@ -858,10 +862,11 @@ export default function DashboardTI() {
                   <p className="text-center text-break">{NameFileWord}</p>
                 </DivOnBoardFile>
               );
-              setFileTicket((fileticket) => [...fileticket, Div]);
+              setFileTicket((fileticket) => [...fileticket, Div]); // Adiciona a visualização do arquivo Word ao estado correspondente.
             } else if (file === "pdf") {
-              const ContentFilePDF = data.content_file[i];
-              const NameFilePDF = data.name_file[i];
+              // Verifica se o arquivo é do tipo PDF.
+              const ContentFilePDF = data.content_file[i]; // Obtém o conteúdo do arquivo PDF.
+              const NameFilePDF = data.name_file[i]; // Obtém o nome do arquivo PDF.
               const Div = (
                 <DivOnBoardFile className="position-relative">
                   <IMGFiles src={PDF} alt="" />
@@ -887,10 +892,11 @@ export default function DashboardTI() {
                   <p className="text-center text-break">{NameFilePDF}</p>
                 </DivOnBoardFile>
               );
-              setFileTicket((fileticket) => [...fileticket, Div]);
+              setFileTicket((fileticket) => [...fileticket, Div]); // Adiciona a visualização do arquivo PDF ao estado correspondente.
             } else if (typeof file === "object") {
-              const image = file.image;
-              const nameImage = data.name_file[i];
+              // Verifica se o arquivo é um objeto (imagem).
+              const image = file.image; // Obtém a imagem do arquivo.
+              const nameImage = data.name_file[i]; // Obtém o nome da imagem.
               const Div = (
                 <DivOnBoardFile className="position-relative">
                   <IMGFiles
@@ -913,42 +919,76 @@ export default function DashboardTI() {
                       link.remove();
                     }}
                   />
-                  <p className="text-center text-break">{nameImage}</p>;
+                  <p className="text-center text-break">{nameImage}</p>
                 </DivOnBoardFile>
               );
-              setFileTicket((fileticket) => [...fileticket, Div]);
+              setFileTicket((fileticket) => [...fileticket, Div]); // Adiciona a visualização da imagem ao estado correspondente.
+            } else if (typeof file === "object") {
+              // Verifica se o arquivo é um objeto (imagem).
+              const image = file.image; // Obtém a imagem do arquivo.
+              const nameImage = data.name_file[i]; // Obtém o nome da imagem.
+              const Div = (
+                <DivOnBoardFile className="position-relative">
+                  <IMGFiles
+                    src={`data:image/jpeg;base64,${file.image}`}
+                    onClick={() => {
+                      setImageUrl(`data:image/jpeg;base64,${image}`);
+                      openImage();
+                    }}
+                    alt=""
+                  />
+                  <ImageFile
+                    className="position-absolute bottom-0 start-50 translate-middle-x"
+                    src={Download}
+                    alt=""
+                    onClick={() => {
+                      const link = document.createElement("a");
+                      link.href = `data:image/jpeg;base64,${image}`;
+                      link.download = nameImage;
+                      link.click();
+                      link.remove();
+                    }}
+                  />
+                  <p className="text-center text-break">{nameImage}</p>
+                </DivOnBoardFile>
+              );
+              setFileTicket((fileticket) => [...fileticket, Div]); // Adiciona a visualização da imagem ao estado correspondente.
             }
           }
         }
+        // Identifica o chat, verifica se contém valores e os separa em grupos de Data, Receptor e Horário.
         if (data.chat !== null && data.chat !== undefined && data.chat !== "undefined") {
-          setCountChat(data.chat.length);
-          setFetchChat(true);
+          setCountChat(data.chat.length); // Define a contagem de mensagens do chat.
+          setFetchChat(true); // Define o estado de busca do chat como verdadeiro.
 
-          const regex = /\[\[([^[\]]+?)\],\[([^[\]]+?)\],\[([^[\]]+?)\]\]/g;
+          const regex = /\[\[([^[\]]+?)\],\[([^[\]]+?)\],\[([^[\]]+?)\]\]/g; // Expressão regular para extrair os grupos de dados.
 
           const chatValue = [];
           let match;
 
           while ((match = regex.exec(data.chat)) !== null) {
-            const [, value1, value2, value3] = match;
-            chatValue.push([value1, value2, value3]);
+            const [, value1, value2, value3] = match; // Extrai os valores dos grupos.
+            chatValue.push([value1, value2, value3]); // Adiciona os valores ao array chatValue.
           }
 
-          setMountChat([]);
+          setMountChat([]); // Limpa os dados de montagem do chat.
 
-          const groupedByDate = {};
+          const groupedByDate = {}; // Objeto para agrupar as mensagens por data.
 
           chatValue.forEach((item) => {
-            const date = item[0].split(":")[1].trim(); // Extrai a data do primeiro elemento
+            // Itera sobre cada mensagem do chat.
+            const date = item[0].split(":")[1].trim(); // Extrai a data da mensagem.
             if (!groupedByDate[date]) {
               groupedByDate[date] = [];
             }
-            groupedByDate[date].push(item);
+            groupedByDate[date].push(item); // Agrupa as mensagens por data.
           });
 
+          // Monta o HTML com cada parte em seu respectivo lugar.
           const renderGroupedItems = () => {
             const groupedItems = [];
             for (const date in groupedByDate) {
+              // Remover "User:" ou "Tech:" do início da string
               groupedItems.push(
                 <div key={date}>
                   <div className="text-center d-flex justify-content-center text-break">
@@ -1004,14 +1044,12 @@ export default function DashboardTI() {
             }
             return groupedItems;
           };
-
           setMountChat(renderGroupedItems());
-
           setChat(true);
-
           aumentarCount();
         }
 
+        // Verifica se o nome que consta no técnico é o mesmo que está logado.
         var nameVer = name_verify.split(" ");
         if (data.responsible_technician !== null) {
           var techVer = data.responsible_technician.split(" ");
@@ -1045,10 +1083,14 @@ export default function DashboardTI() {
     setTicketWindow(true);
   }
 
+  /**
+   * Função para desabilitar o DOM que mostrará a imagem clicada.
+   */
   function imageclose() {
     setImageOpen(false);
   }
 
+  // Função que ajusta o download dos arquivos.
   function downloadMail({ content, data, sliceSize = 512 }) {
     const cleanBase64 = content.replace(/[^A-Za-z0-9+/]/g, ""); // Remove caracteres inválidos
 
@@ -1069,7 +1111,7 @@ export default function DashboardTI() {
       }
 
       const blob = new Blob(byteArrays, { type: data });
-      return blob;
+      return blob; // Retorna o Blob criado.
     } catch (error) {
       setMessageError(error);
       setTypeError("FATAL ERROR");
@@ -1079,6 +1121,7 @@ export default function DashboardTI() {
     }
   }
 
+  // useEffect para atualizar o chat.
   useEffect(() => {
     if (fetchChat === true) {
       fetch("/helpdesk/update_chat/" + ticketID, {
@@ -1105,26 +1148,30 @@ export default function DashboardTI() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initUpdateChat]);
 
+  // Função que fecha o chamado e suas dependências quando ele está aberto.
   function Close_ticket() {
-    setClassBlur("");
-    setModifyTicket(false);
-    sectionTicket.current.style.filter = "blur(0)";
-    setTicketWindow(false);
-    setFetchChat(false);
-    count = 0;
-    clearTimeout(timeoutId);
-    setTechDetails(false);
+    setClassBlur(""); // Remove a classe de desfoque.
+    setModifyTicket(false); // Define o estado de modificação do chamado como falso.
+    sectionTicket.current.style.filter = "blur(0)"; // Remove o efeito de desfoque do chamado.
+    setTicketWindow(false); // Fecha a janela do chamado.
+    setFetchChat(false); // Define o estado de busca do chat como falso.
+    count = 0; // Reinicia a contagem do chat.
+    clearTimeout(timeoutId); // Limpa o timeout para atualização do chat.
+    setTechDetails(false); // Define o estado de detalhes técnicos como falso.
   }
 
+  // Função que salva a mudança do técnico selecionado.
   function ChangeTechnician(event) {
-    setSelectedTech(event.target.value);
+    setSelectedTech(event.target.value); // Atualiza o estado do técnico selecionado.
   }
 
+  // Função que fecha a mensagem.
   function closeMessage() {
-    setModifyTicket(false);
-    setMessageChat(false);
+    setModifyTicket(false); // Define o estado de modificação do chamado como falso.
+    setMessageChat(false); // Define o estado de mensagem do chat como falso.
   }
 
+  // useEffect acionado quando o técnico é mudado.
   useEffect(() => {
     if (selectedTech.length > 1) {
       var date = new Date();
@@ -1176,29 +1223,34 @@ export default function DashboardTI() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedTech]);
 
+  // Função que salva as mensagens digitadas no chat do chamado e envia ao pressionar Enter ou clicar no botão de enviar.
   function NewChat(event) {
     const newText = event.target.value;
     if (event.key === "Enter") {
-      setTextChat(newText);
-      SendChat();
+      setTextChat(newText); // Atualiza o texto do chat.
+      SendChat(); // Envia a mensagem do chat.
       event.preventDefault();
     } else {
-      setTextChat(newText);
+      setTextChat(newText); // Atualiza o texto do chat enquanto é digitado.
     }
   }
 
+  // Função semelhante ao NewChat, porém para o chat de detalhes técnicos.
   function NewChatDetails(event) {
     const newText = event.target.value;
     if (event.key === "Enter") {
-      setDetailsChat(newText);
-      SendDetails();
+      setDetailsChat(newText); // Atualiza o texto do chat de detalhes técnicos.
+      SendDetails(); // Envia a mensagem do chat de detalhes técnicos.
       event.preventDefault();
     } else {
-      setDetailsChat(newText);
+      setDetailsChat(newText); // Atualiza o texto do chat de detalhes técnicos enquanto é digitado.
     }
   }
 
+  // Função que envia mensagens para o chat de detalhes técnicos.
   function SendDetails() {
+    // Implementação para enviar mensagens para o chat de detalhes técnicos.
+    // Pega a data, dia, mês e ano e ajusta.
     var date = new Date();
     function adicionaZero(numero) {
       if (numero < 10) {
@@ -1213,8 +1265,9 @@ export default function DashboardTI() {
     var dataFormatada = adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
     var horaFormatada = adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
 
-    inputRef.current.value = "";
+    inputRef.current.value = ""; // Limpa o valor do campo de entrada.
 
+    // Enviar informações do chat.
     fetch("/helpdesk/ticket/" + ticketID, {
       method: "POST",
       headers: { "Content-Type": "application/json", "X-CSRFToken": token, "Tech-Details": "ok" },
@@ -1235,21 +1288,25 @@ export default function DashboardTI() {
       });
   }
 
+  // Função para montar o chat técnico.
   function MountChatDetails(chat) {
-    setTechDetails(true);
-    setLoadingChat(true);
+    setTechDetails(true); // Define que o chat técnico está sendo exibido.
+    setLoadingChat(true); // Define que o carregamento do chat está em andamento.
+
+    // Verifica se há mensagens no chat.
     if (chat !== null && chat !== undefined && chat !== "undefined") {
       const regex = /\[\[([^[\]]+?)\],\[([^[\]]+?)\],\[([^[\]]+?)\]\]/g;
 
       const chatValue = [];
       let match;
 
+      // Extrai os dados das mensagens do chat.
       while ((match = regex.exec(chat)) !== null) {
         const [, value1, value2, value3] = match;
         chatValue.push([value1, value2, value3]);
       }
 
-      setMountChat([]);
+      setMountChat([]); // Limpa as mensagens já montadas.
 
       const groupedByDate = {};
 
@@ -1261,6 +1318,7 @@ export default function DashboardTI() {
         groupedByDate[date].push(item);
       });
 
+      // Função para renderizar as mensagens agrupadas.
       const renderGroupedItems = () => {
         const groupedItems = [];
         for (const date in groupedByDate) {
@@ -1289,13 +1347,14 @@ export default function DashboardTI() {
             </div>
           );
         }
-        setLoadingChat(false);
+        setLoadingChat(false); // Define que o carregamento do chat foi concluído.
         return groupedItems;
       };
-      setMountDetails(renderGroupedItems());
+      setMountDetails(renderGroupedItems()); // Define as mensagens montadas.
     }
   }
 
+  // Função para enviar mensagem no chat.
   function SendChat() {
     var date = new Date();
     function adicionaZero(numero) {
@@ -1311,9 +1370,13 @@ export default function DashboardTI() {
     var dataFormatada = adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
     var horaFormatada = adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
     inputChat.current.value = "";
+
+    // Verifica se o texto da mensagem está vazio.
     if (textChat.length === 0) {
       return;
     }
+
+    // Envia a mensagem para o backend.
     fetch("/helpdesk/ticket/" + ticketID, {
       method: "POST",
       headers: {
@@ -1331,6 +1394,7 @@ export default function DashboardTI() {
         return response.json();
       })
       .then((data) => {
+        // Recarrega o chat após o envio da mensagem.
         return reloadChat({ data: data });
       })
       .catch((err) => {
@@ -1341,6 +1405,7 @@ export default function DashboardTI() {
       });
   }
 
+  // Função para recarregar o chat após o envio de uma mensagem.
   function reloadChat({ data }) {
     if (data.chat !== null && data.chat !== undefined && data.chat !== "undefined") {
       setCountChat(data.chat.length);
@@ -1424,20 +1489,24 @@ export default function DashboardTI() {
         return groupedItems;
       };
 
+      // Atualiza o estado do chat com as novas mensagens.
       setMountChat(renderGroupedItems());
 
       setChat(true);
     }
   }
 
+  // Função para fechar uma mensagem.
   function closeMessage2() {
     return setMessage(false);
   }
 
+  // Função para exibir ou ocultar o dropdown.
   function dropdown() {
     return myDropDown.current.classList.toggle("showDP");
   }
 
+  // Evento para fechar dropdowns quando o usuário clica fora deles.
   window.onclick = function (event) {
     if (!event.target.matches(".dropbtn") && !event.target.matches(".dropdown-content")) {
       var dropdowns = document.getElementsByClassName("dropdown-content");

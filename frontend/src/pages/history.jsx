@@ -155,6 +155,7 @@ export default function History() {
   let colorBorder = "";
 
   const textareaRef = useRef(null);
+  const dashBoard = useRef(null);
 
   useEffect(() => {
     if (textareaRef.current && textareaRef.current.value !== null) {
@@ -284,6 +285,15 @@ export default function History() {
     setImageOpen(true);
   }
 
+  /**
+   * Esta função é responsável por solicitar um ticket de chamado ao servidor
+   * conforme a decisão do usuário. Recebe o ID do ticket como parâmetro.
+   *
+   * @param {Object} options - Um objeto contendo as opções para a requisição.
+   * @param {string} options.id - O ID do ticket de chamado a ser recuperado.
+   * @returns {void} - Esta função não retorna nada diretamente, mas dispara uma
+   * solicitação de busca do ticket de chamado através da API do servidor.
+   */
   function helpdeskPage({ id }) {
     fetch("/helpdesk/ticket/" + id, {
       method: "GET",
@@ -297,18 +307,30 @@ export default function History() {
         return response.json();
       })
       .then((dataBack) => {
+        /**
+         * Este trecho de código é executado quando a resposta da requisição para buscar o ticket de chamado é recebida com sucesso.
+         * Ele realiza várias ações, incluindo adicionar um efeito de desfoque ao fundo, obter a data do ticket de chamado e calcular a sua vida útil.
+         * Também redefine algumas variáveis relacionadas ao chat.
+         *
+         * @param {Object} dataBack - O objeto de resposta retornado pela requisição para buscar o ticket de chamado.
+         * @param {boolean} setMessageChat - Uma função para definir o estado de exibição da mensagem do chat.
+         * @param {Array} setMountChat - Uma função para definir o estado do chat.
+         * @returns {void} - Esta função não retorna nada diretamente, mas realiza várias operações conforme descrito acima.
+         */
         setBlurNav("addBlur");
-        const dash = document.getElementById("dashboard");
-        dash.style.filter = "blur(3px)";
+        dashBoard.current.style.filter = "blur(3px)";
+        // Oculta a mensagem do chat
         setMessageChat(false);
+        // Reseta o estado do chat
         setMountChat([]);
+        // Extrai a data do primeiro ticket de chamado
         const data = dataBack.data[0];
         const start_date = new Date(data.start_date);
-
+        // Obtém a data atual
         var CurrentDate = new Date();
-
+        // Calcula a diferença de tempo entre a data atual e a data de criação do chamado
         var calcDate = CurrentDate - start_date;
-
+        // Calcula o tempo de vida do chamado em dias
         var lifetime = Math.floor(calcDate / (1000 * 60 * 60 * 24));
 
         setTicketNAME(data.ticketRequester);
@@ -1908,7 +1930,7 @@ export default function History() {
           </Button2>
         </DivSelectView>
       </DivFilter>
-      <section id="dashboard">
+      <section ref={dashBoard} id="dashboard">
         {loadingDash && (
           <div className="position-absolute top-50 start-50 translate-middle">
             <Loading />

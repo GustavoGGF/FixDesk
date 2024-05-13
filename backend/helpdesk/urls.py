@@ -20,5 +20,4 @@ urlpatterns = [
         views.getTicketFilterStatus,
         name="central-get-ticket-filter-words",
     ),
-    path("describe/", views.describe, name="central-describe"),
 ]
