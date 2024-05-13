@@ -44,6 +44,7 @@ export const PathNotes = styled.div`
   background-color: var(--light-white);
   padding: 1.5em;
   border-radius: 1em;
+  overflow-y: auto;
 `;
 
 export const CloseBTN = styled.button`

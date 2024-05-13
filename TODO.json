@@ -23,9 +23,7 @@
     }
   },
   "Login": {
-    "HotFix's": {
-      "SHWUPD": "AJustar tela de updates"
-    }
+    "HotFix's": {}
   },
   "HelpDesk": {
     "Upgrade": {
@@ -65,7 +63,9 @@
       "HotFix7": "ajustar descrição no pdf",
       "HotFix8": "tech_details icone de fechar",
       "HotFix9": "Revisão todos os Filter",
-      "Animation file idea": "Quando estiver com o ticker aberto e tiver uma imagem, deixar cursor mouse e ao clicar ter animação da imagem subindo para tela e ajustar tela de visualização de imagem"
+      "Animation file idea": "Quando estiver com o ticker aberto e tiver uma imagem, deixar cursor mouse e ao clicar ter animação da imagem subindo para tela e ajustar tela de visualização de imagem",
+      "DSHB": "no DashboardPie não mostra os chamados em aguardo",
+      "TLC": "Tela de loading fica carregando ainda"
     }
   },
   "Navbar": {
