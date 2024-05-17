@@ -1610,10 +1610,12 @@ export default function DashboardTI() {
   }
 
   function getTicketKey(event) {
+    btnOpen.current.classList.remove("btn-open");
+    btnClose.current.classList.remove("btn-success");
+    btnStop.current.classList.remove("btn-light");
+    btnAll.current.classList.remove("btn-all");
+
     const newText = event.target.value;
-
-    selectOcorrence.current.value = null;
-
     setProblemSyst(false);
     setProblemInfra(false);
     setFakeSelect(true);
@@ -3092,7 +3094,7 @@ export default function DashboardTI() {
       </div>
       <DivFilter className={`${classBlur} ${themeFilter}`}>
         <div className="form-floating">
-          <Input1 type="text" className="form-control" id="floatingInput" onKeyDown={getTicketKey} />
+          <Input1 type="text" className="form-control" id="floatingInput" onKeyUp={getTicketKey} />
           <label htmlFor="floatingInput">Ocorrência | Problema | Data...</label>
         </div>
         <Select1 ref={selectOcorrence} className="form-select" onChange={enableProblem}>
@@ -3151,10 +3153,10 @@ export default function DashboardTI() {
           <option value="none" disabled>
             Ordernar
           </option>
-          <option value="recent">Data Recente</option>
-          <option selected value="ancient">
-            Data Antiga
+          <option selected value="recent">
+            Data Recente
           </option>
+          <option value="ancient">Data Antiga</option>
         </Select1>
         <DivContainerImages className="d-flex">
           <PSelectView className="position-absolute top-0 start-0 translate-middle">Quantidade</PSelectView>

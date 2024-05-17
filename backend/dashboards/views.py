@@ -360,11 +360,14 @@ def getTicketFilterWords(request):
         test_for_date = None
         order = None
         Quantity_tickets = None
+        ticket_objects = []
         try:
             magic_word = request.META.get("HTTP_WORD_FILTER")
             order = request.META.get("HTTP_ORDER_BY")
-            test_for_date = date.fromisoformat(magic_word)
+            print(order)
             Quantity_tickets = int(request.META.get("HTTP_QUANTITY_TICKETS"))
+            test_for_date = date.fromisoformat(magic_word)
+
         except ValueError:
             test_for_date = None
         try:
@@ -375,11 +378,33 @@ def getTicketFilterWords(request):
                     respective_area="TI",
                     id=magic_word_int,
                 ).order_by("-id")[:Quantity_tickets]
-            else:
+
+                for ticket in ticket_data:
+                    ticket_json = serialize("json", [ticket])
+                    ticket_list.append(ticket_json)
+
+                for ticket in ticket_list:
+                    ticket_data = loads(ticket)[0]["fields"]
+                    ticket_data["id"] = loads(ticket)[0]["pk"]
+                    ticket_objects.append(ticket_data)
+
+                return JsonResponse({"tickets": ticket_objects}, status=200, safe=True)
+            if order == "id":
                 ticket_data = SupportTicket.objects.filter(
                     respective_area="TI",
                     id=magic_word_int,
                 )[:Quantity_tickets]
+
+                for ticket in ticket_data:
+                    ticket_json = serialize("json", [ticket])
+                    ticket_list.append(ticket_json)
+
+                for ticket in ticket_list:
+                    ticket_data = loads(ticket)[0]["fields"]
+                    ticket_data["id"] = loads(ticket)[0]["pk"]
+                    ticket_objects.append(ticket_data)
+
+                return JsonResponse({"tickets": ticket_objects}, status=200, safe=True)
 
             if test_for_date:
                 if order == "-id":
@@ -430,7 +455,6 @@ def getTicketFilterWords(request):
 
         except Exception as e:
             print(e)
-
 
 @login_required(login_url="/login")
 def moreTicket(request):
