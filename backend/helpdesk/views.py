@@ -1,10 +1,11 @@
+# Importando os módulos necessários para o funcionamento do código.
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import smtplib
 from threading import Thread
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt, requires_csrf_token
-from django.http import JsonResponse
+from django.http import HttpRequest, JsonResponse
 from django.contrib.auth.decorators import login_required
 from os import getenv
 from json import loads
@@ -110,6 +111,7 @@ def firstView(request):
 
     if request.method == "GET":
         if request.user.is_authenticated:
+            print("yes")
             Back_User = None
             Back_Tech = None
             Back_Leader = None
@@ -124,6 +126,7 @@ def firstView(request):
                     or User.groups.filter(name=Back_Tech)
                     or User.groups.filter(name=Back_Leader)
                 ):
+                    print("renderizou")
                     return render(request, "index.html", {})
                 else:
                     return redirect("/login")
@@ -131,6 +134,7 @@ def firstView(request):
                 json_error = str(e)
                 return JsonResponse({"status": json_error}, status=300, safe=True)
         else:
+            print("not")
             redirect("/login")
     else:
         redirect("/login")
@@ -549,9 +553,13 @@ def exit(request):
             print(e)
 
 
-@login_required(login_url="/login")
-@requires_csrf_token
-def ticket(request, id):
+@login_required(
+    login_url="/login"
+)  # Decorador que exige que o usuário esteja autenticado. Redireciona para a página de login se não estiver.
+@requires_csrf_token  # Decorador que assegura que o token CSRF seja verificado para evitar ataques CSRF.
+def ticket(
+    request, id
+):  # Função para obter ou enviar dados para os chamados, recebendo a requisição e o ID do ticket.
     if request.method == "POST":
         body = None
         technician = None
@@ -727,25 +735,35 @@ def ticket(request, id):
             # Verifica se a chave 'HTTP_DOWNLOAD_TICKET' está presente nos metadados da requisição.
             if "HTTP_DOWNLOAD_TICKET" in request.META:
                 # Inicializa as variáveis para o ticket, o PDF, o objeto de dados, o formato de dados, o diretório e a empresa como nulos.
-                ticket = None
-                pdf = None
-                data_object = None
-                data_format = None
-                directory = None
-                company = None
-                pdf_base64 = None
-    
+                # Declaração das variáveis a serem utilizadas no código.
+                ticket = None  # Variável para armazenar informações do ticket.
+                pdf = None  # Variável para armazenar o documento PDF.
+                data_object = None  # Variável para armazenar um objeto de dados.
+                data_format = None  # Variável para armazenar o formato dos dados.
+                directory = None  # Variável para armazenar o diretório.
+                company = None  # Variável para armazenar informações da empresa.
+                pdf_base64 = None  # Variável para armazenar o PDF codificado em base64.
+
                 try:
-                    ticket = SupportTicket.objects.get(id=id)
-                    pdf = FPDF()
-                    pdf.add_page()
-                    directory = getcwd()
-                    pdf.add_font("Arial", "", f"{directory}/arial.ttf")
-                    pdf.set_font("Arial", size=12)
-                    pdf.cell(180, 5, txt=f"CHAMADO {ticket.id}", ln=False, align="C")
-                    x_position = pdf.get_x()
-                    y_position = pdf.get_y()
-                    pdf.set_xy(x_position, y_position)
+                    ticket = SupportTicket.objects.get(
+                        id=id
+                    )  # Recuperando informações do ticket com base no ID fornecido.
+                    pdf = FPDF()  # Inicializando o objeto PDF.
+                    pdf.add_page()  # Adicionando uma nova página ao PDF.
+                    directory = getcwd()  # Obtendo o diretório atual.
+                    pdf.add_font(
+                        "Arial", "", f"{directory}/arial.ttf"
+                    )  # Adicionando a fonte Arial ao PDF.
+                    pdf.set_font(
+                        "Arial", size=12
+                    )  # Definindo a fonte e o tamanho do texto.
+                    pdf.cell(
+                        180, 5, txt=f"CHAMADO {ticket.id}", ln=False, align="C"
+                    )  # Adicionando título ao PDF.
+                    x_position = pdf.get_x()  # Obtendo a posição atual no eixo x.
+                    y_position = pdf.get_y()  # Obtendo a posição atual no eixo y.
+                    pdf.set_xy(x_position, y_position)  # Definindo a posição atual.
+
                     data_object = ticket.start_date.date()
                     data_format = data_object.strftime("%d/%m/%Y")
                     pdf.cell(
@@ -807,7 +825,7 @@ def ticket(request, id):
                             align="L",
                         )
                     if ticket.observation != "":
-                        pdf.cell(
+                        pdf.multi_cell(
                             200,
                             10,
                             txt=f"Observação: {ticket.observation}",
@@ -1943,3 +1961,11 @@ def convert_to_dict(chat_data):
         return print(e)
 
     return dictionaries
+
+
+@csrf_exempt
+def redirect_to_specific_url(request: HttpRequest, *args, **kwargs):
+    if request.method == "POST":
+        return redirect("/helpdesk")
+    if request.method == "GET":
+        return redirect("/helpdesk")

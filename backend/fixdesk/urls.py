@@ -1,9 +1,10 @@
 from django.contrib import admin
+from django.shortcuts import redirect
 from django.urls import path, include
 from django.views.generic import TemplateView
 from . import views
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-
+from django.conf.urls import handler404
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -16,3 +17,4 @@ urlpatterns = [
 ]
 
 urlpatterns += staticfiles_urlpatterns()
+handler404 = views.handler404

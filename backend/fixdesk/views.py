@@ -2,7 +2,7 @@ import time
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from dotenv import load_dotenv
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from json import loads
 from os import getenv
 from ldap3 import Connection, SAFE_SYNC, ALL_ATTRIBUTES
@@ -295,3 +295,7 @@ def validation(request):
             error_message = str(e)
             print(error_message)
             return JsonResponse({"status": error_message}, status=400)
+
+
+def handler404(request, exception):
+    return redirect("/login")

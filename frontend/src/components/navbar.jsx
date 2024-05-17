@@ -210,12 +210,13 @@ export default function NavBar({ Name, JobTitle }) {
                   <DropDown>
                     <DropBTN className="btn btn-light" onClick={DropD} id="btndrop">
                       Configuração
-                      <Arrow src={ArrowDown} alt="" id="imgdrop" />
+                      <Arrow src={ArrowDown} alt="seta para abrir configurações" id="imgdrop" />
                     </DropBTN>
                     <DropContent className="visually-hidden" ref={dropContent}>
                       <DropDown id="dropdwn2">
                         <DropBTN className="btn btn-light" id="btn1" onClick={DropD}>
                           Tema
+                          <Arrow src={ArrowDown} alt="seta para abrir temas" />
                         </DropBTN>
                         <DropContent2 className="visually-hidden" ref={themeOption}>
                           <DropBTN className="btn btn-light" id="btn2" onClick={ThemeLight}>

@@ -267,7 +267,7 @@ export const DivOnBoardFile = styled.div`
 
 export const DivNewFiles = styled.div`
   z-index: 10;
-  height: 300px;
+  max-height: 300px;
   width: 300px;
   background: rgba(52, 58, 64, 0.7);
   padding: 10px;

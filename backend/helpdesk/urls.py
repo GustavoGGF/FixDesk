@@ -20,4 +20,5 @@ urlpatterns = [
         views.getTicketFilterStatus,
         name="central-get-ticket-filter-words",
     ),
+    # path("<path:unknown_path>", views.redirect_to_specific_url),
 ]

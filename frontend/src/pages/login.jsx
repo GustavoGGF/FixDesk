@@ -135,10 +135,6 @@ export default function Login() {
           handleAccessRestricted();
         } else if (response.ok) {
           return response.json();
-        } else {
-          setMessage(true);
-          setMessageError("Erro ao verificar Login");
-          setTypeMessage("Fatal ERROR");
         }
       })
       .then((data) => {
@@ -273,8 +269,9 @@ export default function Login() {
           <div className="d-flex flex-column">
             <h6 className="fw-bold mb-2">Nota de Atualização 1.1 - 10/05</h6>
             <span className="text-break">
-              <b>Assunto</b>: improvements (Melhorias, tanto de desempenho quanto visual)
-              <p>Melhoria no campo de observação quando o ticket de chamado é aberto</p>
+              <b>Assunto</b>: improvements. (Melhorias, tanto de desempenho quanto visual)
+              <p>Melhoria no campo de observação quando o ticket de chamado é aberto.</p>
+              <p>Melhoria no campo de observação no PDF ao baixar o chamado.</p>
             </span>
           </div>
         </PathNotes>

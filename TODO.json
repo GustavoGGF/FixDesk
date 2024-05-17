@@ -27,12 +27,10 @@
   },
   "HelpDesk": {
     "Upgrade": {
-      "Upgrade1": "contrato comodato para os equipamentos",
-      "NW_PRBL": "adicionar nova opção de chamado, problemas com software"
+      "Upgrade1": "contrato comodato para os equipamentos"
     },
     "HotFix": {
-      "HotFix1": "ao enviar locagem de equipamento, se estiver alocado já, retornar com alocado cinza e pedir para ajustar data",
-      "File": "Após um alerta os arquivos anexados estão sumindo"
+      "HotFix1": "ao enviar locagem de equipamento, se estiver alocado já, retornar com alocado cinza e pedir para ajustar data"
     }
   },
   "History": {
@@ -40,14 +38,13 @@
       "Upgrade1": "ao adicionar novos arquivos mostrar no chat"
     },
     "HotFix": {
-      "HotFix1": "ajustar descrição no pdf",
       "HotFix2": "Revisão todos os Filter",
-      "Animation file idea": "Quando estiver com o ticker aberto e tiver uma imagem, deixar cursor mouse e ao clicar ter animação da imagem subindo para tela e ajustar tela de visualização de imagem"
+      "Animation file idea": "Quando estiver com o ticker aberto e tiver uma imagem, deixar cursor mouse e ao clicar ter animação da imagem subindo para tela e ajustar tela de visualização de imagem",
+      "MCD": "Melhorar CSS do observation"
     }
   },
   "Dashboard": {
     "Upgrade": {
-      "Upgrade1": "nome do arquivo na tela de ticket",
       "Upgrade2": "ao adicionar novos arquivos mostrar no chat",
       "Upgrade3": "cabeçalho de chamados para modo Lista",
       "Upgrade4": "fazer metodo para excluir usuario do banco de dados do django",
@@ -65,12 +62,11 @@
       "HotFix9": "Revisão todos os Filter",
       "Animation file idea": "Quando estiver com o ticker aberto e tiver uma imagem, deixar cursor mouse e ao clicar ter animação da imagem subindo para tela e ajustar tela de visualização de imagem",
       "DSHB": "no DashboardPie não mostra os chamados em aguardo",
-      "TLC": "Tela de loading fica carregando ainda"
+      "TLC": "Tela de loading fica carregando ainda",
+      "MCD": "Melhorar CSS do observation"
     }
   },
   "Navbar": {
-    "HotFix": {
-      "HotFix1": "setinha para baixo do tema"
-    }
+    "HotFix": {}
   }
 }

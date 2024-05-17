@@ -58,4 +58,5 @@ urlpatterns = [
         views.getTicketFilterTech,
         name="central-get-ticket-filter-tech",
     ),
+    # path("<path:unknown_path>", views.redirect_to_specific_url),
 ]

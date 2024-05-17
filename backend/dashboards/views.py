@@ -3,7 +3,8 @@ from django.views.decorators.csrf import csrf_exempt, requires_csrf_token
 from os import getenv
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
+from django.http import HttpRequest, JsonResponse
+from dotenv import load_dotenv
 from helpdesk.models import SupportTicket, TicketFile
 from json import loads
 from django.core.serializers import serialize
@@ -16,6 +17,9 @@ import calendar
 from magic import Magic
 import mimetypes
 from django.core.files.base import ContentFile
+from PIL import Image, UnidentifiedImageError
+from io import BytesIO
+from base64 import b64encode
 
 
 # Create your views here.
@@ -791,23 +795,35 @@ def getTicketFilterStatus(request):
         return
 
 
-@login_required(login_url="/login")
-@requires_csrf_token
-def upload_new_files(request, id):
+@login_required(
+    login_url="/login"
+)  # Decorador que exige que o usuário esteja autenticado. Redireciona para a página de login se não estiver.
+@requires_csrf_token  # Decorador que assegura que o token CSRF seja verificado para evitar ataques CSRF.
+def upload_new_files(
+    request, id
+):  # Função para realizar upload de novos arquivos, recebendo a requisição e o ID do ticket.
     if request.method == "GET":
-        return
+        return redirect(
+            "/helpdesk"
+        )  # Redireciona para a página de helpdesk se o método da requisição for GET.
     if request.method == "POST":
-        other_files = None
-        image_bytes = None
-        mime = None
-        file_type = None
-        types_str = None
-        types = None
-        valid = None
-        image_str = None
-        other_image = None
+        # Inicializando variáveis que serão utilizadas na função.
+        other_files = None  # Variável para armazenar outros arquivos.
+        image_bytes = None  # Variável para armazenar bytes de imagem.
+        mime = None  # Variável para armazenar informações MIME do arquivo.
+        file_type = None  # Variável para armazenar o tipo do arquivo.
+        types_str = None  # Variável para armazenar a string dos tipos permitidos.
+        types = None  # Variável para armazenar os tipos permitidos como lista.
+        valid = None  # Variável para armazenar o estado de validade do arquivo.
+        image_str = None  # Variável para armazenar a string codificada da imagem.
+        other_image = None  # Variável para armazenar outras imagens.
+        ticket = None  # Variavel para vincular o ticker do Chamado.
+        date = None  # Variavel para pegar a data.
+        hours = None  # varaivel para pegar a hora.
+        image = None  # variavel que resgatar as imagens do ticketFile
+
         try:
-            print(request.FILES)
+            load_dotenv()
             other_files = request.FILES.getlist("files")
 
             for unit_file in other_files:
@@ -845,15 +861,144 @@ def upload_new_files(request, id):
 
                 if valid:
                     Ticket = SupportTicket.objects.get(id=id)
-                    print(id)
                     ticket_file = TicketFile(ticket=Ticket)
-                    print(unit_file)
 
                     ticket_file.file.save(str(unit_file), ContentFile(image_bytes))
 
+            ticket = SupportTicket.objects.get(id=id)
+
+            date = request.POST.get("date")
+            hours = request.POST.get("hours")
+
+            ticket.chat += f",[[Date:{date}],[{request.user.first_name} {request.user.last_name}: Anexou o arquivo {unit_file}],[Hours:{hours}]]"
+            ticket.save()
             ticket_file.save()
 
-            return JsonResponse({"status": "ok"}, status=200, safe=True)
+            image = TicketFile.objects.filter(ticket_id=id)
+
+            for file in image:
+                pil_image = None
+                img_bytes = None
+                image_data = []
+                name_file = []
+                file_type = None
+                content_file = []
+                try:
+                    with file.file.open() as img:
+                        pil_image = Image.open(img)
+
+                        img_bytes = BytesIO()
+                        pil_image.save(img_bytes, format="PNG")
+
+                        image_data.append(
+                            {"image": b64encode(img_bytes.getvalue()).decode("utf-8")}
+                        )
+                        content_file.append("img")
+                        name_file.append("/".join(str(file.file).split("/")[2:]))
+                        file.file.close()
+
+                except UnidentifiedImageError:
+                    mime = None
+                    serialize = []
+                    try:
+                        file.file.open()
+                        image_bytes = file.file.read()
+
+                        mime = Magic()
+
+                        file_type = mime.from_buffer(image_bytes)
+
+                        if "mail" in file_type.lower():
+                            image_data.append("mail")
+                            with open(str(file.file), "rb") as eml_file:
+                                content_file.append(
+                                    b64encode(eml_file.read()).decode("utf-8")
+                                )
+                                name_file.append(
+                                    "/".join(str(file.file).split("/")[2:])
+                                )
+                            file.file.close()
+
+                        elif "excel" in file_type.lower():
+                            image_data.append("excel")
+                            with open(str(file.file), "rb") as exc_file:
+                                content_file.append(
+                                    b64encode(exc_file.read()).decode("utf-8")
+                                )
+                                name_file.append(
+                                    "/".join(str(file.file).split("/")[2:])
+                                )
+                            file.file.close()
+
+                        elif "zip" in file_type.lower():
+                            image_data.append("zip")
+                            with open(str(file.file), "rb") as zip_file:
+                                content_file.append(
+                                    b64encode(zip_file.read()).decode("utf-8")
+                                )
+                                name_file.append(
+                                    "/".join(str(file.file).split("/")[2:])
+                                )
+                            file.file.close()
+
+                        elif (
+                            "utf-8" in file_type.lower()
+                            and "text" in file_type.lower()
+                            or "ascii" in file_type.lower()
+                            and "text" in file_type.lower()
+                        ):
+                            image_data.append("txt")
+                            with open(str(file.file), "rb") as txt_file:
+                                content_file.append(
+                                    b64encode(txt_file.read()).decode("utf-8")
+                                )
+                                name_file.append(
+                                    "/".join(str(file.file).split("/")[2:])
+                                )
+                                file.file.close()
+
+                        elif (
+                            "microsoft" in file_type.lower()
+                            and "word" in file_type.lower()
+                        ):
+                            image_data.append("word")
+                            with open(str(file.file), "rb") as word_file:
+                                content_file.append(
+                                    b64encode(word_file.read()).decode("utf-8")
+                                )
+                                name_file.append(
+                                    "/".join(str(file.file).split("/")[2:])
+                                )
+                                file.file.close()
+
+                        elif (
+                            "pdf" in file_type.lower()
+                            and "document" in file_type.lower()
+                        ):
+                            image_data.append("pdf")
+                            with open(str(file.file), "rb") as pdf_file:
+                                content_file.append(
+                                    b64encode(pdf_file.read()).decode("utf-8")
+                                )
+                                name_file.append(
+                                    "/".join(str(file.file).split("/")[2:])
+                                )
+                            file.file.close()
+
+                    except Exception as e:
+                        print(e)
+            ticket = SupportTicket.objects.get(id=id)
+
+            return JsonResponse(
+                {
+                    "chat": ticket.chat,
+                    "files": image_data,
+                    "content_file": content_file,
+                    "name_file": name_file,
+                },
+                status=200,
+                safe=True,
+            )
         except Exception as e:
             print(e)
 
@@ -922,3 +1067,11 @@ def getTicketFilterTech(request):
             return JsonResponse({"tickets": ticket_objects}, status=200, safe=True)
         except Exception as e:
             return print(e)
+
+
+@csrf_exempt
+def redirect_to_specific_url(request: HttpRequest, *args, **kwargs):
+    if request.method == "POST":
+        return redirect("/helpdesk")
+    if request.method == "GET":
+        return redirect("/helpdesk")

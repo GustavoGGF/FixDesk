@@ -148,6 +148,8 @@ export default function History() {
   const [themeFilter, setThemeFilter] = useState("");
   const [themeCard, setThemeCard] = useState("");
   const UpNwfile = [];
+  const [loadingFiles, setLoadingFiles] = useState(false);
+  const [loadingChat, setLoadingChat] = useState(false);
 
   let count = 0;
   let timeoutId;
@@ -1023,6 +1025,11 @@ export default function History() {
 
   async function reloadChat({ data }) {
     if (data.chat !== null && data.chat !== undefined && data.chat !== "undefined") {
+      console.log(data);
+      setLoadingChat(true);
+      setMessageError("");
+      setTypeError("");
+      setMessageChat(false);
       setCountChat(data.chat.length);
       setFetchChat(true);
 
@@ -1107,13 +1114,7 @@ export default function History() {
       setMountChat(renderGroupedItems());
 
       setChat(true);
-    } else {
-      const chatDiv = document.getElementById("chatDiv");
-      chatDiv.style.background = "#e9ecef";
-      setMessageError("O CHAT ESTÁ INDIPONIVÉL ATÉ O TECNICO INICIAR UMA CONVERSA");
-      setTypeError("PERMISSÃO NEGADA");
-      setMessageChat(true);
-      setChat(false);
+      setLoadingChat(false);
     }
   }
 
@@ -1697,6 +1698,21 @@ export default function History() {
       const file = uploadNewFiles[0][i];
       formData.append("files", file);
     }
+    var date = new Date();
+    function adicionaZero(numero) {
+      if (numero < 10) {
+        return "0" + numero;
+      }
+      return numero;
+    }
+    var day = date.getDate();
+    var month = date.getMonth() + 1;
+    var year = date.getFullYear();
+
+    var dataFormatada = adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
+    var horaFormatada = adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
+    formData.append("hours", horaFormatada);
+    formData.append("date", dataFormatada);
     fetch("/dashboard_TI/upload-new-files/" + ticketID, {
       method: "POST",
       headers: {
@@ -1705,10 +1721,14 @@ export default function History() {
       body: formData,
     })
       .then((response) => {
+        console.log(response);
         return response.json();
       })
       .then((data) => {
-        return window.location.reload();
+        setNewFiles(false);
+        const chat = data.chat;
+        reloadFiles({ files: data.files, name_file: data.name_file, content_file: data.content_file });
+        reloadChat({ data: chat });
       })
       .catch((err) => {
         setMessageError(err);
@@ -1716,6 +1736,220 @@ export default function History() {
         setMessage(true);
         return console.log(err);
       });
+  }
+
+  function reloadFiles({ files, name_file, content_file }) {
+    setLoadingFiles(true);
+    for (let i = 0; i < files.length; i++) {
+      var file = files[i];
+      if (file === "mail") {
+        const contentFileMail = content_file[i];
+        const nameFileMail = name_file[i];
+        const Div = (
+          <div className="text-center">
+            <DivOnBoardFile className="position-relative">
+              <IMGFiles src={Mail} alt="" />
+              <ImageFile
+                className="position-absolute bottom-0 start-50 translate-middle-x"
+                src={Download}
+                alt=""
+                onClick={() => {
+                  const blob = downloadMail({
+                    data: "message/rfc822",
+                    content: contentFileMail,
+                  });
+
+                  const url = window.URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+                  a.href = url;
+                  a.download = nameFileMail;
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
+                }}
+              />
+            </DivOnBoardFile>{" "}
+            <div>{nameFileMail}</div>
+          </div>
+        );
+        setFileTicket((fileticket) => [...fileticket, Div]);
+      } else if (file === "excel") {
+        const ContentFileExcel = content_file[i];
+        const NameFileExcel = name_file[i];
+        const Div = (
+          <DivOnBoardFile className="position-relative">
+            <IMGFiles src={XLS} alt="" />
+            <ImageFile
+              className="position-absolute bottom-0 start-50 translate-middle-x"
+              src={Download}
+              alt=""
+              onClick={() => {
+                const blob = downloadMail({
+                  data: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                  content: ContentFileExcel,
+                });
+
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = NameFileExcel;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+              }}
+            />
+            <p className="text-center text-break">{NameFileExcel}</p>
+          </DivOnBoardFile>
+        );
+        setFileTicket((fileticket) => [...fileticket, Div]);
+      } else if (file === "zip") {
+        const ContentFileZip = content_file[i];
+        const NameFileZip = name_file[i];
+        const Div = (
+          <DivOnBoardFile className="position-relative">
+            <IMGFiles src={ZIP} alt="" />
+            <ImageFile
+              className="position-absolute bottom-0 start-50 translate-middle-x"
+              src={Download}
+              alt=""
+              onClick={() => {
+                const blob = downloadMail({
+                  data: "application/zip",
+                  content: ContentFileZip,
+                });
+
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = NameFileZip;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+              }}
+            />
+            <p className="text-center text-break">{NameFileZip}</p>
+          </DivOnBoardFile>
+        );
+        setFileTicket((fileticket) => [...fileticket, Div]);
+      } else if (file === "txt") {
+        const ContentFileTXT = content_file[i];
+        const NameFileTXT = name_file[i];
+        const Div = (
+          <DivOnBoardFile className="position-relative">
+            <IMGFiles src={TXT} alt="" />
+            <ImageFile
+              className="position-absolute bottom-0 start-50 translate-middle-x"
+              src={Download}
+              alt=""
+              onClick={() => {
+                const blob = downloadMail({
+                  data: "text/plain",
+                  content: ContentFileTXT,
+                });
+
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = NameFileTXT;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+              }}
+            />
+            <p className="text-center text-break">{NameFileTXT}</p>
+          </DivOnBoardFile>
+        );
+        setFileTicket((fileticket) => [...fileticket, Div]);
+      } else if (file === "word") {
+        const ContentFileWord = content_file[i];
+        const NameFileWord = name_file[i];
+        const Div = (
+          <DivOnBoardFile className="position-relative">
+            <IMGFiles src={WORD} alt="" />
+            <ImageFile
+              className="position-absolute bottom-0 start-50 translate-middle-x"
+              src={Download}
+              alt=""
+              onClick={() => {
+                const blob = downloadMail({
+                  data: "application/pdf",
+                  content: ContentFileWord,
+                });
+
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = NameFileWord;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+              }}
+            />{" "}
+            <p className="text-center text-break">{NameFileWord}</p>
+          </DivOnBoardFile>
+        );
+        setFileTicket((fileticket) => [...fileticket, Div]);
+      } else if (file === "pdf") {
+        const ContentFilePDF = content_file[i];
+        const NameFilePDF = name_file[i];
+        const Div = (
+          <DivOnBoardFile className="position-relative">
+            <IMGFiles src={PDF} alt="" />
+            <ImageFile
+              className="position-absolute bottom-0 start-50 translate-middle-x"
+              src={Download}
+              alt=""
+              onClick={() => {
+                const blob = downloadMail({
+                  data: "application/pdf",
+                  content: ContentFilePDF,
+                });
+
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = NameFilePDF;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+              }}
+            />
+            <p className="text-center text-break">{NameFilePDF}</p>
+          </DivOnBoardFile>
+        );
+        setFileTicket((fileticket) => [...fileticket, Div]);
+      } else if (typeof file === "object") {
+        const image = file.image;
+        const nameFile = name_file[i];
+        const Div = (
+          <DivOnBoardFile className="position-relative">
+            <IMGFiles
+              src={`data:image/jpeg;base64,${file.image}`}
+              onClick={() => {
+                setImageUrl(`data:image/jpeg;base64,${image}`);
+                openImage();
+              }}
+              alt=""
+            />
+            <ImageFile
+              className="position-absolute bottom-0 start-50 translate-middle-x"
+              src={Download}
+              alt=""
+              onClick={() => {
+                const link = document.createElement("a");
+                link.href = `data:image/jpeg;base64,${image}`;
+                link.download = "nome-do-arquivo.jpg";
+                link.click();
+                link.remove();
+              }}
+            />
+            <p className="text-center text-break">{nameFile}</p>
+          </DivOnBoardFile>
+        );
+        setFileTicket((fileticket) => [...fileticket, Div]);
+      }
+    }
+    setLoadingFiles(false);
   }
 
   function downloadTicket() {
@@ -1998,6 +2232,7 @@ export default function History() {
               <TextObersavation ref={textareaRef} name="observation" className="autosize-textarea" disabled></TextObersavation>
               <input type="text" value={"tempo de vida do chamado: " + lifeTime + " dias"} className="form-control" disabled />
               <DivFile hidden={fileticket.length >= 1 ? false : true} className="w-100">
+                {loadingFiles && <Loading />}
                 {fileticket}
               </DivFile>
               <input type="text" value={"Tecnico responsavel: " + (ticketResponsible_Technician ? ticketResponsible_Technician : "Nenhum técnico atribuído")} className="form-control" disabled />
@@ -2009,6 +2244,7 @@ export default function History() {
                   <Message TypeError={typeError} MessageError={messageError} CloseMessage={closeMessage2} />
                 </div>
               )}
+              {loadingChat && <Loading />}
             </DivChat>
             {chat && (
               <div className="w-100 d-flex">
@@ -2016,7 +2252,7 @@ export default function History() {
                   <input className="form-control h-100 fs-5" type="text" onKeyUp={NewChat} id="input-chat" />
                 </div>
                 <BtnChat2>
-                  <InputFile className="w-100" type="file" multiple onInput={UploadNewFiles} />
+                  <InputFile className="w-100 cursor" type="file" multiple onInput={UploadNewFiles} />
                 </BtnChat2>
                 <div>
                   <BtnChat className="btn" type="submit" onClick={SendChat}></BtnChat>

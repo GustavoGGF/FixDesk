@@ -659,6 +659,14 @@ export default function Helpdesk() {
       case "none":
         setAlert(false);
         break;
+      case "error":
+        setAlert(true);
+        setMessagetitle("Erro e Problema em Software gerais");
+        setMessageinfo1("1. Informar nome do Software");
+        setMessageinfo2("2. Informar o erro");
+        setProblemn("Erro e Problema em Software gerais");
+        setAlertVerify(false);
+        break;
     }
   }
 
@@ -1937,6 +1945,7 @@ export default function Helpdesk() {
                 Selecione o Problema
               </option>
               <option value="install">Instalação de Software Novo</option>
+              <option value="error">Erros e Problemas em Softwares Gerais</option>
             </Select>
           )}
           {dadosCase && (

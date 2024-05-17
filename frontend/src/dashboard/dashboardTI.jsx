@@ -289,7 +289,7 @@ export default function DashboardTI() {
    */
   useEffect(() => {
     if (textareaRef.current && textareaRef.current.value !== null) {
-      resizeTextarea(textareaRef.current);
+      resizeTextarea();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ticketWindow]);
@@ -298,10 +298,20 @@ export default function DashboardTI() {
    * Função para ajustar o tamanho do textarea com base no conteúdo.
    * @param {HTMLTextAreaElement} textarea - O elemento textarea para redimensionar.
    */
-  function resizeTextarea(textarea) {
-    const lh = textarea.lineHeight;
-    const lines = textarea.value.split("\n").length;
-    textarea.style.height = lh * lines + "px";
+  function resizeTextarea() {
+    // Força o navegador a recalcular o lineHeight após um pequeno atraso
+    setTimeout(() => {
+      const lineHeight = parseInt(window.getComputedStyle(textareaRef.current).lineHeight);
+      const lines = textareaRef.current.value.split("\n").length;
+      const lastLineLength = textareaRef.current.value.split("\n").pop().length;
+      const extraLines = textareaRef.current.value.endsWith("\n") ? 1 : 0; // Contabiliza uma linha extra se o texto terminar com uma quebra de linha
+      const totalLines = lines + extraLines;
+      const height = lineHeight * totalLines + (lastLineLength === 0 ? lineHeight : 0); // Adiciona altura extra se a última linha estiver vazia
+
+      console.log(height);
+
+      textareaRef.current.style.height = height + "px";
+    }, 0);
   }
 
   /**
@@ -3161,7 +3171,7 @@ export default function DashboardTI() {
                   </div>
                 </Calendar>
               </DivINp>
-              <TextObersavation ref={textareaRef} name="observation" className="autosize-textarea" disabled></TextObersavation>
+              <TextObersavation ref={textareaRef} name="observation" disabled></TextObersavation>
               <input type="text" value={"tempo de vida do chamado: " + lifeTime + " dias"} className="form-control" disabled />
               <DivFile hidden={fileticket.length >= 1 ? false : true} className="w-100">
                 {fileticket}
