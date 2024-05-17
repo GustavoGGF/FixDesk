@@ -34,9 +34,7 @@
     }
   },
   "History": {
-    "Upgrade": {
-      "Upgrade1": "ao adicionar novos arquivos mostrar no chat"
-    },
+    "Upgrade": {},
     "HotFix": {
       "HotFix2": "Revisão todos os Filter",
       "Animation file idea": "Quando estiver com o ticker aberto e tiver uma imagem, deixar cursor mouse e ao clicar ter animação da imagem subindo para tela e ajustar tela de visualização de imagem",
