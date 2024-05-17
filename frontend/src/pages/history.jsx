@@ -148,8 +148,6 @@ export default function History() {
   const [themeFilter, setThemeFilter] = useState("");
   const [themeCard, setThemeCard] = useState("");
   const UpNwfile = [];
-  const [loadingFiles, setLoadingFiles] = useState(false);
-  const [loadingChat, setLoadingChat] = useState(false);
 
   let count = 0;
   let timeoutId;
@@ -1025,8 +1023,6 @@ export default function History() {
 
   async function reloadChat({ data }) {
     if (data.chat !== null && data.chat !== undefined && data.chat !== "undefined") {
-      console.log(data);
-      setLoadingChat(true);
       setMessageError("");
       setTypeError("");
       setMessageChat(false);
@@ -1114,7 +1110,6 @@ export default function History() {
       setMountChat(renderGroupedItems());
 
       setChat(true);
-      setLoadingChat(false);
     }
   }
 
@@ -1739,7 +1734,6 @@ export default function History() {
   }
 
   function reloadFiles({ files, name_file, content_file }) {
-    setLoadingFiles(true);
     for (let i = 0; i < files.length; i++) {
       var file = files[i];
       if (file === "mail") {
@@ -1949,7 +1943,6 @@ export default function History() {
         setFileTicket((fileticket) => [...fileticket, Div]);
       }
     }
-    setLoadingFiles(false);
   }
 
   function downloadTicket() {
@@ -2232,7 +2225,6 @@ export default function History() {
               <TextObersavation ref={textareaRef} name="observation" className="autosize-textarea" disabled></TextObersavation>
               <input type="text" value={"tempo de vida do chamado: " + lifeTime + " dias"} className="form-control" disabled />
               <DivFile hidden={fileticket.length >= 1 ? false : true} className="w-100">
-                {loadingFiles && <Loading />}
                 {fileticket}
               </DivFile>
               <input type="text" value={"Tecnico responsavel: " + (ticketResponsible_Technician ? ticketResponsible_Technician : "Nenhum técnico atribuído")} className="form-control" disabled />
@@ -2244,7 +2236,6 @@ export default function History() {
                   <Message TypeError={typeError} MessageError={messageError} CloseMessage={closeMessage2} />
                 </div>
               )}
-              {loadingChat && <Loading />}
             </DivChat>
             {chat && (
               <div className="w-100 d-flex">
