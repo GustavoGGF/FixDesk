@@ -36,14 +36,13 @@
   "History": {
     "Upgrade": {},
     "HotFix": {
-      "HotFix2": "Revisão todos os Filter",
       "Animation file idea": "Quando estiver com o ticker aberto e tiver uma imagem, deixar cursor mouse e ao clicar ter animação da imagem subindo para tela e ajustar tela de visualização de imagem",
-      "MCD": "Melhorar CSS do observation"
+      "MCD": "Melhorar CSS do observation",
+      "Adjust css Filter status": "Status ta mais para baixo"
     }
   },
   "Dashboard": {
     "Upgrade": {
-      "Upgrade2": "ao adicionar novos arquivos mostrar no chat",
       "Upgrade3": "cabeçalho de chamados para modo Lista",
       "Upgrade4": "fazer metodo para excluir usuario do banco de dados do django",
       "DashboardPieLoadingData": "fazer busca de dados no dashboardPIE a cada 60 sec"
@@ -61,7 +60,8 @@
       "Animation file idea": "Quando estiver com o ticker aberto e tiver uma imagem, deixar cursor mouse e ao clicar ter animação da imagem subindo para tela e ajustar tela de visualização de imagem",
       "DSHB": "no DashboardPie não mostra os chamados em aguardo",
       "TLC": "Tela de loading fica carregando ainda",
-      "MCD": "Melhorar CSS do observation"
+      "MCD": "Melhorar CSS do observation",
+      "Adjust css Filter status": "Status ta mais para baixo"
     }
   },
   "Navbar": {

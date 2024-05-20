@@ -20,6 +20,9 @@ from django.core.files.base import ContentFile
 from PIL import Image, UnidentifiedImageError
 from io import BytesIO
 from base64 import b64encode
+from django.db.models.functions import TruncDate
+from django.utils.timezone import make_aware
+import pytz
 
 
 # Create your views here.
@@ -357,104 +360,226 @@ def getTicketFilterWords(request):
         ticket_list = []
         ticket_json = None
         magic_word_int = None
-        test_for_date = None
         order = None
         Quantity_tickets = None
         ticket_objects = []
+        sector_ticket = None
+        occurrence_ticket = None
         try:
             magic_word = request.META.get("HTTP_WORD_FILTER")
             order = request.META.get("HTTP_ORDER_BY")
-            print(order)
             Quantity_tickets = int(request.META.get("HTTP_QUANTITY_TICKETS"))
-            test_for_date = date.fromisoformat(magic_word)
+            sector_ticket = request.META.get("HTTP_SECTOR_FILTER")
+            occurrence_ticket = request.META.get("HTTP_PROBLEM_FILTER")
+            if sector_ticket != None:
+                if occurrence_ticket != None:
+                    try:
+                        magic_word_int = int(magic_word)
+                        if order == "-id":
+                            ticket_data = SupportTicket.objects.filter(
+                                respective_area="TI",
+                                id=magic_word_int,
+                                sector=sector_ticket,
+                                occurrence=occurrence_ticket,
+                            ).order_by("-id")[:Quantity_tickets]
 
-        except ValueError:
-            test_for_date = None
-        try:
-            magic_word_int = int(magic_word)
+                        else:
+                            ticket_data = SupportTicket.objects.filter(
+                                respective_area="TI",
+                                id=magic_word_int,
+                                sector=sector_ticket,
+                                occurrence=occurrence_ticket,
+                            )[:Quantity_tickets]
 
-            if order == "-id":
-                ticket_data = SupportTicket.objects.filter(
-                    respective_area="TI",
-                    id=magic_word_int,
-                ).order_by("-id")[:Quantity_tickets]
+                        for ticket in ticket_data:
+                            ticket_json = serialize("json", [ticket])
+                            ticket_list.append(ticket_json)
 
-                for ticket in ticket_data:
-                    ticket_json = serialize("json", [ticket])
-                    ticket_list.append(ticket_json)
+                        for ticket in ticket_list:
+                            ticket_data = loads(ticket)[0]["fields"]
+                            ticket_data["id"] = loads(ticket)[0]["pk"]
+                            ticket_objects.append(ticket_data)
 
-                for ticket in ticket_list:
-                    ticket_data = loads(ticket)[0]["fields"]
-                    ticket_data["id"] = loads(ticket)[0]["pk"]
-                    ticket_objects.append(ticket_data)
+                        return JsonResponse(
+                            {"tickets": ticket_objects}, status=200, safe=True
+                        )
+                    except ValueError:
+                        if order == "-id":
+                            ticket_data = SupportTicket.objects.filter(
+                                Q(occurrence__icontains=occurrence_ticket)
+                                | Q(ticketRequester=magic_word)
+                                | Q(problemn__icontains=magic_word)
+                                | Q(observation__icontains=magic_word)
+                                | Q(respective_area__icontains=magic_word)
+                                | Q(responsible_technician__icontains=magic_word),
+                            ).order_by("-id")[:Quantity_tickets]
 
-                return JsonResponse({"tickets": ticket_objects}, status=200, safe=True)
-            if order == "id":
-                ticket_data = SupportTicket.objects.filter(
-                    respective_area="TI",
-                    id=magic_word_int,
-                )[:Quantity_tickets]
+                        else:
+                            ticket_data = SupportTicket.objects.filter(
+                                Q(ticketRequester=magic_word)
+                                | Q(problemn__icontains=magic_word)
+                                | Q(observation__icontains=magic_word)
+                                | Q(respective_area__icontains=magic_word)
+                                | Q(responsible_technician__icontains=magic_word),
+                            )[:Quantity_tickets]
 
-                for ticket in ticket_data:
-                    ticket_json = serialize("json", [ticket])
-                    ticket_list.append(ticket_json)
+                        for ticket in ticket_data:
+                            ticket_json = serialize("json", [ticket])
+                            ticket_list.append(ticket_json)
 
-                for ticket in ticket_list:
-                    ticket_data = loads(ticket)[0]["fields"]
-                    ticket_data["id"] = loads(ticket)[0]["pk"]
-                    ticket_objects.append(ticket_data)
+                        ticket_objects = []
 
-                return JsonResponse({"tickets": ticket_objects}, status=200, safe=True)
+                        for ticket in ticket_list:
+                            ticket_data = loads(ticket)[0]["fields"]
+                            ticket_data["id"] = loads(ticket)[0]["pk"]
+                            ticket_objects.append(ticket_data)
 
-            if test_for_date:
-                if order == "-id":
-                    ticket_data = SupportTicket.objects.filter().order_by("-id")[
-                        :Quantity_tickets
-                    ]
+                        return JsonResponse(
+                            {"tickets": ticket_objects}, status=200, safe=True
+                        )
+
+                    except Exception as e:
+                        print(e)
+                        return JsonResponse(
+                            {"tickets": ticket_objects}, status=200, safe=True
+                        )
                 else:
-                    ticket_data = SupportTicket.objects.filter()[:Quantity_tickets]
+                    try:
+                        magic_word_int = int(magic_word)
+                        if order == "-id":
+                            ticket_data = SupportTicket.objects.filter(
+                                respective_area="TI",
+                                id=magic_word_int,
+                                sector=sector_ticket,
+                            ).order_by("-id")[:Quantity_tickets]
 
-        except ValueError:
-            if order == "-id":
-                ticket_data = SupportTicket.objects.filter(
-                    Q(sector__icontains=magic_word)
-                    | Q(ticketRequester=magic_word)
-                    | Q(occurrence__icontains=magic_word)
-                    | Q(problemn__icontains=magic_word)
-                    | Q(observation__icontains=magic_word)
-                    | Q(respective_area__icontains=magic_word)
-                    | Q(responsible_technician__icontains=magic_word),
-                ).order_by("-id")[:Quantity_tickets]
+                        else:
+                            ticket_data = SupportTicket.objects.filter(
+                                respective_area="TI",
+                                id=magic_word_int,
+                                sector=sector_ticket,
+                            )[:Quantity_tickets]
 
+                        for ticket in ticket_data:
+                            ticket_json = serialize("json", [ticket])
+                            ticket_list.append(ticket_json)
+
+                        for ticket in ticket_list:
+                            ticket_data = loads(ticket)[0]["fields"]
+                            ticket_data["id"] = loads(ticket)[0]["pk"]
+                            ticket_objects.append(ticket_data)
+
+                        return JsonResponse(
+                            {"tickets": ticket_objects}, status=200, safe=True
+                        )
+                    except ValueError:
+                        if order == "-id":
+                            ticket_data = SupportTicket.objects.filter(
+                                Q(occurrence__icontains=magic_word)
+                                | Q(ticketRequester=magic_word)
+                                | Q(problemn__icontains=magic_word)
+                                | Q(observation__icontains=magic_word)
+                                | Q(respective_area__icontains=magic_word)
+                                | Q(responsible_technician__icontains=magic_word),
+                            ).order_by("-id")[:Quantity_tickets]
+
+                        else:
+                            ticket_data = SupportTicket.objects.filter(
+                                Q(ticketRequester=magic_word)
+                                | Q(problemn__icontains=magic_word)
+                                | Q(observation__icontains=magic_word)
+                                | Q(respective_area__icontains=magic_word)
+                                | Q(responsible_technician__icontains=magic_word),
+                            )[:Quantity_tickets]
+
+                        for ticket in ticket_data:
+                            ticket_json = serialize("json", [ticket])
+                            ticket_list.append(ticket_json)
+
+                        ticket_objects = []
+
+                        for ticket in ticket_list:
+                            ticket_data = loads(ticket)[0]["fields"]
+                            ticket_data["id"] = loads(ticket)[0]["pk"]
+                            ticket_objects.append(ticket_data)
+
+                        return JsonResponse(
+                            {"tickets": ticket_objects}, status=200, safe=True
+                        )
+
+                    except Exception as e:
+                        print(e)
+                        return JsonResponse(
+                            {"tickets": ticket_objects}, status=200, safe=True
+                        )
             else:
-                ticket_data = SupportTicket.objects.filter(
-                    Q(sector__icontains=magic_word)
-                    | Q(ticketRequester=magic_word)
-                    | Q(occurrence__icontains=magic_word)
-                    | Q(problemn__icontains=magic_word)
-                    | Q(observation__icontains=magic_word)
-                    | Q(respective_area__icontains=magic_word)
-                    | Q(responsible_technician__icontains=magic_word),
-                )[:Quantity_tickets]
+                try:
+                    magic_word_int = int(magic_word)
+                    if order == "-id":
+                        ticket_data = SupportTicket.objects.filter(
+                            respective_area="TI",
+                            id=magic_word_int,
+                            sector=sector_ticket,
+                        ).order_by("-id")[:Quantity_tickets]
 
-            for ticket in ticket_data:
-                ticket_json = serialize("json", [ticket])
-                ticket_list.append(ticket_json)
+                    else:
+                        ticket_data = SupportTicket.objects.filter(
+                            respective_area="TI",
+                            id=magic_word_int,
+                            sector=sector_ticket,
+                        )[:Quantity_tickets]
+
+                        for ticket in ticket_data:
+                            ticket_json = serialize("json", [ticket])
+                            ticket_list.append(ticket_json)
+
+                        for ticket in ticket_list:
+                            ticket_data = loads(ticket)[0]["fields"]
+                            ticket_data["id"] = loads(ticket)[0]["pk"]
+                            ticket_objects.append(ticket_data)
+
+                        return JsonResponse(
+                            {"tickets": ticket_objects}, status=200, safe=True
+                        )
+                except ValueError:
+                    if order == "-id":
+                        ticket_data = SupportTicket.objects.filter(
+                            Q(occurrence__icontains=magic_word)
+                            | Q(ticketRequester=magic_word)
+                            | Q(problemn__icontains=magic_word)
+                            | Q(observation__icontains=magic_word)
+                            | Q(respective_area__icontains=magic_word)
+                            | Q(responsible_technician__icontains=magic_word),
+                        ).order_by("-id")[:Quantity_tickets]
+
+                    else:
+                        ticket_data = SupportTicket.objects.filter(
+                            Q(ticketRequester=magic_word)
+                            | Q(problemn__icontains=magic_word)
+                            | Q(observation__icontains=magic_word)
+                            | Q(respective_area__icontains=magic_word)
+                            | Q(responsible_technician__icontains=magic_word),
+                        )[:Quantity_tickets]
+
+                    for ticket in ticket_data:
+                        ticket_json = serialize("json", [ticket])
+                        ticket_list.append(ticket_json)
+
+                    ticket_objects = []
+
+                    for ticket in ticket_list:
+                        ticket_data = loads(ticket)[0]["fields"]
+                        ticket_data["id"] = loads(ticket)[0]["pk"]
+                        ticket_objects.append(ticket_data)
+
+                    return JsonResponse(
+                        {"tickets": ticket_objects}, status=200, safe=True
+                    )
 
         except Exception as e:
             print(e)
-
-        ticket_objects = []
-        try:
-            for ticket in ticket_list:
-                ticket_data = loads(ticket)[0]["fields"]
-                ticket_data["id"] = loads(ticket)[0]["pk"]
-                ticket_objects.append(ticket_data)
-
             return JsonResponse({"tickets": ticket_objects}, status=200, safe=True)
 
-        except Exception as e:
-            print(e)
 
 @login_required(login_url="/login")
 def moreTicket(request):

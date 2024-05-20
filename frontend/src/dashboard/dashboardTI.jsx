@@ -1616,9 +1616,6 @@ export default function DashboardTI() {
     btnAll.current.classList.remove("btn-all");
 
     const newText = event.target.value;
-    setProblemSyst(false);
-    setProblemInfra(false);
-    setFakeSelect(true);
 
     fetch("getTicketFilterWords/", {
       method: "GET",
@@ -1627,6 +1624,8 @@ export default function DashboardTI() {
         "Word-Filter": newText,
         "Order-By": orderby,
         "Quantity-tickets": countTicket,
+        "Sector-Filter": sectorTicket,
+        "Problem-Filter": problemTicket,
       },
     })
       .then((response) => {
@@ -1862,6 +1861,12 @@ export default function DashboardTI() {
       case "eng":
         setProblemTicket("Softwares de Eng");
         return getTicketFilterProblemn({ problemn: "Softwares de Eng" });
+      case "soft":
+        setProblemTicket("Novo SoftWare");
+        return getTicketFilterProblemn({ problemn: "Novo SoftWare" });
+      case "dados":
+        setProblemTicket("Integridade de Dados");
+        return getTicketFilterProblemn({ problemn: "Integridade de Dados" });
     }
   }
 
@@ -3127,6 +3132,8 @@ export default function DashboardTI() {
             <option value="user">Gerenciamento de Usuario</option>
             <option value="internet">Internet</option>
             <option value="permissao">Pasta</option>
+            <option value="soft">Software e Aplicativos</option>
+            <option value="dados">Integridade de Dados</option>
             <option value="all">Todos</option>
           </Select1>
         )}
