@@ -729,7 +729,7 @@ export default function DashboardTI() {
               const nameFileMail = data.name_file[i]; // Obtém o nome do arquivo de e-mail.
               const Div = (
                 <DivOnBoardFile className="position-relative">
-                  <IMGFiles src={Mail} alt="" />
+                  <IMGFiles src={Mail} className="cursor" alt="imagem de email" />
                   <ImageFile
                     className="position-absolute bottom-0 start-50 translate-middle-x"
                     src={Download}
@@ -759,7 +759,7 @@ export default function DashboardTI() {
               const NameFileExcel = data.name_file[i]; // Obtém o nome do arquivo Excel.
               const Div = (
                 <DivOnBoardFile className="position-relative">
-                  <IMGFiles src={XLS} alt="" />
+                  <IMGFiles src={XLS} className="cursor" alt="imagem Excell" />
                   <ImageFile
                     className="position-absolute bottom-0 start-50 translate-middle-x"
                     src={Download}
@@ -789,7 +789,7 @@ export default function DashboardTI() {
               const NameFileZip = data.name_file[i]; // Obtém o nome do arquivo ZIP.
               const Div = (
                 <DivOnBoardFile className="position-relative">
-                  <IMGFiles src={ZIP} alt="" />
+                  <IMGFiles src={ZIP} className="cursor" alt="imagem ZIP" />
                   <ImageFile
                     className="position-absolute bottom-0 start-50 translate-middle-x"
                     src={Download}
@@ -819,7 +819,7 @@ export default function DashboardTI() {
               const NameFileTXT = data.name_file[i]; // Obtém o nome do arquivo TXT.
               const Div = (
                 <DivOnBoardFile className="position-relative">
-                  <IMGFiles src={TXT} alt="" />
+                  <IMGFiles src={TXT} className="cursor" alt="Arquivo TXT" />
                   <ImageFile
                     className="position-absolute bottom-0 start-50 translate-middle-x"
                     src={Download}
@@ -849,7 +849,7 @@ export default function DashboardTI() {
               const NameFileWord = data.name_file[i]; // Obtém o nome do arquivo Word.
               const Div = (
                 <DivOnBoardFile className="position-relative">
-                  <IMGFiles src={WORD} alt="" />
+                  <IMGFiles src={WORD} className="cursor" alt="Arquivo Word" />
                   <ImageFile
                     className="position-absolute bottom-0 start-50 translate-middle-x"
                     src={Download}
@@ -879,7 +879,7 @@ export default function DashboardTI() {
               const NameFilePDF = data.name_file[i]; // Obtém o nome do arquivo PDF.
               const Div = (
                 <DivOnBoardFile className="position-relative">
-                  <IMGFiles src={PDF} alt="" />
+                  <IMGFiles src={PDF} className="cursor" alt="Arquivo PDF" />
                   <ImageFile
                     src={Download}
                     className="position-absolute bottom-0 start-50 translate-middle-x"
@@ -915,37 +915,8 @@ export default function DashboardTI() {
                       setImageUrl(`data:image/jpeg;base64,${image}`);
                       openImage();
                     }}
-                    alt=""
-                  />
-                  <ImageFile
-                    className="position-absolute bottom-0 start-50 translate-middle-x"
-                    src={Download}
-                    alt=""
-                    onClick={() => {
-                      const link = document.createElement("a");
-                      link.href = `data:image/jpeg;base64,${image}`;
-                      link.download = nameImage;
-                      link.click();
-                      link.remove();
-                    }}
-                  />
-                  <p className="text-center text-break">{nameImage}</p>
-                </DivOnBoardFile>
-              );
-              setFileTicket((fileticket) => [...fileticket, Div]); // Adiciona a visualização da imagem ao estado correspondente.
-            } else if (typeof file === "object") {
-              // Verifica se o arquivo é um objeto (imagem).
-              const image = file.image; // Obtém a imagem do arquivo.
-              const nameImage = data.name_file[i]; // Obtém o nome da imagem.
-              const Div = (
-                <DivOnBoardFile className="position-relative">
-                  <IMGFiles
-                    src={`data:image/jpeg;base64,${file.image}`}
-                    onClick={() => {
-                      setImageUrl(`data:image/jpeg;base64,${image}`);
-                      openImage();
-                    }}
-                    alt=""
+                    className="cursor"
+                    alt="Arquivo de Imagem"
                   />
                   <ImageFile
                     className="position-absolute bottom-0 start-50 translate-middle-x"
@@ -1168,6 +1139,7 @@ export default function DashboardTI() {
     count = 0; // Reinicia a contagem do chat.
     clearTimeout(timeoutId); // Limpa o timeout para atualização do chat.
     setTechDetails(false); // Define o estado de detalhes técnicos como falso.
+    setImageOpen(false); //Fecha a imagem do arquivo em anexo
   }
 
   // Função que salva a mudança do técnico selecionado.

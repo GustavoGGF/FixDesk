@@ -69,6 +69,7 @@ export const IMGFiles = styled.img`
     transform: scale(1.2);
   }
   margin: 0 auto;
+  cursor: pointer !important;
 `;
 
 export const InputFile = styled.input`
@@ -78,7 +79,7 @@ export const InputFile = styled.input`
 
 export const DivImageOpen = styled.div`
   z-index: 10000 !important;
-  background-color: var(--light-white3);
+  background-color: transparent;
 `;
 
 export const ImageOpen = styled.img`
