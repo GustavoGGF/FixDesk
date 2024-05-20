@@ -16,6 +16,8 @@ import { Chart } from "chart.js/auto";
  */
 import { Div } from "../styles/dashboardPie";
 
+let myChart = null;
+
 export default function DashBoardPie({ sector }) {
   /**
    * Variáveis de estado utilizadas neste componente.
@@ -25,6 +27,10 @@ export default function DashBoardPie({ sector }) {
   const [dataPie, setDataPie] = useState("");
   const [loading, setLoading] = useState(true);
 
+  /**
+   * Variável timeoutBarUpdate utilizada para armazenar o identificador do timeout responsável pela atualização contínua do dashboard.
+   */
+  let timeoutBarUpdate;
   /**
    * - Acionado ao inicializar o componente para buscar dados para o dashboard de pizza.
    * - Utiliza uma função assíncrona para realizar a requisição dos dados.
@@ -53,6 +59,7 @@ export default function DashBoardPie({ sector }) {
         const data = await response.json();
         setDataPie(data);
         setLoading(false);
+        CallNewBar();
         return;
       } catch (err) {
         return console.error(err);
@@ -75,7 +82,6 @@ export default function DashBoardPie({ sector }) {
    */
   useEffect(() => {
     const dash = document.getElementById("dashpie");
-    let myChart = null;
 
     if (dataPie && dataPie.data) {
       if (myChart) {
@@ -98,7 +104,45 @@ export default function DashBoardPie({ sector }) {
 
       dash.style.display = "block";
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataPie]);
+
+  function CallNewBar() {
+    if (timeoutBarUpdate) {
+      clearTimeout(timeoutBarUpdate);
+    }
+
+    timeoutBarUpdate = setTimeout(() => {
+      fetchPie();
+    }, 60000);
+  }
+
+  function fetchPie() {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`getDashBoardPie/${sector}`, {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+          },
+        });
+
+        if (response.status === 210) {
+          setLoading(true);
+          // Faça algo aqui se a resposta for 210
+        }
+
+        const data = await response.json();
+        setDataPie(data);
+        setLoading(false);
+        return;
+      } catch (err) {
+        return console.error(err);
+      }
+    };
+
+    return fetchData();
+  }
 
   return (
     <Div>

@@ -3623,7 +3623,9 @@ export default function DashboardTI() {
               <h2 className="text-center">Detalhes tecnicos</h2>
             </div>
             <div>
-              <button onClick={closeDetails}>X</button>
+              <button onClick={closeDetails}>
+                <img src={CloseIMG} alt="" />
+              </button>
             </div>
           </div>
           <div className="overflow-y-auto w-100 h-100 position relative">
