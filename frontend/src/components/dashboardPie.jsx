@@ -85,11 +85,11 @@ export default function DashBoardPie({ sector }) {
       myChart = new Chart(dash, {
         type: "pie",
         data: {
-          labels: ["Chamados", "Chamados em Aberto", "Chamados Finalizados", "Chamados Urgentes(mais de 7 dias aberto)"],
+          labels: ["Chamados", "Chamados em Aberto", "Chamados Finalizados", "Chamados em Aguardo", "Chamados Urgentes(mais de 7 dias aberto)"],
           datasets: [
             {
               data: dataPie.data,
-              backgroundColor: ["#00b4d8", "#ffd60a", "#38b000", "#d00000"],
+              backgroundColor: ["#00b4d8", "#ffd60a", "#38b000", "#f9f9f9", "#d00000"],
               hoverOffset: 4,
             },
           ],

@@ -100,13 +100,14 @@ def getDashBoardPie(request, sector):
             diference = None
 
             try:
-                boardpie = [0, 0, 0, 0]
+                boardpie = [0, 0, 0, 0, 0]
                 tickets_data = SupportTicket.objects.filter(respective_area="TI")
 
                 count = 0
                 openTicket = 0
                 count_urgent = 0
                 closeTicket = 0
+                stopTicket = 0
                 date_verify = None
 
                 for tickets in tickets_data:
@@ -114,10 +115,12 @@ def getDashBoardPie(request, sector):
 
                     opens = tickets.open
 
-                    if opens:
+                    if opens == True:
                         openTicket += 1
-                    else:
+                    if opens == False:
                         closeTicket += 1
+                    if opens == None:
+                        stopTicket += 1
 
                     date_verify = tickets.start_date
 
@@ -131,7 +134,8 @@ def getDashBoardPie(request, sector):
                 boardpie[0] = count
                 boardpie[1] = openTicket
                 boardpie[2] = closeTicket
-                boardpie[3] = count_urgent
+                boardpie[3] = stopTicket
+                boardpie[4] = count_urgent
 
                 return JsonResponse({"data": boardpie}, status=200, safe=True)
 
