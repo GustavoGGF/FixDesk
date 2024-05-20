@@ -40,8 +40,7 @@
   "Dashboard": {
     "Upgrade": {
       "Upgrade3": "cabeçalho de chamados para modo Lista",
-      "Upgrade4": "fazer metodo para excluir usuario do banco de dados do django",
-      "DashboardPieLoadingData": "fazer busca de dados no dashboardPIE a cada 60 sec"
+      "Upgrade4": "fazer metodo para excluir usuario do banco de dados do django"
     },
     "HotFix": {
       "HotFix1": "ao clicar na engrenagem do chamado aberto do TI quando clicar fora tem que fechar",
@@ -50,8 +49,7 @@
       "HotFix4": "deixar botão de fechar tela de cadastro de equipamento menor",
       "HotFix5": "mudar scroll de tudo da tela de cadastrode equip",
       "HotFix6": "botão de fechar na tela de modificação de chamado",
-      "HotFix7": "ajustar descrição no pdf",
-      "HotFix8": "tech_details icone de fechar"
+      "HotFix7": "ajustar descrição no pdf"
     }
   },
   "Navbar": {

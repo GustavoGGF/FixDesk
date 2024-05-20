@@ -56,6 +56,7 @@ import {
   DivChatDetails,
   ImgSend,
   TextObersavation,
+  ButtonDet,
 } from "../styles/dashboardTI.js";
 import Loading from "../components/loading";
 import DashBoardPie from "../components/dashboardPie";
@@ -3623,9 +3624,9 @@ export default function DashboardTI() {
               <h2 className="text-center">Detalhes tecnicos</h2>
             </div>
             <div>
-              <button onClick={closeDetails}>
+              <ButtonDet onClick={closeDetails}>
                 <img src={CloseIMG} alt="" />
-              </button>
+              </ButtonDet>
             </div>
           </div>
           <div className="overflow-y-auto w-100 h-100 position relative">

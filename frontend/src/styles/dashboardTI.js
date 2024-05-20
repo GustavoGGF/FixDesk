@@ -180,3 +180,8 @@ export const TextObersavation = styled.textarea`
   padding: 0.375rem 0.75rem;
   height: 7em !important;
 `;
+
+export const ButtonDet = styled.button`
+  border: none;
+  background-color: transparent;
+`;
