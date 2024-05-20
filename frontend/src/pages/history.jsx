@@ -2114,7 +2114,7 @@ export default function History() {
             <ImgSelectView src={Card} clasName="img-fluid" alt="" />
           </button>
         </DivSelectView>
-        <DivSelectView className="mt-3">
+        <DivSelectView>
           <PSelectView className="position-absolute top-0 start-0 translate-middle">Status</PSelectView>
           <Button1
             className="btn btn-open"

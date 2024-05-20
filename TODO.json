@@ -36,8 +36,6 @@
   "History": {
     "Upgrade": {},
     "HotFix": {
-      "Animation file idea": "Quando estiver com o ticker aberto e tiver uma imagem, deixar cursor mouse e ao clicar ter animação da imagem subindo para tela e ajustar tela de visualização de imagem",
-      "MCD": "Melhorar CSS do observation",
       "Adjust css Filter status": "Status ta mais para baixo"
     }
   },
