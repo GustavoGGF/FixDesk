@@ -122,6 +122,12 @@ def getDashBoardPie(request, sector):
                     if opens == None:
                         stopTicket += 1
 
+                tickets_data = SupportTicket.objects.filter(
+                    respective_area="TI", open=True
+                )
+
+                for tickets in tickets_data:
+
                     date_verify = tickets.start_date
 
                     date_current = datetime.now(date_verify.tzinfo)

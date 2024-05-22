@@ -86,6 +86,7 @@ def CreateOrVerifyUser(user, password, request, helpdesk, name_create_user):
             group_leader.save()
             Valid = False
     except Exception as e:
+        Valid = False
         print(e)
         return JsonResponse({"status": "error"}, status=400, safe=True)
 
