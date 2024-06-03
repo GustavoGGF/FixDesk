@@ -18,8 +18,6 @@ import {
   DivCard,
   H5Card,
   SpanCard,
-  DivList,
-  SpanList,
   PQuantity,
   IMGFiles2,
   DivAlocate,
@@ -50,6 +48,11 @@ import {
   PChatHourR,
   DivFlex1,
   DivFlex2,
+  TR,
+  TD,
+  TRSPACE,
+  Table,
+  TH,
 } from "../styles/historyStyle";
 import { DivNameFile, BtnFile, ImgFile, TitlePage } from "../styles/helpdeskStyle";
 import { DayPicker } from "react-day-picker";
@@ -925,23 +928,26 @@ export default function History() {
       } else if (ticket["open"] === null) {
         colorBorder = "ticketStop";
       }
-
       const Div = (
-        <DivList
+        <TR
+          key={ticket["id"]}
           className={`animate__animated animate__backInUp ${colorBorder}`}
           onClick={() => {
             helpdeskPage({ id: ticket["id"] });
           }}
         >
-          <H5Card>chamado {ticket["id"]}</H5Card>
-          <SpanList>{ticket["ticketRequester"]}</SpanList>
-          <SpanList>Ocorrência: {ticket["occurrence"]}</SpanList>
-          <SpanList>Problema: {ticket["problemn"]}</SpanList>
-          <SpanList>{newDate}</SpanList>
-        </DivList>
+          <TD>{ticket["id"]}</TD>
+          <TD>{ticket["ticketRequester"]}</TD>
+          <TD>{ticket["occurrence"]}</TD>
+          <TD>{ticket["problemn"]}</TD>
+          <TD>{newDate}</TD>
+        </TR>
       );
 
-      setTicketsDash((ticketsDash) => [...ticketsDash, Div]);
+      const Space = <TRSPACE></TRSPACE>;
+
+      setTicketsDash((ticketsDash) => [...ticketsDash, Div]); // Adiciona o cartão ao array de chamados.
+      setTicketsDash((ticketsDash) => [...ticketsDash, Space]);
       const dash = document.getElementById("dashboard");
       dash.classList.add("dashCard");
 
@@ -2163,7 +2169,16 @@ export default function History() {
             <Loading />
           </div>
         )}
-        {ticketsDash}
+        <Table>
+          <thead>
+            <TH className="colorBlack">Chamado</TH>
+            <TH className="colorBlack">Usuario</TH>
+            <TH className="colorBlack">Ocorrencia</TH>
+            <TH className="colorBlack">Problema</TH>
+            <TH className="colorBlack">Data Abertura</TH>
+          </thead>
+          <tbody>{ticketsDash}</tbody>
+        </Table>
       </section>
       {ticketWindow && (
         <TicketOpen className="position-fixed top-50 start-50 translate-middle">

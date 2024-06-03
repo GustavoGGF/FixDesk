@@ -334,3 +334,35 @@ export const DivFlex2 = styled.div`
   display: flex;
   justify-content: start !important;
 `;
+
+export const TR = styled.tr`
+  cursor: pointer;
+  transition: 0.7s;
+  &:hover {
+    transform: scale(1.1);
+  }
+`;
+
+export const TRSPACE = styled.tr`
+  width: 100%;
+  height: 0.8em;
+  background-color: transparent;
+`;
+
+export const Table = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+`;
+
+export const TH = styled.th`
+  width: calc(100% / 6); /* Dividir a largura total igualmente entre 6 colunas */
+  border: 1px solid black;
+  text-align: center;
+  padding: 10px; /* Ajuste conforme necessário */
+`;
+
+export const TD = styled.td`
+  width: calc(100% / 6); /* Dividir a largura total igualmente entre 6 colunas */
+  text-align: center;
+  padding: 10px; /* Ajuste conforme necessário */
+`;

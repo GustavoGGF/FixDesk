@@ -72,8 +72,6 @@ import {
   DivCard,
   H5Card,
   SpanCard,
-  DivList,
-  SpanList,
   ImgSelectView,
   Input1,
   Select1,
@@ -107,7 +105,12 @@ import {
   DivFlex2,
   PChatHourR,
   PChatHourL,
-} from "../styles/historyStyle";
+  TR,
+  Table,
+  TD,
+  TH,
+  TRSPACE,
+} from "../styles/historyStyle.js";
 import { DropDown } from "../styles/navbarStyle.js";
 import { DivNameFile, BtnFile, ImgFile, Select, TitlePage } from "../styles/helpdeskStyle.js";
 import CloseIMG from "../images/components/close.png";
@@ -607,22 +610,25 @@ export default function DashboardTI() {
       }
 
       const Div = (
-        <DivList
+        <TR
           key={ticket["id"]}
           className={`animate__animated animate__backInUp ${colorBorder}`}
           onClick={() => {
             helpdeskPage({ id: ticket["id"] });
           }}
         >
-          <H5Card>chamado {ticket["id"]}</H5Card>
-          <SpanList>{ticket["ticketRequester"]}</SpanList>
-          <SpanList>Ocorrência: {ticket["occurrence"]}</SpanList>
-          <SpanList>Problema: {ticket["problemn"]}</SpanList>
-          <SpanList>{newDate}</SpanList>
-        </DivList>
+          <TD>{ticket["id"]}</TD>
+          <TD>{ticket["ticketRequester"]}</TD>
+          <TD>{ticket["occurrence"]}</TD>
+          <TD>{ticket["problemn"]}</TD>
+          <TD>{newDate}</TD>
+        </TR>
       );
 
+      const Space = <TRSPACE></TRSPACE>;
+
       setTicketsDash((ticketsDash) => [...ticketsDash, Div]); // Adiciona o cartão ao array de chamados.
+      setTicketsDash((ticketsDash) => [...ticketsDash, Space]);
       sectionTicket.current.classList.remove("dashCard"); // remove a classe "dashCard" ao elemento HTML.
       setLoadingDash(false); // Define o estado de carregamento como falso.
     });
@@ -3259,7 +3265,16 @@ export default function DashboardTI() {
             <Loading />
           </div>
         )}
-        {ticketsDash}
+        <Table>
+          <thead>
+            <TH className="colorBlack">Chamado</TH>
+            <TH className="colorBlack">Usuario</TH>
+            <TH className="colorBlack">Ocorrencia</TH>
+            <TH className="colorBlack">Problema</TH>
+            <TH className="colorBlack">Data Abertura</TH>
+          </thead>
+          <tbody>{ticketsDash}</tbody>
+        </Table>
       </section>
       {ticketWindow && (
         <TicketOpen className="position-fixed top-50 start-50 translate-middle">

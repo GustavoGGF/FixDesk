@@ -9,7 +9,6 @@
     },
     "HotFix's": {
       "HotFix6": "squedule sobre FIxDesk no servidor",
-      "HitFix7": "ao baixar PDF Departamento fica como undefined",
       "NewDiagram": "Fazer novo diagrama com as novas mudanças de funcionando da ferramenta"
     },
     "Study Possibility": {
@@ -27,7 +26,8 @@
   },
   "HelpDesk": {
     "Upgrade": {
-      "Upgrade1": "contrato comodato para os equipamentos"
+      "Upgrade1": "contrato comodato para os equipamentos",
+      "NWPBL": "Dentro de Sistema SAP adicionar uma opção de Melhorias"
     },
     "HotFix": {
       "HotFix1": "ao enviar locagem de equipamento, se estiver alocado já, retornar com alocado cinza e pedir para ajustar data"
@@ -45,7 +45,9 @@
     "HotFix": {
       "HotFix1": "ao clicar na engrenagem do chamado aberto do TI quando clicar fora tem que fechar",
       "HotFix5": "mudar scroll de tudo da tela de cadastrode equip",
-      "HotFix7": "ajustar descrição no pdf"
+      "HotFix7": "ajustar descrição no pdf",
+      "TRANSTEC":"QUando não tem nenhum tecnico e é feito a transferencia, aparece no chat que quem transferiu esta atendendo",
+      "DSHPZ":"Remover no dashboard pie a quantidade total de chamados e deixar o numero aparecendo abaixo"
     }
   },
   "Navbar": {

@@ -1,6 +1,0 @@
-sudo docker build -t <NOME> .
-
-sudo docker run --env-file /node0/FixDesk/.env -p 8000:8000 -it <NOME>
-
-docker stop $(docker ps -aq) && docker rm $(docker ps -aq)
-docker rmi $(docker images)

@@ -28,7 +28,7 @@ export default function Login() {
   }, []);
 
   // Definindo versão do Software
-  const version = "1.2";
+  const version = "1.3";
   const [notify, setNotify] = useState(true);
 
   // Essa função realiza uma verificação no armazenamento local do navegador para determinar se a versão
@@ -279,6 +279,13 @@ export default function Login() {
             <span className="text-break">
               <b>Assunto</b>: improvements. (Melhorias, tanto de desempenho quanto visual)
               <p>Melhoria no chat, após enviar um anexo é mostrado no chat a notificação.</p>
+            </span>
+          </div>{" "}
+          <div className="d-flex flex-column">
+            <h6 className="fw-bold mb-2">Nota de Atualização 1.3 - 03/06</h6>
+            <span className="text-break">
+              <b>Assunto</b>: improvements. (Melhorias, tanto de desempenho quanto visual)
+              <p>Melhoria na visualização em modo lista.</p>
             </span>
           </div>
         </PathNotes>
