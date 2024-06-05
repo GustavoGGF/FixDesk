@@ -8,6 +8,7 @@
   --pure-white: #fff;
   --pure-black: #000;
   --light-blue: #03c9f5;
+  --sgbus-green: #70e000;
 }
 
 @keyframes file {
@@ -471,4 +472,18 @@
     background-color: #228b22;
     transition: 0.3s;
   }
+}
+
+@keyframes closeInfo {
+  0% {
+    width: 0.6em;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+.closeInfo {
+  transition: 0.2s;
+  animation: closeInfo 6s ease-in-out;
 }

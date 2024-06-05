@@ -140,35 +140,41 @@ def firstView(request):
         redirect("/login")
 
 
+# Decorator que exige um token CSRF para a proteção contra ataques CSRF
 @requires_csrf_token
+# Decorator que exige que o usuário esteja autenticado para acessar a função
+# Se o usuário não estiver autenticado, será redirecionado para a página de login
 @login_required(login_url="/login")
+# Função que trata o envio de chamados (tickets) para o banco de dados
 def submitTicket(request):
     if request.method == "POST":
-        ticketRequester = None
-        department = None
-        mail = None
-        company = None
-        sector = None
-        respective_area = None
-        occurrence = None
-        problemn = None
-        observation = None
-        start_date_str = None
-        start_date = None
-        pid = None
+        # Inicializando as variáveis com valor None
+        # Estas variáveis serão utilizadas para armazenar os dados do chamado (ticket)
+        company = None  # Empresa relacionada ao chamado
+        department = None  # Departamento responsável pelo chamado
+        mail = None  # E-mail do solicitante
+        observation = None  # Observações adicionais sobre o chamado
+        occurrence = None  # Ocorrência do problema
+        pid = None  # Identificador do Usuario (ID)
+        problemn = None  # Descrição do problema
+        respective_area = None  # Área respectiva ao problema relatado
+        sector = None  # Setor da empresa relacionado ao chamado
+        start_date = None  # Data de início convertida para o formato de data
+        start_date_str = None  # Data de início como string
+        ticketRequester = None  # Solicitante do chamado
         try:
-            ticketRequester = request.POST.get("ticketRequester")
+            company = request.POST.get("company")
             department = request.POST.get("department")
             mail = request.POST.get("mail")
-            company = request.POST.get("company")
-            sector = request.POST.get("sector")
-            respective_area = request.POST.get("respective_area")
-            occurrence = request.POST.get("occurrence")
-            problemn = request.POST.get("problemn")
             observation = request.POST.get("observation")
+            occurrence = request.POST.get("occurrence")
+            pid = request.POST.get("PID")
+            problemn = request.POST.get("problemn")
+            respective_area = request.POST.get("respective_area")
+            sector = request.POST.get("sector")
             start_date_str = request.POST.get("start_date")
             start_date = datetime.strptime(start_date_str, "%Y-%m-%d %H:%M")
-            pid = request.POST.get("PID")
+            ticketRequester = request.POST.get("ticketRequester")
 
             if pid:
                 pass
@@ -179,16 +185,19 @@ def submitTicket(request):
             print(e)
             return
 
-        Ticket = None
-        image_bytes = None
-        mime = None
-        file_type = None
-        types = None
-        valid = None
-        types_str = None
-        image_str = None
-        other_image = None
-        ticket_file = None
+        # Inicializando variáveis adicionais com valor None
+        # Estas variáveis serão utilizadas para armazenar dados adicionais do chamado e informações sobre arquivos de imagem
+
+        Ticket = None  # Objeto que representa o chamado (ticket)
+        file_type = None  # Tipo de arquivo da imagem
+        image_bytes = None  # Bytes da imagem anexada ao chamado
+        image_str = None  # Imagem em formato string codificada (base64, por exemplo)
+        mime = None  # Tipo MIME da imagem
+        other_image = None  # Outra imagem associada ao chamado
+        ticket_file = None  # Arquivo relacionado ao chamado
+        types = None  # Lista de tipos de arquivos permitidos
+        types_str = None  # Tipos de arquivos permitidos como string
+        valid = None  # Indicador de validade da imagem (True ou False)
 
         if "image" in request.FILES:
             Ticket = SupportTicket(
@@ -248,15 +257,19 @@ def submitTicket(request):
                         ticket_file = TicketFile(ticket=Ticket)
                         ticket_file.file.save(str(file), ContentFile(image_bytes))
 
+                        new_id = None
+
                     else:
                         return JsonResponse(
                             {"status": "Invalid"}, status=320, safe=True
                         )
 
+                    new_id = Ticket.id
+
                 except Exception as e:
                     print(e)
 
-            return JsonResponse({"status": "ok"}, status=200, safe=True)
+            return JsonResponse({"id": new_id}, status=200, safe=True)
 
         elif "id_equipament" in request.POST:
             equipament_id = None
@@ -308,9 +321,11 @@ def submitTicket(request):
 
                 Ticket.save()
 
+                new_id = Ticket.id
+
                 # * Monta o ticket e salva no banco
 
-                return JsonResponse({"status": "ok"}, status=200, safe=True)
+                return JsonResponse({"id": new_id}, status=200, safe=True)
             except Exception as e:
                 print(e)
 
@@ -371,7 +386,9 @@ def submitTicket(request):
                 Ticket.save()
                 # * Monta o ticket e salva no banco
 
-                return JsonResponse({"status": "ok"}, status=200, safe=True)
+                new_id = Ticket.id
+
+                return JsonResponse({"id": new_id}, status=200, safe=True)
             except Exception as e:
                 print(e)
 
@@ -408,7 +425,9 @@ def submitTicket(request):
                 Ticket.save()
                 # * Monta o ticket e salva no banco
 
-                return JsonResponse({"status": "ok"}, status=200, safe=True)
+                new_id = Ticket.id
+
+                return JsonResponse({"id": new_id}, status=200, safe=True)
             except Exception as e:
                 print(e)
                 return
@@ -432,8 +451,9 @@ def submitTicket(request):
 
                 Ticket.save()
                 # * Monta o ticket e salva no banco
+                new_id = Ticket.id
 
-                return JsonResponse({"status": "ok"}, status=200, safe=True)
+                return JsonResponse({"id": new_id}, status=200, safe=True)
             except Exception as e:
                 print(e)
                 return
@@ -1948,14 +1968,16 @@ def getTicketFilterWords(request):
                         ticket_data = SupportTicket.objects.filter(
                             respective_area="TI",
                             id=magic_word_int,
-                            sector=sector_ticket,ticketRequester=username
+                            sector=sector_ticket,
+                            ticketRequester=username,
                         ).order_by("-id")[:Quantity_tickets]
 
                     else:
                         ticket_data = SupportTicket.objects.filter(
                             respective_area="TI",
                             id=magic_word_int,
-                            sector=sector_ticket,ticketRequester=username
+                            sector=sector_ticket,
+                            ticketRequester=username,
                         )[:Quantity_tickets]
 
                         for ticket in ticket_data:

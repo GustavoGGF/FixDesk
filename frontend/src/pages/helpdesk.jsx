@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import NavBar from "../components/navbar";
 import "../styles/bootstrap/css/bootstrap.css";
 import { Div, Form, Input, Input2, Select, Div2, Calendar, Textarea, ImageEquip, DivEquip, InputRadio, PNameFile, DivNameFile, ImgFile, BtnFile, InputFile, TitlePage } from "../styles/helpdeskStyle";
@@ -11,6 +11,7 @@ import Loading from "../components/loading";
 import Message from "../components/message";
 import Cloud from "../images/components/cloud-uploading.png";
 import Exclude from "../images/components/lixo.png";
+import Info from "../components/info";
 
 export default function Helpdesk() {
   useEffect(() => {
@@ -87,9 +88,16 @@ export default function Helpdesk() {
   const [inputManualControl, setInputManualControl] = useState(false);
   const [arrayInput, setArrayInput] = useState([]);
   const [fileSizeNotify, setFileSizeNotify] = useState(false);
+  const [info, setInfo] = useState(false);
+  const [infoID, setInfoID] = useState("");
+  const [infoClass, setInfoClass] = useState("");
+  const [infoClass2, setInfoClass2] = useState("");
 
   const footerDay = selectedDay ? <p>Você selecionou {format(selectedDay, "PPP")}</p> : <p>Selecione uma dataUser</p>;
   const footerAlocate = daysForAlocate.length >= 1 ? <p>Você alocou por {daysForAlocate.length} dia(s).</p> : <p>Selecione um ou mais dias.</p>;
+
+  const observationRef = useRef(null);
+  const selectAR = useRef(null);
 
   let file_name = [];
 
@@ -604,6 +612,14 @@ export default function Helpdesk() {
         setMessageinfo1("1. Informe o Erro");
         setMessageinfo2("");
         setProblemn("Correção de falhas");
+        setAlertVerify(false);
+        setAlert(true);
+        break;
+      case "upg":
+        setMessagetitle("Caso de Melhorias");
+        setMessageinfo1("1. Informe a melhoria que deseja implementar");
+        setMessageinfo2("");
+        setProblemn("Melhoria");
         setAlertVerify(false);
         setAlert(true);
         break;
@@ -1219,7 +1235,32 @@ export default function Helpdesk() {
             behavior: "smooth",
           });
         } else if (Status === 200) {
-          window.location.reload(true);
+          setInfoID(dataUser.id);
+          setInfo(true);
+          setInfoClass("animate__lightSpeedInRight");
+          selectAR.current.selectedIndex = 0;
+          observationRef.current.value = "";
+          setInfoClass2("closeInfo");
+          setTimeout(() => {
+            setInfo(false);
+          }, 6000);
+          setInfra(false);
+          setBackup(false);
+          setAlert(false);
+          setMail(false);
+          setEquip(false);
+          setUser(false);
+          setFormNewUser(false);
+          setFormDelUser(false);
+          setInternet(false);
+          setFolder(false);
+          setSYS(false);
+          setSYS2(false);
+          setAlocate(false);
+          setDateEquip(false);
+          setDados(false);
+          setSoftAPP(false);
+          setRespectiveTI(false);
         } else if (Status === 320) {
           setMessage(true);
           setTypeError("Dados Inválidos");
@@ -1614,9 +1655,14 @@ export default function Helpdesk() {
     setCopyUser(event.target.value);
   }
 
+  function closeInfo() {
+    setInfo(false);
+  }
+
   return (
     <Div className={theme}>
       {navbar && <NavBar Name={dataUser.name} JobTitle={dataUser.job_title} />}
+      {info && <Info id={infoID} cls={infoClass} cls2={infoClass2} funct={closeInfo} />}
       {loading && (
         <div className="position-absolute top-50 start-50 translate-middle">
           <Loading />
@@ -1655,7 +1701,7 @@ export default function Helpdesk() {
             </label>
             <Input type="text" className="form-control" id="companyInput" value={dataUser.company || ""} disabled={dataUser.company} />
           </div>
-          <Select className="form-select mb-3" aria-label="Default select example" id="selectAR" onChange={selectARes}>
+          <Select ref={selectAR} className="form-select mb-3" aria-label="Default select example" id="selectAR" onChange={selectARes}>
             <option value="none" disabled selected>
               Seleciona a Área Respectiva
             </option>
@@ -1928,6 +1974,7 @@ export default function Helpdesk() {
               <option value="access">Liberação/bloqueio de acessos</option>
               <option value="quest">Dúvidas operacionais</option>
               <option value="error">Correção de falhas</option>
+              <option value="upg">Melhorias</option>
             </Select>
           )}
           {sys2 && (
@@ -1996,7 +2043,7 @@ export default function Helpdesk() {
           )}
           <div className="d-flex flex-column">
             <div className="form-floating mb-3 mx-auto">
-              <Textarea className="form-control" id="floatingTextarea2" onChange={getObservation}></Textarea>
+              <Textarea ref={observationRef} className="form-control" id="floatingTextarea2" onChange={getObservation}></Textarea>
               <label htmlFor="floatingTextarea2">Observação</label>
             </div>
             <h3 className="text-center mt-1">Upload de Arquivo</h3>

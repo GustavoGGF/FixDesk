@@ -280,7 +280,7 @@ export default function Login() {
               <b>Assunto</b>: improvements. (Melhorias, tanto de desempenho quanto visual)
               <p>Melhoria no chat, após enviar um anexo é mostrado no chat a notificação.</p>
             </span>
-          </div>{" "}
+          </div>
           <div className="d-flex flex-column">
             <h6 className="fw-bold mb-2">Nota de Atualização 1.3 - 03/06</h6>
             <span className="text-break">

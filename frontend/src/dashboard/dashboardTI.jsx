@@ -286,6 +286,7 @@ export default function DashboardTI() {
   const selectEquip0 = useRef(null);
   const selectInternet0 = useRef(null);
   const selectFolder0 = useRef(null);
+  const settingsRef = useRef(null);
 
   /**
    * Função ativada quando a tela de ticket for ativada.
@@ -3056,7 +3057,7 @@ export default function DashboardTI() {
         </ZIndex>
       )}
       {dropdownBTN && (
-        <DivDrop className={`position-absolute top-0 start-0 ${classBlur}`}>
+        <DivDrop ref={settingsRef} className={`position-absolute top-0 start-0 ${classBlur}`}>
           <Dropdown>
             <DropdownButton onClick={dropdown} className="dropbtn"></DropdownButton>
             <DropdownConten ref={myDropDown} className="dropdown-content">

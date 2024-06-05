@@ -27,7 +27,7 @@
   "HelpDesk": {
     "Upgrade": {
       "Upgrade1": "contrato comodato para os equipamentos",
-      "NWPBL": "Dentro de Sistema SAP adicionar uma opção de Melhorias"
+      "COMPTK": "componentizar as opções de chamados"
     },
     "HotFix": {
       "HotFix1": "ao enviar locagem de equipamento, se estiver alocado já, retornar com alocado cinza e pedir para ajustar data"
@@ -39,15 +39,14 @@
   },
   "Dashboard": {
     "Upgrade": {
-      "Upgrade3": "cabeçalho de chamados para modo Lista",
       "Upgrade4": "fazer metodo para excluir usuario do banco de dados do django"
     },
     "HotFix": {
-      "HotFix1": "ao clicar na engrenagem do chamado aberto do TI quando clicar fora tem que fechar",
       "HotFix5": "mudar scroll de tudo da tela de cadastrode equip",
       "HotFix7": "ajustar descrição no pdf",
-      "TRANSTEC":"QUando não tem nenhum tecnico e é feito a transferencia, aparece no chat que quem transferiu esta atendendo",
-      "DSHPZ":"Remover no dashboard pie a quantidade total de chamados e deixar o numero aparecendo abaixo"
+      "TRANSTEC": "QUando não tem nenhum tecnico e é feito a transferencia, aparece no chat que quem transferiu esta atendendo",
+      "DSHPZ": "Remover no dashboard pie a quantidade total de chamados e deixar o numero aparecendo abaixo",
+      "TCHDTL": "em techdetails o chat ta zoado, arrumar"
     }
   },
   "Navbar": {
