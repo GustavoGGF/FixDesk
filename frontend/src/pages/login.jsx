@@ -282,10 +282,13 @@ export default function Login() {
             </span>
           </div>
           <div className="d-flex flex-column">
-            <h6 className="fw-bold mb-2">Nota de Atualização 1.3 - 03/06</h6>
+            <h6 className="fw-bold mb-2">Nota de Atualização 1.3 - </h6>
             <span className="text-break">
               <b>Assunto</b>: improvements. (Melhorias, tanto de desempenho quanto visual)
               <p>Melhoria na visualização em modo lista.</p>
+              <p>Melhoria ao criar um chamado, agora terá uma notificação para ajudar a saber se o chamado foi criado ou não.</p>
+              <p>Ajuste no chat quando algum técnico assume um chamado.</p>
+              <p>Detalhes Tecnicos Ajustado.</p>
             </span>
           </div>
         </PathNotes>

@@ -608,7 +608,7 @@ def ticket(
                         )
 
                     if ticket.chat == None:
-                        ticket.chat = f"[[Date:{date}],[System:{technician} atendeu ao Chamado],[Hours:{hours}]]"
+                        ticket.chat = f"[[Date:{date}],[System:{responsible_technician} atendeu ao Chamado],[Hours:{hours}]]"
 
                         mail = body["mail"]
                         msg = f"{technician} atendeu ao Chamado"

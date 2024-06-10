@@ -42,11 +42,8 @@
       "Upgrade4": "fazer metodo para excluir usuario do banco de dados do django"
     },
     "HotFix": {
-      "HotFix5": "mudar scroll de tudo da tela de cadastrode equip",
       "HotFix7": "ajustar descrição no pdf",
-      "TRANSTEC": "QUando não tem nenhum tecnico e é feito a transferencia, aparece no chat que quem transferiu esta atendendo",
-      "DSHPZ": "Remover no dashboard pie a quantidade total de chamados e deixar o numero aparecendo abaixo",
-      "TCHDTL": "em techdetails o chat ta zoado, arrumar"
+      "ERRDOWN": "Conferir chamado 17, o arquivo"
     }
   },
   "Navbar": {

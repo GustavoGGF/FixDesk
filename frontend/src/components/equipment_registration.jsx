@@ -46,7 +46,6 @@ import {
 import Cloud from "../images/components/cloud-uploading.png";
 import Message from "./message";
 import Close from "../images/components/close.png";
-
 /**
  * Componente responsável pelo registro de equipamentos.
  * @param {string} token - Token de autenticação para CSRF.

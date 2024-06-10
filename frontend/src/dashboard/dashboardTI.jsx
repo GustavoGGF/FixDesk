@@ -37,105 +37,105 @@ import "react-day-picker/dist/style.css";
  * - DashboardBar: componente de barra do painel de instrumentos.
  * - Mail, XLS, ZIP, TXT, WORD, PDF, Download, Exclude, DownTick, Seeting, Send: importações de imagens de componentes.
  */
-import Navbar from "../components/navbar";
 import {
+  ButtonDet,
   Div,
-  DropdownConten,
+  DivChatDetails,
+  DivDetaisl,
+  DivDrop,
+  DivFilter,
+  DivModify,
   Dropdown,
   DropdownButton,
-  DivDrop,
-  P1,
-  DivFilter,
-  IMGConfig,
+  DropdownConten,
   DropBTN,
   DropContent2,
-  DivModify,
-  InputTicket,
-  ZIndex,
-  DivDetaisl,
-  DivChatDetails,
+  IMGConfig,
   ImgSend,
+  InputTicket,
+  P1,
   TextObersavation,
-  ButtonDet,
+  ZIndex,
 } from "../styles/dashboardTI.js";
-import Loading from "../components/loading";
 import DashBoardPie from "../components/dashboardPie";
+import Loading from "../components/loading";
+import Navbar from "../components/navbar";
 import {
-  TicketOpen,
-  CloseBTN,
-  Close,
-  DivChat,
+  AdjustListFiles,
   BtnChat,
-  PSelectView,
-  PQuantity,
-  DivSelectView,
-  DivCard,
-  H5Card,
-  SpanCard,
-  ImgSelectView,
-  Input1,
-  Select1,
-  DivContainerImages,
-  DivImages,
-  IMGS1,
+  BtnChat2,
+  BtnNF,
+  BtnOpen,
   Button1,
   Button2,
-  DivOnBoardFile,
-  IMGFiles,
-  ImageFile,
-  DivFile,
-  DivImageOpen,
-  BtnOpen,
-  ImageOpen,
-  BtnChat2,
-  InputFile,
-  DivNewFiles,
-  DivHR,
-  PNWFile,
-  AdjustListFiles,
-  ImgBTNCls,
-  BtnNF,
-  PBloq,
-  DivINp,
-  DivAlocate,
-  IMGFiles2,
   Calendar,
+  Close,
+  CloseBTN,
+  DivAlocate,
   DivCal,
+  DivCard,
+  DivChat,
+  DivContainerImages,
+  DivFile,
   DivFlex1,
   DivFlex2,
-  PChatHourR,
+  DivHR,
+  DivINp,
+  DivImageOpen,
+  DivImages,
+  DivNewFiles,
+  DivOnBoardFile,
+  DivSelectView,
+  H5Card,
+  IMGFiles,
+  IMGFiles2,
+  IMGS1,
+  ImageFile,
+  ImageOpen,
+  ImgBTNCls,
+  ImgSelectView,
+  Input1,
+  InputFile,
+  PBloq,
   PChatHourL,
-  TR,
-  Table,
+  PChatHourR,
+  PNWFile,
+  PQuantity,
+  PSelectView,
+  SpanCard,
+  Select1,
   TD,
   TH,
+  TR,
   TRSPACE,
+  Table,
+  TicketOpen,
 } from "../styles/historyStyle.js";
 import { DropDown } from "../styles/navbarStyle.js";
-import { DivNameFile, BtnFile, ImgFile, Select, TitlePage } from "../styles/helpdeskStyle.js";
+import { BtnFile, DivNameFile, ImgFile, Select, TitlePage } from "../styles/helpdeskStyle.js";
 import CloseIMG from "../images/components/close.png";
 import Message from "../components/message";
 import "../styles/bootstrap/css/bootstrap.css";
 import "../styles/bootstrap/js/bootstrap";
+import Card from "../images/components/identificacao.png";
+import DashboardBar from "../components/dashboardBar.jsx";
+import Download from "../images/components/download.png";
+import DownTick from "../images/components/attachment.png";
+import Exclude from "../images/components/close.png";
 import IMG1 from "../images/dashboard_TI/quantity_1.png";
 import IMG2 from "../images/dashboard_TI/quantity_2.png";
 import IMG3 from "../images/dashboard_TI/quantity_3.png";
 import IMG4 from "../images/dashboard_TI/quantity_4.png";
-import Registration from "../components/equipment_registration";
 import List from "../images/components/lista-de-itens.png";
-import Card from "../images/components/identificacao.png";
-import DashboardBar from "../components/dashboardBar.jsx";
 import Mail from "../images/components/mail.png";
-import XLS from "../images/components/xlsx.png";
-import ZIP from "../images/components/zip.jpg";
-import TXT from "../images/components/arquivo-txt.png";
-import WORD from "../images/components/palavra.png";
 import PDF from "../images/components/pdf.png";
-import Download from "../images/components/download.png";
-import Exclude from "../images/components/close.png";
-import DownTick from "../images/components/attachment.png";
+import Registration from "../components/equipment_registration";
 import Seeting from "../images/components/definicoes.png";
 import Send from "../images/components/enviar.png";
+import TXT from "../images/components/arquivo-txt.png";
+import WORD from "../images/components/palavra.png";
+import XLS from "../images/components/xlsx.png";
+import ZIP from "../images/components/zip.jpg";
 
 /**
  * Função para ajustar o tema com base na configuração de tema armazenada.
@@ -160,133 +160,154 @@ export default function DashboardTI() {
   /**
    * Variáveis de estado para o componente DashboardTI.
    */
+
+  /**
+   * Variáveis de estado Boolean
+   */
+  const [backup, setBackup] = useState(false);
+  const [btnmore, setBtnMore] = useState(true);
+  const [chat, setChat] = useState(true);
+  const [dataModify, setDataModify] = useState(true);
+  const [dropdownBTN, setDropDownBTN] = useState(false);
+  const [eng, setEng] = useState(false);
+  const [equip, setEquip] = useState(false);
+  const [equipamentforuser, setEquipamentForUser] = useState(false);
+  const [fake, setFake] = useState(true);
+  const [fakeSelect, setFakeSelect] = useState(true);
+  const [fetchChat, setFetchChat] = useState(false);
+  const [folder, setFolder] = useState(false);
+  const [imageopen, setImageOpen] = useState(false);
+  const [inCard, setInCard] = useState(false);
+  const [infra, setInfra] = useState(false);
+  const [inList, setInList] = useState(false);
+  const [internet, setInternet] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [loadingChat, setLoadingChat] = useState(false);
+  const [loadingDash, setLoadingDash] = useState(true);
+  const [mail, setMail] = useState(false);
+  const [mbi, setMBI] = useState(false);
+  const [message, setMessage] = useState(false);
+  const [messageChat, setMessageChat] = useState(false);
+  const [modifyTicket, setModifyTicket] = useState(false);
   const [navbar, setNavbar] = useState(false);
-  const [userData, setUserData] = useState([]);
-  const [tickets, setTickets] = useState([]);
-  const [token, setToken] = useState("");
-  const [ticketNAME, setTicketNAME] = useState("");
-  const [ticketDEPARTMENT, setTicketDEPARTMENT] = useState("");
-  const [ticketMAIL, setTicketMAIL] = useState("");
+  const [newFiles, setNewFiles] = useState(false);
+  const [OcurrenceFake, setOcurrenceFake] = useState(true);
+  const [office, setOffice] = useState(false);
+  const [problemInfra, setProblemInfra] = useState(false);
+  const [problemSyst, setProblemSyst] = useState(false);
+  const [sap, setSAP] = useState(false);
+  const [synch, setSynch] = useState(false);
+  const [system, setSystem] = useState(false);
+  const [techDetails, setTechDetails] = useState(false);
+  const [ticketWindow, setTicketWindow] = useState(false);
+  /**
+   * Variáveis de estado String
+   */
+  const [classBlur, setClassBlur] = useState("");
+  const [colorTheme, setColorTheme] = useState("");
+  const [companynewuser, setCompanyNewUser] = useState("");
+  const [copyprofilenewuser, setCopyProfileNewUser] = useState("");
+  const [costcenter, setCostCenter] = useState("");
+  const [detailsChat, setDetailsChat] = useState("");
+  const [equipamentLocate, setEquipamentLocate] = useState("");
+  const [jobtitlenewuser, setJobTitleNewUser] = useState("");
+  const [lifeTime, setLifetime] = useState("");
+  const [mailtranfer, setMailTranfer] = useState("");
+  const [messageError, setMessageError] = useState("");
+  const [mountDetails, setMountDetails] = useState("");
+  const [namenewuser, setNameNewUser] = useState("");
+  const [occurrence, setOccurrence] = useState("");
+  const [oldfile, setOldFiles] = useState("");
+  const [problemn, setProblemn] = useState("");
+  const [sector, setsector] = useState("");
+  const [sectornewuser, setSectorNewUser] = useState("undefined");
+  const [selectedTech, setSelectedTech] = useState("");
+  const [softwarenewuser, setSoftwareNewUser] = useState("");
+  const [status, setStatus] = useState("open");
+  const [textChat, setTextChat] = useState("");
+  const [theme, setTheme] = useState("");
+  const [themeCard, setThemeCard] = useState("");
+  const [themeFilter, setThemeFilter] = useState("");
   const [ticketCOMPANY, setTicketCOMPANY] = useState("");
-  const [ticketSECTOR, setTicketSECTOR] = useState("");
+  const [ticketDEPARTMENT, setTicketDEPARTMENT] = useState("");
+  const [ticketID, setTicketID] = useState("");
+  const [ticketMAIL, setTicketMAIL] = useState("");
+  const [ticketNAME, setTicketNAME] = useState("");
   const [ticketOCCURRENCE, setTicketOCCURRENCE] = useState("");
   const [ticketPROBLEMN, setTicketPROBLEMN] = useState("");
-  const [lifeTime, setLifetime] = useState("");
   const [ticketResponsible_Technician, setTicketResponsible_Technician] = useState("");
-  const [ticketWindow, setTicketWindow] = useState(false);
-  const [ticketID, setTicketID] = useState("");
-  const [mountChat, setMountChat] = useState([]);
-  const [chat, setChat] = useState(true);
-  const [selectedTech, setSelectedTech] = useState("");
-  const [techs, setTechs] = useState([]);
-  const [messageChat, setMessageChat] = useState(false);
+  const [ticketSECTOR, setTicketSECTOR] = useState("");
+  const [token, setToken] = useState("");
   const [typeError, setTypeError] = useState("");
-  const [messageError, setMessageError] = useState("");
-  const [textChat, setTextChat] = useState("");
-  const [message, setMessage] = useState(false);
-  const [dropdownBTN, setDropDownBTN] = useState(false);
-  const [fetchChat, setFetchChat] = useState(false);
-  const [countChat, setCountChat] = useState();
-  const [initUpdateChat, setInitUpdateChat] = useState();
-  const [fakeSelect, setFakeSelect] = useState(true);
-  const [problemInfra, setProblemInfra] = useState(false);
-  const [equipamentforuser, setEquipamentForUser] = useState(false);
-  const [problemSyst, setProblemSyst] = useState(false);
-  const [orderby, setOrderBy] = useState(null);
-  const [countTicket, setCountTicket] = useState(0);
-  const [loadingDash, setLoadingDash] = useState(true);
-  const [problemTicket, setProblemTicket] = useState(null);
-  const [ticketsDash, setTicketsDash] = useState([]);
-  const [sectorTicket, setSectorTicket] = useState(null);
-  const [ticketOpen, setTicketOpen] = useState();
-  const [status, setStatus] = useState("open");
-  const [btnmore, setBtnMore] = useState(true);
-  const [fileticket, setFileTicket] = useState([]);
-  const [imageurl, setImageUrl] = useState();
-  const [imageopen, setImageOpen] = useState(false);
-  const [uploadNewFiles, setUploadNewFiles] = useState([]);
-  const [newFiles, setNewFiles] = useState(false);
-  const [nameNWFiles, setNameNWFiles] = useState();
-  const [classBlur, setClassBlur] = useState("");
-  const [namenewuser, setNameNewUser] = useState("");
-  const [sectornewuser, setSectorNewUser] = useState("undefined");
   const [wherefrom, setWhereFrom] = useState("");
-  const [machinenewuser, setMachineNewUser] = useState();
-  const [companynewuser, setCompanyNewUser] = useState("");
-  const [softwarenewuser, setSoftwareNewUser] = useState("");
-  const [costcenter, setCostCenter] = useState("");
-  const [jobtitlenewuser, setJobTitleNewUser] = useState("");
-  const [startworknewuser, setStartWorkNewUser] = useState();
-  const [copyprofilenewuser, setCopyProfileNewUser] = useState("");
-  const [mailtranfer, setMailTranfer] = useState("");
-  const [oldfile, setOldFiles] = useState("");
-  const [imageEquipament, setImageEquipament] = useState();
-  const [equipamentLocate, setEquipamentLocate] = useState("");
+  /**
+   * Variáveis de estado Void.
+   */
+  const [countChat, setCountChat] = useState();
   const [daysLocated, setDaysLocated] = useState();
-  const [theme, setTheme] = useState("");
-  const [themeFilter, setThemeFilter] = useState("");
-  const [themeCard, setThemeCard] = useState("");
-  const [modifyTicket, setModifyTicket] = useState(false);
-  const [infra, setInfra] = useState(false);
-  const [system, setSystem] = useState(false);
-  const [backup, setBackup] = useState(false);
-  const [mail, setMail] = useState(false);
-  const [equip, setEquip] = useState(false);
-  const [internet, setInternet] = useState(false);
-  const [folder, setFolder] = useState(false);
-  const [sector, setsector] = useState("");
-  const [sap, setSAP] = useState(false);
-  const [mbi, setMBI] = useState(false);
-  const [synch, setSynch] = useState(false);
-  const [office, setOffice] = useState(false);
-  const [eng, setEng] = useState(false);
-  const [occurrence, setOccurrence] = useState("");
-  const [problemn, setProblemn] = useState("");
-  const [fake, setFake] = useState(true);
-  const [OcurrenceFake, setOcurrenceFake] = useState(true);
-  const [dataModify, setDataModify] = useState(true);
-  const [techDetails, setTechDetails] = useState(false);
-  const [detailsChat, setDetailsChat] = useState("");
-  const [mountDetails, setMountDetails] = useState("");
-  const [loadingChat, setLoadingChat] = useState(false);
-
+  const [imageEquipament, setImageEquipament] = useState();
+  const [imageurl, setImageUrl] = useState();
+  const [initUpdateChat, setInitUpdateChat] = useState();
+  const [machinenewuser, setMachineNewUser] = useState();
+  const [nameNWFiles, setNameNWFiles] = useState();
+  const [startworknewuser, setStartWorkNewUser] = useState();
+  const [ticketOpen, setTicketOpen] = useState();
+  /**
+   * Variáveis de estado Int.
+   */
+  const [countTicket, setCountTicket] = useState(0);
+  /**
+   * Variáveis de estado Array.
+   */
+  const [fileticket, setFileTicket] = useState([]);
+  const [mountChat, setMountChat] = useState([]);
+  const [ticketsDash, setTicketsDash] = useState([]);
+  const [techs, setTechs] = useState([]);
+  const [tickets, setTickets] = useState([]);
+  const [uploadNewFiles, setUploadNewFiles] = useState([]);
+  const [userData, setUserData] = useState([]);
+  /**
+   * Variáveis de estado Null.
+   */
+  const [orderby, setOrderBy] = useState(null);
+  const [problemTicket, setProblemTicket] = useState(null);
+  const [sectorTicket, setSectorTicket] = useState(null);
   /**
    * Variáveis de referência para o componente DashboardTI.
    */
+  const allView = useRef(null);
+  const btnAll = useRef(null);
+  const btnClose = useRef(null);
+  const btnOpen = useRef(null);
+  const btnStop = useRef(null);
+  const calendarALT = useRef(null);
+  const dropCont = useRef(null);
+  const inputChat = useRef(null);
   const inputRef = useRef(null);
+  const fiftyView = useRef(null);
+  const fiveView = useRef(null);
+  const myDropDown = useRef(null);
+  const selectBackup0 = useRef(null);
+  const selectBo = useRef(null);
+  const selectEngO = useRef(null);
+  const selectError = useRef(null);
+  const selectEquip0 = useRef(null);
+  const selectFolder0 = useRef(null);
+  const selectForm = useRef(null);
+  const selectMail0 = useRef(null);
+  const selectInternet0 = useRef(null);
+  const selectMBIO = useRef(null);
+  const selectOcorrence = useRef(null);
+  const selectOfficeO = useRef(null);
+  const selectOrderO = useRef(null);
+  const selectSAPO = useRef(null);
+  const selectSynchO = useRef(null);
   const sectionTicket = useRef(null);
-  const thenView = useRef(null);
   const selectViewCard = useRef(null);
   const selectViewList = useRef(null);
-  const calendarALT = useRef(null);
-  const inputChat = useRef(null);
-  const myDropDown = useRef(null);
-  const selectOcorrence = useRef(null);
-  const btnOpen = useRef(null);
-  const btnClose = useRef(null);
-  const btnStop = useRef(null);
-  const btnAll = useRef(null);
-  const selectSynchO = useRef(null);
-  const selectEngO = useRef(null);
-  const selectOfficeO = useRef(null);
-  const selectMBIO = useRef(null);
-  const selectSAPO = useRef(null);
-  const textareaRef = useRef(null);
-  const selectBo = useRef(null);
-  const selectOrderO = useRef(null);
-  const fiveView = useRef(null);
-  const fiftyView = useRef(null);
-  const allView = useRef(null);
-  const dropCont = useRef(null);
-  const selectForm = useRef(null);
-  const selectError = useRef(null);
-  const selectBackup0 = useRef(null);
-  const selectMail0 = useRef(null);
-  const selectEquip0 = useRef(null);
-  const selectInternet0 = useRef(null);
-  const selectFolder0 = useRef(null);
   const settingsRef = useRef(null);
+  const textareaRef = useRef(null);
+  const thenView = useRef(null);
 
   /**
    * Função ativada quando a tela de ticket for ativada.
@@ -326,6 +347,7 @@ export default function DashboardTI() {
   function ThemeBlack() {
     setThemeFilter("");
     setThemeCard("");
+    setColorTheme("colorBlack");
     setTheme("themeBlack");
   }
 
@@ -336,6 +358,7 @@ export default function DashboardTI() {
   function ThemeLight() {
     setThemeCard("themeCardLight");
     setThemeFilter("themeFilterLight");
+    setColorTheme("colorLight");
     setTheme("themeLight");
   }
 
@@ -459,6 +482,8 @@ export default function DashboardTI() {
     setTicketsDash([]);
     setLoading(false);
     setNavbar(true);
+    setInCard(true);
+    setInList(false);
 
     // Definir o tipo de visualização como "card" no local storage
     localStorage.setItem("selectView", "card");
@@ -550,6 +575,8 @@ export default function DashboardTI() {
     setTicketsDash([]);
     setNavbar(true);
     setLoading(false);
+    setInList(true);
+    setInCard(false);
 
     // Definir o tipo de visualização como "list" no local storage
     localStorage.setItem("selectView", "list");
@@ -1326,7 +1353,7 @@ export default function DashboardTI() {
                 return (
                   <div key={index}>
                     <DivFlex2 className="w-100 text-break position relative">
-                      <div className="uChat2 position-relative">
+                      <div className="uChat2D position-relative">
                         <p>{chat}</p>
                         <PChatHourL className="position-absolute bottom-0 start-0">{time}</PChatHourL>
                       </div>
@@ -3071,7 +3098,7 @@ export default function DashboardTI() {
       <TitlePage className="text-center text-light mt-3">Central de Gerenciamento de Chamados TI</TitlePage>
       <div className={`d-flex flex-column justify-content-center w-100 ${classBlur}`}>
         <div className="d-flex justify-content-center w-100">
-          <DashBoardPie sector={"TI"} />
+          <DashBoardPie sector={"TI"} clss={colorTheme} />
         </div>
         <div className="d-flex justify-content-center">
           <DashboardBar />
@@ -3266,16 +3293,19 @@ export default function DashboardTI() {
             <Loading />
           </div>
         )}
-        <Table>
-          <thead>
-            <TH className="colorBlack">Chamado</TH>
-            <TH className="colorBlack">Usuario</TH>
-            <TH className="colorBlack">Ocorrencia</TH>
-            <TH className="colorBlack">Problema</TH>
-            <TH className="colorBlack">Data Abertura</TH>
-          </thead>
-          <tbody>{ticketsDash}</tbody>
-        </Table>
+        {inList && (
+          <Table>
+            <thead>
+              <TH className={colorTheme}>Chamado</TH>
+              <TH className={colorTheme}>Usuario</TH>
+              <TH className={colorTheme}>Ocorrencia</TH>
+              <TH className={colorTheme}>Problema</TH>
+              <TH className={colorTheme}>Data Abertura</TH>
+            </thead>
+            <tbody>{ticketsDash}</tbody>
+          </Table>
+        )}
+        {inCard && <>{ticketsDash}</>}
       </section>
       {ticketWindow && (
         <TicketOpen className="position-fixed top-50 start-50 translate-middle">

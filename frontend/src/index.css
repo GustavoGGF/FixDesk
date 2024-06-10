@@ -487,3 +487,14 @@
   transition: 0.2s;
   animation: closeInfo 6s ease-in-out;
 }
+
+.uChat2D {
+  background: #ade8f4;
+  border-radius: 20px;
+  padding: 10px;
+  margin-top: 3px;
+  max-width: 50%;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  min-width: 7%;
+}

@@ -14,11 +14,12 @@ import { Chart } from "chart.js/auto";
  * Importação de um componente que atuará como um elemento do DOM neste componente.
  * - Div: importação do componente Div do módulo "../styles/dashboardPie".
  */
-import { Div } from "../styles/dashboardPie";
+import { Div, Div2 } from "../styles/dashboardPie";
 
 let myChart = null;
+let totalTickets = 0;
 
-export default function DashBoardPie({ sector }) {
+export default function DashBoardPie({ sector, clss }) {
   /**
    * Variáveis de estado utilizadas neste componente.
    * - dataPie: estado que armazena os dados para o gráfico de pizza.
@@ -88,14 +89,16 @@ export default function DashBoardPie({ sector }) {
         myChart.destroy();
       }
 
+      totalTickets = dataPie.data.shift();
+
       myChart = new Chart(dash, {
         type: "pie",
         data: {
-          labels: ["Chamados", "Chamados em Aberto", "Chamados Finalizados", "Chamados em Aguardo", "Chamados Urgentes(mais de 7 dias aberto)"],
+          labels: ["Chamados em Aberto", "Chamados Finalizados", "Chamados em Aguardo", "Chamados Urgentes(mais de 7 dias aberto)"],
           datasets: [
             {
               data: dataPie.data,
-              backgroundColor: ["#00b4d8", "#ffd60a", "#38b000", "#f9f9f9", "#d00000"],
+              backgroundColor: ["#ffd60a", "#38b000", "#f9f9f9", "#d00000"],
               hoverOffset: 4,
             },
           ],
@@ -147,8 +150,11 @@ export default function DashBoardPie({ sector }) {
   return (
     <Div>
       {loading && <Loading />}
-      <div>
+      <Div2>
         <canvas id="dashpie" className="hidden"></canvas>
+      </Div2>
+      <div className="d-flex w-100 text-center justify-content-center">
+        <p className={clss}>{totalTickets}</p>
       </div>
     </Div>
   );

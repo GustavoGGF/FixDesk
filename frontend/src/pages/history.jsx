@@ -150,6 +150,8 @@ export default function History() {
   const [theme, setTheme] = useState("");
   const [themeFilter, setThemeFilter] = useState("");
   const [themeCard, setThemeCard] = useState("");
+  const [inList, setInList] = useState(false);
+  const [inCard, setInCard] = useState(false);
   const UpNwfile = [];
 
   let count = 0;
@@ -795,6 +797,8 @@ export default function History() {
     setTicketsDash([]);
     setLoading(false);
     setNavbar(true);
+    setInCard(true);
+    setInList(false);
 
     localStorage.setItem("selectView", "card");
 
@@ -878,6 +882,8 @@ export default function History() {
     setTicketsDash([]);
     setNavbar(true);
     setLoading(false);
+    setInList(true);
+    setInCard(false);
 
     localStorage.setItem("selectView", "list");
 
@@ -2169,16 +2175,19 @@ export default function History() {
             <Loading />
           </div>
         )}
-        <Table>
-          <thead>
-            <TH className="colorBlack">Chamado</TH>
-            <TH className="colorBlack">Usuario</TH>
-            <TH className="colorBlack">Ocorrencia</TH>
-            <TH className="colorBlack">Problema</TH>
-            <TH className="colorBlack">Data Abertura</TH>
-          </thead>
-          <tbody>{ticketsDash}</tbody>
-        </Table>
+        {inList && (
+          <Table>
+            <thead>
+              <TH className="colorBlack">Chamado</TH>
+              <TH className="colorBlack">Usuario</TH>
+              <TH className="colorBlack">Ocorrencia</TH>
+              <TH className="colorBlack">Problema</TH>
+              <TH className="colorBlack">Data Abertura</TH>
+            </thead>
+            <tbody>{ticketsDash}</tbody>
+          </Table>
+        )}
+        {inCard && <>{ticketsDash}</>}
       </section>
       {ticketWindow && (
         <TicketOpen className="position-fixed top-50 start-50 translate-middle">
