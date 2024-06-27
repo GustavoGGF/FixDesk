@@ -38,13 +38,8 @@
     "HotFix": {}
   },
   "Dashboard": {
-    "Upgrade": {
-      "Upgrade4": "fazer metodo para excluir usuario do banco de dados do django"
-    },
-    "HotFix": {
-      "HotFix7": "ajustar descrição no pdf",
-      "ERRDOWN": "Conferir chamado 17, o arquivo"
-    }
+    "Upgrade": {},
+    "HotFix": {}
   },
   "Navbar": {
     "HotFix": {}

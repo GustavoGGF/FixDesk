@@ -334,8 +334,6 @@ export default function DashboardTI() {
       const totalLines = lines + extraLines;
       const height = lineHeight * totalLines + (lastLineLength === 0 ? lineHeight : 0); // Adiciona altura extra se a última linha estiver vazia
 
-      console.log(height);
-
       textareaRef.current.style.height = height + "px";
     }, 0);
   }
@@ -1145,9 +1143,15 @@ export default function DashboardTI() {
         headers: { Accept: "application/json" },
       })
         .then((response) => {
+          console.log("response dashboard TI:", response);
           return response.json();
         })
         .then((data) => {
+          console.log("Data dashboard TI:", data);
+          console.log("Status dashboard TI:", data.status);
+          if (data.status === 302) {
+            return window.location.href("/login");
+          }
           var newChat = parseInt(data.chat.length);
           if (newChat > countChat) {
             setCountChat(newChat);
@@ -2270,6 +2274,22 @@ export default function DashboardTI() {
       const file = uploadNewFiles[0][i];
       formData.append("files", file);
     }
+    var date = new Date();
+    function adicionaZero(numero) {
+      if (numero < 10) {
+        return "0" + numero;
+      }
+      return numero;
+    }
+    var day = date.getDate();
+    var month = date.getMonth() + 1;
+    var year = date.getFullYear();
+
+    var dataFormatada = adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
+    var horaFormatada = adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
+
+    formData.append("date", dataFormatada);
+    formData.append("hours", horaFormatada);
     fetch("upload-new-files/" + ticketID, {
       method: "POST",
       headers: {
@@ -2562,7 +2582,6 @@ export default function DashboardTI() {
         return response.json();
       })
       .then((data) => {
-        console.log(data);
         MountChatDetails(data.details);
       })
       .catch((err) => {

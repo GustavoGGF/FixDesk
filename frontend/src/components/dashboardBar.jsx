@@ -142,6 +142,9 @@ export default function DashboardBar() {
             console.log(err);
           }
         }
+        if (response.status === 302) {
+          return window.location.href("/login");
+        }
         return response.json();
       })
       .then((data) => {

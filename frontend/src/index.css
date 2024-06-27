@@ -417,7 +417,7 @@
 }
 
 .borderEquip {
-  border: 2px solid #5fdd9d;
+  border: 2px solid hsl(347, 92%, 64%);
 }
 
 .none {

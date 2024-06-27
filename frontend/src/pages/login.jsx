@@ -282,13 +282,22 @@ export default function Login() {
             </span>
           </div>
           <div className="d-flex flex-column">
-            <h6 className="fw-bold mb-2">Nota de Atualização 1.3 - </h6>
+            <h6 className="fw-bold mb-2">Nota de Atualização 1.3 - 13/06</h6>
             <span className="text-break">
               <b>Assunto</b>: improvements. (Melhorias, tanto de desempenho quanto visual)
               <p>Melhoria na visualização em modo lista.</p>
               <p>Melhoria ao criar um chamado, agora terá uma notificação para ajudar a saber se o chamado foi criado ou não.</p>
               <p>Ajuste no chat quando algum técnico assume um chamado.</p>
               <p>Detalhes Tecnicos Ajustado.</p>
+              <p>Ajuste ao Anexar conteúdo.</p>
+            </span>
+          </div>
+          <div className="d-flex flex-column">
+            <h6 className="fw-bold mb-2">Nota de Atualização 1.4 - ##/##</h6>
+            <span className="text-break">
+              <b>Assunto</b>: improvements. (Melhorias, tanto de desempenho quanto visual)
+              <p>Redirecionamento adequanto para quanto efetuado a expiração do token de segurança.</p>
+              <p>Tempo de expiração de token de segurança aumentado de 3600 segundo(1 hora) para 14400 segundos(4 horas).</p>
             </span>
           </div>
         </PathNotes>

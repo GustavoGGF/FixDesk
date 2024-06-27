@@ -90,7 +90,7 @@ def dashboard_TI(request):
 @login_required(login_url="/login")
 def getDashBoardPie(request, sector):
     if request.method == "POST":
-        return JsonResponse({"status": "ok"}, status=200, safe=True)
+        return redirect("/dashboard_TI")
     if request.method == "GET":
         if sector == "TI":
             boardpie = None
@@ -1029,7 +1029,7 @@ def upload_new_files(
             date = request.POST.get("date")
             hours = request.POST.get("hours")
 
-            ticket.chat += f",[[Date:{date}],[{request.user.first_name} {request.user.last_name}: Anexou o arquivo {unit_file}],[Hours:{hours}]]"
+            ticket.chat += f",[[Date:{date}],[System:{request.user.first_name} {request.user.last_name} Anexou o arquivo {unit_file}],[Hours:{hours}]]"
             ticket.save()
             ticket_file.save()
 
@@ -1058,7 +1058,6 @@ def upload_new_files(
 
                 except UnidentifiedImageError:
                     mime = None
-                    serialize = []
                     try:
                         file.file.open()
                         image_bytes = file.file.read()
@@ -1066,86 +1065,50 @@ def upload_new_files(
                         mime = Magic()
 
                         file_type = mime.from_buffer(image_bytes)
+                        file_path = str(file.file)
+                        file_name = "/".join(file_path.split("/")[2:])
 
                         if "mail" in file_type.lower():
                             image_data.append("mail")
-                            with open(str(file.file), "rb") as eml_file:
-                                content_file.append(
-                                    b64encode(eml_file.read()).decode("utf-8")
-                                )
-                                name_file.append(
-                                    "/".join(str(file.file).split("/")[2:])
-                                )
-                            file.file.close()
-
+                            type_detected = "mail"
                         elif "excel" in file_type.lower():
                             image_data.append("excel")
-                            with open(str(file.file), "rb") as exc_file:
-                                content_file.append(
-                                    b64encode(exc_file.read()).decode("utf-8")
-                                )
-                                name_file.append(
-                                    "/".join(str(file.file).split("/")[2:])
-                                )
-                            file.file.close()
-
+                            type_detected = "excel"
                         elif "zip" in file_type.lower():
                             image_data.append("zip")
-                            with open(str(file.file), "rb") as zip_file:
-                                content_file.append(
-                                    b64encode(zip_file.read()).decode("utf-8")
-                                )
-                                name_file.append(
-                                    "/".join(str(file.file).split("/")[2:])
-                                )
-                            file.file.close()
-
+                            type_detected = "zip"
                         elif (
-                            "utf-8" in file_type.lower()
-                            and "text" in file_type.lower()
-                            or "ascii" in file_type.lower()
-                            and "text" in file_type.lower()
+                            "utf-8" in file_type.lower() and "text" in file_type.lower()
+                        ) or (
+                            "ascii" in file_type.lower() and "text" in file_type.lower()
                         ):
                             image_data.append("txt")
-                            with open(str(file.file), "rb") as txt_file:
-                                content_file.append(
-                                    b64encode(txt_file.read()).decode("utf-8")
-                                )
-                                name_file.append(
-                                    "/".join(str(file.file).split("/")[2:])
-                                )
-                                file.file.close()
-
+                            type_detected = "txt"
                         elif (
                             "microsoft" in file_type.lower()
                             and "word" in file_type.lower()
                         ):
                             image_data.append("word")
-                            with open(str(file.file), "rb") as word_file:
-                                content_file.append(
-                                    b64encode(word_file.read()).decode("utf-8")
-                                )
-                                name_file.append(
-                                    "/".join(str(file.file).split("/")[2:])
-                                )
-                                file.file.close()
-
+                            type_detected = "word"
                         elif (
                             "pdf" in file_type.lower()
                             and "document" in file_type.lower()
                         ):
                             image_data.append("pdf")
-                            with open(str(file.file), "rb") as pdf_file:
-                                content_file.append(
-                                    b64encode(pdf_file.read()).decode("utf-8")
-                                )
-                                name_file.append(
-                                    "/".join(str(file.file).split("/")[2:])
-                                )
-                            file.file.close()
+                            type_detected = "pdf"
+                        else:
+                            type_detected = None
+
+                        if type_detected:
+                            with open(file_path, "rb") as f:
+                                content_file.append(b64encode(f.read()).decode("utf-8"))
+                            name_file.append(file_name)
+
+                        file.file.close()
 
                     except Exception as e:
                         print(e)
+                        return JsonResponse({"error": e}, status=666)
             ticket = SupportTicket.objects.get(id=id)
 
             return JsonResponse(

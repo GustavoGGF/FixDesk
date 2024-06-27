@@ -140,6 +140,9 @@ export default function DashBoardPie({ sector, clss }) {
         setLoading(false);
         return;
       } catch (err) {
+        if (err instanceof SyntaxError) {
+          return (window.location.href = "/login");
+        }
         return console.error(err);
       }
     };
