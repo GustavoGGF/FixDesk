@@ -3,14 +3,9 @@
     "Upgrades": {
       "Upgrade1": "Usar HTTPS para criptografar a comunicação entre o navegador do usuário e o servidor",
       "Upgrade2": "Tema personalizado de fundo",
-      "Upgrade4": "Ao entrar em url errada, redirecionar",
-      "LCM": "link do chamado no email",
-      "UCSLP": "quando acbar o cookie do csrf mandar para login"
+      "LCM": "link do chamado no email"
     },
-    "HotFix's": {
-      "HotFix6": "squedule sobre FIxDesk no servidor",
-      "NewDiagram": "Fazer novo diagrama com as novas mudanças de funcionando da ferramenta"
-    },
+    "HotFix's": {},
     "Study Possibility": {
       "FrameWork1": "fdpf2",
       "FrameWork2": "defusedxml",
@@ -43,5 +38,8 @@
   },
   "Navbar": {
     "HotFix": {}
+  },
+  "Chat":{
+  	"IMGCHT":"Imagem no chat ao abrir não fecha"
   }
 }

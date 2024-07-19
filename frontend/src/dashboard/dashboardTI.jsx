@@ -1147,8 +1147,6 @@ export default function DashboardTI() {
           return response.json();
         })
         .then((data) => {
-          console.log("Data dashboard TI:", data);
-          console.log("Status dashboard TI:", data.status);
           if (data.status === 302) {
             return window.location.href("/login");
           }

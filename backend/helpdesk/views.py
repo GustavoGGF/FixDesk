@@ -28,6 +28,11 @@ import mimetypes
 from django.core.files.base import ContentFile
 from fpdf import FPDF
 import re
+import logging
+
+# Configuração básica de logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 def sendMail(mail, msgm1, msgm2):
@@ -69,7 +74,7 @@ def sendMail(mail, msgm1, msgm2):
 
 # Create your views here.
 @csrf_exempt
-@login_required(login_url="/login")
+# @login_required(login_url="/login")
 def firstView(request):
     if request.method == "POST":
         csrf = None
@@ -107,11 +112,12 @@ def firstView(request):
                 safe=True,
             )
         except Exception as e:
-            print(e)
+            logger.info(e)
+            logger.info("Deu ruim help")
+            return JsonResponse({"status": str(e)}, status=300, safe=True)
 
     if request.method == "GET":
         if request.user.is_authenticated:
-            print("yes")
             Back_User = None
             Back_Tech = None
             Back_Leader = None
@@ -126,18 +132,17 @@ def firstView(request):
                     or User.groups.filter(name=Back_Tech)
                     or User.groups.filter(name=Back_Leader)
                 ):
-                    print("renderizou")
                     return render(request, "index.html", {})
                 else:
+                    logger.info("Auth")
                     return redirect("/login")
             except Exception as e:
                 json_error = str(e)
+                logger.info(e)
                 return JsonResponse({"status": json_error}, status=300, safe=True)
         else:
-            print("not")
-            redirect("/login")
-    else:
-        redirect("/login")
+            logger.info("not logged")
+            return redirect("/login")
 
 
 # Decorator que exige um token CSRF para a proteção contra ataques CSRF

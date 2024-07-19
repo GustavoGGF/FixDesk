@@ -11,9 +11,6 @@ SETTINGS_MODULE = "fixdesk.settings"
 # Define a variável de ambiente DJANGO_SETTINGS_MODULE
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", SETTINGS_MODULE)
 
-# ...
-print(BASE_DIR)
-
 
 def main():
     # ...

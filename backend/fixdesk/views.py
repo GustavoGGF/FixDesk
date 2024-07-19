@@ -9,6 +9,11 @@ from ldap3 import Connection, SAFE_SYNC, ALL_ATTRIBUTES
 from threading import Thread
 from django.contrib.auth.models import User, Group
 from django.contrib.auth import login
+import logging
+
+# Configuração básica de logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 # Função que cria usuario no /admin
@@ -27,11 +32,7 @@ def CreateOrVerifyUser(user, password, request, helpdesk, name_create_user):
         userAuthentic = User.objects.get(username=user)
 
     except User.DoesNotExist:
-        if "ADM" in name_create_user:
-            name_create_user = name_create_user.replace("ADM", "").strip()
-            name_create_user = name_create_user.split()
-        else:
-            name_create_user = name_create_user.split()
+        name_create_user = name_create_user.split()
 
         userAuthentic = User.objects.create_user(
             username=user,
@@ -44,7 +45,6 @@ def CreateOrVerifyUser(user, password, request, helpdesk, name_create_user):
     Back_User = getenv("DJANGO_GROUP_USER")
     Back_Tech = getenv("DJANGO_GROUP_TECH")
     Back_Leader = getenv("DJANGO_GROUP_LEADER")
-    Valid = True
 
     try:
         group_user = Group.objects.get(name=Back_User)
@@ -86,8 +86,9 @@ def CreateOrVerifyUser(user, password, request, helpdesk, name_create_user):
             group_leader.save()
             Valid = False
     except Exception as e:
+        logger.info("Deu ruim autenticação")
         Valid = False
-        print(e)
+        logger.info("Validação não validada: ", e)
         return JsonResponse({"status": "error"}, status=400, safe=True)
 
 
@@ -109,9 +110,9 @@ def validation(request):
             password = str(body["password"])
 
         except Exception as e:
-            print(e)
+            logger.info(e)
             erro = str(e)
-            print(erro, flush=True)
+            logger.info(erro, flush=True)
             return JsonResponse({"status": e}, status=1, safe=True)
 
         dominio = None
@@ -126,9 +127,9 @@ def validation(request):
             server1 = getenv("SERVER1")
 
         except Exception as e:
-            print(e)
+            logger.info(e)
             erro = str(e)
-            print(erro, flush=True)
+            logger.info(erro, flush=True)
             return JsonResponse({"status": e}, status=2)
 
         server = None
@@ -161,7 +162,7 @@ def validation(request):
                 )
 
         except Exception as e:
-            print(e)
+            logger.info(e)
             return JsonResponse({"status": "invalid access"}, status=401, safe=True)
 
         extractor = None
@@ -199,7 +200,7 @@ def validation(request):
             tech_leader = getenv("TECH_LEADER")
 
         except Exception as e:
-            print(e)
+            logger.info(e)
             return JsonResponse({"status": e}, status=400)
 
         helpdesk = ""
@@ -264,7 +265,7 @@ def validation(request):
                 pid = ""
 
         except Exception as e:
-            print(e)
+            logger.info(e)
             return JsonResponse({"status": e}, status=400)
 
         client = None
@@ -289,12 +290,13 @@ def validation(request):
                 if Valid:
                     break
                 time.sleep(0.1)
-
+            # return render(request, "index.html")
             return JsonResponse({"data": client_data}, status=200, safe=True)
 
         except Exception as e:
+            logger.info("Não foi")
             error_message = str(e)
-            print(error_message)
+            logger.info(error_message)
             return JsonResponse({"status": error_message}, status=400)
 
 

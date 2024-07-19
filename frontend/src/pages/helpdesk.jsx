@@ -1,7 +1,26 @@
 import React, { useState, useEffect, useRef } from "react";
 import NavBar from "../components/navbar";
 import "../styles/bootstrap/css/bootstrap.css";
-import { Div, Form, Input, Input2, Select, Div2, Calendar, Textarea, ImageEquip, DivEquip, InputRadio, PNameFile, DivNameFile, ImgFile, BtnFile, InputFile, TitlePage } from "../styles/helpdeskStyle";
+import {
+  Div,
+  Form,
+  Input,
+  Input2,
+  Select,
+  Div2,
+  Calendar,
+  Textarea,
+  ImageEquip,
+  DivEquip,
+  InputRadio,
+  PNameFile,
+  DivNameFile,
+  ImgFile,
+  BtnFile,
+  InputFile,
+  TitlePage,
+  Contract,
+} from "../styles/helpdeskStyle";
 import { DivUpload, HeaderFiles, PFiles, IMGFile, Span1, Span2, BodyFiles, PFiles2, B1, InputFiles, IMGFile2, FooterFiles, Divider, Span3, ListFiles } from "../styles/Equipment_RegistrationStyle";
 import { DayPicker } from "react-day-picker";
 import ptBR from "date-fns/locale/pt";
@@ -12,6 +31,7 @@ import Message from "../components/message";
 import Cloud from "../images/components/cloud-uploading.png";
 import Exclude from "../images/components/lixo.png";
 import Info from "../components/info";
+import Close from "../images/components/close.png";
 
 export default function Helpdesk() {
   useEffect(() => {
@@ -26,6 +46,7 @@ export default function Helpdesk() {
   }, []);
 
   const [csrfToken, setCSRFToken] = useState("");
+  const [confirmOtherEquipaments, SetConfirmOtherEquipaments] = useState(true);
   const [messagetitle, setMessagetitle] = useState("");
   const [messageinfo1, setMessageinfo1] = useState("");
   const [messageinfo2, setMessageinfo2] = useState("");
@@ -92,12 +113,18 @@ export default function Helpdesk() {
   const [infoID, setInfoID] = useState("");
   const [infoClass, setInfoClass] = useState("");
   const [infoClass2, setInfoClass2] = useState("");
+  const [otherEquipaments, setOtherEquipaments] = useState(false);
+  const [comodato, setComodato] = useState(false);
+  const [otherMouse, setOtherMouse] = useState(false);
+  const [otherTeclado, setOtherTeclado] = useState(false);
+  const [otherRede, setOtherRede] = useState(false);
 
   const footerDay = selectedDay ? <p>Você selecionou {format(selectedDay, "PPP")}</p> : <p>Selecione uma dataUser</p>;
   const footerAlocate = daysForAlocate.length >= 1 ? <p>Você alocou por {daysForAlocate.length} dia(s).</p> : <p>Selecione um ou mais dias.</p>;
 
   const observationRef = useRef(null);
   const selectAR = useRef(null);
+  const primaryContainerRef = useRef(null);
 
   let file_name = [];
 
@@ -846,14 +873,15 @@ export default function Helpdesk() {
             const Div = (
               <DivEquip
                 className="equipsclass"
-                onClick={(event) =>
+                onClick={(event) => {
                   selectEquipament({
                     element: event.currentTarget,
                     id: equipament.id,
-                  })
-                }
+                  });
+                  setOtherEquipaments(true);
+                }}
               >
-                <ImageEquip src={`dataUser:image/jpeg;base64,${equipament.image}`} alt="" />
+                <ImageEquip src={`data:image/jpeg;base64,${equipament.image}`} alt="" />
                 <p>Modelo: {equipament.model}</p>
                 <p>Empresa: {equipament.company}</p>
               </DivEquip>
@@ -1454,7 +1482,7 @@ export default function Helpdesk() {
                   })
                 }
               >
-                <ImageEquip src={`dataUser:image/jpeg;base64,${equipament.image}`} alt="" />
+                <ImageEquip src={`data:image/jpeg;base64,${equipament.image}`} alt={`equipamento ${equipament.model}`} />
                 <p>Modelo: {equipament.model}</p>
                 <p>Empresa: {equipament.company}</p>
               </DivEquip>
@@ -1659,6 +1687,27 @@ export default function Helpdesk() {
     setInfo(false);
   }
 
+  function selectOtherEquips(event) {
+    if (event.target.checked) {
+      switch (event.target.value) {
+        default:
+          setOtherMouse(false);
+          setOtherRede(false);
+          setOtherTeclado(false);
+          break;
+        case "Mouse":
+          setOtherMouse(true);
+          break;
+        case "Teclado":
+          setOtherTeclado(true);
+          break;
+        case "Rede":
+          setOtherRede(true);
+          break;
+      }
+    }
+  }
+
   return (
     <Div className={theme}>
       {navbar && <NavBar Name={dataUser.name} JobTitle={dataUser.job_title} />}
@@ -1674,7 +1723,7 @@ export default function Helpdesk() {
         </div>
       )}
       {dashboard && (
-        <Form className={`mx-auto d-flex flex-column align-items-center justify-content-around ${themeTicket}`}>
+        <Form className={`mx-auto d-flex flex-column align-items-center justify-content-around ${themeTicket}`} ref={primaryContainerRef}>
           <TitlePage>Criação de Chamados</TitlePage>
           <div className="mb-3">
             <input type="hidden" name="_csrf" value={csrfToken} />
@@ -2031,7 +2080,97 @@ export default function Helpdesk() {
                 </Select>
               </div>
               <div className="d-flex flex-wrap justify-content-center">{dashequipaments}</div>
+              {otherEquipaments && (
+                <div className="d-flex flex-column">
+                  <h4 className="text-center">Marque caso precise de algum dos itens adicionais</h4>
+                  <div class="form-check d-flex justify-content-center">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      value="Mouse"
+                      id="checkMouse"
+                      onChange={(event) => {
+                        selectOtherEquips(event);
+                      }}
+                    />
+                    <label class="form-check-label" for="checkMouse">
+                      Mouse
+                    </label>
+                  </div>
+                  <div class="form-check d-flex justify-content-center">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      value="Teclado"
+                      id="checkTeclado"
+                      onChange={(event) => {
+                        selectOtherEquips(event);
+                      }}
+                    />
+                    <label class="form-check-label" for="checkTeclado">
+                      Teclado
+                    </label>
+                  </div>
+                  <div class="form-check d-flex justify-content-center">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      value="Rede"
+                      id="checkRede"
+                      onChange={(event) => {
+                        selectOtherEquips(event);
+                      }}
+                    />
+                    <label class="form-check-label" for="checkRede">
+                      Cabo de Rede
+                    </label>
+                  </div>
+                  {confirmOtherEquipaments && (
+                    <button
+                      onClick={() => {
+                        SetConfirmOtherEquipaments(false);
+                        setComodato(true);
+                      }}
+                      class="w-25 btn btn-success d-flex m-auto"
+                    >
+                      Confirmar
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
+          )}
+          {comodato && (
+            <Contract class="position-fixed top-50 start-50 translate-middle d-flex flex-column">
+              <div class="d-flex">
+                <h3 className="text-center w-100 fw-bold">Contrato Comodato</h3>
+                <button
+                  onClick={() => {
+                    setComodato(false);
+                  }}
+                >
+                  <img src={Close} alt="botão de fechar" />
+                </button>
+              </div>
+              <div class="d-flex flex-column">
+                <h3 class="mt-3">INSTRUMENTO PARTICULAR DE COMODATO</h3>
+                <span class="mt-3">
+                  <b>LUPATECH S.A. - EM RECUPERAÇÃO JUDICIAL, </b>à, Rua Dalton Lanh dos reis, 201, bairro Distrito Industrial, no Município de Caxias do Sul, Estado de Rio Grande do Sul – CEP
+                  95112-090, regularmente inscrita no CNPJ/MF sob o nº89.463.822/0012-75, doravante denominada simplesmente de <b>COMODANTE.</b>
+                </span>
+                <span class="mt-3">e</span>
+                <span class="mt-3">
+                  <b>{dataUser.name}</b>, doravante denominada simplesmente <b>COMODATÁRIO</b>.
+                </span>
+                <span class="mt-3">
+                  <b>CONSIDERAÇÕES</b>
+                </span>
+                <span>
+                  A <b>COMODANTE </b> é proprietária e legítima possuidora do seguinte equipamento:
+                </span>
+              </div>
+              <button>Concordo</button>
+            </Contract>
           )}
           {dateequip && (
             <div className="justify-content-center text-center">

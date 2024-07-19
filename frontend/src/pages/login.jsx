@@ -134,20 +134,22 @@ export default function Login() {
         } else if (response.status === 425) {
           handleAccessRestricted();
         } else if (response.ok) {
-          return response.json();
+          return (window.location.href = "/helpdesk");
+          // return response.json();
         }
       })
-      .then((data) => {
-        if (data) {
-          localStorage.setItem("dataInfo", JSON.stringify(data));
-          window.location.replace("/helpdesk");
-        }
-      })
+      // .then((data) => {
+      // ;
+      // if (data) {
+      // localStorage.setItem("dataInfo", JSON.stringify(data));
+      // }
+      // })
       .catch((err) => {
         console.error("Erro na validação do login:", err);
         setMessage(true);
         setMessageError("Erro ao verificar Login", err);
         setTypeMessage("Fatal ERROR");
+        return;
       });
   }
 

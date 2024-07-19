@@ -1,5 +1,8 @@
 from django.urls import path, include
+
+from fixdesk import settings
 from . import views
+from django.conf.urls.static import static
 
 urlpatterns = [
     path("", views.firstView, name="central-de-chamados"),
@@ -21,4 +24,4 @@ urlpatterns = [
         name="central-get-ticket-filter-words",
     ),
     # path("<path:unknown_path>", views.redirect_to_specific_url),
-]
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

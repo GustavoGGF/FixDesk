@@ -277,7 +277,7 @@ export default function Equipment_Registration({ token, equipamentforuser, Close
       <p className="text-center">Imagem do Equipamento</p>
       <DivUpload className="upload">
         <div className="upload-files">
-          <HeaderFiles>
+          <HeaderFiles className="justify-content-center">
             <PFiles>
               <IMGFile2 src={Cloud} alt="" />
               <Span1 className="up">up</Span1>

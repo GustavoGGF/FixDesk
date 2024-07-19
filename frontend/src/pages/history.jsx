@@ -388,7 +388,7 @@ export default function History() {
           calendar.classList.add("AdjustWid");
         }
 
-        if (data.file.length >= 1) {
+        if (data.file !== null && data.file.length >= 1) {
           const files = data.file;
           for (let i = 0; i < files.length; i++) {
             var file = files[i];

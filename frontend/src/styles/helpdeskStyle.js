@@ -103,3 +103,9 @@ export const TitlePage = styled.h2`
   font-weight: bold;
   font-family: "Lugrasimo", cursive;
 `;
+
+export const Contract = styled.div`
+  height: 80%;
+  width: 80%;
+  z-index: 1000;
+`;
