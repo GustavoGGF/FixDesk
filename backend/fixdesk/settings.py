@@ -14,8 +14,13 @@ SECRET_KEY = "django-insecure-4h1mm_oolu%b$@g=eragw%v*=dp5qbvv8dkzd2rf+!#tz-(&wt
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["sappp01", "10.1.1.73", "localhost"]
-
+ALLOWED_HOSTS = [
+    "sappp01",
+    "10.1.1.73",
+    "localhost",
+    "sappp01.lupatech.com.br",
+    "fixdesk",
+]
 
 # Application definition
 
@@ -107,6 +112,9 @@ STATIC_URL = "/static/"
 STATICFILES_DIRS = (os.path.join(BASE_DIR, "build/static"),)
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "build/static/media")
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
@@ -116,8 +124,17 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
 SESSION_ENGINE = "django.contrib.sessions.backends.db"
 SESSION_COOKIE_NAME = "sessionid"
 SESSION_COOKIE_AGE = 14400
-SESSION_COOKIE_HTTPONLY = True
+# SESSION_COOKIE_HTTPONLY = True
 SESSION_SAVE_EVERY_REQUEST = False
+# SECURE_SSL_REDIRECT = True
+SECURE_HSTS_SECONDS = 14400
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+# X_FRAME_OPTIONS = "DENY"

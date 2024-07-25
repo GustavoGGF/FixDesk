@@ -34,7 +34,7 @@
   },
   "Dashboard": {
     "Upgrade": {},
-    "HotFix": {}
+    "HotFix": {"LDNG":"Loading infinito",}
   },
   "Navbar": {
     "HotFix": {}

@@ -1,9 +1,36 @@
-# Use a imagem base do Python
 FROM nginx:latest
 
-#COPY ./static /usr/share/nginx/html/static
+RUN mkdir -p /etc/nginx/sites-available /etc/nginx/sites-enabled
+
+COPY ./nginx-configs/fixdesk.conf /etc/nginx/sites-available/fixdesk.conf
 
 RUN chown -R nginx:nginx /var/cache/nginx
 
-# Define the command to run your application
+RUN ln -s /etc/nginx/sites-available/fixdesk.conf /etc/nginx/sites-enabled/
+
+RUN mkdir -p /etc/nginx/ssl
+
+COPY ./certs/* /etc/nginx/ssl/
+
+# Cria o diretório para logs
+RUN mkdir -p /var/log/nginx
+
+COPY ../nginx-configs/nginx.conf /etc/nginx/
+
+RUN mkdir -p /etc/nginx/logs/
+
+RUN mkdir -p /var/www/html/static
+
+COPY ./build/index.html /var/www/html/static
+COPY ./build/asset-manifest.json /var/www/html/static
+
+RUN mkdir /var/www/html/static/css
+COPY ./build/static/css /var/www/html/static/css
+
+RUN mkdir /var/www/html/static/js
+COPY ./build/static/js /var/www/html/static/js
+
+RUN mkdir /var/www/html/media
+COPY ./build/static/media /var/www/html/media
+
 ENTRYPOINT ["nginx", "-g", "daemon off;"]
