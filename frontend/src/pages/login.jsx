@@ -294,8 +294,10 @@ export default function Login() {
             </span>
           </div>
           <div className="d-flex flex-column">
-            <h6 className="fw-bold mb-2">Nota de Atualização 1.4 - ##/##</h6>
+            <h6 className="fw-bold mb-2">Nota de Atualização 2.0 - 25/06</h6>
             <span className="text-break">
+              <b>Assunto Melhoria significativa:</b>
+              <p>Adicionado HTTPS a ferramenta, visando segurança para aplicação</p>
               <b>Assunto</b>: improvements. (Melhorias, tanto de desempenho quanto visual)
               <p>Redirecionamento adequanto para quanto efetuado a expiração do token de segurança.</p>
               <p>Tempo de expiração de token de segurança aumentado de 3600 segundo(1 hora) para 14400 segundos(4 horas).</p>

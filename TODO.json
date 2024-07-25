@@ -1,7 +1,6 @@
 {
   "All Site": {
     "Upgrades": {
-      "Upgrade1": "Usar HTTPS para criptografar a comunicação entre o navegador do usuário e o servidor",
       "Upgrade2": "Tema personalizado de fundo",
       "LCM": "link do chamado no email"
     },
@@ -22,7 +21,8 @@
   "HelpDesk": {
     "Upgrade": {
       "Upgrade1": "contrato comodato para os equipamentos",
-      "COMPTK": "componentizar as opções de chamados"
+      "COMPTK": "componentizar as opções de chamados",
+      "NEWPBM": "Adicionar Metadas aos softwares de suporte"
     },
     "HotFix": {
       "HotFix1": "ao enviar locagem de equipamento, se estiver alocado já, retornar com alocado cinza e pedir para ajustar data"
@@ -34,12 +34,18 @@
   },
   "Dashboard": {
     "Upgrade": {},
-    "HotFix": {"LDNG":"Loading infinito",}
+    "HotFix": { "LDNG": "Loading infinito" }
   },
   "Navbar": {
     "HotFix": {}
   },
-  "Chat":{
-  	"IMGCHT":"Imagem no chat ao abrir não fecha"
+  "Chat": {
+    "IMGCHT": "Imagem no chat ao abrir não fecha"
+  },
+  "Tickets": {
+    "LST": "Margin top cabeçalho do modo lista",
+    "ALTRNM": "Mudar problema para descrição",
+    "ALTRCLR": "Alterar cor do chamado fechado",
+    "VTMDVLST": "Verificar chamados que chegam no modo lista"
   }
 }

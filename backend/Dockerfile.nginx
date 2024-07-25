@@ -23,14 +23,6 @@ RUN mkdir -p /var/www/html/static
 
 COPY ./build/index.html /var/www/html/static
 COPY ./build/asset-manifest.json /var/www/html/static
-
-RUN mkdir /var/www/html/static/css
-COPY ./build/static/css /var/www/html/static/css
-
-RUN mkdir /var/www/html/static/js
-COPY ./build/static/js /var/www/html/static/js
-
-RUN mkdir /var/www/html/media
-COPY ./build/static/media /var/www/html/media
+COPY ./build/static/ /var/www/html/static
 
 ENTRYPOINT ["nginx", "-g", "daemon off;"]
