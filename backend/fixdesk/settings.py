@@ -15,11 +15,12 @@ SECRET_KEY = "django-insecure-4h1mm_oolu%b$@g=eragw%v*=dp5qbvv8dkzd2rf+!#tz-(&wt
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    "sappp01",
-    "10.1.1.73",
     "localhost",
     "sappp01.lupatech.com.br",
-    "fixdesk",
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://sappp01.lupatech.com.br",
 ]
 
 # Application definition
