@@ -2307,8 +2307,8 @@ export default function History() {
       )}
       {imageopen && (
         <DivImageOpen className="position-fixed top-50 start-50 translate-middle">
-          <div className="w-100 text-sm-end">
-            <BtnOpen onClick={imageclose}>
+          <div className="w-100 position-relative">
+            <BtnOpen onClick={imageclose} className="position-absolute top-0 end-0">
               <Close src={CloseIMG} alt="" />
             </BtnOpen>
           </div>

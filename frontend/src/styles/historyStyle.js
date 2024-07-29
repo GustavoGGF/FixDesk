@@ -80,15 +80,17 @@ export const InputFile = styled.input`
 export const DivImageOpen = styled.div`
   z-index: 10000 !important;
   background-color: transparent;
+  height: 90% !important;
 `;
 
 export const ImageOpen = styled.img`
-  width: 100%;
+  height: 100%;
 `;
 
 export const BtnOpen = styled.button`
   background: transparent;
   border: none;
+  margin: 1em;
 `;
 
 export const DivAlocate = styled.div`

@@ -65,7 +65,6 @@ import {
   BtnChat,
   BtnChat2,
   BtnNF,
-  BtnOpen,
   Button1,
   Button2,
   Calendar,
@@ -109,7 +108,7 @@ import {
   TR,
   TRSPACE,
   Table,
-  TicketOpen,
+  TicketOpen,BtnOpen
 } from "../styles/historyStyle.js";
 import { DropDown } from "../styles/navbarStyle.js";
 import { BtnFile, DivNameFile, ImgFile, Select, TitlePage } from "../styles/helpdeskStyle.js";
@@ -3493,8 +3492,8 @@ export default function DashboardTI() {
       {equipamentforuser && <Registration token={token} equipamentforuser={equipamentforuser} CloseFunct={closeUpload} />}
       {imageopen && (
         <DivImageOpen className="position-fixed top-50 start-50 translate-middle">
-          <div className="w-100 text-sm-end">
-            <BtnOpen onClick={imageclose}>
+          <div className="w-100 positon-relative">
+            <BtnOpen onClick={imageclose} className="position-absolute top-0 end-0">
               <Close src={CloseIMG} alt="" />
             </BtnOpen>
           </div>
