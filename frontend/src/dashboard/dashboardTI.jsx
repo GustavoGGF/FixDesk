@@ -108,7 +108,8 @@ import {
   TR,
   TRSPACE,
   Table,
-  TicketOpen,BtnOpen
+  TicketOpen,
+  BtnOpen,
 } from "../styles/historyStyle.js";
 import { DropDown } from "../styles/navbarStyle.js";
 import { BtnFile, DivNameFile, ImgFile, Select, TitlePage } from "../styles/helpdeskStyle.js";
@@ -3303,7 +3304,7 @@ export default function DashboardTI() {
           </Button2>
         </DivSelectView>
       </DivFilter>
-      <section ref={sectionTicket}>
+      <section ref={sectionTicket} className="mt-3">
         {loadingDash && (
           <div className="position-absolute top-50 start-50 translate-middle">
             <Loading />

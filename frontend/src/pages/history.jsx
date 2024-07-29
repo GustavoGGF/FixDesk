@@ -88,6 +88,8 @@ export default function History() {
     }
   }, []);
 
+  const [colorTheme, setColorTheme] = useState("");
+
   const [navbar, setNavbar] = useState(false);
   const [loading, setLoading] = useState(true);
   const [ticketWindow, setTicketWindow] = useState(false);
@@ -178,12 +180,14 @@ export default function History() {
   function ThemeBlack() {
     setThemeFilter("");
     setThemeCard("");
+    setColorTheme("colorBlack");
     return setTheme("themeBlack");
   }
 
   function ThemeLight() {
     setThemeCard("themeCardLight");
     setThemeFilter("themeFilterLight");
+    setColorTheme("colorLight");
     return setTheme("themeLight");
   }
 
@@ -2003,7 +2007,7 @@ export default function History() {
           <Message TypeError={typeError} MessageError={messageError} CloseMessage={closeMessage} />
         </div>
       )}
-      <TitlePage className="text-center text-light mt-3">Historico de Chamados</TitlePage>
+      <TitlePage className="text-center text-light mt-3">Histórico de Chamados</TitlePage>
       <DivFilter className={`${blurNav} ${themeFilter}`}>
         <div className="form-floating">
           <Input1 type="text" className="form-control" id="floatingInput" onKeyDown={getTicketKey} />
@@ -2178,11 +2182,11 @@ export default function History() {
         {inList && (
           <Table>
             <thead>
-              <TH className="colorBlack">Chamado</TH>
-              <TH className="colorBlack">Usuario</TH>
-              <TH className="colorBlack">Ocorrencia</TH>
-              <TH className="colorBlack">Problema</TH>
-              <TH className="colorBlack">Data Abertura</TH>
+              <TH className={colorTheme}>Chamado</TH>
+              <TH className={colorTheme}>Usuario</TH>
+              <TH className={colorTheme}>Ocorrencia</TH>
+              <TH className={colorTheme}>Problema</TH>
+              <TH className={colorTheme}>Data Abertura</TH>
             </thead>
             <tbody>{ticketsDash}</tbody>
           </Table>
