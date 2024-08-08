@@ -3,7 +3,7 @@ import "animate.css";
 
 import "../styles/bootstrap/css/bootstrap.css";
 import Logo from "../images/logos/lupalogo.png";
-import { Div, IMG, Span, H5, Notification, Div2 } from "../styles/loginStyle";
+import { Div, IMG, Span } from "../styles/loginStyle";
 import Message from "../components/message";
 import Loading from "../components/loading";
 
@@ -27,65 +27,18 @@ export default function Login() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Definindo versão do Software
-  const version = "1.3";
-  const [notify, setNotify] = useState(true);
-
-  // Essa função realiza uma verificação no armazenamento local do navegador para determinar se a versão
-  // do software é a mais recente.Em caso negativo, exibe uma notificação de atualização(patch notes).
-  useEffect(() => {
-    const storedVersion = localStorage.getItem("version");
-
-    if (!storedVersion || storedVersion !== version) {
-      setNotify(true);
-    } else {
-      setNotify(false);
-    }
-  }, []);
-
-  const notificationRef = useRef(null);
-  // Este procedimento é acionado imediatamente após a alteração do estado de notify.
-  // Se o estado for verdadeiro, aguarda o término da animação atual e, em seguida, insere uma nova animação.
-  useEffect(() => {
-    if (notify) {
-      const notificationElement = notificationRef.current;
-
-      const handleAnimationEnd = () => {
-        notificationElement.classList.remove("animate__fadeInUp", "animate__slow");
-        notificationElement.classList.add("animate__pulse", "infinit");
-      };
-
-      notificationElement.addEventListener("animationend", handleAnimationEnd);
-
-      return () => {
-        notificationElement.removeEventListener("animationend", handleAnimationEnd);
-      };
-    }
-  }, [notify]);
-
   // Essas são variáveis de estado que são alteradas dinamicamente ao longo do código.
-  const [loginPage, setLoginPage] = useState(true);
-  const [passlimit, setPassLimit] = useState(false);
+  // Constantes Boolean
   const [awaitValidation, setAwaitValidation] = useState(false);
+  const [loginPage, setLoginPage] = useState(true);
   const [message, setMessage] = useState(false);
-  const [typeMessage, setTypeMessage] = useState("");
-  const [messageError, setMessageError] = useState("");
+  const [passlimit, setPassLimit] = useState(false);
+  // Constantes String
   const [animation, setAnimation] = useState("");
-  const [theme, setTheme] = useState("");
   const [color, setColor] = useState("");
-  const [patchNotes, setPatchNotes] = useState(false);
-
-  // Esta função é acionada quando a constante pathNotes é alterada.Se for verdadeira,
-  // ela verifica a versão do código no armazenamento local e realiza uma atualização, se necessário.
-  useEffect(() => {
-    if (patchNotes) {
-      const storedVersion = localStorage.getItem("version");
-
-      if (!storedVersion || storedVersion !== version) {
-        localStorage.setItem("version", version);
-      }
-    }
-  }, [patchNotes]);
+  const [messageError, setMessageError] = useState("");
+  const [theme, setTheme] = useState("");
+  const [typeMessage, setTypeMessage] = useState("");
 
   // Esta função é responsável por alterar o tema do site para "black".
   function setThemeBlack() {
@@ -229,24 +182,6 @@ export default function Login() {
           <Loading />
         </div>
       )}
-      <Div2 className="position-absolute bottom-0 start-0 d-flex">
-        <H5
-          onClick={() => {
-            setPatchNotes(true);
-          }}
-        >
-          {version}
-        </H5>
-        {notify && (
-          <Notification
-            onClick={() => {
-              setPatchNotes(true);
-            }}
-            ref={notificationRef}
-            className="animate__animated animate__fadeInUp animate__slow"
-          ></Notification>
-        )}
-      </Div2>
     </Div>
   );
 }

@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.18033b11.css",
-    "main.js": "/static/js/main.bc8d0b42.js",
+    "main.js": "/static/js/main.f60e012e.js",
     "static/media/definicoes.png": "/static/media/definicoes.25f9223de2d58f6bf587.png",
     "static/media/Lugrasimo-Regular.ttf": "/static/media/Lugrasimo-Regular.d80bf32e05bbfd3f566f.ttf",
     "static/media/fixdesk.png": "/static/media/fixdesk.ac323cae5cc46de51786.png",
@@ -10,10 +10,10 @@
     "index.html": "/index.html",
     "static/media/caret-down-square.svg": "/static/media/caret-down-square.8e67f1d918a871e63142bedb11799909.svg",
     "main.18033b11.css.map": "/static/css/main.18033b11.css.map",
-    "main.bc8d0b42.js.map": "/static/js/main.bc8d0b42.js.map"
+    "main.f60e012e.js.map": "/static/js/main.f60e012e.js.map"
   },
   "entrypoints": [
     "static/css/main.18033b11.css",
-    "static/js/main.bc8d0b42.js"
+    "static/js/main.f60e012e.js"
   ]
 }

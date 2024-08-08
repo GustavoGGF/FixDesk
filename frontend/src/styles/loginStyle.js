@@ -15,25 +15,3 @@ export const Span = styled.span`
   font-weight: bold;
   font-size: 1.3em;
 `;
-
-export const H5 = styled.h5`
-  color: var(--white);
-  cursor: pointer;
-`;
-
-export const Notification = styled.div`
-  content: "";
-  width: 1em;
-  height: 1em;
-  background: var(--light-green);
-  margin-bottom: 1em;
-  border-radius: 50%;
-  cursor: pointer;
-  -webkit-box-shadow: 0px 0px 28px 3px rgba(175, 252, 65, 1);
-  -moz-box-shadow: 0px 0px 28px 3px rgba(175, 252, 65, 1);
-  box-shadow: 0px 0px 28px 3px rgba(175, 252, 65, 1);
-`;
-
-export const Div2 = styled.div`
-  margin: 0.5em;
-`;
