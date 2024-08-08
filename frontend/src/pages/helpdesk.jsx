@@ -1,41 +1,43 @@
 import React, { useState, useEffect, useRef } from "react";
-import NavBar from "../components/navbar";
-import "../styles/bootstrap/css/bootstrap.css";
-import {
-  Div,
-  Form,
-  Input,
-  Input2,
-  Select,
-  Div2,
-  Calendar,
-  Textarea,
-  ImageEquip,
-  DivEquip,
-  InputRadio,
-  PNameFile,
-  DivNameFile,
-  ImgFile,
-  BtnFile,
-  InputFile,
-  TitlePage,
-  Contract,
-} from "../styles/helpdeskStyle";
-import { DivUpload, HeaderFiles, PFiles, IMGFile, Span1, Span2, BodyFiles, PFiles2, B1, InputFiles, IMGFile2, FooterFiles, Divider, Span3, ListFiles } from "../styles/Equipment_RegistrationStyle";
-import { DayPicker } from "react-day-picker";
+import { format } from "date-fns";
 import ptBR from "date-fns/locale/pt";
 import "react-day-picker/dist/style.css";
-import { format } from "date-fns";
+import { DayPicker } from "react-day-picker";
+import NavBar from "../components/navbar";
 import Loading from "../components/loading";
 import Message from "../components/message";
-import Cloud from "../images/components/cloud-uploading.png";
-import Exclude from "../images/components/lixo.png";
 import Info from "../components/info";
+import Cloud from "../images/components/cloud-uploading.png";
 import Close from "../images/components/close.png";
+import Exclude from "../images/components/lixo.png";
+import "../styles/bootstrap/css/bootstrap.css";
+import {
+  BtnFile,
+  Calendar,
+  Contract,
+  Div,
+  Div2,
+  DivEquip,
+  DivNameFile,
+  Form,
+  ImageEquip,
+  ImgFile,
+  Input,
+  Input2,
+  InputFile,
+  InputRadio,
+  PNameFile,
+  Select,
+  Textarea,
+  TitlePage,
+} from "../styles/helpdeskStyle";
+import { B1, BodyFiles, Divider, DivUpload, FooterFiles, HeaderFiles, IMGFile, IMGFile2, InputFiles, ListFiles, PFiles, PFiles2, Span1, Span2, Span3 } from "../styles/Equipment_RegistrationStyle";
 
 export default function Helpdesk() {
+  // Função inicia ao iniciar a pagina
   useEffect(() => {
     document.title = "Abrir Chamado";
+    // Verifica o tema predefinido
     const theme = localStorage.getItem("Theme");
     if (theme === null || theme === "black") {
       localStorage.setItem("Theme", "black");
@@ -45,99 +47,120 @@ export default function Helpdesk() {
     }
   }, []);
 
-  const [csrfToken, setCSRFToken] = useState("");
-  const [confirmOtherEquipaments, SetConfirmOtherEquipaments] = useState(true);
-  const [messagetitle, setMessagetitle] = useState("");
-  const [messageinfo1, setMessageinfo1] = useState("");
-  const [messageinfo2, setMessageinfo2] = useState("");
-  const [sector, setsector] = useState("");
-  const [occurrence, setOccurrence] = useState("");
-  const [problemn, setProblemn] = useState("");
-  const [observation, setObservation] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [motivation, setMotivation] = useState(true);
-  const [alertverify, setAlertVerify] = useState(false);
-  const [navbar, setNavbar] = useState(false);
-  const [dashboard, setDashboard] = useState(false);
-  const [infra, setInfra] = useState(false);
-  const [system, setSystem] = useState(false);
-  const [backup, setBackup] = useState(false);
-  const [alert, setAlert] = useState(false);
-  const [machine, setMachine] = useState(false);
-  const [mail, setMail] = useState(false);
-  const [equip, setEquip] = useState(false);
-  const [user, setUser] = useState(false);
-  const [internet, setInternet] = useState(false);
-  const [folder, setFolder] = useState(false);
-  const [formnewuser, setFormNewUser] = useState(false);
-  const [formdeluser, setFormDelUser] = useState(false);
-  const [selectedDay, setSelectedDay] = useState(new Date());
-  const [dataUser, setdataUser] = useState();
-  const [message, setMessage] = useState(false);
-  const [typeError, setTypeError] = useState("");
-  const [messageError, setMessageError] = useState("");
-  const [respectiveTI, setRespectiveTI] = useState(false);
-  const [respectiveArea, setRespectiveArea] = useState("");
-  const [sys, setSYS] = useState(false);
-  const [sys2, setSYS2] = useState(false);
-  const [softAPP, setSoftAPP] = useState(false);
-  const [dadosCase, setDados] = useState(false);
-  const [alocate, setAlocate] = useState(false);
-  const [equipaments, setEquipaments] = useState();
-  const [dashequipaments, setDashEquipaments] = useState("");
-  const [filename, setFileName] = useState([]);
-  const [fileimg, setFileImg] = useState([]);
-  const [dateequip, setDateEquip] = useState(false);
-  const [daysForAlocate, setDaysForAlocate] = useState([]);
-  const [equipamentSelected, setEquipamentSelected] = useState("");
-  const [newname, setNewName] = useState("");
-  const [sectornewuser, setSectorNewUser] = useState("");
-  const [motivationContract, setMotivationContract] = useState("");
-  const [necessaryMachine, setNecessaryMachine] = useState();
-  const [companynewUser, setCompanyNewUser] = useState("");
-  const [softwareNewUser, setSoftwareNewUser] = useState([]);
+  // Constantes String
   const [centralcost, setCentralCost] = useState("");
-  const [jobtitlenewuser, setJobTitleNewUser] = useState("");
+  const [companynewUser, setCompanyNewUser] = useState("");
   const [copyUser, setCopyUser] = useState("");
-  const [maildelegation, setMailDelegation] = useState("");
+  const [csrfToken, setCSRFToken] = useState("");
+  const [dashequipaments, setDashEquipaments] = useState("");
   const [dirsave, setDirSave] = useState("");
-  const [nameOnDropFiles, setNameOnDropFiles] = useState("");
-  const [nameOnInutFiles, setNameOnInputFiles] = useState("");
-  const [theme, setTheme] = useState("");
-  const [themeTicket, setThemeTicket] = useState("");
-  const [inputDropControl, setInputDropControl] = useState(true);
-  const [inputManualControl, setInputManualControl] = useState(false);
-  const [arrayInput, setArrayInput] = useState([]);
-  const [fileSizeNotify, setFileSizeNotify] = useState(false);
-  const [info, setInfo] = useState(false);
-  const [infoID, setInfoID] = useState("");
+  const [equipamentSelected, setEquipamentSelected] = useState("");
   const [infoClass, setInfoClass] = useState("");
   const [infoClass2, setInfoClass2] = useState("");
-  const [otherEquipaments, setOtherEquipaments] = useState(false);
+  const [infoID, setInfoID] = useState("");
+  const [jobtitlenewuser, setJobTitleNewUser] = useState("");
+  const [maildelegation, setMailDelegation] = useState("");
+  const [messageError, setMessageError] = useState("");
+  const [messageinfo1, setMessageinfo1] = useState("");
+  const [messageinfo2, setMessageinfo2] = useState("");
+  const [messagetitle, setMessagetitle] = useState("");
+  const [motivationContract, setMotivationContract] = useState("");
+  const [nameOnDropFiles, setNameOnDropFiles] = useState("");
+  const [nameOnInutFiles, setNameOnInputFiles] = useState("");
+  const [newname, setNewName] = useState("");
+  const [observation, setObservation] = useState("");
+  const [occurrence, setOccurrence] = useState("");
+  const [problemn, setProblemn] = useState("");
+  const [respectiveArea, setRespectiveArea] = useState("");
+  const [sector, setsector] = useState("");
+  const [sectornewuser, setSectorNewUser] = useState("");
+  const [theme, setTheme] = useState("");
+  const [themeTicket, setThemeTicket] = useState("");
+  const [typeError, setTypeError] = useState("");
+  // Constante Boolean
+  const [alert, setAlert] = useState(false);
+  const [alertverify, setAlertVerify] = useState(false);
+  const [alocate, setAlocate] = useState(false);
+  const [backup, setBackup] = useState(false);
   const [comodato, setComodato] = useState(false);
+  const [confirmOtherEquipaments, SetConfirmOtherEquipaments] = useState(true);
+  const [dashboard, setDashboard] = useState(false);
+  const [dadosCase, setDados] = useState(false);
+  const [dateequip, setDateEquip] = useState(false);
+  const [equip, setEquip] = useState(false);
+  const [fileSizeNotify, setFileSizeNotify] = useState(false);
+  const [folder, setFolder] = useState(false);
+  const [formdeluser, setFormDelUser] = useState(false);
+  const [formnewuser, setFormNewUser] = useState(false);
+  const [info, setInfo] = useState(false);
+  const [inputDropControl, setInputDropControl] = useState(true);
+  const [inputManualControl, setInputManualControl] = useState(false);
+  const [infra, setInfra] = useState(false);
+  const [internet, setInternet] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [machine, setMachine] = useState(false);
+  const [mail, setMail] = useState(false);
+  const [message, setMessage] = useState(false);
+  const [motivation, setMotivation] = useState(true);
+  const [navbar, setNavbar] = useState(false);
+  const [otherEquipaments, setOtherEquipaments] = useState(false);
   const [otherMouse, setOtherMouse] = useState(false);
-  const [otherTeclado, setOtherTeclado] = useState(false);
   const [otherRede, setOtherRede] = useState(false);
-
+  const [otherTeclado, setOtherTeclado] = useState(false);
+  const [respectiveTI, setRespectiveTI] = useState(false);
+  const [softAPP, setSoftAPP] = useState(false);
+  const [sys, setSYS] = useState(false);
+  const [sys2, setSYS2] = useState(false);
+  const [system, setSystem] = useState(false);
+  const [user, setUser] = useState(false);
+  // Constante New Date
+  const [selectedDay, setSelectedDay] = useState(new Date());
+  // Constante Vazio
+  const [dataUser, setdataUser] = useState();
+  const [equipaments, setEquipaments] = useState();
+  const [necessaryMachine, setNecessaryMachine] = useState();
+  // Constante Array
+  const [arrayInput, setArrayInput] = useState([]);
+  const [daysForAlocate, setDaysForAlocate] = useState([]);
+  const [fileimg, setFileImg] = useState([]);
+  const [filename, setFileName] = useState([]);
+  const [softwareNewUser, setSoftwareNewUser] = useState([]);
+  // Constantes para Data
   const footerDay = selectedDay ? <p>Você selecionou {format(selectedDay, "PPP")}</p> : <p>Selecione uma dataUser</p>;
   const footerAlocate = daysForAlocate.length >= 1 ? <p>Você alocou por {daysForAlocate.length} dia(s).</p> : <p>Selecione um ou mais dias.</p>;
-
+  // Constante de Referencia
   const observationRef = useRef(null);
-  const selectAR = useRef(null);
   const primaryContainerRef = useRef(null);
+  const selectAR = useRef(null);
+  const selectBackupRef = useRef(null);
+  const selectDadoRef = useRef(null);
+  const selectError = useRef(null);
+  const selectEquipRef = useRef(null);
+  const selectFolderRef = useRef(null);
+  const selectForm = useRef(null);
+  const selectInternetRef = useRef(null);
+  const selectMailRef = useRef(null);
+  const selectOfficeRef = useRef(null);
+  const selectSoftRef = useRef(null);
+  const selectSysRef = useRef(null);
+  const selectUserRef = useRef(null);
 
+  // Inciando Array
   let file_name = [];
 
+  // Função que seta o Tema Escuro
   function ThemeBlack() {
     setThemeTicket("");
     setTheme("themeBlack");
   }
 
+  // Função que seta o tema Claro
   function ThemeLight() {
     setThemeTicket("themeLightTicket");
     setTheme("themeLight");
   }
 
+  // Função iniciada ao entrar na pagina que pega dados basicos do usuario
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -145,6 +168,9 @@ export default function Helpdesk() {
           method: "POST",
           headers: {
             Accept: "application/json",
+            "Content-Type": "application/json",
+            "Cache-Control": "no-cache",
+            Pragma: "no-cache",
           },
           body: {},
         });
@@ -165,6 +191,7 @@ export default function Helpdesk() {
     fetchData();
   }, []);
 
+  // Após os dados dos usuarios for setado, cancela o Loading e mostra a tela
   useEffect(() => {
     if (dataUser && Object.keys(dataUser).length > 0) {
       setLoading(false);
@@ -173,6 +200,7 @@ export default function Helpdesk() {
     }
   }, [dataUser]);
 
+  // Após a tela principal for mostrada seta alguns Estilos
   useEffect(() => {
     if (dashboard === true) {
       //DOM
@@ -247,9 +275,9 @@ export default function Helpdesk() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dashboard]);
 
+  // Função que libera a Área Respectiva
   function selectARes() {
-    const select = document.getElementById("selectAR");
-    const option = select.options[select.selectedIndex].value;
+    const option = selectAR.current.value;
 
     switch (option) {
       case "TI":
@@ -269,11 +297,11 @@ export default function Helpdesk() {
     }
   }
 
+  // Função que seleciona Infra ou Sistema
   function handleSelect() {
-    const select = document.getElementById("select-Form");
-    const option = select.options[select.selectedIndex].value;
+    const select = selectForm.current.value;
 
-    switch (option) {
+    switch (select) {
       default:
         break;
       case "infra":
@@ -331,14 +359,15 @@ export default function Helpdesk() {
         setSYS2(false);
         setAlocate(false);
         setDateEquip(false);
+        break;
     }
   }
 
+  // Seleciona o Problema
   function selectProblem() {
-    const select = document.getElementById("select-error");
-    const option = select.options[select.selectedIndex].value;
+    const select = selectError.current.value;
 
-    switch (option) {
+    switch (select) {
       default:
         break;
       case "backup":
@@ -600,14 +629,32 @@ export default function Helpdesk() {
         setOccurrence("Integridade de Dados");
         setDateEquip(false);
         break;
+      case "metadados":
+        setDados(false);
+        setSoftAPP(false);
+        setSYS2(false);
+        setSYS(true);
+        setBackup(false);
+        setAlocate(false);
+        setAlert(false);
+        setMail(false);
+        setEquip(false);
+        setUser(false);
+        setFormNewUser(false);
+        setFormDelUser(false);
+        setInternet(false);
+        setFolder(false);
+        setOccurrence("Metadados");
+        setDateEquip(false);
+        break;
     }
   }
 
+  // Select de Sistema
   function selectSys() {
-    const select = document.getElementById("select-sap");
-    const option = select.options[select.selectedIndex].value;
+    const select = selectSysRef.current.value;
 
-    switch (option) {
+    switch (select) {
       default:
         break;
       case "user":
@@ -655,11 +702,11 @@ export default function Helpdesk() {
     }
   }
 
+  // Select de Sistema Especificos
   function selectOffice() {
-    const selectOffice = document.getElementById("select-office");
-    const optionOffice = selectOffice.options[selectOffice.selectedIndex].value;
+    const selectOffice = selectOfficeRef.current.value;
 
-    switch (optionOffice) {
+    switch (selectOffice) {
       default:
         break;
       case "buy":
@@ -684,11 +731,11 @@ export default function Helpdesk() {
     }
   }
 
+  // Select Softwares
   function selectSoftAPP() {
-    const select = document.getElementById("select-soft");
-    const option = select.options[select.selectedIndex].value;
+    const select = selectSoftRef.current.value;
 
-    switch (option) {
+    switch (select) {
       default:
         break;
       case "install":
@@ -713,11 +760,11 @@ export default function Helpdesk() {
     }
   }
 
+  // Select para arquivos
   function selectDado() {
-    const selectOffice = document.getElementById("select-dado");
-    const optionOffice = selectOffice.options[selectOffice.selectedIndex].value;
+    const selectOffice = selectDadoRef.current.value;
 
-    switch (optionOffice) {
+    switch (selectOffice) {
       default:
         break;
       case "corrupted":
@@ -734,15 +781,16 @@ export default function Helpdesk() {
     }
   }
 
+  // Pega a Observação
   function getObservation(event) {
     setObservation(event.target.value);
   }
 
+  // Select Backup
   function selectBackup() {
-    const selectBackup = document.getElementById("select-backup");
-    const optionBackup = selectBackup.options[selectBackup.selectedIndex].value;
+    const selectBackup = selectBackupRef.current.value;
 
-    switch (optionBackup) {
+    switch (selectBackup) {
       default:
         break;
       case "pasta":
@@ -767,11 +815,11 @@ export default function Helpdesk() {
     }
   }
 
+  // Select E-mail
   function selectMail() {
-    const selectMail = document.getElementById("select-mail");
-    const optionMail = selectMail.options[selectMail.selectedIndex].value;
+    const selectMail = selectMailRef.current.value;
 
-    switch (optionMail) {
+    switch (selectMail) {
       default:
         break;
       case "maxcap":
@@ -801,6 +849,7 @@ export default function Helpdesk() {
     }
   }
 
+  // Seleciona o Equipamento de locação selecionado
   function selectEquipament({ element, id }) {
     setEquipamentSelected(id);
     const allElements = document.querySelectorAll(".equipsclass");
@@ -812,11 +861,11 @@ export default function Helpdesk() {
     setDateEquip(true);
   }
 
+  // Select de equipamentos gerais
   function selectEquip() {
-    const selectEquip = document.getElementById("select-equip");
-    const optionEquip = selectEquip.options[selectEquip.selectedIndex].value;
+    const selectEquipValue = selectEquipRef.current.value;
 
-    switch (optionEquip) {
+    switch (selectEquipValue) {
       default:
         break;
       case "off":
@@ -868,6 +917,7 @@ export default function Helpdesk() {
         setAlertVerify(false);
         setAlocate(true);
         setProblemn("Alocação de Máquina");
+        // Caso seja selecionado locação de maquina monta os computadores disponiveis
         if (equipaments && Object.keys(equipaments).length > 0) {
           equipaments.forEach((equipament) => {
             const Div = (
@@ -907,11 +957,11 @@ export default function Helpdesk() {
     }
   }
 
+  // Select de bloqueio e Criação de User
   function selectUser() {
-    const select = document.getElementById("select-user");
-    const option = select.options[select.selectedIndex].value;
+    const select = selectUserRef.current.value;
 
-    switch (option) {
+    switch (select) {
       default:
         break;
       case "adduser":
@@ -940,11 +990,11 @@ export default function Helpdesk() {
     }
   }
 
+  // Select de Pasta
   function selectFolder() {
-    const select = document.getElementById("select-folder");
-    const option = select.options[select.selectedIndex].value;
+    const select = selectFolderRef.current.value;
 
-    switch (option) {
+    switch (select) {
       default:
         break;
       case "lib":
@@ -972,11 +1022,11 @@ export default function Helpdesk() {
     }
   }
 
+  // Select de internet
   function selectInternet() {
-    const select = document.getElementById("select-internet");
-    const option = select.options[select.selectedIndex].value;
+    const select = selectInternetRef.current.value;
 
-    switch (option) {
+    switch (select) {
       default:
         break;
       case "lib":
@@ -1004,6 +1054,7 @@ export default function Helpdesk() {
     }
   }
 
+  // Input de motivo da contratação
   function selectMotivation() {
     const option = document.querySelectorAll("input[name='motivation']");
 
@@ -1022,6 +1073,7 @@ export default function Helpdesk() {
     });
   }
 
+  // Select de máquina para locação
   function selectMachine() {
     const option = document.querySelectorAll("input[name='machine']");
 
@@ -1750,14 +1802,14 @@ export default function Helpdesk() {
             </label>
             <Input type="text" className="form-control" id="companyInput" value={dataUser.company || ""} disabled={dataUser.company} />
           </div>
-          <Select ref={selectAR} className="form-select mb-3" aria-label="Default select example" id="selectAR" onChange={selectARes}>
+          <Select ref={selectAR} className="form-select mb-3" aria-label="Default select example" onChange={selectARes}>
             <option value="none" disabled selected>
               Seleciona a Área Respectiva
             </option>
             <option value="TI">TI</option>
           </Select>
           {respectiveTI && (
-            <Select className="form-select mb-3" aria-label="Default select example" id="select-Form" onChange={handleSelect}>
+            <Select className="form-select mb-3" aria-label="Default select example" useRef={selectForm} onChange={handleSelect}>
               <option value="none" disabled selected>
                 Selecione o tipo de ocorrência
               </option>
@@ -1766,7 +1818,7 @@ export default function Helpdesk() {
             </Select>
           )}
           {infra && (
-            <Select className="form-select mb-3" aria-label="Default select example" id="select-error" onChange={selectProblem}>
+            <Select className="form-select mb-3" aria-label="Default select example" useRef={selectError} onChange={selectProblem}>
               <option value="none" disabled selected>
                 Selecione o problema ocorrido
               </option>
@@ -1781,18 +1833,18 @@ export default function Helpdesk() {
             </Select>
           )}
           {backup && (
-            <Select className="form-select mb-3" aria-label="Default select example" id="select-backup" onChange={selectBackup}>
+            <Select className="form-select mb-3" aria-label="Default select example" useRef={selectBackupRef} onChange={selectBackup}>
               <option value="none" disabled selected>
-                Selecione o problema ocorrido
+                Selecione a descrição do ocorrido
               </option>
               <option value="pasta">Pasta/Arquivo</option>
               <option value="mail">E-mail</option>
             </Select>
           )}
           {mail && (
-            <Select className="form-select mb-3" aria-label="Default select example" id="select-mail" onChange={selectMail}>
+            <Select className="form-select mb-3" aria-label="Default select example" useRef={selectMailRef} onChange={selectMail}>
               <option value="none" disabled selected>
-                Selecione o problema ocorrido
+                Selecione a descrição do ocorrido
               </option>
               <option value="maxcap">Aumentar capacidade</option>
               <option value="conect">Não conecta</option>
@@ -1800,9 +1852,9 @@ export default function Helpdesk() {
             </Select>
           )}
           {equip && (
-            <Select className="form-select mb-3" aria-label="Default select example" id="select-equip" onChange={selectEquip}>
+            <Select className="form-select mb-3" aria-label="Default select example" useRef={selectEquipRef} onChange={selectEquip}>
               <option value="none" disabled selected>
-                Selecione o problema ocorrido
+                Selecione a descrição do ocorrido
               </option>
               <option value="off">Computador não liga</option>
               <option value="printer">Problema com a impressora</option>
@@ -1813,7 +1865,7 @@ export default function Helpdesk() {
             </Select>
           )}
           {user && (
-            <Select className="form-select mb-3" aria-label="Default select example" id="select-user" onChange={selectUser}>
+            <Select className="form-select mb-3" aria-label="Default select example" useRef={selectUserRef} onChange={selectUser}>
               <option value="none" disabled selected>
                 Selecione o problema ocorrido
               </option>
@@ -1822,9 +1874,9 @@ export default function Helpdesk() {
             </Select>
           )}
           {internet && (
-            <Select className="form-select mb-3" aria-label="Default select example" id="select-internet" onChange={selectInternet}>
+            <Select className="form-select mb-3" aria-label="Default select example" useRef={selectInternetRef} onChange={selectInternet}>
               <option value="none" disabled selected>
-                Selecione o problema ocorrido
+                Selecione a descrição do ocorrido
               </option>
               <option value="lib">Liberação de site</option>
               <option value="block">Bloqueio de site</option>
@@ -1994,7 +2046,7 @@ export default function Helpdesk() {
             </div>
           )}
           {folder && (
-            <Select className="form-select mb-3" aria-label="Default select example" id="select-folder" onChange={selectFolder}>
+            <Select className="form-select mb-3" aria-label="Default select example" useRef={selectFolderRef} onChange={selectFolder}>
               <option value="none" disabled selected>
                 Selecione o problema ocorrido
               </option>
@@ -2003,7 +2055,7 @@ export default function Helpdesk() {
             </Select>
           )}
           {system && (
-            <Select className="form-select mb-3" aria-label="Default select example" id="select-error" onChange={selectProblem}>
+            <Select className="form-select mb-3" aria-label="Default select example" useRef={selectError} onChange={selectProblem}>
               <option value="none" disabled selected>
                 Selecione o Sistema
               </option>
@@ -2011,11 +2063,12 @@ export default function Helpdesk() {
               <option value="mbi">MBI</option>
               <option value="synch">Synchro</option>
               <option value="office">Office</option>
+              <option value="metadados">Metadados</option>
               <option value="eng">Softwares de Engenharia</option>
             </Select>
           )}
           {sys && (
-            <Select className="form-select mb-3" aria-label="Default select example" id="select-sap" onChange={selectSys}>
+            <Select className="form-select mb-3" aria-label="Default select example" useRef={selectSysRef} onChange={selectSys}>
               <option value="none" disabled selected>
                 Selecione o Problema
               </option>
@@ -2027,7 +2080,7 @@ export default function Helpdesk() {
             </Select>
           )}
           {sys2 && (
-            <Select className="form-select mb-3" aria-label="Default select example" id="select-office" onChange={selectOffice}>
+            <Select className="form-select mb-3" aria-label="Default select example" useRef={selectOfficeRef} onChange={selectOffice}>
               <option value="none" disabled selected>
                 Selecione o Problema
               </option>
@@ -2036,16 +2089,16 @@ export default function Helpdesk() {
             </Select>
           )}
           {softAPP && (
-            <Select className="form-select mb-3" aria-label="Default select example" id="select-soft" onChange={selectSoftAPP}>
+            <Select className="form-select mb-3" aria-label="Default select example" useRef={selectSoftRef} onChange={selectSoftAPP}>
               <option value="none" disabled selected>
-                Selecione o Problema
+                Selecione a descrição do problema
               </option>
               <option value="install">Instalação de Software Novo</option>
               <option value="error">Erros e Problemas em Softwares Gerais</option>
             </Select>
           )}
           {dadosCase && (
-            <Select className="form-select mb-3" aria-label="Default select example" id="select-dado" onChange={selectDado}>
+            <Select className="form-select mb-3" aria-label="Default select example" useRef={selectDadoRef} onChange={selectDado}>
               <option value="none" disabled selected>
                 Selecione o Problema
               </option>

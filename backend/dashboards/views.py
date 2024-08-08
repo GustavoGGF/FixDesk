@@ -206,27 +206,71 @@ def equipment_inventory(request):
     if request.method == "GET":
         return JsonResponse({"status": "ok"}, status=200, safe=True)
 
+    """
+    Função para obter tickets baseados nos filtros fornecidos pelo usuário.
+
+    Requer que o usuário esteja autenticado. Caso o usuário não esteja logado,
+    será redirecionado para a página de login especificada.
+
+    Parâmetros:
+    - request: Objeto HttpRequest que contém os parâmetros da requisição, incluindo os filtros aplicados pelo usuário.
+
+    Retorna:
+    - HttpResponse: A resposta contendo os tickets que correspondem aos filtros aplicados. Pode ser um JSON ou um outro formato de resposta, dependendo da implementação.
+
+    Descrição:
+    A função `getTicketFilter` processa a requisição do usuário, aplica os filtros recebidos e retorna uma lista de tickets que atendem aos critérios especificados.
+    """
+
 
 @login_required(login_url="/login")
 def getTicketFilter(request):
     if request.method == "GET":
+        # Inicializa a variável Quantity_tickets com valor None.
+        # Usada para armazenar a quantidade total de tickets que atendem aos filtros aplicados.
         Quantity_tickets = None
+
+        # Inicializa a variável ticket_data com valor None.
+        # Usada para armazenar os dados dos tickets retornados, geralmente em formato de dicionário ou objeto.
         ticket_data = None
+
+        # Inicializa a lista ticket_list como uma lista vazia.
+        # Usada para armazenar a lista de tickets que atendem aos critérios de filtro.
         ticket_list = []
+
+        # Inicializa a variável ticket_json com valor None.
+        # Usada para armazenar os dados dos tickets em formato JSON para ser retornado na resposta.
         ticket_json = None
+
+        # Inicializa a variável order com valor None.
+        # Usada para armazenar informações sobre a ordem de classificação dos tickets, se aplicável.
         order = None
+
+        # Inicializa a variável problemnFront com valor None.
+        # Usada para armazenar informações relacionadas ao problema do frontend, caso haja um filtro baseado em problema.
         problemnFront = None
+
+        # Inicializa a variável sectorFront com valor None.
+        # Usada para armazenar informações relacionadas ao setor do frontend, se houver um filtro baseado em setor.
         sectorFront = None
+
+        # Inicializa a variável status como uma string vazia.
+        # Usada para armazenar o status dos tickets ou o status do filtro aplicado, se aplicável.
         status = ""
+
         try:
+            # Pegando o valor do status
             status = request.META.get("HTTP_STATUS_TICKET")
             if status == "open":
                 status = True
             elif status == "close":
                 status = False
+            elif status == "stop":
+                status = None
             elif status == "all":
                 status = ""
 
+            # Pegando Valores Necessarios
             Quantity_tickets = int(request.META.get("HTTP_QUANTITY_TICKETS"))
             order = request.META.get("HTTP_ORDER_BY")
             sectorFront = request.META.get("HTTP_SECTOR_TICKET")

@@ -37,16 +37,3 @@ export const Notification = styled.div`
 export const Div2 = styled.div`
   margin: 0.5em;
 `;
-
-export const PathNotes = styled.div`
-  width: 60%;
-  height: 60%;
-  background-color: var(--light-white);
-  padding: 1.5em;
-  border-radius: 1em;
-  overflow-y: auto;
-`;
-
-export const CloseBTN = styled.button`
-  margin: 1em;
-`;

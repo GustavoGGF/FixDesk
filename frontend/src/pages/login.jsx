@@ -3,7 +3,7 @@ import "animate.css";
 
 import "../styles/bootstrap/css/bootstrap.css";
 import Logo from "../images/logos/lupalogo.png";
-import { Div, IMG, Span, H5, Notification, Div2, PathNotes, CloseBTN } from "../styles/loginStyle";
+import { Div, IMG, Span, H5, Notification, Div2 } from "../styles/loginStyle";
 import Message from "../components/message";
 import Loading from "../components/loading";
 
@@ -247,64 +247,6 @@ export default function Login() {
           ></Notification>
         )}
       </Div2>
-      {patchNotes && (
-        <PathNotes className="d-flex flex-column position-absolute top-50 start-50 translate-middle z-3">
-          <CloseBTN
-            className="position-absolute top-0 end-0 btn btn-danger"
-            onClick={() => {
-              setPatchNotes(false);
-            }}
-          >
-            X
-          </CloseBTN>
-          <h3 className="text-center mb-5 mt-3 fw-bold">Notas de Atualizações</h3>
-          <div className="d-flex flex-column">
-            <h6 className="fw-bold mb-2">Nota de Atualização 1.0 - 09/05</h6>
-            <p className="text-break">
-              <b>Assunto</b>: Data de Lançamento da Ferramenta de Chamados FixDesk É com grande satisfação que anunciamos a data oficial de lançamento da nossa nova ferramenta de chamados, FixDesk.
-              Após um período de desenvolvimento e testes rigorosos, estamos felizes em informar que o FixDesk estará disponível para uso a partir de 21/03/2024. Esta ferramenta revolucionária promete
-              simplificar e otimizar o processo de gerenciamento de chamados, proporcionando uma experiência mais eficiente e organizada para toda a equipe. Fiquem atentos para mais informações sobre
-              treinamentos e orientações sobre como utilizar o FixDesk da melhor forma possível.
-            </p>
-          </div>
-          <div className="d-flex flex-column">
-            <h6 className="fw-bold mb-2">Nota de Atualização 1.1 - 10/05</h6>
-            <span className="text-break">
-              <b>Assunto</b>: improvements. (Melhorias, tanto de desempenho quanto visual)
-              <p>Melhoria no campo de observação quando o ticket de chamado é aberto.</p>
-              <p>Melhoria no campo de observação no PDF ao baixar o chamado.</p>
-            </span>
-          </div>
-          <div className="d-flex flex-column">
-            <h6 className="fw-bold mb-2">Nota de Atualização 1.2 - 17/05</h6>
-            <span className="text-break">
-              <b>Assunto</b>: improvements. (Melhorias, tanto de desempenho quanto visual)
-              <p>Melhoria no chat, após enviar um anexo é mostrado no chat a notificação.</p>
-            </span>
-          </div>
-          <div className="d-flex flex-column">
-            <h6 className="fw-bold mb-2">Nota de Atualização 1.3 - 13/06</h6>
-            <span className="text-break">
-              <b>Assunto</b>: improvements. (Melhorias, tanto de desempenho quanto visual)
-              <p>Melhoria na visualização em modo lista.</p>
-              <p>Melhoria ao criar um chamado, agora terá uma notificação para ajudar a saber se o chamado foi criado ou não.</p>
-              <p>Ajuste no chat quando algum técnico assume um chamado.</p>
-              <p>Detalhes Tecnicos Ajustado.</p>
-              <p>Ajuste ao Anexar conteúdo.</p>
-            </span>
-          </div>
-          <div className="d-flex flex-column">
-            <h6 className="fw-bold mb-2">Nota de Atualização 2.0 - 25/06</h6>
-            <span className="text-break">
-              <b>Assunto Melhoria significativa:</b>
-              <p>Adicionado HTTPS a ferramenta, visando segurança para aplicação</p>
-              <b>Assunto</b>: improvements. (Melhorias, tanto de desempenho quanto visual)
-              <p>Redirecionamento adequanto para quanto efetuado a expiração do token de segurança.</p>
-              <p>Tempo de expiração de token de segurança aumentado de 3600 segundo(1 hora) para 14400 segundos(4 horas).</p>
-            </span>
-          </div>
-        </PathNotes>
-      )}
     </Div>
   );
 }

@@ -2185,7 +2185,7 @@ export default function History() {
               <TH className={colorTheme}>Chamado</TH>
               <TH className={colorTheme}>Usuario</TH>
               <TH className={colorTheme}>Ocorrencia</TH>
-              <TH className={colorTheme}>Problema</TH>
+              <TH className={colorTheme}>Descrição</TH>
               <TH className={colorTheme}>Data Abertura</TH>
             </thead>
             <tbody>{ticketsDash}</tbody>

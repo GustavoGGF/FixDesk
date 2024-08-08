@@ -1984,41 +1984,52 @@ export default function DashboardTI() {
       });
   }
 
+  /**
+   * Atualiza a visualização dos chamados de acordo com a quantidade especificada pelo usuário.
+   *
+   * Esta função é responsável por:
+   * 1. Limpar a lista de chamados e a visualização do painel de chamados.
+   * 2. Atualizar a cor de fundo dos filtros de visualização para indicar que não estão selecionados.
+   * 3. Realizar uma requisição para o servidor para obter os chamados filtrados de acordo com a quantidade e outros parâmetros especificados.
+   * 4. Atualizar o estado com os novos dados recebidos e gerenciar possíveis erros durante a requisição.
+   *
+   * @param {Object} params - Objeto contendo os parâmetros necessários para a requisição.
+   * @param {number} params.quantity - Quantidade de chamados a ser visualizada.
+   */
   function getTicketFilter({ quantity }) {
+    // Limpa a lista de chamados e o painel de chamados, e indica que a visualização está carregando
     setTickets([]);
     setTicketsDash([]);
     setLoadingDash(true);
+
+    // Define a cor de fundo dos filtros de visualização para transparente, indicando que não estão selecionados
     fiveView.current.style.backgroundColor = "transparent";
-
     thenView.current.style.backgroundColor = "transparent";
-
     fiftyView.current.style.backgroundColor = "transparent";
-
     allView.current.style.backgroundColor = "transparent";
 
+    // Faz uma requisição GET para o endpoint de filtragem de chamados
     fetch("getTicketFilter/", {
       method: "GET",
       headers: {
         Accept: "application/json",
-        "Quantity-tickets": quantity,
-        "Order-by": orderby,
-        "Problemn-Ticket": problemTicket,
-        "Sector-Ticket": sectorTicket,
-        "Status-Ticket": status,
+        "Quantity-tickets": quantity, // Define a quantidade de chamados a ser filtrada
+        "Order-by": orderby, // Ordem de exibição dos chamados
+        "Problemn-Ticket": problemTicket, // Filtro por problema do chamado
+        "Sector-Ticket": sectorTicket, // Filtro por setor do chamado
+        "Status-Ticket": status, // Filtro por status do chamado
       },
     })
-      .then((response) => {
-        return response.json();
-      })
+      .then((response) => response.json()) // Converte a resposta para JSON
       .then((data) => {
-        setLoadingDash(false);
-        setTickets(data.tickets);
+        setLoadingDash(false); // Desativa o estado de carregamento
+        setTickets(data.tickets); // Atualiza a lista de chamados com os dados recebidos
       })
       .catch((err) => {
-        setMessageError(err);
-        setTypeError("FATAL ERROR");
-        setMessage(true);
-        return console.log(err);
+        setMessageError(err); // Define a mensagem de erro
+        setTypeError("FATAL ERROR"); // Define o tipo de erro como fatal
+        setMessage(true); // Exibe a mensagem de erro
+        console.log(err); // Loga o erro no console para depuração
       });
   }
 
@@ -3316,7 +3327,7 @@ export default function DashboardTI() {
               <TH className={colorTheme}>Chamado</TH>
               <TH className={colorTheme}>Usuario</TH>
               <TH className={colorTheme}>Ocorrencia</TH>
-              <TH className={colorTheme}>Problema</TH>
+              <TH className={colorTheme}>Descrição</TH>
               <TH className={colorTheme}>Data Abertura</TH>
             </thead>
             <tbody>{ticketsDash}</tbody>

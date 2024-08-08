@@ -15,6 +15,11 @@ urlpatterns = [
         views.equipment_inventory,
         name="central-equipment-inventory",
     ),
+    # Define uma URL padrão para o endpoint "getTicketFilter".
+    # Este endpoint é responsável por chamar a função 'getTicketFilter' na view 'views'.
+    # A função 'getTicketFilter' tem a finalidade de processar os filtros selecionados pelo usuário
+    # e retornar os chamados (tickets) que correspondem a esses filtros.
+    # O nome desta URL é 'central-get-ticket-filter', e pode ser utilizado em templates e em redirecionamentos.
     path("getTicketFilter/", views.getTicketFilter, name="central-get-ticket-filter"),
     path(
         "getTicketFilterWords/",
@@ -58,5 +63,4 @@ urlpatterns = [
         views.getTicketFilterTech,
         name="central-get-ticket-filter-tech",
     ),
-    # path("<path:unknown_path>", views.redirect_to_specific_url),
 ]

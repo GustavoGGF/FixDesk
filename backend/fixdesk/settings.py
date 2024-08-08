@@ -14,10 +14,7 @@ SECRET_KEY = "django-insecure-4h1mm_oolu%b$@g=eragw%v*=dp5qbvv8dkzd2rf+!#tz-(&wt
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    "localhost",
-    "sappp01.lupatech.com.br",
-]
+ALLOWED_HOSTS = ["localhost", "sappp01.lupatech.com.br", "sappp01", "10.1.1.73"]
 
 CSRF_TRUSTED_ORIGINS = [
     "https://sappp01.lupatech.com.br",

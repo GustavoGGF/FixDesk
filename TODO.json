@@ -22,8 +22,7 @@
   "HelpDesk": {
     "Upgrade": {
       "Upgrade1": "contrato comodato para os equipamentos",
-      "COMPTK": "componentizar as opções de chamados",
-      "NEWPBM": "Adicionar Metadados aos softwares de suporte"
+      "COMPTK": "componentizar as opções de chamados"
     },
     "HotFix": {
       "HotFix1": "ao enviar locagem de equipamento, se estiver alocado já, retornar com alocado cinza e pedir para ajustar data"
@@ -41,10 +40,5 @@
     "HotFix": {}
   },
   "Chat": {},
-  "Tickets": {
-    "LST": "Margin top cabeçalho do modo lista",
-    "ALTRNM": "Mudar problema para descrição",
-    "ALTRCLR": "Alterar cor do chamado fechado",
-    "VTMDVLST": "Verificar chamados que chegam no modo lista"
-  }
+  "Tickets": {}
 }
