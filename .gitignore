@@ -1,6 +1,6 @@
 /frontend/node_modules/
 
-.env
+*.env
 
 *.log
 
@@ -11,3 +11,5 @@
 /backend/equipaments
 
 /backend/certs
+
+*.conf
