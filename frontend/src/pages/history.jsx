@@ -2,239 +2,257 @@ import React, { useState, useEffect, useRef } from "react";
 import Navbar from "../components/navbar";
 import Loading from "../components/loading";
 import {
-  Div,
-  TicketOpen,
-  Close,
-  CloseBTN,
-  DivChat,
+  AdjustListFiles,
   BtnChat,
-  IMGFiles,
-  ImageOpen,
-  DivImageOpen,
+  BtnChat2,
+  BtnNF,
   BtnOpen,
-  ImgSelectView,
-  DivSelectView,
-  PSelectView,
-  DivCard,
-  H5Card,
-  SpanCard,
-  PQuantity,
-  IMGFiles2,
-  DivAlocate,
-  Calendar,
-  DivINp,
-  DivFilter,
-  Input1,
-  Select1,
-  DivContainerImages,
-  DivImages,
-  IMGS1,
   Button1,
   Button2,
-  DivFile,
-  ImageFile,
-  DivOnBoardFile,
-  BtnChat2,
-  InputFile,
-  PNWFile,
-  DivNewFiles,
-  BtnNF,
-  ImgBTNCls,
-  AdjustListFiles,
-  DivHR,
-  PBloq,
+  Calendar,
+  Close,
+  CloseBTN,
+  Div,
+  DivAlocate,
+  DivCard,
   DivCal,
-  PChatHourL,
-  PChatHourR,
+  DivChat,
+  DivContainerImages,
+  DivFile,
+  DivFilter,
   DivFlex1,
   DivFlex2,
-  TR,
-  TD,
-  TRSPACE,
+  DivHR,
+  DivImageOpen,
+  DivImages,
+  DivINp,
+  DivNewFiles,
+  DivOnBoardFile,
+  DivSelectView,
+  H5Card,
+  IMGS1,
+  IMGFiles,
+  IMGFiles2,
+  ImageFile,
+  ImageOpen,
+  ImgBTNCls,
+  ImgSelectView,
+  Input1,
+  InputFile,
+  PChatHourL,
+  PChatHourR,
+  PBloq,
+  PNWFile,
+  PQuantity,
+  PSelectView,
+  Select1,
+  SpanCard,
   Table,
+  TicketOpen,
+  TD,
   TH,
+  TR,
+  TRSPACE,
 } from "../styles/historyStyle";
-import { DivNameFile, BtnFile, ImgFile, TitlePage } from "../styles/helpdeskStyle";
+import { BtnFile, DivNameFile, ImgFile, TitlePage } from "../styles/helpdeskStyle";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
-import Message from "../components/message";
+import Card from "../images/components/identificacao.png";
 import CloseIMG from "../images/components/close.png";
+import Download from "../images/components/download.png";
+import DownTick from "../images/components/attachment.png";
 import IMG1 from "../images/dashboard_TI/quantity_1.png";
 import IMG2 from "../images/dashboard_TI/quantity_2.png";
 import IMG3 from "../images/dashboard_TI/quantity_3.png";
 import IMG4 from "../images/dashboard_TI/quantity_4.png";
 import List from "../images/components/lista-de-itens.png";
-import Card from "../images/components/identificacao.png";
-import Download from "../images/components/download.png";
 import Mail from "../images/components/mail.png";
-import XLS from "../images/components/xlsx.png";
-import ZIP from "../images/components/zip.jpg";
+import Message from "../components/message";
+import PDF from "../images/components/pdf.png";
 import TXT from "../images/components/arquivo-txt.png";
 import WORD from "../images/components/palavra.png";
-import PDF from "../images/components/pdf.png";
-import DownTick from "../images/components/attachment.png";
+import XLS from "../images/components/xlsx.png";
+import ZIP from "../images/components/zip.jpg";
 import ptBR from "date-fns/locale/pt";
 import { TextObersavation } from "../styles/dashboardTI";
 
 export default function History() {
   useEffect(() => {
+    // Define o título do documento
     document.title = "Meus Chamados";
+
+    // Obtém o tema armazenado no localStorage
     const theme = localStorage.getItem("Theme");
+
+    // Aplica o tema apropriado
     if (theme === null || theme === "black") {
       localStorage.setItem("Theme", "black");
-      return ThemeBlack();
+      ThemeBlack();
     } else {
-      return ThemeLight();
+      ThemeLight();
     }
-  }, []);
+  }, []); // O array de dependências vazio faz com que o useEffect execute apenas na montagem do componente
 
+  // Variaveis de estado String
+  const [blurNav, setBlurNav] = useState("");
+  const [companynewuser, setCompanyNewUser] = useState("");
   const [colorTheme, setColorTheme] = useState("");
-
-  const [navbar, setNavbar] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [ticketWindow, setTicketWindow] = useState(false);
-  const [token, setToken] = useState("");
-  const [Data, setData] = useState([]);
-  const [loadingDash, setLoadingDash] = useState(true);
-  const [tickets, setTickets] = useState([]);
-  const [message, setMessage] = useState(false);
-  const [typeError, setTypeError] = useState("");
-  const [messageError, setMessageError] = useState("");
-  const [ticketNAME, setTicketNAME] = useState("");
-  const [ticketDEPARTMENT, setTicketDEPARTMENT] = useState("");
-  const [ticketMAIL, setTicketMAIL] = useState("");
+  const [costcenter, setCostCenter] = useState("");
+  const [copyprofilenewuser, setCopyProfileNewUser] = useState("");
+  const [equipamentLocate, setEquipamentLocate] = useState("");
+  const [jobtitlenewuser, setJobTitleNewUser] = useState("");
+  const [lifeTime, setLifetime] = useState("");
+  const [mailtranfer, setMailTranfer] = useState("");
+  const [namenewuser, setNameNewUser] = useState("");
+  const [oldfile, setOldFiles] = useState("");
+  const [sectornewuser, setSectorNewUser] = useState("undefined");
+  const [status, setStatus] = useState("open");
+  const [softwarenewuser, setSoftwareNewUser] = useState("");
+  const [textChat, setTextChat] = useState("");
+  const [theme, setTheme] = useState("");
+  const [themeCard, setThemeCard] = useState("");
+  const [themeFilter, setThemeFilter] = useState("");
   const [ticketCOMPANY, setTicketCOMPANY] = useState("");
-  const [ticketSECTOR, setTicketSECTOR] = useState("");
+  const [ticketDEPARTMENT, setTicketDEPARTMENT] = useState("");
+  const [ticketID, setTicketID] = useState("");
+  const [ticketMAIL, setTicketMAIL] = useState("");
+  const [ticketNAME, setTicketNAME] = useState("");
   const [ticketOCCURRENCE, setTicketOCCURRENCE] = useState("");
   const [ticketPROBLEMN, setTicketPROBLEMN] = useState("");
-  const [lifeTime, setLifetime] = useState("");
+  const [ticketSECTOR, setTicketSECTOR] = useState("");
   const [ticketResponsible_Technician, setTicketResponsible_Technician] = useState("");
-  const [ticketID, setTicketID] = useState("");
-  const [mountChat, setMountChat] = useState([]);
-  const [chat, setChat] = useState(true);
-  const [messageChat, setMessageChat] = useState(false);
-  const [textChat, setTextChat] = useState("");
-  const [fetchchat, setFetchChat] = useState(false);
-  const [countchat, setCountChat] = useState();
-  const [initUpdateChat, setInitUpdateChat] = useState();
-  const [fileticket, setFileTicket] = useState([]);
-  const [imageurl, setImageUrl] = useState();
-  const [imageopen, setImageOpen] = useState(false);
-  const [fakeSelect, setFakeSelect] = useState(true);
-  const [problemInfra, setProblemInfra] = useState(false);
-  const [ticketsDash, setTicketsDash] = useState([]);
-  const [countTicket, SetCountTicket] = useState(0);
-  const [orderby, setOrderBy] = useState(null);
-  const [imageEquipament, setImageEquipament] = useState();
-  const [equipamentLocate, setEquipamentLocate] = useState("");
-  const [daysLocated, setDaysLocated] = useState();
-  const [namenewuser, setNameNewUser] = useState("");
-  const [sectornewuser, setSectorNewUser] = useState("undefined");
+  const [token, setToken] = useState("");
+  const [typeError, setTypeError] = useState("");
+  const [messageError, setMessageError] = useState("");
   const [wherefrom, setWhereFrom] = useState("");
-  const [machinenewuser, setMachineNewUser] = useState();
-  const [companynewuser, setCompanyNewUser] = useState("");
-  const [softwarenewuser, setSoftwareNewUser] = useState("");
-  const [costcenter, setCostCenter] = useState("");
-  const [jobtitlenewuser, setJobTitleNewUser] = useState("");
-  const [startworknewuser, setStartWorkNewUser] = useState();
-  const [copyprofilenewuser, setCopyProfileNewUser] = useState("");
-  const [mailtranfer, setMailTranfer] = useState("");
-  const [oldfile, setOldFiles] = useState("");
-  const [problemTicket, setProblemTicket] = useState(null);
-  const [sectorTicket, setSectorTicket] = useState(null);
-  const [problemSyst, setProblemSyst] = useState(false);
-  const [status, setStatus] = useState("open");
+
+  // Declarando variaveis de estado Boolean
   const [btnmore, setBtnMore] = useState(false);
-  const [uploadNewFiles, setUploadNewFiles] = useState([]);
-  const [nameNWFiles, setNameNWFiles] = useState();
-  const [newFiles, setNewFiles] = useState(false);
-  const [blurNav, setBlurNav] = useState("");
-  const [theme, setTheme] = useState("");
-  const [themeFilter, setThemeFilter] = useState("");
-  const [themeCard, setThemeCard] = useState("");
-  const [inList, setInList] = useState(false);
+  const [chat, setChat] = useState(true);
+  const [fakeSelect, setFakeSelect] = useState(true);
+  const [fetchchat, setFetchChat] = useState(false);
+  const [imageopen, setImageOpen] = useState(false);
   const [inCard, setInCard] = useState(false);
+  const [inList, setInList] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [loadingDash, setLoadingDash] = useState(true);
+  const [message, setMessage] = useState(false);
+  const [messageChat, setMessageChat] = useState(false);
+  const [newFiles, setNewFiles] = useState(false);
+  const [navbar, setNavbar] = useState(false);
+  const [problemInfra, setProblemInfra] = useState(false);
+  const [problemSyst, setProblemSyst] = useState(false);
+  const [ticketWindow, setTicketWindow] = useState(false);
+
+  // Varaiveis de estado Array
+  const [Data, setData] = useState([]);
+  const [fileticket, setFileTicket] = useState([]);
+  const [mountChat, setMountChat] = useState([]);
+  const [tickets, setTickets] = useState([]);
+  const [ticketsDash, setTicketsDash] = useState([]);
+  const [uploadNewFiles, setUploadNewFiles] = useState([]);
+
+  // Varaiveis de estado Vazias
+  const [countchat, setCountChat] = useState();
+  const [daysLocated, setDaysLocated] = useState();
+  const [imageEquipament, setImageEquipament] = useState();
+  const [imageurl, setImageUrl] = useState();
+  const [machinenewuser, setMachineNewUser] = useState();
+  const [nameNWFiles, setNameNWFiles] = useState();
+  const [startworknewuser, setStartWorkNewUser] = useState();
+  const [initUpdateChat, setInitUpdateChat] = useState();
+
+  // Variaveis de estado Number
+  const [countTicket, setCountTicket] = useState(0);
+
+  // Variaveis de estado Null
+  const [problemTicket, setProblemTicket] = useState(null);
+  const [orderby, setOrderBy] = useState(null);
+  const [sectorTicket, setSectorTicket] = useState(null);
+
   const UpNwfile = [];
 
-  let count = 0;
-  let timeoutId;
-  let daysLCT = [];
   let colorBorder = "";
+  let count = 0;
+  let daysLCT = [];
+  let timeoutId;
 
-  const textareaRef = useRef(null);
   const dashBoard = useRef(null);
+  const textareaRef = useRef(null);
 
   useEffect(() => {
-    if (textareaRef.current && textareaRef.current.value !== null) {
+    // Verifica se a referência do textarea está definida e se o valor não está vazio
+    if (textareaRef.current && textareaRef.current.value !== undefined && textareaRef.current.value !== "") {
+      // Redimensiona o textarea com base no valor atual
       resizeTextarea(textareaRef.current);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ticketWindow]);
+    // A lista de dependências inclui ticketWindow para executar o efeito quando ticketWindow mudar
+  }, [ticketWindow]); // Inclua aqui todas as dependências necessárias
 
   function resizeTextarea(textarea) {
-    const lh = textarea.lineHeight;
+    // Obtém o estilo de altura da linha do textarea, assumindo que esteja definido em pixels
+    const lineHeight = parseFloat(window.getComputedStyle(textarea).lineHeight);
+
+    // Conta o número de linhas no textarea
     const lines = textarea.value.split("\n").length;
-    textarea.style.height = lh * lines + "px";
+
+    // Ajusta a altura do textarea com base no número de linhas
+    textarea.style.height = `${lineHeight * lines}px`;
   }
 
+  // Função de Tema escuro
   function ThemeBlack() {
     setThemeFilter("");
     setThemeCard("");
     setColorTheme("colorBlack");
-    return setTheme("themeBlack");
+    setTheme("themeBlack");
   }
 
+  // Função de Tema claro
   function ThemeLight() {
     setThemeCard("themeCardLight");
     setThemeFilter("themeFilterLight");
     setColorTheme("colorLight");
-    return setTheme("themeLight");
+    setTheme("themeLight");
   }
 
   useEffect(() => {
-    let paragraphs = [];
-    if (uploadNewFiles.length >= 1) {
-      const fileNM = uploadNewFiles[0];
-
-      for (let i = 0; i < fileNM.length; i++) {
-        const file = fileNM[i];
-
-        paragraphs.push(
-          <div className="d-flex w-100 justify-content-center">
-            <DivNameFile key={i}>
-              <PNWFile>{file.name}</PNWFile>
-            </DivNameFile>
-            <div>
-              <BtnFile
-                type="button"
-                onClick={() => {
-                  const newArray = Array.from(fileNM);
-                  newArray.splice(i, 1);
-
-                  const dataTransfer = new DataTransfer();
-
-                  newArray.forEach((file) => {
-                    dataTransfer.items.add(file);
-                  });
-
-                  const newFileList = dataTransfer.files;
-
-                  setUploadNewFiles([newFileList]);
-                }}
-              >
-                <ImgFile src={CloseIMG} alt="Excluir arquivo" />
-              </BtnFile>
-            </div>
-          </div>
-        );
-      }
-
-      setNameNWFiles(paragraphs);
-
-      setNewFiles(true);
+    if (uploadNewFiles.length < 1) {
+      setNameNWFiles([]);
+      setNewFiles(false);
       return;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    // Cria a lista de elementos JSX para os arquivos
+    const paragraphs = uploadNewFiles[0].map((file, index) => (
+      <div className="d-flex w-100 justify-content-center" key={file.name}>
+        <DivNameFile>
+          <PNWFile>{file.name}</PNWFile>
+        </DivNameFile>
+        <div>
+          <BtnFile
+            type="button"
+            onClick={() => {
+              // Remove o arquivo atual da lista
+              const updatedFiles = uploadNewFiles[0].filter((_, i) => i !== index);
+
+              // Cria um novo objeto DataTransfer para atualizar a lista de arquivos
+              const dataTransfer = new DataTransfer();
+              updatedFiles.forEach((file) => dataTransfer.items.add(file));
+
+              // Atualiza o estado com a nova lista de arquivos
+              setUploadNewFiles([dataTransfer.files]);
+            }}
+          >
+            <ImgFile src={CloseIMG} alt="Excluir arquivo" />
+          </BtnFile>
+        </div>
+      </div>
+    ));
+
+    // Atualiza o estado com a lista de arquivos
+    setNameNWFiles(paragraphs);
+    setNewFiles(true);
   }, [uploadNewFiles]);
 
   function aumentarCount() {
@@ -248,30 +266,39 @@ export default function History() {
   }
 
   useEffect(() => {
-    const dataInfo = JSON.parse(localStorage.getItem("dataInfo"));
-    setData(dataInfo.data);
-    const formData = new FormData();
-    formData.append("name", dataInfo.data.name);
-    fetch("", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-      },
-      body: formData,
-    })
-      .then((response) => {
+    const fetchData = async () => {
+      try {
+        const dataInfo = JSON.parse(localStorage.getItem("dataInfo"));
+        if (!dataInfo) throw new Error("Informações de usuário não encontradas");
+
+        setData(dataInfo.data);
+
+        const formData = new FormData();
+        formData.append("name", dataInfo.data.name);
+
+        const response = await fetch("", {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: formData,
+        });
+
         if (response.status === 402) {
-          return (window.location.href = "/login");
+          window.location.href = "/login";
+          return;
         }
-        return response.json();
-      })
-      .then((data) => {
+
+        const data = await response.json();
         setToken(data.token);
         setTickets(data.tickets);
-        SetCountTicket(10);
+        setCountTicket(10);
         setOrderBy("-id");
+
         const btn = document.getElementById("thenView");
-        btn.style.backgroundColor = "#00B4D8";
+        if (btn) btn.style.backgroundColor = "#00B4D8";
+
         if (data.tickets.length === 0) {
           setTypeError("Falta de Dados");
           setMessageError("Você Ainda não abriu nenhum chamado");
@@ -280,14 +307,18 @@ export default function History() {
           setMessage(true);
           setNavbar(true);
         }
-        return;
-      })
-      .catch((err) => {
-        setTypeError("Faltal ERROR");
-        setMessageError(err);
+      } catch (error) {
+        setTypeError("Erro Fatal");
+        setMessageError(error.message || "Erro desconhecido");
         setMessage(true);
-        return console.log(err);
-      });
+        console.error("Erro na solicitação:", error);
+      } finally {
+        setLoadingDash(false);
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
   function openImage() {
@@ -1245,7 +1276,7 @@ export default function History() {
         return response.json();
       })
       .then((data) => {
-        SetCountTicket(data.count);
+        setCountTicket(data.count);
         setTickets(data.tickets);
         return countTicket;
       })
@@ -1948,7 +1979,7 @@ export default function History() {
               onClick={() => {
                 const link = document.createElement("a");
                 link.href = `data:image/jpeg;base64,${image}`;
-                link.download = "nome-do-arquivo.jpg";
+                link.download = nameFile;
                 link.click();
                 link.remove();
               }}
@@ -2080,7 +2111,7 @@ export default function History() {
             className="btn"
             id="fiveView"
             onClick={() => {
-              SetCountTicket(5);
+              setCountTicket(5);
               getTicketFilter({ id: "fiveView", quantity: 5 });
             }}
           >
@@ -2091,7 +2122,7 @@ export default function History() {
             className="btn"
             id="thenView"
             onClick={() => {
-              SetCountTicket(10);
+              setCountTicket(10);
               getTicketFilter({ id: "thenView", quantity: 10 });
             }}
           >
@@ -2102,7 +2133,7 @@ export default function History() {
             className="btn"
             id="fiftyView"
             onClick={() => {
-              SetCountTicket(50);
+              setCountTicket(50);
               getTicketFilter({ id: "fiftyView", quantity: 50 });
             }}
           >
@@ -2113,7 +2144,7 @@ export default function History() {
             className="btn"
             id="allView"
             onClick={() => {
-              SetCountTicket(100000);
+              setCountTicket(100000);
               getTicketFilter({ id: "allView", quantity: 100000 });
             }}
           >

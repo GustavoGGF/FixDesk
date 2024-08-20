@@ -42,15 +42,16 @@ export default function DashboardBar() {
    * Constantes useRef utilizadas para referenciar elementos do DOM neste componente.
    * - selectPeriod: referência ao elemento select utilizado para selecionar o período.
    * - dashboardBar: referência ao elemento DOM que representa a barra do dashboard.
+   * - timeoutBarUpdateRef: referência ao elemento timeout para buscar informações em determinado periodo.
    */
-  const selectPeriod = useRef(null);
   const dashboardBar = useRef(null);
+  const selectPeriod = useRef(null);
+  const timeoutBarUpdateRef = useRef(null);
 
   /**
    * Variável timeoutBarUpdate utilizada para armazenar o identificador do timeout responsável pela atualização contínua do dashboard.
    * barChartData: variável que armazena os dados do dashboard em formato de string.
    */
-  let timeoutBarUpdate;
   let barChartData = "";
 
   /**
@@ -327,13 +328,14 @@ export default function DashboardBar() {
    * - Define um novo timeoutBarUpdate para chamar a função de atualização a cada 1 minuto.
    */
   function CallNewBar() {
-    if (timeoutBarUpdate) {
-      clearTimeout(timeoutBarUpdate);
+    if (timeoutBarUpdateRef.current) {
+      clearTimeout(timeoutBarUpdateRef.current);
     }
 
     let updateFunction;
+    const currentBarChartData = barChartData;
 
-    switch (barChartData) {
+    switch (currentBarChartData) {
       case "week":
         updateFunction = periodweek;
         break;
@@ -350,7 +352,7 @@ export default function DashboardBar() {
         return;
     }
 
-    timeoutBarUpdate = setTimeout(() => {
+    timeoutBarUpdateRef.current = setTimeout(() => {
       updateFunction();
     }, 60000);
   }

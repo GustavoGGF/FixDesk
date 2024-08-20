@@ -1,20 +1,8 @@
 {
   "All Site": {
-    "Upgrades": {
-      "Upgrade2": "Tema personalizado de fundo",
-      "LCM": "link do chamado no email",
-      "VRFLNK": "Verificar outras urls"
-    },
+    "Upgrades": {},
     "HotFix's": {},
-    "Study Possibility": {
-      "FrameWork1": "fdpf2",
-      "FrameWork2": "defusedxml",
-      "FrameWork3": "distro",
-      "FrameWork4": "distlib",
-      "FrameWork5": "django-clearcache",
-      "FrameWork6": "filelock",
-      "FrameWork7": "httplib2"
-    }
+    "Study Possibility": {}
   },
   "Login": {
     "HotFix's": {}

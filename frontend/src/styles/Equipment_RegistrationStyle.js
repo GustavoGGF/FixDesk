@@ -41,11 +41,14 @@ export const HeaderFiles = styled.header`
   height: 10em;
   display: flex;
   padding: 1.2em;
+  -webkit-border-top-left-radius: 0.5em;
+  -webkit-border-top-right-radius: 0.5em;
 `;
 
 export const PFiles = styled.p`
   color: var(--pure-white);
   font-size: 4em;
+  -webkit-font-smoothing: antialiased; /* Melhora a suavização da fonte em navegadores WebKit */
 `;
 
 export const IMGFile = styled.img`
@@ -57,6 +60,7 @@ export const Span1 = styled.span`
   transform: translateX(-2em);
   display: inline-block;
   margin-right: 1em;
+  -webkit-transform: translateX(-2em); /* Garantia de compatibilidade com WebKit */
 `;
 
 export const Span2 = styled.span`
@@ -64,6 +68,7 @@ export const Span2 = styled.span`
   font-weight: 100;
   margin-left: -0.7em;
   transform: translateX(-2em);
+  -webkit-transform: translateX(-2em); /* Garantia de compatibilidade com WebKit */
 `;
 
 export const BodyFiles = styled.div`
@@ -76,10 +81,12 @@ export const PFiles2 = styled.p`
   font-size: 1em;
   padding-top: 1em;
   line-height: 1.4;
+  -webkit-font-smoothing: antialiased; /* Melhora a suavização da fonte em navegadores WebKit */
 `;
 
 export const B1 = styled.b`
   color: var(--ocean-green);
+  -webkit-text-fill-color: var(--ocean-green); /* Garante a cor do texto em navegadores WebKit */
 `;
 
 export const InputFiles = styled.input`
@@ -102,11 +109,13 @@ export const Divider = styled.div`
   border-top: solid 4px darken(var(--pure-black), 3.5%);
   text-align: center;
   transition: width 0.5s ease;
+  -webkit-transition: width 0.5s ease; /* Garante transição suave em navegadores WebKit */
 `;
 
 export const Span3 = styled.span`
   display: inline-block;
   transform: translateY(-25px);
+  -webkit-transform: translateY(-25px); /* Garantia de compatibilidade com WebKit */
   font-size: 12px;
   padding-top: 8px;
   margin-bottom: 5px;
@@ -118,6 +127,7 @@ export const ListFiles = styled.div`
   margin-top: 15px;
   text-align: center;
   overflow-x: hidden;
+  -webkit-overflow-scrolling: touch; /* Melhora a rolagem em dispositivos móveis WebKit */
 `;
 
 export const IMGClose = styled.img`
@@ -125,4 +135,6 @@ export const IMGClose = styled.img`
   width: 2em;
   height: 2em;
   cursor: pointer;
+  -webkit-transition: transform 0.3s ease; /* Transição suave para efeitos de transformação */
+  transition: transform 0.3s ease;
 `;

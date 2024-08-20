@@ -1,143 +1,168 @@
-import React, { useState, useEffect, useRef } from "react";
-import NavBar from "../components/navbar";
-import "../styles/bootstrap/css/bootstrap.css";
-import {
-  Div,
-  Form,
-  Input,
-  Input2,
-  Select,
-  Div2,
-  Calendar,
-  Textarea,
-  ImageEquip,
-  DivEquip,
-  InputRadio,
-  PNameFile,
-  DivNameFile,
-  ImgFile,
-  BtnFile,
-  InputFile,
-  TitlePage,
-  Contract,
-} from "../styles/helpdeskStyle";
-import { DivUpload, HeaderFiles, PFiles, IMGFile, Span1, Span2, BodyFiles, PFiles2, B1, InputFiles, IMGFile2, FooterFiles, Divider, Span3, ListFiles } from "../styles/Equipment_RegistrationStyle";
-import { DayPicker } from "react-day-picker";
-import ptBR from "date-fns/locale/pt";
-import "react-day-picker/dist/style.css";
-import { format } from "date-fns";
-import Loading from "../components/loading";
-import Message from "../components/message";
+import Close from "../images/components/close.png";
 import Cloud from "../images/components/cloud-uploading.png";
 import Exclude from "../images/components/lixo.png";
 import Info from "../components/info";
-import Close from "../images/components/close.png";
+import Loading from "../components/loading";
+import Message from "../components/message";
+import NavBar from "../components/navbar";
+import ptBR from "date-fns/locale/pt";
+import { format } from "date-fns";
+import "react-day-picker/dist/style.css";
+import { DayPicker } from "react-day-picker";
+import React, { useEffect, useRef, useState } from "react";
+import "../styles/bootstrap/css/bootstrap.css";
+import {
+  BtnFile,
+  Calendar,
+  Contract,
+  Div,
+  Div2,
+  DivEquip,
+  DivNameFile,
+  Form,
+  ImageEquip,
+  ImgFile,
+  Input,
+  Input2,
+  InputFile,
+  InputRadio,
+  PNameFile,
+  Select,
+  Textarea,
+  TitlePage,
+} from "../styles/helpdeskStyle";
+import { B1, BodyFiles, Divider, DivUpload, FooterFiles, HeaderFiles, IMGFile, IMGFile2, InputFiles, ListFiles, PFiles, PFiles2, Span1, Span2, Span3 } from "../styles/Equipment_RegistrationStyle";
 
 export default function Helpdesk() {
   useEffect(() => {
+    // Este useEffect é executado uma vez após o componente ser montado.
+    // O array de dependências vazio ([]) garante que o código dentro deste useEffect
+    // seja executado apenas na montagem inicial do componente e não em atualizações subsequentes.
+
+    // Define o título da página
     document.title = "Abrir Chamado";
+
+    // Recupera o tema armazenado no localStorage
     const theme = localStorage.getItem("Theme");
-    if (theme === null || theme === "black") {
+
+    // Se o tema for "light", aplica o tema claro
+    if (theme === "light") {
+      ThemeLight();
+    } else {
+      // Caso contrário, define o tema como "black" e aplica o tema preto
+      // Isso cobre o caso onde o tema é "null" ou qualquer outro valor que não seja "light"
       localStorage.setItem("Theme", "black");
       ThemeBlack();
-    } else if (theme === "light") {
-      ThemeLight();
     }
-  }, []);
+  }, []); // Array de dependências vazio
 
-  const [csrfToken, setCSRFToken] = useState("");
-  const [confirmOtherEquipaments, SetConfirmOtherEquipaments] = useState(true);
-  const [messagetitle, setMessagetitle] = useState("");
-  const [messageinfo1, setMessageinfo1] = useState("");
-  const [messageinfo2, setMessageinfo2] = useState("");
-  const [sector, setsector] = useState("");
-  const [occurrence, setOccurrence] = useState("");
-  const [problemn, setProblemn] = useState("");
-  const [observation, setObservation] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [motivation, setMotivation] = useState(true);
-  const [alertverify, setAlertVerify] = useState(false);
-  const [navbar, setNavbar] = useState(false);
-  const [dashboard, setDashboard] = useState(false);
-  const [infra, setInfra] = useState(false);
-  const [system, setSystem] = useState(false);
-  const [backup, setBackup] = useState(false);
-  const [alert, setAlert] = useState(false);
-  const [machine, setMachine] = useState(false);
-  const [mail, setMail] = useState(false);
-  const [equip, setEquip] = useState(false);
-  const [user, setUser] = useState(false);
-  const [internet, setInternet] = useState(false);
-  const [folder, setFolder] = useState(false);
-  const [formnewuser, setFormNewUser] = useState(false);
-  const [formdeluser, setFormDelUser] = useState(false);
-  const [selectedDay, setSelectedDay] = useState(new Date());
-  const [dataUser, setdataUser] = useState();
-  const [message, setMessage] = useState(false);
-  const [typeError, setTypeError] = useState("");
-  const [messageError, setMessageError] = useState("");
-  const [respectiveTI, setRespectiveTI] = useState(false);
-  const [respectiveArea, setRespectiveArea] = useState("");
-  const [sys, setSYS] = useState(false);
-  const [sys2, setSYS2] = useState(false);
-  const [softAPP, setSoftAPP] = useState(false);
-  const [dadosCase, setDados] = useState(false);
-  const [alocate, setAlocate] = useState(false);
-  const [equipaments, setEquipaments] = useState();
-  const [dashequipaments, setDashEquipaments] = useState("");
-  const [filename, setFileName] = useState([]);
-  const [fileimg, setFileImg] = useState([]);
-  const [dateequip, setDateEquip] = useState(false);
-  const [daysForAlocate, setDaysForAlocate] = useState([]);
-  const [equipamentSelected, setEquipamentSelected] = useState("");
-  const [newname, setNewName] = useState("");
-  const [sectornewuser, setSectorNewUser] = useState("");
-  const [motivationContract, setMotivationContract] = useState("");
-  const [necessaryMachine, setNecessaryMachine] = useState();
+  // Declarando variáveis de estado String
   const [companynewUser, setCompanyNewUser] = useState("");
-  const [softwareNewUser, setSoftwareNewUser] = useState([]);
   const [centralcost, setCentralCost] = useState("");
-  const [jobtitlenewuser, setJobTitleNewUser] = useState("");
   const [copyUser, setCopyUser] = useState("");
-  const [maildelegation, setMailDelegation] = useState("");
+  const [csrfToken, setCSRFToken] = useState("");
+  const [dashequipaments, setDashEquipaments] = useState("");
   const [dirsave, setDirSave] = useState("");
-  const [nameOnDropFiles, setNameOnDropFiles] = useState("");
-  const [nameOnInutFiles, setNameOnInputFiles] = useState("");
-  const [theme, setTheme] = useState("");
-  const [themeTicket, setThemeTicket] = useState("");
-  const [inputDropControl, setInputDropControl] = useState(true);
-  const [inputManualControl, setInputManualControl] = useState(false);
-  const [arrayInput, setArrayInput] = useState([]);
-  const [fileSizeNotify, setFileSizeNotify] = useState(false);
-  const [info, setInfo] = useState(false);
-  const [infoID, setInfoID] = useState("");
+  const [equipamentSelected, setEquipamentSelected] = useState("");
   const [infoClass, setInfoClass] = useState("");
   const [infoClass2, setInfoClass2] = useState("");
-  const [otherEquipaments, setOtherEquipaments] = useState(false);
-  const [comodato, setComodato] = useState(false);
-  const [otherMouse, setOtherMouse] = useState(false);
-  const [otherTeclado, setOtherTeclado] = useState(false);
-  const [otherRede, setOtherRede] = useState(false);
+  const [infoID, setInfoID] = useState("");
+  const [jobtitlenewuser, setJobTitleNewUser] = useState("");
+  const [maildelegation, setMailDelegation] = useState("");
+  const [messageError, setMessageError] = useState("");
+  const [messageinfo1, setMessageinfo1] = useState("");
+  const [messageinfo2, setMessageinfo2] = useState("");
+  const [messagetitle, setMessagetitle] = useState("");
+  const [motivationContract, setMotivationContract] = useState("");
+  const [nameOnDropFiles, setNameOnDropFiles] = useState("");
+  const [nameOnInutFiles, setNameOnInputFiles] = useState("");
+  const [newname, setNewName] = useState("");
+  const [observation, setObservation] = useState("");
+  const [occurrence, setOccurrence] = useState("");
+  const [problemn, setProblemn] = useState("");
+  const [respectiveArea, setRespectiveArea] = useState("");
+  const [sector, setsector] = useState("");
+  const [sectornewuser, setSectorNewUser] = useState("");
+  const [theme, setTheme] = useState("");
+  const [themeTicket, setThemeTicket] = useState("");
+  const [typeError, setTypeError] = useState("");
 
+  // Declarando variaveis de estado Boolean
+  const [alocate, setAlocate] = useState(false);
+  const [alert, setAlert] = useState(false);
+  const [alertverify, setAlertVerify] = useState(false);
+  const [backup, setBackup] = useState(false);
+  const [dashboard, setDashboard] = useState(false);
+  const [comodato, setComodato] = useState(false);
+  const [confirmOtherEquipaments, SetConfirmOtherEquipaments] = useState(true);
+  const [dadosCase, setDados] = useState(false);
+  const [dateequip, setDateEquip] = useState(false);
+  const [equip, setEquip] = useState(false);
+  const [fileSizeNotify, setFileSizeNotify] = useState(false);
+  const [folder, setFolder] = useState(false);
+  const [formdeluser, setFormDelUser] = useState(false);
+  const [formnewuser, setFormNewUser] = useState(false);
+  const [info, setInfo] = useState(false);
+  const [infra, setInfra] = useState(false);
+  const [inputDropControl, setInputDropControl] = useState(true);
+  const [inputManualControl, setInputManualControl] = useState(false);
+  const [internet, setInternet] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [mail, setMail] = useState(false);
+  const [machine, setMachine] = useState(false);
+  const [message, setMessage] = useState(false);
+  const [motivation, setMotivation] = useState(true);
+  const [navbar, setNavbar] = useState(false);
+  const [otherEquipaments, setOtherEquipaments] = useState(false);
+  const [otherMouse, setOtherMouse] = useState(false);
+  const [otherRede, setOtherRede] = useState(false);
+  const [otherTeclado, setOtherTeclado] = useState(false);
+  const [respectiveTI, setRespectiveTI] = useState(false);
+  const [softAPP, setSoftAPP] = useState(false);
+  const [sys, setSYS] = useState(false);
+  const [sys2, setSYS2] = useState(false);
+  const [system, setSystem] = useState(false);
+  const [user, setUser] = useState(false);
+
+  // Declarando variaveis de estado new Data
+  const [selectedDay, setSelectedDay] = useState(new Date());
+
+  // Declarando variaveis de estado Vazias
+  const [dataUser, setdataUser] = useState();
+  const [equipaments, setEquipaments] = useState();
+  const [necessaryMachine, setNecessaryMachine] = useState();
+
+  // Declarando varaiveis de estado array
+  const [arrayInput, setArrayInput] = useState([]);
+  const [daysForAlocate, setDaysForAlocate] = useState([]);
+  const [fileimg, setFileImg] = useState([]);
+  const [filename, setFileName] = useState([]);
+  const [softwareNewUser, setSoftwareNewUser] = useState([]);
+
+  // Variaveis de datas
   const footerDay = selectedDay ? <p>Você selecionou {format(selectedDay, "PPP")}</p> : <p>Selecione uma dataUser</p>;
   const footerAlocate = daysForAlocate.length >= 1 ? <p>Você alocou por {daysForAlocate.length} dia(s).</p> : <p>Selecione um ou mais dias.</p>;
 
+  // Declarando Variaveis Null
   const observationRef = useRef(null);
-  const selectAR = useRef(null);
   const primaryContainerRef = useRef(null);
+  const selectAR = useRef(null);
 
   let file_name = [];
 
+  // Função que muda o tema pra escuro
   function ThemeBlack() {
     setThemeTicket("");
     setTheme("themeBlack");
   }
 
+  // Função que muda o tema para claro
   function ThemeLight() {
     setThemeTicket("themeLightTicket");
     setTheme("themeLight");
   }
 
+  // Ao iniciar a pagina pega dados do backend
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -145,15 +170,20 @@ export default function Helpdesk() {
           method: "POST",
           headers: {
             Accept: "application/json",
+            "Content-Type": "application/json",
           },
           body: {},
         });
         if (!response.ok) {
-          throw new Error("Erro na solicitação");
+          // Lançar um erro se a resposta não for ok
+          const errorData = await response.text(); // Obtém o texto de erro, se disponível
+          throw new Error(`Erro na solicitação: ${errorData}`);
         }
         const data = await response.json();
+        // Atualiza os estados com os dados recebidos
         setEquipaments(data.equipaments);
         setCSRFToken(data.token);
+        // Processa dados do localStorage com segurança
         const storedDataUser = localStorage.getItem("dataInfo");
         const dataUserInfo = storedDataUser ? JSON.parse(storedDataUser).data : null;
         setdataUser(dataUserInfo);
@@ -161,18 +191,20 @@ export default function Helpdesk() {
         console.error("Erro na solicitação:", error);
       }
     };
-
     fetchData();
   }, []);
 
   useEffect(() => {
+    // Verifica se dataUser existe e contém pelo menos uma chave
     if (dataUser && Object.keys(dataUser).length > 0) {
+      // Atualiza os estados somente se a condição for atendida
       setLoading(false);
       setNavbar(true);
       setDashboard(true);
     }
-  }, [dataUser]);
+  }, [dataUser]); // Dependência de dataUser para atualizar o efeito quando dataUser mudar
 
+  // Função inicia quando dashboard é renderizado, realiza animação e funcionalidade para imagens adicionadas quando soltadas
   useEffect(() => {
     if (dashboard === true) {
       //DOM
@@ -248,10 +280,12 @@ export default function Helpdesk() {
   }, [dashboard]);
 
   function selectARes() {
-    const select = document.getElementById("selectAR");
-    const option = select.options[select.selectedIndex].value;
+    // Obtém o elemento select e o valor da opção selecionada
+    const selectElement = document.getElementById("selectAR");
+    const selectedValue = selectElement.options[selectElement.selectedIndex].value;
 
-    switch (option) {
+    // Atualiza os estados com base no valor selecionado
+    switch (selectedValue) {
       case "TI":
         setAlert(false);
         setRespectiveTI(true);
@@ -752,7 +786,12 @@ export default function Helpdesk() {
     }
   }
 
+  /**
+   * Atualiza o estado `observation` com o valor do input.
+   * @param {Event} event - O evento de mudança do input.
+   */
   function getObservation(event) {
+    // Atualiza o estado com o valor do input
     setObservation(event.target.value);
   }
 
@@ -820,13 +859,18 @@ export default function Helpdesk() {
   }
 
   function selectEquipament({ element, id }) {
+    // Define o equipamento selecionado
     setEquipamentSelected(id);
-    const allElements = document.querySelectorAll(".equipsclass");
-    allElements.forEach((el) => {
-      el.style.border = "none";
+
+    // Remove a borda de todos os elementos
+    document.querySelectorAll(".equipsclass").forEach((el) => {
+      el.classList.remove("borderEquip");
     });
 
+    // Adiciona a borda ao elemento selecionado
     element.classList.add("borderEquip");
+
+    // Define a data do equipamento como verdadeira
     setDateEquip(true);
   }
 
@@ -1023,35 +1067,38 @@ export default function Helpdesk() {
   }
 
   function selectMotivation() {
-    const option = document.querySelectorAll("input[name='motivation']");
+    // Obtém todos os inputs com o nome 'motivation'
+    const options = document.querySelectorAll("input[name='motivation']");
 
-    option.forEach((radio) => {
+    // Adiciona um listener de evento change a cada input
+    options.forEach((radio) => {
       radio.addEventListener("change", (event) => {
         if (event.target.checked) {
+          // Atualiza o estado com o valor do input selecionado
           setMotivationContract(event.target.value);
 
-          if (event.target.value === "other") {
-            setMotivation(false);
-          } else {
-            setMotivation(true);
-          }
+          // Define o estado de motivação com base no valor do input
+          setMotivation(event.target.value !== "other");
         }
       });
     });
   }
 
   function selectMachine() {
-    const option = document.querySelectorAll("input[name='machine']");
+    // Obtém todos os inputs com o nome 'machine'
+    const options = document.querySelectorAll("input[name='machine']");
 
-    option.forEach((radio) => {
+    // Adiciona um listener de evento change a cada input
+    options.forEach((radio) => {
       radio.addEventListener("change", (event) => {
         if (event.target.checked) {
+          // Atualiza o estado com base no valor do input selecionado
           if (event.target.value === "yes") {
             setMachine(false);
             setNecessaryMachine(false);
           } else if (event.target.value === "no") {
             setMachine(true);
-            setMessagetitle("Caso de não haver maquina");
+            setMessagetitle("Caso de não haver máquina");
             setMessageinfo1("1. Deverá ser feita uma solicitação de equipamento");
             setMessageinfo2("");
             setNecessaryMachine(true);
@@ -1264,6 +1311,8 @@ export default function Helpdesk() {
       method: "POST",
       headers: {
         "X-CSRFToken": csrfToken,
+        Accept: "application/json",
+        "Content-Type": "application/json",
       },
       body: formdataUser,
     })
@@ -1344,7 +1393,7 @@ export default function Helpdesk() {
   }
 
   function closeMessage() {
-    return setMessage(false);
+    setMessage(false);
   }
 
   function inputDrop() {

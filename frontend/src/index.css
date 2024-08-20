@@ -9,6 +9,11 @@
   --pure-black: #000;
   --light-blue: #03c9f5;
   --sgbus-green: #70e000;
+  --sky-blue: #3498db;
+  --tomato-red: #e74c3c;
+  --crimson-red: #bb2d3b;
+  --cadet-blue: #adb5bd;
+  --cultured: #f8f9fa;
 }
 
 @keyframes file {

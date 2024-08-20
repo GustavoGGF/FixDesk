@@ -3,8 +3,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.django
-    ports:
-      - "8000:8000"
     volumes:
       - /node/FixDesk/backend:/FixDesk
     env_file:
@@ -19,11 +17,12 @@ services:
     ports:
       - "80:80"
       - "443:443"
+      - "8000:8000"
     depends_on:
       - fixdesk
     networks:
       - backend
-      
+
 networks:
   backend:
     driver: bridge

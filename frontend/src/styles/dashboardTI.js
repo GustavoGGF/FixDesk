@@ -6,6 +6,7 @@ export const Div = styled.div`
   width: 100vw;
   position: absolute;
   overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch; /* Melhora a rolagem em dispositivos móveis WebKit */
 `;
 
 export const TicketOpen = styled.div`
@@ -14,22 +15,23 @@ export const TicketOpen = styled.div`
   height: 90%;
   position: relative;
   border-radius: 20px;
+  -webkit-box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adiciona uma sombra suave em navegadores WebKit */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 `;
 
 export const DropdownConten = styled.div`
   display: none;
   position: absolute;
-  background-color: #f1f1f1;
+  background-color: rgb(52, 152, 219);
   min-width: 160px;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   z-index: 1;
-  border-top-right-radius: 10px;
-  border-bottom-left-radius: 10px;
-  border-bottom-right-radius: 10px;
+  border-radius: 10px;
   text-align: center;
-  background-color: rgb(52, 152, 219);
   color: #f9f9f9;
   padding: 5px;
+  -webkit-box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2); /* Adiciona suporte a sombras em WebKit */
+  background-color: rgb(52, 152, 219); /* Mantido conforme sua escolha */
 `;
 
 export const Dropdown = styled.div`
