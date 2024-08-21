@@ -14,14 +14,14 @@ export const Div = styled.div`
 `;
 
 export const TicketOpen = styled.div`
-  background: var(--pure-light);
+  background: var(--pure-white);
   width: 80%;
   border-radius: 1.2em;
   overflow-y: auto;
   z-index: 10 !important;
   max-height: 95%;
   position: relative;
-  -webkit-background: var(--pure-light); /* Adicionado para compatibilidade com navegadores baseados em WebKit */
+  -webkit-background: var(--pure-white); /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   -webkit-width: 80%; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   -webkit-border-radius: 1.2em; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   -webkit-overflow-y: auto; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
@@ -190,7 +190,7 @@ export const DivFilter = styled.div`
   margin: 0 auto;
   width: 90% !important;
   display: flex;
-  background: var(--pure-light);
+  background: var(--pure-white);
   justify-content: space-around;
   flex-wrap: wrap;
   border-radius: 20px;
@@ -199,7 +199,7 @@ export const DivFilter = styled.div`
   -webkit-margin: 0 auto; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   -webkit-width: 90% !important; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   -webkit-display: flex; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
-  -webkit-background: var(--pure-light); /* Adicionado para compatibilidade com navegadores baseados em WebKit */
+  -webkit-background: var(--pure-white); /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   -webkit-justify-content: space-around; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   -webkit-flex-wrap: wrap; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   -webkit-border-radius: 20px; /* Adicionado para compatibilidade com navegadores baseados em WebKit */

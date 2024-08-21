@@ -3099,6 +3099,29 @@ export default function DashboardTI() {
     setTechDetails(false);
   }
 
+  useEffect(() => {
+    function handleEscape(event) {
+      if (event.key === "Escape" || event.keyCode === 27) {
+        if (techDetails) {
+          closeDetails(); // Fecha apenas techDetails se estiver aberto
+        } else if (ticketWindow) {
+          Close_ticket(); // Fecha ticketWindow se techDetails não estiver aberto
+        }
+      }
+    }
+
+    // Adiciona o listener apenas se ticketWindow ou techDetails estiverem abertos
+    if (ticketWindow || techDetails) {
+      document.addEventListener("keydown", handleEscape);
+    }
+
+    // Função de limpeza para remover o listener
+    return () => {
+      document.removeEventListener("keydown", handleEscape);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ticketWindow, techDetails]); // Dependências ajustadas para ambos os estados
+
   return (
     <Div className={`position-relative ${theme}`}>
       {navbar && (
