@@ -1311,8 +1311,7 @@ export default function Helpdesk() {
       method: "POST",
       headers: {
         "X-CSRFToken": csrfToken,
-        Accept: "application/json",
-        "Content-Type": "application/json",
+        "Cache-Control": "no-cache",
       },
       body: formdataUser,
     })

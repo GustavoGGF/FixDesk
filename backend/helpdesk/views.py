@@ -29,6 +29,8 @@ from django.core.files.base import ContentFile
 from fpdf import FPDF
 import re
 import logging
+from django.views.decorators.http import require_http_methods
+from django.db import transaction
 
 # Configuração básica de logging
 logging.basicConfig(level=logging.INFO)
@@ -146,65 +148,301 @@ def firstView(request):
 
 
 # Decorator que exige um token CSRF para a proteção contra ataques CSRF
-@requires_csrf_token
 # Decorator que exige que o usuário esteja autenticado para acessar a função
 # Se o usuário não estiver autenticado, será redirecionado para a página de login
+@requires_csrf_token
 @login_required(login_url="/login")
+@require_http_methods(["POST"])
+@transaction.atomic
 # Função que trata o envio de chamados (tickets) para o banco de dados
 def submitTicket(request):
-    if request.method == "POST":
-        # Inicializando as variáveis com valor None
-        # Estas variáveis serão utilizadas para armazenar os dados do chamado (ticket)
-        company = None  # Empresa relacionada ao chamado
-        department = None  # Departamento responsável pelo chamado
-        mail = None  # E-mail do solicitante
-        observation = None  # Observações adicionais sobre o chamado
-        occurrence = None  # Ocorrência do problema
-        pid = None  # Identificador do Usuario (ID)
-        problemn = None  # Descrição do problema
-        respective_area = None  # Área respectiva ao problema relatado
-        sector = None  # Setor da empresa relacionado ao chamado
-        start_date = None  # Data de início convertida para o formato de data
-        start_date_str = None  # Data de início como string
-        ticketRequester = None  # Solicitante do chamado
-        try:
-            company = request.POST.get("company")
-            department = request.POST.get("department")
-            mail = request.POST.get("mail")
-            observation = request.POST.get("observation")
-            occurrence = request.POST.get("occurrence")
-            pid = request.POST.get("PID")
-            problemn = request.POST.get("problemn")
-            respective_area = request.POST.get("respective_area")
-            sector = request.POST.get("sector")
-            start_date_str = request.POST.get("start_date")
+    # Inicializando as variáveis com valor None
+    # Estas variáveis serão utilizadas para armazenar os dados do chamado (ticket)
+    company = None  # Empresa relacionada ao chamado
+    department = None  # Departamento responsável pelo chamado
+    mail = None  # E-mail do solicitante
+    observation = None  # Observações adicionais sobre o chamado
+    occurrence = None  # Ocorrência do problema
+    pid = None  # Identificador do Usuario (ID)
+    problemn = None  # Descrição do problema
+    respective_area = None  # Área respectiva ao problema relatado
+    sector = None  # Setor da empresa relacionado ao chamado
+    start_date = None  # Data de início convertida para o formato de data
+    start_date_str = None  # Data de início como string
+    ticketRequester = None  # Solicitante do chamado
+    try:
+        company = request.POST.get("company")
+        department = request.POST.get("department")
+        mail = request.POST.get("mail")
+        observation = request.POST.get("observation")
+        occurrence = request.POST.get("occurrence")
+        pid = request.POST.get("PID")
+        problemn = request.POST.get("problemn")
+        respective_area = request.POST.get("respective_area")
+        sector = request.POST.get("sector")
+        start_date_str = request.POST.get("start_date")
+        if start_date_str == None:
+            new_date = datetime.now()
+            start_date = new_date.strftime("%Y-%m-%d %H:%M")
+        else:
             start_date = datetime.strptime(start_date_str, "%Y-%m-%d %H:%M")
-            ticketRequester = request.POST.get("ticketRequester")
+        ticketRequester = request.POST.get("ticketRequester")
 
-            if pid:
-                pass
-            else:
-                return JsonResponse({"error": "error"}, status=403, safe=True)
+        if pid:
+            pass
+        else:
+            return JsonResponse({"error": "error"}, status=403, safe=True)
 
+    except Exception as e:
+        print(e)
+        return
+
+    # Inicializando variáveis adicionais com valor None
+    # Estas variáveis serão utilizadas para armazenar dados adicionais do chamado e informações sobre arquivos de imagem
+
+    Ticket = None  # Objeto que representa o chamado (ticket)
+    file_type = None  # Tipo de arquivo da imagem
+    image_bytes = None  # Bytes da imagem anexada ao chamado
+    image_str = None  # Imagem em formato string codificada (base64, por exemplo)
+    mime = None  # Tipo MIME da imagem
+    other_image = None  # Outra imagem associada ao chamado
+    ticket_file = None  # Arquivo relacionado ao chamado
+    types = None  # Lista de tipos de arquivos permitidos
+    types_str = None  # Tipos de arquivos permitidos como string
+    valid = None  # Indicador de validade da imagem (True ou False)
+
+    if "image" in request.FILES:
+        Ticket = SupportTicket(
+            ticketRequester=ticketRequester,
+            department=department,
+            mail=mail,
+            company=company,
+            sector=sector,
+            respective_area=respective_area,
+            occurrence=occurrence,
+            problemn=problemn,
+            observation=observation,
+            start_date=start_date,
+            PID=pid,
+            open=True,
+        )
+
+        images = request.FILES.getlist("image")
+
+        for file in images:
+            try:
+                image_bytes = file.read()
+
+                mime = Magic()
+
+                file_type = mime.from_buffer(image_bytes)
+
+                types_str = getenv("VALID_TYPES")
+
+                types_str = types_str.strip("[]")
+
+                types = [type.strip() for type in types_str.split(",")]
+
+                valid = False
+
+                for typeUn in types:
+                    if typeUn.replace('"', "").lower() in file_type.lower():
+                        valid = True
+                        break
+
+                if not valid:
+                    image_str = str(file)
+
+                    other_image = mimetypes.guess_type(image_str)
+
+                    for typeUn in types:
+                        if (
+                            typeUn.replace('"', "").lower()
+                            in other_image[0].replace('"', "").lower()
+                        ):
+                            valid = True
+                            break
+
+                if valid:
+                    Ticket.save()
+
+                    ticket_file = TicketFile(ticket=Ticket)
+                    ticket_file.file.save(str(file), ContentFile(image_bytes))
+
+                    new_id = None
+
+                else:
+                    return JsonResponse({"status": "Invalid"}, status=320, safe=True)
+
+                new_id = Ticket.id
+
+            except Exception as e:
+                print(e)
+
+        return JsonResponse({"id": new_id}, status=200, safe=True)
+
+    elif "id_equipament" in request.POST:
+        equipament_id = None
+        equipament = None
+        old_dates = None
+        try:
+            equipament_id = request.POST.get("id_equipament")
+
+            days = request.POST.get("days_alocated")
+
+            exist_equipament = SupportTicket.objects.filter(equipament=equipament_id)
+
+            for ee in exist_equipament:
+                old_dates = ee.date_alocate.split(",")
+                status = ee.open
+
+            new_dates = days.split(",")
+
+            if exist_equipament:
+                for Odates in old_dates:
+                    for Ndates in new_dates:
+                        if Odates == Ndates and status == True:
+                            return JsonResponse(
+                                {"status": "Invalid Date", "dates": old_dates},
+                                status=310,
+                                safe=True,
+                            )
+
+            equipament = Equipaments.objects.get(id=equipament_id)
+
+            Ticket = SupportTicket(
+                ticketRequester=ticketRequester,
+                department=department,
+                mail=mail,
+                company=company,
+                sector=sector,
+                respective_area=respective_area,
+                occurrence=occurrence,
+                problemn=problemn,
+                observation=observation,
+                start_date=start_date,
+                PID=pid,
+                equipament=equipament,
+                date_alocate=days,
+                open=True,
+            )
+
+            Ticket.save()
+
+            new_id = Ticket.id
+
+            # * Monta o ticket e salva no banco
+
+            return JsonResponse({"id": new_id}, status=200, safe=True)
+        except Exception as e:
+            print(e)
+
+    elif "company_new_user" in request.POST:
+        name_new_user = None
+        sector_new_user = None
+        where_from = None
+        company_new_user = None
+        machine_new_user = None
+        software_new_user = None
+        cost_center = None
+        job_title_new_user = None
+        start_work_new_user = None
+        copy_profile_new_user = None
+        try:
+            name_new_user = request.POST.get("new_user")
+            sector_new_user = request.POST.get("sector_new_user")
+            where_from = request.POST.get("where_from")
+            machine_new_user = request.POST.get("machine_new_user")
+            company_new_user = request.POST.get("company_new_user")
+            software_new_user = request.POST.get("software_new_user")
+            cost_center = request.POST.get("cost_center")
+            job_title_new_user = request.POST.get("job_title_new_user")
+            start_work_new_user = request.POST.get("start_work_new_user")
+            copy_profile_new_user = request.POST.get("copy_profile_new_user")
+
+            if machine_new_user == "false":
+                machine_new_user = False
+
+            elif machine_new_user == "true":
+                machine_new_user = True
+
+            Ticket = SupportTicket(
+                ticketRequester=ticketRequester,
+                department=department,
+                mail=mail,
+                company=company,
+                sector=sector,
+                respective_area=respective_area,
+                occurrence=occurrence,
+                problemn=problemn,
+                observation=observation,
+                start_date=start_date,
+                PID=pid,
+                name_new_user=name_new_user,
+                sector_new_user=sector_new_user,
+                where_from=where_from,
+                machine_new_user=machine_new_user,
+                company_new_user=company_new_user,
+                software_new_user=software_new_user,
+                cost_center=cost_center,
+                job_title_new_user=job_title_new_user,
+                start_work_new_user=start_work_new_user,
+                copy_profile_new_user=copy_profile_new_user,
+                open=True,
+            )
+
+            Ticket.save()
+            # * Monta o ticket e salva no banco
+
+            new_id = Ticket.id
+
+            return JsonResponse({"id": new_id}, status=200, safe=True)
+        except Exception as e:
+            print(e)
+
+    elif "mail_tranfer" in request.POST:
+        name_new_user = None
+        mail_tranfer = None
+        old_files = None
+        start_work_new_user = None
+        try:
+            name_new_user = request.POST.get("new_user")
+            mail_tranfer = request.POST.get("mail_tranfer")
+            old_files = request.POST.get("old_files")
+            start_work_new_user = request.POST.get("start_work_new_user")
+
+            Ticket = SupportTicket(
+                ticketRequester=ticketRequester,
+                department=department,
+                mail=mail,
+                company=company,
+                sector=sector,
+                respective_area=respective_area,
+                occurrence=occurrence,
+                problemn=problemn,
+                observation=observation,
+                start_date=start_date,
+                PID=pid,
+                name_new_user=name_new_user,
+                mail_tranfer=mail_tranfer,
+                old_files=old_files,
+                start_work_new_user=start_work_new_user,
+                open=True,
+            )
+
+            Ticket.save()
+            # * Monta o ticket e salva no banco
+
+            new_id = Ticket.id
+
+            return JsonResponse({"id": new_id}, status=200, safe=True)
         except Exception as e:
             print(e)
             return
 
-        # Inicializando variáveis adicionais com valor None
-        # Estas variáveis serão utilizadas para armazenar dados adicionais do chamado e informações sobre arquivos de imagem
+    else:
 
-        Ticket = None  # Objeto que representa o chamado (ticket)
-        file_type = None  # Tipo de arquivo da imagem
-        image_bytes = None  # Bytes da imagem anexada ao chamado
-        image_str = None  # Imagem em formato string codificada (base64, por exemplo)
-        mime = None  # Tipo MIME da imagem
-        other_image = None  # Outra imagem associada ao chamado
-        ticket_file = None  # Arquivo relacionado ao chamado
-        types = None  # Lista de tipos de arquivos permitidos
-        types_str = None  # Tipos de arquivos permitidos como string
-        valid = None  # Indicador de validade da imagem (True ou False)
-
-        if "image" in request.FILES:
+        try:
             Ticket = SupportTicket(
                 ticketRequester=ticketRequester,
                 department=department,
@@ -220,251 +458,14 @@ def submitTicket(request):
                 open=True,
             )
 
-            images = request.FILES.getlist("image")
-
-            for file in images:
-                try:
-                    image_bytes = file.read()
-
-                    mime = Magic()
-
-                    file_type = mime.from_buffer(image_bytes)
-
-                    types_str = getenv("VALID_TYPES")
-
-                    types_str = types_str.strip("[]")
-
-                    types = [type.strip() for type in types_str.split(",")]
-
-                    valid = False
-
-                    for typeUn in types:
-                        if typeUn.replace('"', "").lower() in file_type.lower():
-                            valid = True
-                            break
-
-                    if not valid:
-                        image_str = str(file)
-
-                        other_image = mimetypes.guess_type(image_str)
-
-                        for typeUn in types:
-                            if (
-                                typeUn.replace('"', "").lower()
-                                in other_image[0].replace('"', "").lower()
-                            ):
-                                valid = True
-                                break
-
-                    if valid:
-                        Ticket.save()
-
-                        ticket_file = TicketFile(ticket=Ticket)
-                        ticket_file.file.save(str(file), ContentFile(image_bytes))
-
-                        new_id = None
-
-                    else:
-                        return JsonResponse(
-                            {"status": "Invalid"}, status=320, safe=True
-                        )
-
-                    new_id = Ticket.id
-
-                except Exception as e:
-                    print(e)
+            Ticket.save()
+            # * Monta o ticket e salva no banco
+            new_id = Ticket.id
 
             return JsonResponse({"id": new_id}, status=200, safe=True)
-
-        elif "id_equipament" in request.POST:
-            equipament_id = None
-            equipament = None
-            old_dates = None
-            try:
-                equipament_id = request.POST.get("id_equipament")
-
-                days = request.POST.get("days_alocated")
-
-                exist_equipament = SupportTicket.objects.filter(
-                    equipament=equipament_id
-                )
-
-                for ee in exist_equipament:
-                    old_dates = ee.date_alocate.split(",")
-                    status = ee.open
-
-                new_dates = days.split(",")
-
-                if exist_equipament:
-                    for Odates in old_dates:
-                        for Ndates in new_dates:
-                            if Odates == Ndates and status == True:
-                                return JsonResponse(
-                                    {"status": "Invalid Date", "dates": old_dates},
-                                    status=310,
-                                    safe=True,
-                                )
-
-                equipament = Equipaments.objects.get(id=equipament_id)
-
-                Ticket = SupportTicket(
-                    ticketRequester=ticketRequester,
-                    department=department,
-                    mail=mail,
-                    company=company,
-                    sector=sector,
-                    respective_area=respective_area,
-                    occurrence=occurrence,
-                    problemn=problemn,
-                    observation=observation,
-                    start_date=start_date,
-                    PID=pid,
-                    equipament=equipament,
-                    date_alocate=days,
-                    open=True,
-                )
-
-                Ticket.save()
-
-                new_id = Ticket.id
-
-                # * Monta o ticket e salva no banco
-
-                return JsonResponse({"id": new_id}, status=200, safe=True)
-            except Exception as e:
-                print(e)
-
-        elif "company_new_user" in request.POST:
-            name_new_user = None
-            sector_new_user = None
-            where_from = None
-            company_new_user = None
-            machine_new_user = None
-            software_new_user = None
-            cost_center = None
-            job_title_new_user = None
-            start_work_new_user = None
-            copy_profile_new_user = None
-            try:
-                name_new_user = request.POST.get("new_user")
-                sector_new_user = request.POST.get("sector_new_user")
-                where_from = request.POST.get("where_from")
-                machine_new_user = request.POST.get("machine_new_user")
-                company_new_user = request.POST.get("company_new_user")
-                software_new_user = request.POST.get("software_new_user")
-                cost_center = request.POST.get("cost_center")
-                job_title_new_user = request.POST.get("job_title_new_user")
-                start_work_new_user = request.POST.get("start_work_new_user")
-                copy_profile_new_user = request.POST.get("copy_profile_new_user")
-
-                if machine_new_user == "false":
-                    machine_new_user = False
-
-                elif machine_new_user == "true":
-                    machine_new_user = True
-
-                Ticket = SupportTicket(
-                    ticketRequester=ticketRequester,
-                    department=department,
-                    mail=mail,
-                    company=company,
-                    sector=sector,
-                    respective_area=respective_area,
-                    occurrence=occurrence,
-                    problemn=problemn,
-                    observation=observation,
-                    start_date=start_date,
-                    PID=pid,
-                    name_new_user=name_new_user,
-                    sector_new_user=sector_new_user,
-                    where_from=where_from,
-                    machine_new_user=machine_new_user,
-                    company_new_user=company_new_user,
-                    software_new_user=software_new_user,
-                    cost_center=cost_center,
-                    job_title_new_user=job_title_new_user,
-                    start_work_new_user=start_work_new_user,
-                    copy_profile_new_user=copy_profile_new_user,
-                    open=True,
-                )
-
-                Ticket.save()
-                # * Monta o ticket e salva no banco
-
-                new_id = Ticket.id
-
-                return JsonResponse({"id": new_id}, status=200, safe=True)
-            except Exception as e:
-                print(e)
-
-        elif "mail_tranfer" in request.POST:
-            name_new_user = None
-            mail_tranfer = None
-            old_files = None
-            start_work_new_user = None
-            try:
-                name_new_user = request.POST.get("new_user")
-                mail_tranfer = request.POST.get("mail_tranfer")
-                old_files = request.POST.get("old_files")
-                start_work_new_user = request.POST.get("start_work_new_user")
-
-                Ticket = SupportTicket(
-                    ticketRequester=ticketRequester,
-                    department=department,
-                    mail=mail,
-                    company=company,
-                    sector=sector,
-                    respective_area=respective_area,
-                    occurrence=occurrence,
-                    problemn=problemn,
-                    observation=observation,
-                    start_date=start_date,
-                    PID=pid,
-                    name_new_user=name_new_user,
-                    mail_tranfer=mail_tranfer,
-                    old_files=old_files,
-                    start_work_new_user=start_work_new_user,
-                    open=True,
-                )
-
-                Ticket.save()
-                # * Monta o ticket e salva no banco
-
-                new_id = Ticket.id
-
-                return JsonResponse({"id": new_id}, status=200, safe=True)
-            except Exception as e:
-                print(e)
-                return
-
-        else:
-            try:
-                Ticket = SupportTicket(
-                    ticketRequester=ticketRequester,
-                    department=department,
-                    mail=mail,
-                    company=company,
-                    sector=sector,
-                    respective_area=respective_area,
-                    occurrence=occurrence,
-                    problemn=problemn,
-                    observation=observation,
-                    start_date=start_date,
-                    PID=pid,
-                    open=True,
-                )
-
-                Ticket.save()
-                # * Monta o ticket e salva no banco
-                new_id = Ticket.id
-
-                return JsonResponse({"id": new_id}, status=200, safe=True)
-            except Exception as e:
-                print(e)
-                return
-    if request.method == "GET":
-        return redirect("/helpdesk")
-
+        except Exception as e:
+            print(e)
+            return
 
 @csrf_exempt
 @login_required(login_url="/login")
