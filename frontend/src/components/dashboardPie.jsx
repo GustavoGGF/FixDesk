@@ -7,7 +7,6 @@
  * - Chart: importação da classe Chart do módulo "chart.js/auto" para a renderização de gráficos.
  */
 import React, { useState, useEffect } from "react";
-import Loading from "./loading";
 import { Chart } from "chart.js/auto";
 
 /**
@@ -26,7 +25,6 @@ export default function DashBoardPie({ sector, clss }) {
    * - loading: estado que controla a exibição do indicador de carregamento.
    */
   const [dataPie, setDataPie] = useState("");
-  const [loading, setLoading] = useState(true);
 
   /**
    * Variável timeoutBarUpdate utilizada para armazenar o identificador do timeout responsável pela atualização contínua do dashboard.
@@ -53,13 +51,13 @@ export default function DashBoardPie({ sector, clss }) {
         });
 
         if (response.status === 210) {
-          setLoading(true);
+          // setLoading(true);
           // Faça algo aqui se a resposta for 210
         }
 
         const data = await response.json();
         setDataPie(data);
-        setLoading(false);
+        // setLoading(false);
         CallNewBar();
         return;
       } catch (err) {
@@ -131,13 +129,13 @@ export default function DashBoardPie({ sector, clss }) {
         });
 
         if (response.status === 210) {
-          setLoading(true);
+          // setLoading(true);
           // Faça algo aqui se a resposta for 210
         }
 
         const data = await response.json();
         setDataPie(data);
-        setLoading(false);
+        // setLoading(false);
         return;
       } catch (err) {
         if (err instanceof SyntaxError) {
@@ -152,7 +150,6 @@ export default function DashBoardPie({ sector, clss }) {
 
   return (
     <Div>
-      {loading && <Loading />}
       <Div2>
         <canvas id="dashpie" className="hidden"></canvas>
       </Div2>

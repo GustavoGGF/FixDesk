@@ -1143,7 +1143,6 @@ export default function DashboardTI() {
         headers: { Accept: "application/json" },
       })
         .then((response) => {
-          console.log("response dashboard TI:", response);
           return response.json();
         })
         .then((data) => {
@@ -1414,9 +1413,11 @@ export default function DashboardTI() {
       })
       .then((data) => {
         // Recarrega o chat após o envio da mensagem.
+        setTextChat("");
         return reloadChat({ data: data });
       })
       .catch((err) => {
+        setTextChat("");
         setMessageError(err);
         setTypeError("FATAL ERROR");
         setMessage(true);
