@@ -1,38 +1,42 @@
-import Close from "../images/components/close.png";
 import Cloud from "../images/components/cloud-uploading.png";
 import Exclude from "../images/components/lixo.png";
 import Info from "../components/info";
 import Loading from "../components/loading";
 import Message from "../components/message";
 import NavBar from "../components/navbar";
-import ptBR from "date-fns/locale/pt";
-import { format } from "date-fns";
 import "react-day-picker/dist/style.css";
-import { DayPicker } from "react-day-picker";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, createContext } from "react";
 import "../styles/bootstrap/css/bootstrap.css";
 import {
   BtnFile,
-  Calendar,
-  Contract,
   Div,
-  Div2,
-  DivEquip,
   DivNameFile,
   Form,
-  ImageEquip,
   ImgFile,
   Input,
-  Input2,
   InputFile,
-  InputRadio,
   PNameFile,
-  Select,
   Textarea,
   TitlePage,
+  B1,
+  BodyFiles,
+  Divider,
+  DivUpload,
+  FooterFiles,
+  HeaderFiles,
+  IMGFile,
+  IMGFile2,
+  InputFiles,
+  ListFiles,
+  PFiles,
+  PFiles2,
+  Span1,
+  Span2,
+  Span3,
 } from "../styles/helpdeskStyle";
-import { B1, BodyFiles, Divider, DivUpload, FooterFiles, HeaderFiles, IMGFile, IMGFile2, InputFiles, ListFiles, PFiles, PFiles2, Span1, Span2, Span3 } from "../styles/Equipment_RegistrationStyle";
+import TicketsOptions from "../components/ticketsOptions";
 
+export const ValorContext = createContext();
 export default function Helpdesk() {
   useEffect(() => {
     // Este useEffect é executado uma vez após o componente ser montado.
@@ -57,98 +61,55 @@ export default function Helpdesk() {
   }, []); // Array de dependências vazio
 
   // Declarando variáveis de estado String
-  const [companynewUser, setCompanyNewUser] = useState("");
-  const [centralcost, setCentralCost] = useState("");
-  const [copyUser, setCopyUser] = useState("");
   const [csrfToken, setCSRFToken] = useState("");
-  const [dashequipaments, setDashEquipaments] = useState("");
-  const [dirsave, setDirSave] = useState("");
-  const [equipamentSelected, setEquipamentSelected] = useState("");
   const [infoClass, setInfoClass] = useState("");
   const [infoClass2, setInfoClass2] = useState("");
   const [infoID, setInfoID] = useState("");
-  const [jobtitlenewuser, setJobTitleNewUser] = useState("");
-  const [maildelegation, setMailDelegation] = useState("");
   const [messageError, setMessageError] = useState("");
-  const [messageinfo1, setMessageinfo1] = useState("");
-  const [messageinfo2, setMessageinfo2] = useState("");
-  const [messagetitle, setMessagetitle] = useState("");
-  const [motivationContract, setMotivationContract] = useState("");
   const [nameOnDropFiles, setNameOnDropFiles] = useState("");
   const [nameOnInutFiles, setNameOnInputFiles] = useState("");
-  const [newname, setNewName] = useState("");
   const [observation, setObservation] = useState("");
+  const [messagetitle, setMessagetitle] = useState("");
+  const [sector, setSector] = useState("");
   const [occurrence, setOccurrence] = useState("");
   const [problemn, setProblemn] = useState("");
-  const [respectiveArea, setRespectiveArea] = useState("");
-  const [sector, setsector] = useState("");
-  const [sectornewuser, setSectorNewUser] = useState("");
+  const [equipamentSelected, setEquipamentSelected] = useState("");
+  const [typeError, setTypeError] = useState("");
   const [theme, setTheme] = useState("");
   const [themeTicket, setThemeTicket] = useState("");
-  const [typeError, setTypeError] = useState("");
-
+  const [respectiveArea, setRespectiveArea] = useState("");
+  const [messageinfo1, setMessageinfo1] = useState("");
+  const [messageinfo2, setMessageinfo2] = useState("");
   // Declarando variaveis de estado Boolean
-  const [alocate, setAlocate] = useState(false);
-  const [alert, setAlert] = useState(false);
-  const [alertverify, setAlertVerify] = useState(false);
-  const [backup, setBackup] = useState(false);
+
   const [dashboard, setDashboard] = useState(false);
-  const [comodato, setComodato] = useState(false);
-  const [confirmOtherEquipaments, SetConfirmOtherEquipaments] = useState(true);
-  const [dadosCase, setDados] = useState(false);
-  const [dateequip, setDateEquip] = useState(false);
-  const [equip, setEquip] = useState(false);
   const [fileSizeNotify, setFileSizeNotify] = useState(false);
-  const [folder, setFolder] = useState(false);
-  const [formdeluser, setFormDelUser] = useState(false);
-  const [formnewuser, setFormNewUser] = useState(false);
   const [info, setInfo] = useState(false);
-  const [infra, setInfra] = useState(false);
   const [inputDropControl, setInputDropControl] = useState(true);
   const [inputManualControl, setInputManualControl] = useState(false);
-  const [internet, setInternet] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [mail, setMail] = useState(false);
-  const [machine, setMachine] = useState(false);
+  const [reset, setReset] = useState(false);
   const [message, setMessage] = useState(false);
-  const [motivation, setMotivation] = useState(true);
   const [navbar, setNavbar] = useState(false);
-  const [otherEquipaments, setOtherEquipaments] = useState(false);
-  const [otherMouse, setOtherMouse] = useState(false);
-  const [otherRede, setOtherRede] = useState(false);
-  const [otherTeclado, setOtherTeclado] = useState(false);
-  const [respectiveTI, setRespectiveTI] = useState(false);
-  const [softAPP, setSoftAPP] = useState(false);
-  const [sys, setSYS] = useState(false);
-  const [sys2, setSYS2] = useState(false);
-  const [system, setSystem] = useState(false);
-  const [user, setUser] = useState(false);
-
-  // Declarando variaveis de estado new Data
-  const [selectedDay, setSelectedDay] = useState(new Date());
+  const [alertverify, setAlertVerify] = useState(false);
+  const [alert, setAlert] = useState(false);
 
   // Declarando variaveis de estado Vazias
   const [dataUser, setdataUser] = useState();
-  const [equipaments, setEquipaments] = useState();
-  const [necessaryMachine, setNecessaryMachine] = useState();
 
   // Declarando varaiveis de estado array
   const [arrayInput, setArrayInput] = useState([]);
   const [daysForAlocate, setDaysForAlocate] = useState([]);
   const [fileimg, setFileImg] = useState([]);
   const [filename, setFileName] = useState([]);
-  const [softwareNewUser, setSoftwareNewUser] = useState([]);
-
-  // Variaveis de datas
-  const footerDay = selectedDay ? <p>Você selecionou {format(selectedDay, "PPP")}</p> : <p>Selecione uma dataUser</p>;
-  const footerAlocate = daysForAlocate.length >= 1 ? <p>Você alocou por {daysForAlocate.length} dia(s).</p> : <p>Selecione um ou mais dias.</p>;
 
   // Declarando Variaveis Null
   const observationRef = useRef(null);
   const primaryContainerRef = useRef(null);
-  const selectAR = useRef(null);
 
   let file_name = [];
+
+  // const respectiveAr = useContext(ValorContext);
 
   // Função que muda o tema pra escuro
   function ThemeBlack() {
@@ -171,6 +132,7 @@ export default function Helpdesk() {
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json",
+            "Cache-Control": "no-cache",
           },
           body: {},
         });
@@ -181,7 +143,6 @@ export default function Helpdesk() {
         }
         const data = await response.json();
         // Atualiza os estados com os dados recebidos
-        setEquipaments(data.equipaments);
         setCSRFToken(data.token);
         // Processa dados do localStorage com segurança
         const storedDataUser = localStorage.getItem("dataInfo");
@@ -279,513 +240,6 @@ export default function Helpdesk() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dashboard]);
 
-  function selectARes() {
-    // Obtém o elemento select e o valor da opção selecionada
-    const selectElement = document.getElementById("selectAR");
-    const selectedValue = selectElement.options[selectElement.selectedIndex].value;
-
-    // Atualiza os estados com base no valor selecionado
-    switch (selectedValue) {
-      case "TI":
-        setAlert(false);
-        setRespectiveTI(true);
-        setRespectiveArea("TI");
-        setAlertVerify(false);
-        break;
-      case "none":
-        setRespectiveTI(false);
-        setAlert(false);
-        break;
-      default:
-        setRespectiveTI(false);
-        setAlert(false);
-        break;
-    }
-  }
-
-  function handleSelect() {
-    const select = document.getElementById("select-Form");
-    const option = select.options[select.selectedIndex].value;
-
-    switch (option) {
-      default:
-        break;
-      case "infra":
-        setInfra(true);
-        setAlert(false);
-        setBackup(false);
-        setMail(false);
-        setFormNewUser(false);
-        setFormDelUser(false);
-        setEquip(false);
-        setUser(false);
-        setInternet(false);
-        setFolder(false);
-        setAlertVerify(false);
-        setsector("Infraestrutura");
-        setSystem(false);
-        setSYS(false);
-        setSYS2(false);
-        setAlocate(false);
-        setDateEquip(false);
-        break;
-      case "sistema":
-        setSystem(true);
-        setInfra(false);
-        setAlert(false);
-        setBackup(false);
-        setMail(false);
-        setFormNewUser(false);
-        setFormDelUser(false);
-        setEquip(false);
-        setUser(false);
-        setInternet(false);
-        setFolder(false);
-        setsector("Sistema");
-        setAlertVerify(false);
-        setSYS(false);
-        setSYS2(false);
-        setAlocate(false);
-        setDateEquip(false);
-        break;
-      case "none":
-        setInfra(false);
-        setSystem(false);
-        setAlert(false);
-        setBackup(false);
-        setMail(false);
-        setFormNewUser(false);
-        setFormDelUser(false);
-        setEquip(false);
-        setUser(false);
-        setInternet(false);
-        setFolder(false);
-        setsector("");
-        setSYS(false);
-        setSYS2(false);
-        setAlocate(false);
-        setDateEquip(false);
-    }
-  }
-
-  function selectProblem() {
-    const select = document.getElementById("select-error");
-    const option = select.options[select.selectedIndex].value;
-
-    switch (option) {
-      default:
-        break;
-      case "backup":
-        setBackup(true);
-        setAlert(false);
-        setMail(false);
-        setEquip(false);
-        setFormNewUser(false);
-        setFormDelUser(false);
-        setUser(false);
-        setInternet(false);
-        setFolder(false);
-        setOccurrence("Backup");
-        setAlertVerify(false);
-        setSYS(false);
-        setSYS2(false);
-        setAlocate(false);
-        setDados(false);
-        setDateEquip(false);
-        setSoftAPP(false);
-        break;
-      case "mail":
-        setMail(true);
-        setBackup(false);
-        setAlert(false);
-        setEquip(false);
-        setFormNewUser(false);
-        setFormDelUser(false);
-        setUser(false);
-        setInternet(false);
-        setFolder(false);
-        setOccurrence("E-mail");
-        setAlertVerify(false);
-        setSYS(false);
-        setSYS2(false);
-        setAlocate(false);
-        setDateEquip(false);
-        setDados(false);
-        setSoftAPP(false);
-        break;
-      case "equip":
-        setEquip(true);
-        setBackup(false);
-        setMail(false);
-        setAlert(false);
-        setFormNewUser(false);
-        setFormDelUser(false);
-        setUser(false);
-        setInternet(false);
-        setFolder(false);
-        setAlertVerify(false);
-        setAlocate(false);
-        setOccurrence("Equipamento");
-        setSYS(false);
-        setSYS2(false);
-        setDateEquip(false);
-        setDados(false);
-        setSoftAPP(false);
-        break;
-      case "user":
-        setUser(true);
-        setBackup(false);
-        setAlert(false);
-        setMail(false);
-        setEquip(false);
-        setFormDelUser(false);
-        setFormNewUser(false);
-        setInternet(false);
-        setFolder(false);
-        setAlertVerify(false);
-        setAlocate(false);
-        setOccurrence("Gerenciamento de Usuario");
-        setSYS(false);
-        setSYS2(false);
-        setDateEquip(false);
-        setDados(false);
-        setSoftAPP(false);
-        break;
-      case "internet":
-        setInternet(true);
-        setBackup(false);
-        setAlert(false);
-        setMail(false);
-        setEquip(false);
-        setUser(false);
-        setFormNewUser(false);
-        setFormDelUser(false);
-        setFolder(false);
-        setAlertVerify(false);
-        setAlocate(false);
-        setDateEquip(false);
-        setOccurrence("Internet");
-        setSYS(false);
-        setSYS2(false);
-        setDateEquip(false);
-        setDados(false);
-        setSoftAPP(false);
-        break;
-      case "folder":
-        setFolder(true);
-        setBackup(false);
-        setAlert(false);
-        setMail(false);
-        setEquip(false);
-        setUser(false);
-        setFormNewUser(false);
-        setFormDelUser(false);
-        setInternet(false);
-        setAlertVerify(false);
-        setAlocate(false);
-        setDateEquip(false);
-        setOccurrence("Permissão");
-        setSYS(false);
-        setSYS2(false);
-        setDateEquip(false);
-        setDados(false);
-        setSoftAPP(false);
-        break;
-      case "none":
-        setBackup(false);
-        setAlert(false);
-        setMail(false);
-        setEquip(false);
-        setUser(false);
-        setFormNewUser(false);
-        setFormDelUser(false);
-        setInternet(false);
-        setFolder(false);
-        setSYS(false);
-        setSYS2(false);
-        setAlocate(false);
-        setDateEquip(false);
-        setDados(false);
-        setSoftAPP(false);
-        break;
-      case "sap":
-        setSYS(true);
-        setSYS2(false);
-        setBackup(false);
-        setAlert(false);
-        setMail(false);
-        setEquip(false);
-        setUser(false);
-        setFormNewUser(false);
-        setFormDelUser(false);
-        setInternet(false);
-        setFolder(false);
-        setOccurrence("SAP");
-        setAlocate(false);
-        setDateEquip(false);
-        setDados(false);
-        setSoftAPP(false);
-        break;
-      case "mbi":
-        setSYS(true);
-        setBackup(false);
-        setAlert(false);
-        setMail(false);
-        setEquip(false);
-        setUser(false);
-        setFormNewUser(false);
-        setFormDelUser(false);
-        setInternet(false);
-        setFolder(false);
-        setOccurrence("MBI");
-        setSYS2(false);
-        setAlocate(false);
-        setDateEquip(false);
-        setDados(false);
-        setSoftAPP(false);
-        break;
-      case "synch":
-        setSYS(true);
-        setBackup(false);
-        setAlert(false);
-        setMail(false);
-        setEquip(false);
-        setUser(false);
-        setFormNewUser(false);
-        setFormDelUser(false);
-        setInternet(false);
-        setFolder(false);
-        setOccurrence("Synchro");
-        setSYS2(false);
-        setAlocate(false);
-        setDateEquip(false);
-        setDados(false);
-        setSoftAPP(false);
-        break;
-      case "office":
-        setSYS2(true);
-        setSYS(false);
-        setBackup(false);
-        setAlert(false);
-        setMail(false);
-        setEquip(false);
-        setUser(false);
-        setAlocate(false);
-        setFormNewUser(false);
-        setFormDelUser(false);
-        setInternet(false);
-        setFolder(false);
-        setOccurrence("Office");
-        setDateEquip(false);
-        setDados(false);
-        setSoftAPP(false);
-        break;
-      case "eng":
-        setSYS2(true);
-        setSYS(false);
-        setBackup(false);
-        setAlocate(false);
-        setAlert(false);
-        setMail(false);
-        setEquip(false);
-        setUser(false);
-        setFormNewUser(false);
-        setFormDelUser(false);
-        setInternet(false);
-        setFolder(false);
-        setOccurrence("Softwares de Eng");
-        setDateEquip(false);
-        setDados(false);
-        setSoftAPP(false);
-        break;
-      case "soft":
-        setSoftAPP(true);
-        setSYS2(false);
-        setSYS(false);
-        setBackup(false);
-        setAlocate(false);
-        setAlert(false);
-        setMail(false);
-        setEquip(false);
-        setUser(false);
-        setFormNewUser(false);
-        setFormDelUser(false);
-        setInternet(false);
-        setFolder(false);
-        setOccurrence("Novo SoftWare");
-        setDateEquip(false);
-        setDados(false);
-        break;
-      case "dados":
-        setDados(true);
-        setSoftAPP(false);
-        setSYS2(false);
-        setSYS(false);
-        setBackup(false);
-        setAlocate(false);
-        setAlert(false);
-        setMail(false);
-        setEquip(false);
-        setUser(false);
-        setFormNewUser(false);
-        setFormDelUser(false);
-        setInternet(false);
-        setFolder(false);
-        setOccurrence("Integridade de Dados");
-        setDateEquip(false);
-        break;
-      case "metadados":
-        setDados(false);
-        setSoftAPP(false);
-        setSYS2(false);
-        setSYS(true);
-        setBackup(false);
-        setAlocate(false);
-        setAlert(false);
-        setMail(false);
-        setEquip(false);
-        setUser(false);
-        setFormNewUser(false);
-        setFormDelUser(false);
-        setInternet(false);
-        setFolder(false);
-        setOccurrence("Metadados");
-        setDateEquip(false);
-        break;
-    }
-  }
-
-  function selectSys() {
-    const select = document.getElementById("select-sap");
-    const option = select.options[select.selectedIndex].value;
-
-    switch (option) {
-      default:
-        break;
-      case "user":
-        setMessagetitle("Caso de Criação/exclusão de usuários");
-        setMessageinfo1("1. Informar o usuário que deverá ser criado ou excluido");
-        setMessageinfo2("2. Informar os acessos que o mesmo poderá utilizar");
-        setProblemn("Criação/exclusão usuário");
-        setAlert(true);
-        setAlertVerify(false);
-        break;
-      case "access":
-        setMessagetitle("Caso de Liberação/bloqueio de acessos");
-        setMessageinfo1("1. Descreva o que deseja bloquear e/ou liberar");
-        setMessageinfo2("");
-        setProblemn("Liberação/bloqueio de acessos");
-        setAlert(true);
-        setAlertVerify(false);
-        break;
-      case "quest":
-        setMessagetitle("Caso de Dúvidas operacionais");
-        setMessageinfo1("1. Descreva o que deseja saber");
-        setMessageinfo2("");
-        setProblemn("Dúvidas operacionais");
-        setAlertVerify(false);
-        setAlert(true);
-        break;
-      case "error":
-        setMessagetitle("Caso de Correção de falhas");
-        setMessageinfo1("1. Informe o Erro");
-        setMessageinfo2("");
-        setProblemn("Correção de falhas");
-        setAlertVerify(false);
-        setAlert(true);
-        break;
-      case "upg":
-        setMessagetitle("Caso de Melhorias");
-        setMessageinfo1("1. Informe a melhoria que deseja implementar");
-        setMessageinfo2("");
-        setProblemn("Melhoria");
-        setAlertVerify(false);
-        setAlert(true);
-        break;
-      case "none":
-        setAlert(false);
-    }
-  }
-
-  function selectOffice() {
-    const selectOffice = document.getElementById("select-office");
-    const optionOffice = selectOffice.options[selectOffice.selectedIndex].value;
-
-    switch (optionOffice) {
-      default:
-        break;
-      case "buy":
-        setAlert(true);
-        setMessagetitle("Aquisição de software/licenciamento");
-        setMessageinfo1("1. Informe para quem será a licença");
-        setMessageinfo2("");
-        setProblemn("Aquisição de software/licenciamento");
-        setAlertVerify(false);
-        break;
-      case "error":
-        setAlert(true);
-        setMessagetitle("Caso de Correção de falhas");
-        setMessageinfo1("1. Informe o Erro");
-        setMessageinfo2("");
-        setProblemn("Correção de falhas");
-        setAlertVerify(false);
-        break;
-      case "none":
-        setAlert(false);
-        break;
-    }
-  }
-
-  function selectSoftAPP() {
-    const select = document.getElementById("select-soft");
-    const option = select.options[select.selectedIndex].value;
-
-    switch (option) {
-      default:
-        break;
-      case "install":
-        setAlert(true);
-        setMessagetitle("Instalação de Novo Software");
-        setMessageinfo1("1. Informar nome do Software");
-        setMessageinfo2("");
-        setProblemn("Instalação de Novo Software");
-        setAlertVerify(false);
-        break;
-      case "none":
-        setAlert(false);
-        break;
-      case "error":
-        setAlert(true);
-        setMessagetitle("Erro e Problema em Software gerais");
-        setMessageinfo1("1. Informar nome do Software");
-        setMessageinfo2("2. Informar o erro");
-        setProblemn("Erro e Problema em Software gerais");
-        setAlertVerify(false);
-        break;
-    }
-  }
-
-  function selectDado() {
-    const selectOffice = document.getElementById("select-dado");
-    const optionOffice = selectOffice.options[selectOffice.selectedIndex].value;
-
-    switch (optionOffice) {
-      default:
-        break;
-      case "corrupted":
-        setAlert(true);
-        setMessagetitle("Arquivo Corrompido");
-        setMessageinfo1("1. Informar local deste arquivo ou Anexar o Mesmo");
-        setMessageinfo2("");
-        setProblemn("Arquivo Corrompido");
-        setAlertVerify(false);
-        break;
-      case "none":
-        setAlert(false);
-        break;
-    }
-  }
-
   /**
    * Atualiza o estado `observation` com o valor do input.
    * @param {Event} event - O evento de mudança do input.
@@ -793,319 +247,6 @@ export default function Helpdesk() {
   function getObservation(event) {
     // Atualiza o estado com o valor do input
     setObservation(event.target.value);
-  }
-
-  function selectBackup() {
-    const selectBackup = document.getElementById("select-backup");
-    const optionBackup = selectBackup.options[selectBackup.selectedIndex].value;
-
-    switch (optionBackup) {
-      default:
-        break;
-      case "pasta":
-        setAlert(true);
-        setMessagetitle("Caso de pasta");
-        setMessageinfo1("1. Informar o caminho completo da pasta");
-        setMessageinfo2("2. Informar a dataUser de criação e exclusão do arquivo");
-        setProblemn("Restaurar pasta");
-        setAlertVerify(false);
-        break;
-      case "mail":
-        setAlert(true);
-        setMessagetitle("Caso de e-mail");
-        setMessageinfo1("1. Descreva o que deseja restaurar");
-        setMessageinfo2("");
-        setProblemn("Restaurar e-mail");
-        setAlertVerify(false);
-        break;
-      case "none":
-        setAlert(false);
-        break;
-    }
-  }
-
-  function selectMail() {
-    const selectMail = document.getElementById("select-mail");
-    const optionMail = selectMail.options[selectMail.selectedIndex].value;
-
-    switch (optionMail) {
-      default:
-        break;
-      case "maxcap":
-        setAlert(false);
-        setProblemn("Aumentar capacidade de e-mail");
-        setAlertVerify(false);
-        break;
-      case "conect":
-        setAlert(true);
-        setMessagetitle("Caso de email não conecta na internet");
-        setMessageinfo1("1. Informar mensagem de erro");
-        setMessageinfo2("");
-        setProblemn("Problema com conexão");
-        setAlertVerify(false);
-        break;
-      case "none":
-        setAlert(false);
-        break;
-      case "domin":
-        setAlert(true);
-        setMessagetitle("Caso de liberar domínion de e-mail");
-        setMessageinfo1("1. Informar dóminio, exemplo @lupatech.com.br");
-        setMessageinfo2("");
-        setProblemn("Liberar domínio");
-        setAlertVerify(false);
-        break;
-    }
-  }
-
-  function selectEquipament({ element, id }) {
-    // Define o equipamento selecionado
-    setEquipamentSelected(id);
-
-    // Remove a borda de todos os elementos
-    document.querySelectorAll(".equipsclass").forEach((el) => {
-      el.classList.remove("borderEquip");
-    });
-
-    // Adiciona a borda ao elemento selecionado
-    element.classList.add("borderEquip");
-
-    // Define a data do equipamento como verdadeira
-    setDateEquip(true);
-  }
-
-  function selectEquip() {
-    const selectEquip = document.getElementById("select-equip");
-    const optionEquip = selectEquip.options[selectEquip.selectedIndex].value;
-
-    switch (optionEquip) {
-      default:
-        break;
-      case "off":
-        setAlocate(false);
-        setAlert(true);
-        setMessagetitle("Caso de computador não ligar");
-        setMessageinfo1("1. Informar o usuario e setor de onde fica o equipamento");
-        setMessageinfo2("");
-        setProblemn("Equipamento não liga");
-        setAlertVerify(false);
-        break;
-      case "printer":
-        setAlocate(false);
-        setAlert(true);
-        setMessagetitle("Caso de problema com a impressora");
-        setMessageinfo1("1. Informar onde a impressora está localizada");
-        setMessageinfo2("2. Informar menssagem de erro que aparece");
-        setProblemn("Problema com a impressora");
-        setAlertVerify(false);
-        break;
-      case "roaming":
-        setAlocate(false);
-        setAlert(true);
-        setMessagetitle("Caso de troca de local de trabalho");
-        setMessageinfo1("1. Informar se no local existe ponto de rede e de energia");
-        setMessageinfo2("");
-        setProblemn("Mudanca de local de trabalho");
-        setAlertVerify(false);
-        break;
-      case "usb":
-        setAlocate(false);
-        setAlert(true);
-        setMessagetitle("Caso de liberação/bloqueio de USB");
-        setMessageinfo1("1. Justificar a solicitação");
-        setMessageinfo2("2. Caso não seja o gestor da area, anexar a autorização do mesmo");
-        setProblemn("USB");
-        setAlertVerify(false);
-        break;
-      case "none":
-        setAlert(false);
-        setAlocate(false);
-        break;
-      case "alocate":
-        setDashEquipaments("");
-        setAlert(true);
-        setMessagetitle("Caso de Alocação de equipamento");
-        setMessageinfo1("1. Selecionar o equipamento desejado");
-        setMessageinfo2("2. Informar a dataUser e a necessidade de equipamentos adicionais como teclado, etc...");
-        setAlertVerify(false);
-        setAlocate(true);
-        setProblemn("Alocação de Máquina");
-        if (equipaments && Object.keys(equipaments).length > 0) {
-          equipaments.forEach((equipament) => {
-            const Div = (
-              <DivEquip
-                className="equipsclass"
-                onClick={(event) => {
-                  selectEquipament({
-                    element: event.currentTarget,
-                    id: equipament.id,
-                  });
-                  setOtherEquipaments(true);
-                }}
-              >
-                <ImageEquip src={`data:image/jpeg;base64,${equipament.image}`} alt="" />
-                <p>Modelo: {equipament.model}</p>
-                <p>Empresa: {equipament.company}</p>
-              </DivEquip>
-            );
-
-            setDashEquipaments((prvDiv) => [...prvDiv, Div]);
-          });
-          break;
-        } else {
-          setMessage(true);
-          setTypeError("Falta de Dados");
-          setMessageError("Nenhum equipamento Cadastrado");
-          break;
-        }
-      case "change":
-        setAlert(true);
-        setMessagetitle("Caso de Troca de Equipamento");
-        setMessageinfo1("1. Informar o Equipamento");
-        setMessageinfo2("2. Justificar o motivo da troca");
-        setProblemn("Trocar Equipamento");
-        setAlertVerify(false);
-        break;
-    }
-  }
-
-  function selectUser() {
-    const select = document.getElementById("select-user");
-    const option = select.options[select.selectedIndex].value;
-
-    switch (option) {
-      default:
-        break;
-      case "adduser":
-        setAlert(false);
-        setFormNewUser(true);
-        setFormDelUser(false);
-        setProblemn("Criacao de usuario de rede");
-        setAlertVerify(false);
-        setMotivationContract("");
-        setSectorNewUser("");
-        setNewName("");
-        break;
-      case "deluser":
-        setFormDelUser(true);
-        setFormNewUser(false);
-        setAlert(false);
-        setProblemn("Exclusao de usuario de rede");
-        setAlertVerify(false);
-        break;
-      case "none":
-        setAlert(false);
-        setFormNewUser(false);
-        setFormDelUser(false);
-        setAlertVerify(false);
-        break;
-    }
-  }
-
-  function selectFolder() {
-    const select = document.getElementById("select-folder");
-    const option = select.options[select.selectedIndex].value;
-
-    switch (option) {
-      default:
-        break;
-      case "lib":
-        setAlert(true);
-        setMessagetitle("Caso de liberação de pasta");
-        setMessageinfo1("1. Informar o diretorio completo da pasta");
-        setMessageinfo2("2.Caso não seja o gestor responsavel pela pasta, anexar a autorização do mesmo");
-        setProblemn("Liberar pasta");
-        setAlertVerify(false);
-        break;
-      case "block":
-        setAlert(true);
-        setMessagetitle("Caso de bloqueio de pasta");
-        setMessageinfo1("1. Informar o diretorio completo da pasta");
-        setMessageinfo2("2.Caso não seja o gestor responsavel pela pasta, anexar a autorização do mesmo");
-        setProblemn("Bloquear pasta");
-        setAlertVerify(false);
-        break;
-      case "none":
-        setAlert(false);
-        setMessagetitle("");
-        setMessageinfo1("");
-        setMessageinfo2("");
-        break;
-    }
-  }
-
-  function selectInternet() {
-    const select = document.getElementById("select-internet");
-    const option = select.options[select.selectedIndex].value;
-
-    switch (option) {
-      default:
-        break;
-      case "lib":
-        setAlert(true);
-        setMessagetitle("Caso de liberação de site");
-        setMessageinfo1("1. Informar o link completo do site");
-        setMessageinfo2("2.Caso não seja o gestor da area, anexar a autorização do mesmo");
-        setProblemn("Liberacao de site");
-        setAlertVerify(false);
-        break;
-      case "block":
-        setAlert(true);
-        setMessagetitle("Caso de bloqueio de site");
-        setMessageinfo1("1. Informar o link completo do site");
-        setMessageinfo2("2.Caso não seja o gestor da area, anexar a autorização do mesmo");
-        setProblemn("Bloqueio de site");
-        setAlertVerify(false);
-        break;
-      case "none":
-        setAlert(false);
-        setMessagetitle("");
-        setMessageinfo1("");
-        setMessageinfo2("");
-        break;
-    }
-  }
-
-  function selectMotivation() {
-    // Obtém todos os inputs com o nome 'motivation'
-    const options = document.querySelectorAll("input[name='motivation']");
-
-    // Adiciona um listener de evento change a cada input
-    options.forEach((radio) => {
-      radio.addEventListener("change", (event) => {
-        if (event.target.checked) {
-          // Atualiza o estado com o valor do input selecionado
-          setMotivationContract(event.target.value);
-
-          // Define o estado de motivação com base no valor do input
-          setMotivation(event.target.value !== "other");
-        }
-      });
-    });
-  }
-
-  function selectMachine() {
-    // Obtém todos os inputs com o nome 'machine'
-    const options = document.querySelectorAll("input[name='machine']");
-
-    // Adiciona um listener de evento change a cada input
-    options.forEach((radio) => {
-      radio.addEventListener("change", (event) => {
-        if (event.target.checked) {
-          // Atualiza o estado com base no valor do input selecionado
-          if (event.target.value === "yes") {
-            setMachine(false);
-            setNecessaryMachine(false);
-          } else if (event.target.value === "no") {
-            setMachine(true);
-            setMessagetitle("Caso de não haver máquina");
-            setMessageinfo1("1. Deverá ser feita uma solicitação de equipamento");
-            setMessageinfo2("");
-            setNecessaryMachine(true);
-          }
-        }
-      });
-    });
   }
 
   /**
@@ -1197,92 +338,6 @@ export default function Helpdesk() {
       }
       formdataUser.append("id_equipament", equipamentSelected);
       formdataUser.append("days_alocated", NewDatesAlocate);
-    } else if (problemn === "Criacao de usuario de rede") {
-      if (newname.length < 2) {
-        setMessage(true);
-        setTypeError("Falta de dados");
-        setMessageError("Nome Obrigatório!!!");
-        return;
-      }
-
-      if (sectornewuser.length < 1) {
-        setMessage(true);
-        setTypeError("Falta de dados");
-        setMessageError("Setor Obrigatório!!!");
-        return;
-      }
-
-      if (motivationContract.length < 2) {
-        setMessage(true);
-        setTypeError("Falta de dados");
-        setMessageError("Tipo da Contratação Obrigatória!!!");
-        return;
-      }
-
-      if (necessaryMachine === undefined) {
-        setMessage(true);
-        setTypeError("Falta de dados");
-        setMessageError("Obigatório informar a necessidade de Máquina!!!");
-        return;
-      }
-
-      if (companynewUser.length < 2) {
-        setMessage(true);
-        setTypeError("Falta de dados");
-        setMessageError("Obigatório informar a Unidade!!!");
-        return;
-      }
-
-      if (centralcost.length < 2) {
-        setMessage(true);
-        setTypeError("Falta de dados");
-        setMessageError("Obigatório Informar Centro de Custo!!!");
-        return;
-      }
-
-      if (jobtitlenewuser.length < 2) {
-        setMessage(true);
-        setTypeError("Falta de dados");
-        setMessageError("Obigatório Informar o cargo!!!");
-        return;
-      }
-      formdataUser.append("new_user", newname);
-      formdataUser.append("sector_new_user", sectornewuser);
-      formdataUser.append("where_from", motivationContract);
-      formdataUser.append("machine_new_user", necessaryMachine);
-      formdataUser.append("company_new_user", companynewUser);
-      formdataUser.append("software_new_user", softwareNewUser);
-      formdataUser.append("cost_center", centralcost);
-      formdataUser.append("job_title_new_user", jobtitlenewuser);
-      formdataUser.append("start_work_new_user", selectedDay);
-      formdataUser.append("copy_profile_new_user", copyUser);
-    } else if (problemn === "Exclusao de usuario de rede") {
-      if (newname.length < 2) {
-        setMessage(true);
-        setTypeError("Falta de dados");
-        setMessageError("Nome Obrigatório!!!");
-        return;
-      }
-      if (maildelegation.length < 2) {
-        setMessage(true);
-        setTypeError("Falta de dados");
-        setMessageError("E-mail para transferencia Obrigatório!!!");
-        return;
-      }
-      if (dirsave.length < 2) {
-        setMessage(true);
-        setTypeError("Falta de dados");
-        setMessageError("Obrigatório informar onde os dados devem ser salvos!!!");
-        return;
-      }
-      formdataUser.append("new_user", newname);
-      formdataUser.append("mail_tranfer", maildelegation);
-      formdataUser.append("old_files", dirsave);
-      formdataUser.append("start_work_new_user", selectedDay);
-    } else {
-      formdataUser.append("start_date", dataUserFormatada);
-      formdataUser.append("PID", dataUser.pid);
-      formdataUser.append("respective_area", respectiveArea);
     }
     if (total_size > 10 * 1024 * 1024) {
       setMessage(true);
@@ -1332,29 +387,12 @@ export default function Helpdesk() {
           setInfoID(dataUser.id);
           setInfo(true);
           setInfoClass("animate__lightSpeedInRight");
-          selectAR.current.selectedIndex = 0;
+          setReset(true);
           observationRef.current.value = "";
           setInfoClass2("closeInfo");
           setTimeout(() => {
             setInfo(false);
           }, 6000);
-          setInfra(false);
-          setBackup(false);
-          setAlert(false);
-          setMail(false);
-          setEquip(false);
-          setUser(false);
-          setFormNewUser(false);
-          setFormDelUser(false);
-          setInternet(false);
-          setFolder(false);
-          setSYS(false);
-          setSYS2(false);
-          setAlocate(false);
-          setDateEquip(false);
-          setDados(false);
-          setSoftAPP(false);
-          setRespectiveTI(false);
         } else if (Status === 320) {
           setMessage(true);
           setTypeError("Dados Inválidos");
@@ -1391,10 +429,13 @@ export default function Helpdesk() {
       });
   }
 
+  // Fechar menssagem
   function closeMessage() {
     setMessage(false);
   }
 
+  // Apos soltar um arquivo para upload é chamado essa função que mostra qual arquivo foi anexado
+  // e seu tamanho
   function inputDrop() {
     setInputDropControl(true);
     setInputManualControl(false);
@@ -1444,6 +485,8 @@ export default function Helpdesk() {
     setFileSizeNotify(true);
   }
 
+  // Apos enviar um arquivo para upload é chamado essa função que mostra qual arquivo foi anexado
+  // e seu tamanho
   function inputManual(event) {
     // setInputDropControl(false);
     setInputManualControl(true);
@@ -1500,6 +543,7 @@ export default function Helpdesk() {
     setFileSizeNotify(true);
   }
 
+  // Função que remove arquivo anexado para upload
   function removeFile(indexToRemove) {
     if (arrayInput.length < 1) {
       setNameOnInputFiles("");
@@ -1527,252 +571,71 @@ export default function Helpdesk() {
     setNameOnInputFiles(updatedParagraphs);
   }
 
-  function selectCompanyEquip() {
-    setDashEquipaments("");
-    const select = document.getElementById("select-company-equip");
-    const option = select.options[select.selectedIndex].value;
-
-    switch (option) {
-      default:
-        break;
-      case "csc":
-        equipaments.forEach((equipament) => {
-          if (equipament.company === "CSC") {
-            const Div = (
-              <DivEquip
-                className="equipsclass"
-                onClick={(event) =>
-                  selectEquipament({
-                    element: event.currentTarget,
-                    id: equipament.id,
-                  })
-                }
-              >
-                <ImageEquip src={`data:image/jpeg;base64,${equipament.image}`} alt={`equipamento ${equipament.model}`} />
-                <p>Modelo: {equipament.model}</p>
-                <p>Empresa: {equipament.company}</p>
-              </DivEquip>
-            );
-
-            setDashEquipaments((prvDiv) => [...prvDiv, Div]);
-          }
-        });
-        break;
-      case "fiber":
-        equipaments.forEach((equipament) => {
-          if (equipament.company === "FIBER") {
-            const Div = (
-              <DivEquip
-                className="equipsclass"
-                onClick={(event) =>
-                  selectEquipament({
-                    element: event.currentTarget,
-                    id: equipament.id,
-                  })
-                }
-              >
-                <ImageEquip src={`dataUser:image/jpeg;base64,${equipament.image}`} alt="" />
-                <p>Modelo: {equipament.model}</p>
-                <p>Empresa: {equipament.company}</p>
-              </DivEquip>
-            );
-
-            setDashEquipaments((prvDiv) => [...prvDiv, Div]);
-          }
-        });
-        break;
-      case "vera":
-        equipaments.forEach((equipament) => {
-          if (equipament.company === "VERA") {
-            const Div = (
-              <DivEquip
-                className="equipsclass"
-                onClick={(event) =>
-                  selectEquipament({
-                    element: event.currentTarget,
-                    id: equipament.id,
-                  })
-                }
-              >
-                <ImageEquip src={`dataUser:image/jpeg;base64,${equipament.image}`} alt="" />
-                <p>Modelo: {equipament.model}</p>
-                <p>Empresa: {equipament.company}</p>
-              </DivEquip>
-            );
-
-            setDashEquipaments((prvDiv) => [...prvDiv, Div]);
-          }
-        });
-        break;
-      case "ropes":
-        equipaments.forEach((equipament) => {
-          if (equipament.company === "ROPES") {
-            const Div = (
-              <DivEquip
-                className="equipsclass"
-                onClick={(event) =>
-                  selectEquipament({
-                    element: event.currentTarget,
-                    id: equipament.id,
-                  })
-                }
-              >
-                <ImageEquip src={`dataUser:image/jpeg;base64,${equipament.image}`} alt="" />
-                <p>Modelo: {equipament.model}</p>
-                <p>Empresa: {equipament.company}</p>
-              </DivEquip>
-            );
-
-            setDashEquipaments((prvDiv) => [...prvDiv, Div]);
-          }
-        });
-        break;
-      case "mna":
-        equipaments.forEach((equipament) => {
-          if (equipament.company === "MNA") {
-            const Div = (
-              <DivEquip
-                className="equipsclass"
-                onClick={(event) =>
-                  selectEquipament({
-                    element: event.currentTarget,
-                    id: equipament.id,
-                  })
-                }
-              >
-                <ImageEquip src={`dataUser:image/jpeg;base64,${equipament.image}`} alt="" />
-                <p>Modelo: {equipament.model}</p>
-                <p>Empresa: {equipament.company}</p>
-              </DivEquip>
-            );
-
-            setDashEquipaments((prvDiv) => [...prvDiv, Div]);
-          }
-        });
-        break;
-      case "all":
-        equipaments.forEach((equipament) => {
-          const Div = (
-            <DivEquip
-              className="equipsclass"
-              onClick={(event) =>
-                selectEquipament({
-                  element: event.currentTarget,
-                  id: equipament.id,
-                })
-              }
-            >
-              <ImageEquip src={`dataUser:image/jpeg;base64,${equipament.image}`} alt="" />
-              <p>Modelo: {equipament.model}</p>
-              <p>Empresa: {equipament.company}</p>
-            </DivEquip>
-          );
-
-          setDashEquipaments((prvDiv) => [...prvDiv, Div]);
-        });
-        break;
-    }
-  }
-
-  function nameNewUser(event) {
-    setNewName(event.target.value);
-  }
-
-  function emailDelegation(event) {
-    setMailDelegation(event.target.value);
-  }
-
-  function saveU(event) {
-    setDirSave(event.target.value);
-  }
-
-  function SectorNewUser(event) {
-    setSectorNewUser(event.target.value);
-  }
-
-  function selectCompanyNW() {
-    const select = document.getElementById("select-company-new-user");
-    const option = select.options[select.selectedIndex].value;
-
-    switch (option) {
-      default:
-        break;
-      case "0":
-        setCompanyNewUser("CSC");
-        break;
-      case "1":
-        setCompanyNewUser("Fiberliners");
-        break;
-      case "2":
-        setCompanyNewUser("Valmicro");
-        break;
-      case "3":
-        setCompanyNewUser("Valmicro – Mipel Sul");
-        break;
-      case "4":
-        setCompanyNewUser("Ropes");
-        break;
-      case "5":
-        setCompanyNewUser("Escritorio Corporativo SP");
-        break;
-      case "6":
-        setCompanyNewUser("Valmicro SP");
-        break;
-      case "7":
-        setCompanyNewUser("Mipel Microfusão");
-        break;
-    }
-  }
-
-  function softwaresNewUser() {
-    var Array = [];
-    var checkboxes = document.querySelectorAll('input[type="checkbox"]');
-
-    checkboxes.forEach(function (checkbox) {
-      if (checkbox.checked) {
-        Array.push(checkbox.value);
-      }
-    });
-
-    return setSoftwareNewUser(Array);
-  }
-
-  function centralCost(event) {
-    setCentralCost(event.target.value);
-  }
-
-  function jobTitleFunct(event) {
-    setJobTitleNewUser(event.target.value);
-  }
-
-  function nameCopyUser(event) {
-    setCopyUser(event.target.value);
-  }
-
+  // Fechar informação
   function closeInfo() {
     setInfo(false);
   }
 
-  function selectOtherEquips(event) {
-    if (event.target.checked) {
-      switch (event.target.value) {
-        default:
-          setOtherMouse(false);
-          setOtherRede(false);
-          setOtherTeclado(false);
-          break;
-        case "Mouse":
-          setOtherMouse(true);
-          break;
-        case "Teclado":
-          setOtherTeclado(true);
-          break;
-        case "Rede":
-          setOtherRede(true);
-          break;
-      }
-    }
-  }
+  // Pega a variavel de estado typeError
+  const getTypeError = (value) => {
+    setTypeError(value);
+  };
+
+  // Pega a variavel de estado messageError
+  const getMessageError = (value) => {
+    setMessageError(value);
+  };
+
+  // Pega a variavel de estado sector
+  const getSector = (value) => {
+    setSector(value);
+  };
+
+  // Pega a variavel de estado ocurrence
+  const getOccurrence = (value) => {
+    setOccurrence(value);
+  };
+
+  // Pega a variavel de estado problemn
+  const getProblemn = (value) => {
+    setProblemn(value);
+  };
+
+  // Pega a variavel de estado equipamentSelected
+  const getEquipamentSelected = (value) => {
+    setEquipamentSelected(value);
+  };
+
+  // Pega a variavel de estado messageInfo2
+  const getMessageInfo2 = (value) => {
+    setMessageinfo2(value);
+  };
+
+  // Pega a variavel de estado messageInfo1
+  const getMessageInfo1 = (value) => {
+    setMessageinfo1(value);
+  };
+
+  // Pega a variavel de estado messageTitle
+  const getMessageTitle = (value) => {
+    setMessagetitle(value);
+  };
+
+  // Pega a variavel de estado alertVerify
+  const getAlertVerify = (value) => {
+    setAlertVerify(value);
+  };
+
+  // Pega a variavel de estado alert
+  const getAlert = (value) => {
+    setAlert(value);
+  };
+
+  // Pega a variavel de estado respectiveArea
+  const getRespectiveArea = (value) => {
+    setRespectiveArea(value);
+    console.log(value);
+  };
 
   return (
     <Div className={theme}>
@@ -1816,309 +679,36 @@ export default function Helpdesk() {
             </label>
             <Input type="text" className="form-control" id="companyInput" value={dataUser.company || ""} disabled={dataUser.company} />
           </div>
-          <Select ref={selectAR} className="form-select mb-3" aria-label="Default select example" id="selectAR" onChange={selectARes}>
-            <option value="none" disabled selected>
-              Seleciona a Área Respectiva
-            </option>
-            <option value="TI">TI</option>
-          </Select>
-          {respectiveTI && (
-            <Select className="form-select mb-3" aria-label="Default select example" id="select-Form" onChange={handleSelect}>
-              <option value="none" disabled selected>
-                Selecione o tipo de ocorrência
-              </option>
-              <option value="infra">Infra</option>
-              <option value="sistema">Sistema</option>
-            </Select>
-          )}
-          {infra && (
-            <Select className="form-select mb-3" aria-label="Default select example" id="select-error" onChange={selectProblem}>
-              <option value="none" disabled selected>
-                Selecione o problema ocorrido
-              </option>
-              <option value="backup">Backup/Restore</option>
-              <option value="mail">E-mail</option>
-              <option value="equip">Equipamento</option>
-              {(dataUser.helpdesk === "Admin" || dataUser.helpdesk === "Gestor") && <option value="user">Gerenciamento de usuário</option>}
-              <option value="internet">Internet</option>
-              <option value="folder">Pasta</option>
-              <option value="soft">Software e Aplicativos</option>
-              <option value="dados">Integridade de Dados</option>
-            </Select>
-          )}
-          {backup && (
-            <Select className="form-select mb-3" aria-label="Default select example" id="select-backup" onChange={selectBackup}>
-              <option value="none" disabled selected>
-                Selecione o problema ocorrido
-              </option>
-              <option value="pasta">Pasta/Arquivo</option>
-              <option value="mail">E-mail</option>
-            </Select>
-          )}
-          {mail && (
-            <Select className="form-select mb-3" aria-label="Default select example" id="select-mail" onChange={selectMail}>
-              <option value="none" disabled selected>
-                Selecione o problema ocorrido
-              </option>
-              <option value="maxcap">Aumentar capacidade</option>
-              <option value="conect">Não conecta</option>
-              <option value="domin">Liberar domínio de E-mail</option>
-            </Select>
-          )}
-          {equip && (
-            <Select className="form-select mb-3" aria-label="Default select example" id="select-equip" onChange={selectEquip}>
-              <option value="none" disabled selected>
-                Selecione o problema ocorrido
-              </option>
-              <option value="off">Computador não liga</option>
-              <option value="printer">Problema com a impressora</option>
-              <option value="roaming">Mudança de local de trabalho</option>
-              <option value="usb">Liberação/Bloqueio de USB</option>
-              <option value="alocate">Alocar equipamento</option>
-              <option value="change">Trocar Equipamento</option>
-            </Select>
-          )}
-          {user && (
-            <Select className="form-select mb-3" aria-label="Default select example" id="select-user" onChange={selectUser}>
-              <option value="none" disabled selected>
-                Selecione o problema ocorrido
-              </option>
-              <option value="adduser">Criar usuário de rede</option>
-              <option value="deluser">Excluir usuário de rede</option>
-            </Select>
-          )}
-          {internet && (
-            <Select className="form-select mb-3" aria-label="Default select example" id="select-internet" onChange={selectInternet}>
-              <option value="none" disabled selected>
-                Selecione o problema ocorrido
-              </option>
-              <option value="lib">Liberação de site</option>
-              <option value="block">Bloqueio de site</option>
-            </Select>
-          )}
-          {formnewuser && (
-            <div className="p-2 bg-light w-75 mb-3">
-              <div className="input-group mb-3 mt-3">
-                <span className="input-group-text" id="basic-addon1">
-                  Nome
-                </span>
-                <input type="text" className="form-control" placeholder="NOME COMPLETO!!" aria-label="newname" aria-describedby="basic-addon1" onKeyDown={nameNewUser} />
-              </div>
-              <div className="input-group mb-3">
-                <span className="input-group-text" id="basic-addon1">
-                  Setor
-                </span>
-                <input type="text" className="form-control w-75" placeholder="Setor/Departamento" aria-label="newdepartamen" aria-describedby="basic-addon1" onKeyDown={SectorNewUser} />
-              </div>
-              <div className="d-flex flex-column justify-content-start">
-                <div className="d-flex mb-3">
-                  <InputRadio type="radio" className="form-check-input" name="motivation" onChange={selectMotivation} value="new" />
-                  <span>Nova contratação</span>
-                </div>
-                <div className="d-flex mb-3">
-                  <InputRadio type="radio" className="form-check-input" name="motivation" onChange={selectMotivation} value="old" />
-                  <span>Remanejamento para outro setor/departamento</span>
-                </div>
-                <div className="d-flex mb-3">
-                  <InputRadio type="radio" className="form-check-input" name="motivation" onChange={selectMotivation} value="other" />
-                  <span>Outro</span>
-                  <Input2 type="text" className="form-control" disabled={motivation} />
-                </div>
-              </div>
-              <div className="d-flex flex-column justify-content-start mb-3">
-                <span className="mb-3">Existe equipamento de informática disponivel no setor para o usuário?</span>
-                <div className="d-flex">
-                  <InputRadio type="radio" className="form-check-input" name="machine" onChange={selectMachine} value="yes" />
-                  <span className="mb-3">SIM</span>
-                </div>
-                <div className="d-flex mb-3">
-                  <InputRadio type="radio" className="form-check-input" name="machine" onChange={selectMachine} value="no" />
-                  <span>NÃO</span>
-                </div>
-                {machine && (
-                  <Div2 className="alert alert-warning d-flex flex-column text-center" role="alert">
-                    <h5>{messagetitle}</h5>
-                    <span>{messageinfo1}</span>
-                  </Div2>
-                )}
-              </div>
-              <div className="w-100 ">
-                <span>Informe a unidade</span>
-                <Select className="form-select mb-3 mt-3 text-center mx-auto" aria-label="Default select example" id="select-company-new-user" onChange={selectCompanyNW}>
-                  <option value="none" selected>
-                    Selecione a unidade
-                  </option>
-                  <option value="0">CSC</option>
-                  <option value="1">Fiberliners</option>
-                  <option value="2">Valmicro</option>
-                  <option value="3">Valmicro – Mipel Sul</option>
-                  <option value="4">Ropes</option>
-                  <option value="5">Escritorio Corporativo SP</option>
-                  <option value="6">Valmicro SP</option>
-                  <option value="7">Mipel Microfusão</option>
-                </Select>
-              </div>
-              <div className="d-flex flex-column mb-3">
-                <span className="mb-1">Informe o sistemas/softwares que requisitam usuario/licença</span>
-                <div className="mx-auto">
-                  <ul className="list-group">
-                    <li className="list-group-item">
-                      <input className="form-check-input me-1" type="checkbox" value="SAP" onChange={softwaresNewUser} />
-                      <label className="form-check-label" htmlFor="SAP">
-                        SAP
-                      </label>
-                    </li>
-                    <li className="list-group-item">
-                      <input className="form-check-input me-1" type="checkbox" value="MBI" onChange={softwaresNewUser} />
-                      <label className="form-check-label" htmlFor="MBI">
-                        MBI / NetTerm
-                      </label>
-                    </li>
-                    <li className="list-group-item">
-                      <input className="form-check-input me-1" type="checkbox" value="Solfis" onChange={softwaresNewUser} />
-                      <label className="form-check-label" htmlFor="Solfis">
-                        Synchro Fiscal (Solfis)
-                      </label>
-                    </li>
-                    <li className="list-group-item">
-                      <input className="form-check-input me-1" type="checkbox" value="DFe Manager" onChange={softwaresNewUser} />
-                      <label className="form-check-label" htmlFor="DFe">
-                        Synchro NFe (DFe Manager)
-                      </label>
-                    </li>
-                    <li className="list-group-item">
-                      <input className="form-check-input me-1" type="checkbox" value="Metadados" onChange={softwaresNewUser} />
-                      <label className="form-check-label" htmlFor="Metadados">
-                        Metadados
-                      </label>
-                    </li>
-                    <li className="list-group-item">
-                      <input className="form-check-input me-1" type="checkbox" value="AutoCad" onChange={softwaresNewUser} />
-                      <label className="form-check-label" htmlFor="AutoCad">
-                        AutoCad
-                      </label>
-                    </li>
-                    <li className="list-group-item">
-                      <input className="form-check-input me-1" type="checkbox" value="SolidWorks" onChange={softwaresNewUser} />
-                      <label className="form-check-label" htmlFor="SolidWorks">
-                        SolidWorks
-                      </label>
-                    </li>
-                    <li className="list-group-item">
-                      <input className="form-check-input me-1" type="checkbox" value="Office" onChange={softwaresNewUser} />
-                      <label className="form-check-label" htmlFor="Office">
-                        Office
-                      </label>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-              <div>
-                <span>Centro de custo:</span>
-                <input type="number" className="form-control" onKeyDown={centralCost} />
-              </div>
-              <div className="mb-3">
-                <span>Cargo/Função:</span>
-                <input type="text" className="form-control" onKeyDown={jobTitleFunct} />
-              </div>
-              <div className="text-center">
-                <span className="mb-3">dataUser de inicio das atitividades:</span>
-                <Calendar className="mt-3 d-flex">
-                  <DayPicker fixedWeeks showOutsideDays selected={selectedDay} onSelect={setSelectedDay} mode="single" footer={footerDay} locale={ptBR} />
-                </Calendar>
-              </div>
-              <div>
-                <span className="mb-2">
-                  Informe um usuário que tenha o perfil semelhante ao do contratado. Inclua observações caso exista alguma restrição na cópia deste, ou digite nenhum caso não exista semelhante.(terá
-                  as mesmas permissões)
-                </span>
-                <input type="text" className="form-control mt-3" placeholder="NOME COMPLETO!!!" onKeyDown={nameCopyUser} />
-              </div>
-            </div>
-          )}
-          {formdeluser && (
-            <div className="p-2 bg-light w-75 mb-3 d-flex flex-column">
-              <div className="input-group mb-3 mt-3">
-                <span className="input-group-text" id="basic-addon1">
-                  Nome
-                </span>
-                <input type="text" className="form-control" placeholder="NOME COMPLETO!!" aria-label="delname" aria-describedby="basic-addon1" onKeyDown={nameNewUser} />
-              </div>
-              <span>Informar para quem os e-mails deverão ser direcionados</span>
-              <div className="input-group mb-3 mt-3">
-                <span className="input-group-text" id="basic-addon1">
-                  email
-                </span>
-                <input type="mail" className="form-control" placeholder="NOME COMPLETO!!" aria-label="delmail" aria-describedby="basic-addon1" onKeyDown={emailDelegation} />
-              </div>
-              <span className="mb-3">Informar diretorio onde deverá ser salvo os documentos da pasta pessoal U</span>
-              <input type="text" className="form-control mb-3" placeholder="informar diretorio completo" onKeyDown={saveU} />
-              <span className="mb-3">Informar a dataUser que deverá ser feito o bloqueio do usuario</span>
-              <div className="t-3 d-flex justify-content-center">
-                <DayPicker fixedWeeks showOutsideDays selected={selectedDay} onSelect={setSelectedDay} mode="single" footer={footerDay} locale={ptBR} />
-              </div>
-            </div>
-          )}
-          {folder && (
-            <Select className="form-select mb-3" aria-label="Default select example" id="select-folder" onChange={selectFolder}>
-              <option value="none" disabled selected>
-                Selecione o problema ocorrido
-              </option>
-              <option value="lib">Liberação de Pasta</option>
-              <option value="block">Bloqueio de Pasta</option>
-            </Select>
-          )}
-          {system && (
-            <Select className="form-select mb-3" aria-label="Default select example" id="select-error" onChange={selectProblem}>
-              <option value="none" disabled selected>
-                Selecione o Sistema
-              </option>
-              <option value="sap">SAP</option>
-              <option value="mbi">MBI</option>
-              <option value="synch">Synchro</option>
-              <option value="office">Office</option>
-              <option value="metadados">MetaDados</option>
-              <option value="eng">Softwares de Engenharia</option>
-            </Select>
-          )}
-          {sys && (
-            <Select className="form-select mb-3" aria-label="Default select example" id="select-sap" onChange={selectSys}>
-              <option value="none" disabled selected>
-                Selecione o Problema
-              </option>
-              <option value="user">Criação/exclusão de usuários</option>
-              <option value="access">Liberação/bloqueio de acessos</option>
-              <option value="quest">Dúvidas operacionais</option>
-              <option value="error">Correção de falhas</option>
-              <option value="upg">Melhorias</option>
-            </Select>
-          )}
-          {sys2 && (
-            <Select className="form-select mb-3" aria-label="Default select example" id="select-office" onChange={selectOffice}>
-              <option value="none" disabled selected>
-                Selecione o Problema
-              </option>
-              <option value="buy">Aquisição de software/licenciamento</option>
-              <option value="error">Correção de falhas</option>
-            </Select>
-          )}
-          {softAPP && (
-            <Select className="form-select mb-3" aria-label="Default select example" id="select-soft" onChange={selectSoftAPP}>
-              <option value="none" disabled selected>
-                Selecione o Problema
-              </option>
-              <option value="install">Instalação de Software Novo</option>
-              <option value="error">Erros e Problemas em Softwares Gerais</option>
-            </Select>
-          )}
-          {dadosCase && (
-            <Select className="form-select mb-3" aria-label="Default select example" id="select-dado" onChange={selectDado}>
-              <option value="none" disabled selected>
-                Selecione o Problema
-              </option>
-              <option value="corrupted">Arquivo Corrompido</option>
-            </Select>
-          )}
+          <ValorContext.Provider
+            value={{
+              respectiveArea,
+              setRespectiveArea: getRespectiveArea,
+              alert,
+              setAlert: getAlert,
+              messagetitle,
+              setMessagetitle: getMessageTitle,
+              messageinfo1,
+              setMessageinfo1: getMessageInfo1,
+              messageinfo2,
+              setMessageinfo2: getMessageInfo2,
+              typeError,
+              setTypeError: getTypeError,
+              messageError,
+              setMessageError: getMessageError,
+              sector,
+              setSector: getSector,
+              occurrence,
+              setOccurrence: getOccurrence,
+              problemn,
+              setProblemn: getProblemn,
+              alertverify,
+              setAlertVerify: getAlertVerify,
+              equipamentSelected,
+              setEquipamentSelected: getEquipamentSelected,
+            }}
+          >
+            <TicketsOptions reset={reset} />
+          </ValorContext.Provider>
           {alert && (
             <div className="alert alert-info d-flex flex-column" role="alert">
               <h5 className="fw-bold">{messagetitle}</h5>
@@ -2129,122 +719,6 @@ export default function Helpdesk() {
           {alertverify && (
             <div className="alert alert-danger" role="alert">
               <h5 className="fw-bold">{messagetitle}</h5>
-            </div>
-          )}
-          {alocate && (
-            <div className="w-100">
-              <div className="d-flex justify-content-center">
-                <Select className="form-select mb-3" aria-label="Default select example" id="select-company-equip" onChange={selectCompanyEquip}>
-                  <option value="none" disabled selected>
-                    Selecione uma Unidade
-                  </option>
-                  <option value="csc">CSC</option>
-                  <option value="fiber">Fiber</option>
-                  <option value="vera">Vera</option>
-                  <option value="ropes">Ropes</option>
-                  <option value="mna">MNA</option>
-                  <option value="all">Todas Unidades</option>
-                </Select>
-              </div>
-              <div className="d-flex flex-wrap justify-content-center">{dashequipaments}</div>
-              {otherEquipaments && (
-                <div className="d-flex flex-column">
-                  <h4 className="text-center">Marque caso precise de algum dos itens adicionais</h4>
-                  <div class="form-check d-flex justify-content-center">
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      value="Mouse"
-                      id="checkMouse"
-                      onChange={(event) => {
-                        selectOtherEquips(event);
-                      }}
-                    />
-                    <label class="form-check-label" for="checkMouse">
-                      Mouse
-                    </label>
-                  </div>
-                  <div class="form-check d-flex justify-content-center">
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      value="Teclado"
-                      id="checkTeclado"
-                      onChange={(event) => {
-                        selectOtherEquips(event);
-                      }}
-                    />
-                    <label class="form-check-label" for="checkTeclado">
-                      Teclado
-                    </label>
-                  </div>
-                  <div class="form-check d-flex justify-content-center">
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      value="Rede"
-                      id="checkRede"
-                      onChange={(event) => {
-                        selectOtherEquips(event);
-                      }}
-                    />
-                    <label class="form-check-label" for="checkRede">
-                      Cabo de Rede
-                    </label>
-                  </div>
-                  {confirmOtherEquipaments && (
-                    <button
-                      onClick={() => {
-                        SetConfirmOtherEquipaments(false);
-                        setComodato(true);
-                      }}
-                      class="w-25 btn btn-success d-flex m-auto"
-                    >
-                      Confirmar
-                    </button>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
-          {comodato && (
-            <Contract class="position-fixed top-50 start-50 translate-middle d-flex flex-column">
-              <div class="d-flex">
-                <h3 className="text-center w-100 fw-bold">Contrato Comodato</h3>
-                <button
-                  onClick={() => {
-                    setComodato(false);
-                  }}
-                >
-                  <img src={Close} alt="botão de fechar" />
-                </button>
-              </div>
-              <div class="d-flex flex-column">
-                <h3 class="mt-3">INSTRUMENTO PARTICULAR DE COMODATO</h3>
-                <span class="mt-3">
-                  <b>LUPATECH S.A. - EM RECUPERAÇÃO JUDICIAL, </b>à, Rua Dalton Lanh dos reis, 201, bairro Distrito Industrial, no Município de Caxias do Sul, Estado de Rio Grande do Sul – CEP
-                  95112-090, regularmente inscrita no CNPJ/MF sob o nº89.463.822/0012-75, doravante denominada simplesmente de <b>COMODANTE.</b>
-                </span>
-                <span class="mt-3">e</span>
-                <span class="mt-3">
-                  <b>{dataUser.name}</b>, doravante denominada simplesmente <b>COMODATÁRIO</b>.
-                </span>
-                <span class="mt-3">
-                  <b>CONSIDERAÇÕES</b>
-                </span>
-                <span>
-                  A <b>COMODANTE </b> é proprietária e legítima possuidora do seguinte equipamento:
-                </span>
-              </div>
-              <button>Concordo</button>
-            </Contract>
-          )}
-          {dateequip && (
-            <div className="justify-content-center text-center">
-              <span className="mb-1 mt-2">dataUser de alocagem do Equipamento:</span>
-              <Calendar className="mt-3">
-                <DayPicker mode="multiple" selected={daysForAlocate} onSelect={setDaysForAlocate} footer={footerAlocate} locale={ptBR} />
-              </Calendar>
             </div>
           )}
           <div className="d-flex flex-column">

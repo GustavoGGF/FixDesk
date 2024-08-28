@@ -76,6 +76,7 @@ export default function NavBar({ Name, JobTitle }) {
       method: "GET",
       headers: {
         Accept: "text/html",
+        "Cache-Control": "no-cache",
       },
     })
       .then((response) => {

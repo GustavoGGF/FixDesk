@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import Seeting from "../images/components/definicoes.png";
 
 export const Div = styled.div`
   height: 100vh !important;
@@ -17,51 +16,6 @@ export const TicketOpen = styled.div`
   border-radius: 20px;
   -webkit-box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adiciona uma sombra suave em navegadores WebKit */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-`;
-
-export const DropdownConten = styled.div`
-  display: none;
-  position: absolute;
-  background-color: rgb(52, 152, 219);
-  min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-  z-index: 1;
-  border-radius: 10px;
-  text-align: center;
-  color: #f9f9f9;
-  padding: 5px;
-  -webkit-box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2); /* Adiciona suporte a sombras em WebKit */
-  background-color: rgb(52, 152, 219); /* Mantido conforme sua escolha */
-`;
-
-export const Dropdown = styled.div`
-  position: relative;
-  display: inline-block;
-`;
-
-export const DropdownButton = styled.div`
-  color: white;
-  padding: 16px;
-  font-size: 16px;
-  border: none;
-  cursor: pointer;
-  background-image: url(${Seeting});
-  background-position: center;
-  background-size: cover;
-  background-repeat: no-repeat;
-  width: 50px !important;
-  height: 50px !important;
-`;
-
-export const DivDrop = styled.div`
-  margin: 10px;
-  margin-top: 100px;
-`;
-
-export const P1 = styled.p`
-  margin-top: 10px;
-  cursor: pointer;
-  user-select: none;
 `;
 
 export const A1 = styled.a`

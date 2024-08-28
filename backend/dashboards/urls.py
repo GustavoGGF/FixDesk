@@ -10,11 +10,6 @@ urlpatterns = [
         name="central-dashboard-pie",
     ),
     path("get_ticket_TI", views.get_ticket_TI, name="central-dashboard-ticket-TI"),
-    path(
-        "equipment_inventory/",
-        views.equipment_inventory,
-        name="central-equipment-inventory",
-    ),
     # Define uma URL padrão para o endpoint "getTicketFilter".
     # Este endpoint é responsável por chamar a função 'getTicketFilter' na view 'views'.
     # A função 'getTicketFilter' tem a finalidade de processar os filtros selecionados pelo usuário

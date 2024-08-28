@@ -37,26 +37,7 @@ import "react-day-picker/dist/style.css";
  * - DashboardBar: componente de barra do painel de instrumentos.
  * - Mail, XLS, ZIP, TXT, WORD, PDF, Download, Exclude, DownTick, Seeting, Send: importações de imagens de componentes.
  */
-import {
-  ButtonDet,
-  Div,
-  DivChatDetails,
-  DivDetaisl,
-  DivDrop,
-  DivFilter,
-  DivModify,
-  Dropdown,
-  DropdownButton,
-  DropdownConten,
-  DropBTN,
-  DropContent2,
-  IMGConfig,
-  ImgSend,
-  InputTicket,
-  P1,
-  TextObersavation,
-  ZIndex,
-} from "../styles/dashboardTI.js";
+import { ButtonDet, Div, DivChatDetails, DivDetaisl, DivFilter, DivModify, DropBTN, DropContent2, IMGConfig, ImgSend, InputTicket, TextObersavation, ZIndex } from "../styles/dashboardTI.js";
 import DashBoardPie from "../components/dashboardPie";
 import Loading from "../components/loading";
 import Navbar from "../components/navbar";
@@ -112,7 +93,7 @@ import {
   BtnOpen,
 } from "../styles/historyStyle.js";
 import { DropDown } from "../styles/navbarStyle.js";
-import { BtnFile, DivNameFile, ImgFile, Select, TitlePage } from "../styles/helpdeskStyle.js";
+import { BtnFile, DivNameFile, ImgFile, TitlePage } from "../styles/helpdeskStyle.js";
 import CloseIMG from "../images/components/close.png";
 import Message from "../components/message";
 import "../styles/bootstrap/css/bootstrap.css";
@@ -129,7 +110,6 @@ import IMG4 from "../images/dashboard_TI/quantity_4.png";
 import List from "../images/components/lista-de-itens.png";
 import Mail from "../images/components/mail.png";
 import PDF from "../images/components/pdf.png";
-import Registration from "../components/equipment_registration";
 import Seeting from "../images/components/definicoes.png";
 import Send from "../images/components/enviar.png";
 import TXT from "../images/components/arquivo-txt.png";
@@ -168,10 +148,8 @@ export default function DashboardTI() {
   const [btnmore, setBtnMore] = useState(true);
   const [chat, setChat] = useState(true);
   const [dataModify, setDataModify] = useState(true);
-  const [dropdownBTN, setDropDownBTN] = useState(false);
   const [eng, setEng] = useState(false);
   const [equip, setEquip] = useState(false);
-  const [equipamentforuser, setEquipamentForUser] = useState(false);
   const [fake, setFake] = useState(true);
   const [fakeSelect, setFakeSelect] = useState(true);
   const [fetchChat, setFetchChat] = useState(false);
@@ -286,7 +264,6 @@ export default function DashboardTI() {
   const inputRef = useRef(null);
   const fiftyView = useRef(null);
   const fiveView = useRef(null);
-  const myDropDown = useRef(null);
   const selectBackup0 = useRef(null);
   const selectBo = useRef(null);
   const selectEngO = useRef(null);
@@ -305,7 +282,6 @@ export default function DashboardTI() {
   const sectionTicket = useRef(null);
   const selectViewCard = useRef(null);
   const selectViewList = useRef(null);
-  const settingsRef = useRef(null);
   const textareaRef = useRef(null);
   const thenView = useRef(null);
 
@@ -395,7 +371,7 @@ export default function DashboardTI() {
     setUserData(dataInfo.data);
     fetch("", {
       method: "POST",
-      headers: { Accept: "application/json" },
+      headers: { Accept: "application/json", "Cache-Control": "no-cache" },
     })
       .then((response) => {
         return response.json();
@@ -427,7 +403,6 @@ export default function DashboardTI() {
     if (userData && Object.keys(userData).length > 0) {
       // Verifica se os dados do usuário estão disponíveis e não vazios.
       setNavbar(true); // Define a flag de exibição da barra de navegação como verdadeira.
-      setDropDownBTN(true); // Define a flag de exibição do botão de menu suspenso como verdadeira.
       fetch("get_ticket_TI", {
         // Faz uma solicitação ao backend para obter os chamados de TI.
         method: "GET",
@@ -677,6 +652,7 @@ export default function DashboardTI() {
       headers: {
         "X-CSRF-Token": token,
         pid: userData.pid,
+        "Cache-Control": "no-cache", // Adiciona o cabeçalho para evitar cache
       },
     })
       .then((response) => {
@@ -1140,7 +1116,7 @@ export default function DashboardTI() {
     if (fetchChat === true) {
       fetch("/helpdesk/update_chat/" + ticketID, {
         method: "GET",
-        headers: { Accept: "application/json" },
+        headers: { Accept: "application/json", "Cache-Control": "no-cache" },
       })
         .then((response) => {
           return response.json();
@@ -1209,8 +1185,9 @@ export default function DashboardTI() {
       fetch("/helpdesk/ticket/" + ticketID, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          Accept: "application/json",
           "X-CSRFToken": token,
+          "Cache-Control": "no-cache",
         },
         body: JSON.stringify({
           responsible_technician: selectedTech,
@@ -1288,7 +1265,7 @@ export default function DashboardTI() {
     // Enviar informações do chat.
     fetch("/helpdesk/ticket/" + ticketID, {
       method: "POST",
-      headers: { "Content-Type": "application/json", "X-CSRFToken": token, "Tech-Details": "ok" },
+      headers: { "Content-Type": "application/json", "X-CSRFToken": token, "Tech-Details": "ok", "Cache-Control": "no-cache" },
       body: JSON.stringify({ chat: detailsChat, date: dataFormatada, hours: horaFormatada }),
     })
       .then((response) => {
@@ -1400,6 +1377,7 @@ export default function DashboardTI() {
       headers: {
         "Content-Type": "application/json",
         "X-CSRFToken": token,
+        "Cache-Control": "no-cache",
       },
       body: JSON.stringify({
         technician: userData.name,
@@ -1521,11 +1499,6 @@ export default function DashboardTI() {
     return setMessage(false);
   }
 
-  // Função para exibir ou ocultar o dropdown.
-  function dropdown() {
-    return myDropDown.current.classList.toggle("showDP");
-  }
-
   // Evento para fechar dropdowns quando o usuário clica fora deles.
   window.onclick = function (event) {
     if (!event.target.matches(".dropbtn") && !event.target.matches(".dropdown-content")) {
@@ -1541,155 +1514,225 @@ export default function DashboardTI() {
     return;
   };
 
+  // Essa função irá exibir problemas refentes a area especifica que o usuario escolher, como infra e sistema
   function enableProblem() {
+    // Obtém o valor da opção selecionada no elemento select
     const option = selectOcorrence.current.options[selectOcorrence.current.selectedIndex].value;
 
+    // Estrutura switch para lidar com diferentes opções de seleção
     switch (option) {
       default:
+        // Caso padrão: não faz nada, apenas quebra o switch
         break;
+
       case "null":
+        // Quando a opção selecionada é "null"
+        // Exibe a seleção falsa (provavelmente um placeholder ou instrução)
         setFakeSelect(true);
+        // Esconde as seções de problemas de Infra e Sistema
         setProblemInfra(false);
         setProblemSyst(false);
+        // Limpa o problema do ticket atual
         setProblemTicket(null);
         break;
+
       case "infra":
+        // Quando a opção selecionada é "infra"
+        // Esconde a seleção falsa
         setFakeSelect(false);
+        // Exibe problemas relacionados à Infraestrutura
         setProblemInfra(true);
+        // Esconde problemas relacionados ao Sistema
         setProblemSyst(false);
+        // Limpa o problema do ticket atual
         setProblemTicket(null);
+        // Define o setor do ticket como "Infraestrutura"
         setSectorTicket("Infraestrutura");
+        // Filtra tickets pelo setor "Infraestrutura"
         getTicketFilterSector({ sector: "Infraestrutura" });
         break;
+
       case "system":
+        // Quando a opção selecionada é "system"
+        // Esconde a seleção falsa
         setFakeSelect(false);
+        // Esconde problemas relacionados à Infraestrutura
         setProblemInfra(false);
+        // Exibe problemas relacionados ao Sistema
         setProblemSyst(true);
+        // Limpa o problema do ticket atual
         setProblemTicket(null);
+        // Define o setor do ticket como "Sistema"
         setSectorTicket("Sistema");
+        // Filtra tickets pelo setor "Sistema"
         getTicketFilterSector({ sector: "Sistema" });
         break;
+
       case "all":
+        // Quando a opção selecionada é "all"
+        // Exibe a seleção falsa
         setFakeSelect(true);
+        // Esconde problemas relacionados à Infraestrutura e Sistema
         setProblemInfra(false);
         setProblemSyst(false);
+        // Define o setor do ticket como "all", que provavelmente significa todos os setores
         setSectorTicket("all");
+        // Limpa o problema do ticket atual
         setProblemTicket(null);
+        // Filtra tickets por todos os setores
         getTicketFilterSector({ sector: "all" });
         break;
     }
   }
 
+  /**
+   * Função responsável por buscar tickets filtrados com base no setor selecionado.
+   * @param {Object} param - Objeto que contém os parâmetros da função.
+   * @param {string} param.sector - O setor pelo qual os tickets serão filtrados.
+   */
   function getTicketFilterSector({ sector }) {
+    // Inicializa o estado dos tickets e da dashboard como arrays vazios para limpar os dados anteriores
     setTickets([]);
     setTicketsDash([]);
+
+    // Define o estado de carregamento da dashboard como verdadeiro, indicando que a busca de dados está em andamento
     setLoadingDash(true);
 
+    // Realiza uma requisição GET para o endpoint "getTicketFilter/"
     fetch("getTicketFilter/", {
-      method: "GET",
+      method: "GET", // Define o método HTTP como GET para a requisição
       headers: {
-        Accept: "application/json",
-        "Quantity-tickets": countTicket,
-        "Order-by": orderby,
-        "Problemn-Ticket": problemTicket,
-        "Sector-Ticket": sector,
-        "Status-Ticket": status,
+        Accept: "application/json", // Define que a resposta esperada é no formato JSON
+        "Quantity-tickets": countTicket, // Envia o número de tickets desejado no cabeçalho da requisição
+        "Order-by": orderby, // Envia o critério de ordenação para a busca
+        "Problemn-Ticket": problemTicket, // Envia o problema específico do ticket que deve ser filtrado
+        "Sector-Ticket": sector, // Envia o setor selecionado para filtrar os tickets
+        "Status-Ticket": status, // Envia o status do ticket para a filtragem
+        "Cache-Control": "no-cache", // Define que a requisição não deve utilizar o cache, garantindo dados atualizados
       },
     })
       .then((response) => {
+        // Converte a resposta da requisição para JSON
         return response.json();
       })
       .then((data) => {
+        // Desativa o estado de carregamento, pois os dados já foram recebidos
         setLoadingDash(false);
+        // Atualiza o estado dos tickets com os dados recebidos da API
         setTickets(data.tickets);
       })
       .catch((err) => {
+        // Caso ocorra um erro durante a requisição, define a mensagem de erro e seu tipo
         setMessageError(err);
         setTypeError("FATAL ERROR");
+        // Exibe a mensagem de erro na interface
         setMessage(true);
+        // Loga o erro no console para fins de debug
         return console.log(err);
       });
   }
 
-  function equipamentForUser() {
-    setEquipamentForUser(true);
-  }
-
-  function closeUpload() {
-    setEquipamentForUser(false);
-  }
-
+  /**
+   * Função responsável por buscar tickets com base em caracteres digitados pelo usuário.
+   * Essa função é ativada pelo evento `keyDown`, capturando os caracteres conforme são digitados
+   * e realizando uma busca por tickets relacionados a esses caracteres.
+   * @param {Object} event - O evento de teclado que dispara a função.
+   */
   function getTicketKey(event) {
+    // Remove classes de estilo de botões específicos para redefinir seu estado visual
     btnOpen.current.classList.remove("btn-open");
     btnClose.current.classList.remove("btn-success");
     btnStop.current.classList.remove("btn-light");
     btnAll.current.classList.remove("btn-all");
 
+    // Captura o valor do campo de entrada (input) onde o usuário está digitando
     const newText = event.target.value;
 
+    // Realiza uma requisição GET para buscar tickets que correspondam ao texto digitado
     fetch("getTicketFilterWords/", {
-      method: "GET",
+      method: "GET", // Define o método HTTP como GET para a requisição
       headers: {
-        Accept: "application/json",
-        "Word-Filter": newText,
-        "Order-By": orderby,
-        "Quantity-tickets": countTicket,
-        "Sector-Filter": sectorTicket,
-        "Problem-Filter": problemTicket,
+        Accept: "application/json", // Define que a resposta esperada é no formato JSON
+        "Word-Filter": newText, // Envia o texto digitado pelo usuário como filtro de palavras
+        "Order-By": orderby, // Envia o critério de ordenação para a busca
+        "Quantity-tickets": countTicket, // Envia a quantidade de tickets desejada no cabeçalho da requisição
+        "Sector-Filter": sectorTicket, // Envia o setor filtrado dos tickets
+        "Problem-Filter": problemTicket, // Envia o filtro de problemas dos tickets
+        "Cache-Control": "no-cache", // Define que a requisição não deve utilizar o cache, garantindo dados atualizados
       },
     })
       .then((response) => {
+        // Converte a resposta da requisição para JSON
         return response.json();
       })
       .then((data) => {
+        // Desativa o estado de carregamento, pois os dados já foram recebidos
         setLoadingDash(false);
+        // Atualiza o estado dos tickets com os dados recebidos da API
         setTickets(data.tickets);
       })
       .catch((err) => {
+        // Caso ocorra um erro durante a requisição, define a mensagem de erro e seu tipo
         setMessageError(err);
         setTypeError("FATAL ERROR");
+        // Exibe a mensagem de erro na interface
         setMessage(true);
+        // Loga o erro no console para fins de debug
         return console.log(err);
       });
   }
 
+  /**
+   * Função responsável por obter tickets com o status "open" (aberto).
+   * Esta função realiza uma requisição para filtrar e buscar tickets que estão abertos,
+   * atualizando o estado dos tickets na interface e gerenciando os botões de filtragem.
+   */
   function ticketOpenStatus() {
+    // Limpa os estados dos tickets e do dashboard antes de realizar a nova busca
     setTickets([]);
     setTicketsDash([]);
 
-    btnOpen.current.classList.add("btn-open");
-    btnClose.current.classList.remove("btn-success");
-    btnStop.current.classList.remove("btn-light");
-    btnAll.current.classList.remove("btn-all");
+    // Atualiza as classes dos botões para refletir o estado de filtragem
+    btnOpen.current.classList.add("btn-open"); // Marca o botão "Open" como ativo
+    btnClose.current.classList.remove("btn-success"); // Remove o estilo de sucesso do botão "Close"
+    btnStop.current.classList.remove("btn-light"); // Remove o estilo de luz do botão "Stop"
+    btnAll.current.classList.remove("btn-all"); // Remove o estilo do botão "All"
 
+    // Realiza uma requisição GET para buscar tickets com o status "open"
     fetch("getTicketFilterStatus/", {
-      method: "GET",
+      method: "GET", // Define o método HTTP como GET para a requisição
       headers: {
-        Accept: "application/json",
-        "Order-By": orderby,
-        "Quantity-tickets": countTicket,
-        "Problemn-Ticket": problemTicket,
-        "Sector-Ticket": sectorTicket,
-        "Status-Request": "open",
+        Accept: "application/json", // Define que a resposta esperada é no formato JSON
+        "Order-By": orderby, // Envia o critério de ordenação para a busca
+        "Quantity-tickets": countTicket, // Envia a quantidade de tickets desejada no cabeçalho da requisição
+        "Problemn-Ticket": problemTicket, // Envia o filtro de problemas dos tickets
+        "Sector-Ticket": sectorTicket, // Envia o setor filtrado dos tickets
+        "Status-Request": "open", // Filtra os tickets com status "open" (aberto)
+        "Cache-Control": "no-cache", // Define que a requisição não deve utilizar o cache, garantindo dados atualizados
       },
     })
       .then((response) => {
+        // Converte a resposta da requisição para JSON
         return response.json();
       })
       .then((data) => {
+        // Verifica se não há tickets retornados com os filtros aplicados
         if (data.tickets.length === 0) {
+          // Se não houver tickets, exibe uma mensagem informativa
           setMessage(true);
           setTypeError("Falta de dados");
           setMessageError("Nenhum ticket com esses Filtros");
-          setBtnMore(false);
+          setBtnMore(false); // Desativa o botão de "carregar mais"
         } else {
-          setBtnMore(true);
-          setLoadingDash(false);
-          setStatus("open");
-          setTickets(data.tickets);
+          // Se houver tickets, atualiza o estado da aplicação com os novos dados
+          setBtnMore(true); // Ativa o botão de "carregar mais"
+          setLoadingDash(false); // Desativa o estado de carregamento
+          setStatus("open"); // Define o status atual como "open"
+          setTickets(data.tickets); // Atualiza o estado dos tickets com os dados recebidos
         }
       })
       .catch((err) => {
+        // Em caso de erro, exibe uma mensagem de erro na interface e loga o erro no console
         setMessageError(err);
         setTypeError("FATAL ERROR");
         setMessage(true);
@@ -1697,43 +1740,57 @@ export default function DashboardTI() {
       });
   }
 
+  /**
+   * Função responsável por buscar e exibir tickets com o status "close" (fechado).
+   * Esta função faz uma requisição para filtrar e recuperar tickets fechados,
+   * atualizando a interface com os resultados e gerenciando os botões de filtragem.
+   */
   function ticketClose() {
+    // Limpa os estados dos tickets e do dashboard antes de realizar a nova busca
     setTickets([]);
     setTicketsDash([]);
 
-    btnOpen.current.classList.remove("btn-open");
-    btnClose.current.classList.add("btn-success");
-    btnStop.current.classList.remove("btn-light");
-    btnAll.current.classList.remove("btn-all");
+    // Atualiza as classes dos botões para refletir o estado de filtragem
+    btnOpen.current.classList.remove("btn-open"); // Remove o estilo do botão "Open"
+    btnClose.current.classList.add("btn-success"); // Marca o botão "Close" como ativo com estilo de sucesso
+    btnStop.current.classList.remove("btn-light"); // Remove o estilo de luz do botão "Stop"
+    btnAll.current.classList.remove("btn-all"); // Remove o estilo do botão "All"
 
+    // Realiza uma requisição GET para buscar tickets com o status "close"
     fetch("getTicketFilterStatus/", {
-      method: "GET",
+      method: "GET", // Define o método HTTP como GET para a requisição
       headers: {
-        Accept: "application/json",
-        "Order-By": orderby,
-        "Quantity-tickets": countTicket,
-        "Problemn-Ticket": problemTicket,
-        "Sector-Ticket": sectorTicket,
-        "Status-Request": "close",
+        Accept: "application/json", // Define que a resposta esperada é no formato JSON
+        "Order-By": orderby, // Envia o critério de ordenação para a busca
+        "Quantity-tickets": countTicket, // Envia a quantidade de tickets desejada no cabeçalho da requisição
+        "Problemn-Ticket": problemTicket, // Envia o filtro de problemas dos tickets
+        "Sector-Ticket": sectorTicket, // Envia o setor filtrado dos tickets
+        "Status-Request": "close", // Filtra os tickets com status "close" (fechado)
+        "Cache-Control": "no-cache", // Define que a requisição não deve utilizar o cache, garantindo dados atualizados
       },
     })
       .then((response) => {
+        // Converte a resposta da requisição para JSON
         return response.json();
       })
       .then((data) => {
+        // Verifica se não há tickets retornados com os filtros aplicados
         if (data.tickets.length === 0) {
+          // Se não houver tickets, exibe uma mensagem informativa
           setMessage(true);
           setTypeError("Falta de dados");
           setMessageError("Nenhum ticket com esses Filtros");
-          setBtnMore(false);
+          setBtnMore(false); // Desativa o botão de "carregar mais"
         } else {
-          setBtnMore(true);
-          setLoadingDash(false);
-          setStatus("close");
-          setTickets(data.tickets);
+          // Se houver tickets, atualiza o estado da aplicação com os novos dados
+          setBtnMore(true); // Ativa o botão de "carregar mais"
+          setLoadingDash(false); // Desativa o estado de carregamento
+          setStatus("close"); // Define o status atual como "close"
+          setTickets(data.tickets); // Atualiza o estado dos tickets com os dados recebidos
         }
       })
       .catch((err) => {
+        // Em caso de erro, exibe uma mensagem de erro na interface e loga o erro no console
         setMessageError(err);
         setTypeError("FATAL ERROR");
         setMessage(true);
@@ -1741,43 +1798,57 @@ export default function DashboardTI() {
       });
   }
 
+  /**
+   * Função responsável por buscar e exibir tickets com o status "stop" (em aguardo).
+   * Esta função faz uma requisição para filtrar e recuperar tickets que estão em aguardo,
+   * atualizando a interface com os resultados e gerenciando os botões de filtragem.
+   */
   function ticketStop() {
+    // Limpa os estados dos tickets e do dashboard antes de realizar a nova busca
     setTickets([]);
     setTicketsDash([]);
 
-    btnOpen.current.classList.remove("btn-open");
-    btnClose.current.classList.remove("btn-success");
-    btnStop.current.classList.add("btn-light");
-    btnAll.current.classList.remove("btn-all");
+    // Atualiza as classes dos botões para refletir o estado de filtragem
+    btnOpen.current.classList.remove("btn-open"); // Remove o estilo do botão "Open"
+    btnClose.current.classList.remove("btn-success"); // Remove o estilo de sucesso do botão "Close"
+    btnStop.current.classList.add("btn-light"); // Marca o botão "Stop" como ativo com estilo de luz
+    btnAll.current.classList.remove("btn-all"); // Remove o estilo do botão "All"
 
+    // Realiza uma requisição GET para buscar tickets com o status "stop" (em aguardo)
     fetch("getTicketFilterStatus/", {
-      method: "GET",
+      method: "GET", // Define o método HTTP como GET para a requisição
       headers: {
-        Accept: "application/json",
-        "Order-By": orderby,
-        "Quantity-tickets": countTicket,
-        "Problemn-Ticket": problemTicket,
-        "Sector-Ticket": sectorTicket,
-        "Status-Request": "stop",
+        Accept: "application/json", // Define que a resposta esperada é no formato JSON
+        "Order-By": orderby, // Envia o critério de ordenação para a busca
+        "Quantity-tickets": countTicket, // Envia a quantidade de tickets desejada no cabeçalho da requisição
+        "Problemn-Ticket": problemTicket, // Envia o filtro de problemas dos tickets
+        "Sector-Ticket": sectorTicket, // Envia o setor filtrado dos tickets
+        "Status-Request": "stop", // Filtra os tickets com status "stop" (em aguardo)
+        "Cache-Control": "no-cache", // Define que a requisição não deve utilizar o cache, garantindo dados atualizados
       },
     })
       .then((response) => {
+        // Converte a resposta da requisição para JSON
         return response.json();
       })
       .then((data) => {
+        // Verifica se não há tickets retornados com os filtros aplicados
         if (data.tickets.length === 0) {
+          // Se não houver tickets, exibe uma mensagem informativa
           setMessage(true);
           setTypeError("Falta de dados");
           setMessageError("Nenhum ticket com esses Filtros");
-          setBtnMore(false);
+          setBtnMore(false); // Desativa o botão de "carregar mais"
         } else {
-          setBtnMore(true);
-          setLoadingDash(false);
-          setStatus("close");
-          setTickets(data.tickets);
+          // Se houver tickets, atualiza o estado da aplicação com os novos dados
+          setBtnMore(true); // Ativa o botão de "carregar mais"
+          setLoadingDash(false); // Desativa o estado de carregamento
+          setStatus("close"); // Define o status atual como "close" (deve ser alterado para "stop" conforme explicado abaixo)
+          setTickets(data.tickets); // Atualiza o estado dos tickets com os dados recebidos
         }
       })
       .catch((err) => {
+        // Em caso de erro, exibe uma mensagem de erro na interface e loga o erro no console
         setMessageError(err);
         setTypeError("FATAL ERROR");
         setMessage(true);
@@ -1785,43 +1856,56 @@ export default function DashboardTI() {
       });
   }
 
+  /**
+   * Função responsável por buscar e exibir todos os tickets, independentemente do status.
+   * Esta função faz uma requisição para filtrar e recuperar todos os tickets,
+   * atualizando a interface com os resultados e gerenciando os botões de filtragem.
+   */
   function statusTicketAll() {
+    // Limpa os estados dos tickets e do dashboard antes de realizar a nova busca
     setTickets([]);
     setTicketsDash([]);
 
-    btnOpen.current.classList.remove("btn-open");
-    btnClose.current.classList.remove("btn-success");
-    btnStop.current.classList.remove("btn-light");
-    btnAll.current.classList.add("btn-all");
+    // Atualiza as classes dos botões para refletir o estado de filtragem
+    btnOpen.current.classList.remove("btn-open"); // Remove o estilo do botão "Open"
+    btnClose.current.classList.remove("btn-success"); // Remove o estilo de sucesso do botão "Close"
+    btnStop.current.classList.remove("btn-light"); // Remove o estilo de luz do botão "Stop"
+    btnAll.current.classList.add("btn-all"); // Marca o botão "All" como ativo com estilo apropriado
 
+    // Realiza uma requisição GET para buscar todos os tickets
     fetch("getTicketFilterStatus/", {
-      method: "GET",
+      method: "GET", // Define o método HTTP como GET para a requisição
       headers: {
-        Accept: "application/json",
-        "Order-By": orderby,
-        "Quantity-tickets": countTicket,
-        "Problemn-Ticket": problemTicket,
-        "Sector-Ticket": sectorTicket,
-        "Status-Request": "all",
+        Accept: "application/json", // Define que a resposta esperada é no formato JSON
+        "Order-By": orderby, // Envia o critério de ordenação para a busca
+        "Quantity-tickets": countTicket, // Envia a quantidade de tickets desejada no cabeçalho da requisição
+        "Problemn-Ticket": problemTicket, // Envia o filtro de problemas dos tickets
+        "Sector-Ticket": sectorTicket, // Envia o setor filtrado dos tickets
+        "Status-Request": "all", // Filtra todos os tickets, independente do status
       },
     })
       .then((response) => {
+        // Converte a resposta da requisição para JSON
         return response.json();
       })
       .then((data) => {
+        // Verifica se não há tickets retornados com os filtros aplicados
         if (data.tickets.length === 0) {
+          // Se não houver tickets, exibe uma mensagem informativa
           setMessage(true);
           setTypeError("Falta de dados");
           setMessageError("Nenhum ticket com esses Filtros");
-          setBtnMore(false);
+          setBtnMore(false); // Desativa o botão de "carregar mais"
         } else {
-          setBtnMore(true);
-          setLoadingDash(false);
-          setStatus("all");
-          setTickets(data.tickets);
+          // Se houver tickets, atualiza o estado da aplicação com os novos dados
+          setBtnMore(true); // Ativa o botão de "carregar mais"
+          setLoadingDash(false); // Desativa o estado de carregamento
+          setStatus("all"); // Define o status atual como "all"
+          setTickets(data.tickets); // Atualiza o estado dos tickets com os dados recebidos
         }
       })
       .catch((err) => {
+        // Em caso de erro, exibe uma mensagem de erro na interface e loga o erro no console
         setMessageError(err);
         setTypeError("FATAL ERROR");
         setMessage(true);
@@ -1829,159 +1913,211 @@ export default function DashboardTI() {
       });
   }
 
+  /**
+   * Função responsável por alterar o filtro de problemas baseado na opção selecionada no componente select.
+   * Atualiza o estado do problema e chama a função para filtrar os chamados conforme a opção selecionada.
+   */
   function changeProblemn() {
+    // Mapeia os valores das opções do select para descrições de problemas
+    const problemMapping = {
+      backup: "Backup",
+      mail: "E-mail",
+      equipamento: "Equipamento",
+      user: "Gerenciamento de Usuario",
+      internet: "Internet",
+      permissao: "Permissão",
+      all: "all",
+      sap: "SAP",
+      mbi: "MBI",
+      synchro: "Synchro",
+      office: "Office",
+      eng: "Softwares de Eng",
+      soft: "Novo SoftWare",
+      dados: "Integridade de Dados",
+    };
+
+    // Obtém o valor da opção selecionada no select
     const option = selectBo.current.options[selectBo.current.selectedIndex].value;
 
-    switch (option) {
-      default:
-        break;
-      case "backup":
-        setProblemTicket("Backup");
-        return getTicketFilterProblemn({ problemn: "Backup" });
-      case "mail":
-        setProblemTicket("E-mail");
-        return getTicketFilterProblemn({ problemn: "E-mail" });
-      case "equipamento":
-        setProblemTicket("Equipamento");
-        return getTicketFilterProblemn({ problemn: "Equipamento" });
-      case "user":
-        setProblemTicket("Gerenciamento de Usuario");
-        return getTicketFilterProblemn({ problemn: "Gerenciamento de Usuario" });
-      case "internet":
-        setProblemTicket("Internet");
-        return getTicketFilterProblemn({ problemn: "Internet" });
-      case "permissao":
-        setProblemTicket("Permissão");
-        return getTicketFilterProblemn({ problemn: "Permissão" });
-      case "all":
-        setProblemTicket("all");
-        return getTicketFilterProblemn({ problemn: "all" });
-      case "sap":
-        setProblemTicket("SAP");
-        return getTicketFilterProblemn({ problemn: "SAP" });
-      case "mbi":
-        setProblemTicket("MBI");
-        return getTicketFilterProblemn({ problemn: "MBI" });
-      case "synchro":
-        setProblemTicket("Synchro");
-        return getTicketFilterProblemn({ problemn: "Synchro" });
-      case "office":
-        setProblemTicket("Office");
-        return getTicketFilterProblemn({ problemn: "Office" });
-      case "eng":
-        setProblemTicket("Softwares de Eng");
-        return getTicketFilterProblemn({ problemn: "Softwares de Eng" });
-      case "soft":
-        setProblemTicket("Novo SoftWare");
-        return getTicketFilterProblemn({ problemn: "Novo SoftWare" });
-      case "dados":
-        setProblemTicket("Integridade de Dados");
-        return getTicketFilterProblemn({ problemn: "Integridade de Dados" });
-    }
+    // Mapeia o valor da opção para o problema correspondente ou define "all" como padrão
+    const problem = problemMapping[option] || "all";
+
+    // Atualiza o estado com o problema selecionado
+    setProblemTicket(problem);
+
+    // Chama a função para filtrar os chamados com base no problema selecionado
+    getTicketFilterProblemn({ problemn: problem });
   }
 
+  /**
+   * Filtra os chamados com base no técnico selecionado no componente select.
+   * Faz uma requisição para obter os chamados atribuídos ao técnico e atualiza o estado da aplicação.
+   *
+   * @param {Event} event - Evento de mudança do select que contém o valor do técnico selecionado.
+   */
   function filterTechnician(event) {
+    // Limpa os dados de tickets e a visualização do dashboard
     setTickets([]);
     setTicketsDash([]);
     setLoadingDash(true);
+
+    // Faz uma requisição GET para obter os tickets filtrados pelo técnico selecionado
     fetch("get-ticket-filter-tech/", {
       method: "GET",
-      headers: { Accept: "application/json", "Tech-Select": event.target.value },
+      headers: {
+        Accept: "application/json",
+        "Tech-Select": event.target.value, // Valor do técnico selecionado
+        "Cache-Control": "no-cache",
+      },
     })
       .then((response) => {
-        return response.json();
+        return response.json(); // Converte a resposta em JSON
       })
       .then((data) => {
+        // Atualiza o estado com os tickets recebidos e finaliza o carregamento
         setLoadingDash(false);
         setTickets(data.tickets);
-        if (data.ticket.length < 1 || data.ticket == null) {
-          setMessageError("Esse Tecnico não possui Chamados");
+
+        // Verifica se não há tickets para o técnico selecionado e exibe uma mensagem de erro
+        if (data.tickets.length < 1 || data.tickets == null) {
+          setMessageError("Esse Técnico não possui Chamados");
           setTypeError("Falta de Dados");
           setMessage(true);
         }
-        return;
       })
       .catch((err) => {
-        return console.log(err);
+        // Loga o erro no console, não atualiza a mensagem de erro
+        console.log(err);
       });
   }
 
+  /**
+   * Obtém e filtra os chamados com base no problema especificado.
+   * Essa função é chamada quando um problema é selecionado em um componente select,
+   * e atualiza a lista de tickets exibida de acordo com o problema selecionado.
+   *
+   * @param {Object} params - Parâmetros para filtrar os tickets.
+   * @param {string} params.problemn - O problema específico usado para filtrar os tickets.
+   */
   function getTicketFilterProblemn({ problemn }) {
+    // Limpa os dados de tickets e a visualização do dashboard antes de carregar novos dados
     setTickets([]);
     setTicketsDash([]);
     setLoadingDash(true);
 
+    // Faz uma requisição GET para obter os tickets filtrados pelo problema especificado
     fetch("getTicketFilter/", {
       method: "GET",
       headers: {
         Accept: "application/json",
-        "Quantity-tickets": countTicket,
-        "Order-by": orderby,
-        "Problemn-Ticket": problemn,
-        "Sector-Ticket": sectorTicket,
-        "Status-Ticket": status,
+        "Quantity-tickets": countTicket, // Número de tickets a ser retornado
+        "Order-by": orderby, // Ordem de classificação dos tickets
+        "Problemn-Ticket": problemn, // Problema específico para o filtro
+        "Sector-Ticket": sectorTicket, // Setor para o filtro
+        "Status-Ticket": status, // Status dos tickets para o filtro
+        "Cache-Control": "no-cache", // Garante que a resposta não seja cacheada
       },
     })
       .then((response) => {
-        return response.json();
+        return response.json(); // Converte a resposta em JSON
       })
       .then((data) => {
+        // Atualiza o estado com os tickets recebidos e finaliza o carregamento
         setLoadingDash(false);
         setTickets(data.tickets);
       })
       .catch((err) => {
+        // Atualiza o estado para exibir uma mensagem de erro em caso de falha
         setMessageError(err);
         setTypeError("FATAL ERROR");
         setMessage(true);
-        return console.log(err);
+        console.log(err); // Loga o erro no console para depuração
       });
   }
 
+  /**
+   * Reordena a lista de tickets com base na opção selecionada para exibir os tickets mais recentes ou mais antigos.
+   * Esta função é acionada quando o usuário seleciona uma opção de ordenação em um componente select.
+   *
+   * @description
+   * A função limpa os tickets e o dashboard exibido antes de aplicar a nova ordenação.
+   * Dependendo da opção selecionada, a função chama `getTicketFilterOrderTime` para obter os tickets na ordem desejada.
+   *
+   * @param {Event} event - O evento de alteração do select, que contém a opção selecionada pelo usuário.
+   */
   function selectOrder() {
+    // Limpa os dados de tickets e a visualização do dashboard antes de aplicar a nova ordenação
     setTickets([]);
     setTicketsDash([]);
+
+    // Obtém a opção selecionada do componente select
     const option = selectOrderO.current.options[selectOrderO.current.selectedIndex].value;
 
+    // Aplica a ordenação com base na opção selecionada
     switch (option) {
       default:
         break;
       case "recent":
+        // Ordena os tickets por ID de forma decrescente (mais recente primeiro)
         getTicketFilterOrderTime({ order: "-id" });
         setOrderBy("-id");
         break;
       case "ancient":
+        // Ordena os tickets por ID de forma crescente (mais antigo primeiro)
         getTicketFilterOrderTime({ order: "id" });
         setOrderBy("id");
         break;
     }
   }
 
+  /**
+   * Busca e organiza os tickets com base nos filtros aplicados e na ordem especificada.
+   * Esta função faz uma requisição à API para obter tickets filtrados e ordenados conforme os parâmetros fornecidos.
+   *
+   * @param {Object} params - Parâmetros para a requisição.
+   * @param {string} params.order - O critério de ordenação dos tickets, pode ser "id" para mais antigo ou "-id" para mais recente.
+   *
+   * @description
+   * A função faz uma requisição GET para o endpoint `getTicketFilter/` com os filtros e critérios de ordenação fornecidos.
+   * Após obter os dados, a função atualiza o estado dos tickets e o estado de carregamento.
+   *
+   * A função realiza as seguintes operações:
+   * 1. Limpa os dados de tickets e o dashboard.
+   * 2. Faz uma requisição à API com os parâmetros de filtro e ordenação.
+   * 3. Atualiza o estado dos tickets com os dados recebidos da API.
+   * 4. Trata erros de requisição e exibe mensagens de erro apropriadas.
+   *
+   * @returns {void}
+   */
   function getTicketFilterOrderTime({ order }) {
+    // Limpa os dados de tickets e o dashboard antes de aplicar a nova ordenação
     setTickets([]);
     setTicketsDash([]);
+
+    // Faz uma requisição GET para buscar os tickets filtrados e ordenados
     fetch("getTicketFilter/", {
       method: "GET",
       headers: {
         Accept: "application/json",
-        "Quantity-tickets": countTicket,
-        "Order-By": order,
-        "Problemn-Ticket": problemTicket,
-        "Sector-Ticket": sectorTicket,
-        "Status-Ticket": status,
+        "Quantity-tickets": countTicket, // Número de tickets a ser retornado
+        "Order-By": order, // Critério de ordenação
+        "Problemn-Ticket": problemTicket, // Filtro por problema do ticket
+        "Sector-Ticket": sectorTicket, // Filtro por setor do ticket
+        "Status-Ticket": status, // Filtro por status do ticket
+        "Cache-Control": "no-cache", // Evita cache da requisição
       },
     })
-      .then((response) => {
-        return response.json();
-      })
+      .then((response) => response.json()) // Converte a resposta em JSON
       .then((data) => {
-        setLoadingDash(false);
-        setTickets(data.tickets);
+        setLoadingDash(false); // Desativa o carregamento do dashboard
+        setTickets(data.tickets); // Atualiza a lista de tickets com os dados recebidos
       })
       .catch((err) => {
+        // Trata erros de requisição e exibe uma mensagem de erro
         setMessageError(err);
         setTypeError("FATAL ERROR");
         setMessage(true);
-        return console.log(err);
+        console.log(err);
       });
   }
 
@@ -2034,208 +2170,325 @@ export default function DashboardTI() {
       });
   }
 
+  /**
+   * Busca mais tickets a partir do servidor e atualiza a lista de tickets exibida.
+   *
+   * Esta função faz uma requisição para o endpoint `/helpdesk/moreTicket/` para obter mais tickets com base na quantidade atual e outros parâmetros.
+   * Após obter os dados, a função atualiza o estado dos tickets e o contador de tickets.
+   *
+   * @description
+   * A função realiza uma requisição GET para buscar mais tickets. Após receber os dados, ela atualiza o estado dos tickets e o contador de tickets.
+   * Se ocorrer um erro durante a requisição, uma mensagem de erro é exibida ao usuário.
+   *
+   * @returns {void}
+   */
   function moreTickets() {
+    // Faz uma requisição GET para buscar mais tickets
     fetch("/helpdesk/moreTicket/", {
       method: "GET",
       headers: {
         Accept: "application/json",
-        "Ticket-Current": countTicket,
-        "ORDER-BY": orderby,
-        "Tech-Dash": "TI",
+        "Ticket-Current": countTicket, // Quantidade atual de tickets, pode ser usada para paginação
+        "ORDER-BY": orderby, // Critério de ordenação dos tickets
+        "Tech-Dash": "TI", // Filtro por técnico, se aplicável
+        "Cache-Control": "no-cache", // Evita cache da requisição para obter dados atualizados
       },
     })
-      .then((response) => {
-        return response.json();
-      })
+      .then((response) => response.json()) // Converte a resposta em JSON
       .then((data) => {
-        setCountTicket(data.count);
-        setTickets(data.tickets);
+        setCountTicket(data.count); // Atualiza o contador de tickets com o novo valor
+        setTickets(data.tickets); // Atualiza a lista de tickets com os novos dados
       })
       .catch((err) => {
+        // Trata erros de requisição e exibe uma mensagem de erro
         setMessageError(err);
         setTypeError("FATAL ERROR");
         setMessage(true);
-        return console.log(err);
+        console.log(err); // Exibe o erro no console para depuração
       });
   }
 
+  /**
+   * Finaliza um chamado, atualizando seu status para "close" e registrando a data e hora de conclusão.
+   *
+   * Esta função realiza uma requisição POST para o endpoint `/helpdesk/ticket/{ticketID}`, onde `{ticketID}` é o ID do chamado que está sendo finalizado.
+   * O corpo da requisição inclui informações sobre o técnico responsável, a data e hora da conclusão, e o e-mail associado ao chamado.
+   * Após a requisição, a função trata as respostas do servidor e pode recarregar a página ou exibir uma mensagem de erro ao usuário.
+   *
+   * @description
+   * A função envia uma requisição para atualizar o status de um chamado para "close". Se a resposta for bem-sucedida, a página será recarregada.
+   * Caso contrário, exibe uma mensagem de erro adequada. Se a resposta for um erro de permissão, uma mensagem específica é exibida.
+   *
+   * @returns {void}
+   */
   function closeTicket() {
     var date = new Date();
+
+    // Adiciona um zero à frente de números menores que 10 para formatar corretamente a data e hora
     function adicionaZero(numero) {
       if (numero < 10) {
         return "0" + numero;
       }
       return numero;
     }
+
+    // Obtém e formata a data e hora atuais
     var day = date.getDate();
     var month = date.getMonth() + 1;
     var year = date.getFullYear();
-
     var dataFormatada = adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
     var horaFormatada = adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
+
+    // Define o estado inicial da mensagem como falsa
     setMessage(false);
+
+    // Faz uma requisição POST para atualizar o status do chamado
     fetch("/helpdesk/ticket/" + ticketID, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "X-CSRFToken": token,
+        "X-CSRFToken": token, // Inclui o token CSRF para segurança
+        "Cache-Control": "no-cache", // Evita cache da requisição
       },
       body: JSON.stringify({
-        technician: userData.name,
-        status: "close",
-        hours: horaFormatada,
-        date: dataFormatada,
-        mail: ticketMAIL,
+        technician: userData.name, // Nome do técnico que está finalizando o chamado
+        status: "close", // Novo status do chamado
+        hours: horaFormatada, // Hora de conclusão
+        date: dataFormatada, // Data de conclusão
+        mail: ticketMAIL, // E-mail associado ao chamado
       }),
     })
       .then((response) => {
-        console.log(response.status);
+        console.log(response.status); // Exibe o status da resposta para depuração
+
         if (response.status === 304) {
-          setMessageError("Ticket não percetence a você");
+          // Se o status for 304, o chamado não pertence ao usuário
+          setMessageError("Ticket não pertence a você");
           setTypeError("Permissão Negada");
           setMessage(true);
           return;
         }
 
         if (response.status === 200) {
+          // Se a resposta for bem-sucedida, recarrega a página
           return window.location.reload();
         } else {
+          // Para outros status, tenta converter a resposta em JSON e exibir uma mensagem de erro
           return response.json();
         }
       })
-      .then((data) => {
-        console.log("return data");
-        return;
-      })
       .catch((err) => {
+        // Trata erros de requisição e exibe uma mensagem de erro
         setMessageError("Erro ao finalizar o Ticket");
         setTypeError("FATAL ERROR");
         setMessage(true);
-        return console.log(err);
+        console.log(err); // Exibe o erro no console para depuração
       });
   }
 
+  /**
+   * Reabre um chamado que está finalizado, atualizando seu status para "open" e registrando a data e hora da reabertura.
+   *
+   * Esta função realiza uma requisição POST para o endpoint `/helpdesk/ticket/{ticketID}`, onde `{ticketID}` é o ID do chamado que está sendo reaberto.
+   * O corpo da requisição inclui informações sobre o técnico responsável, a data e hora da reabertura, e o e-mail associado ao chamado.
+   * Após a requisição, a função trata as respostas do servidor e pode recarregar a página ou exibir uma mensagem de erro ao usuário.
+   *
+   * @description
+   * A função envia uma requisição para atualizar o status de um chamado para "open". Se a resposta for bem-sucedida, a página será recarregada.
+   * Caso contrário, exibe uma mensagem de erro adequada. Se a resposta for um erro de permissão, uma mensagem específica é exibida.
+   *
+   * @returns {void}
+   */
   function reopenTicket() {
     var date = new Date();
+
+    // Adiciona um zero à frente de números menores que 10 para formatar corretamente a data e hora
     function adicionaZero(numero) {
       if (numero < 10) {
         return "0" + numero;
       }
       return numero;
     }
+
+    // Obtém e formata a data e hora atuais
     var day = date.getDate();
     var month = date.getMonth() + 1;
     var year = date.getFullYear();
-
     var dataFormatada = adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
     var horaFormatada = adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
+
+    // Faz uma requisição POST para atualizar o status do chamado para "open"
     fetch("/helpdesk/ticket/" + ticketID, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "X-CSRFToken": token,
+        "X-CSRFToken": token, // Inclui o token CSRF para segurança
+        "Cache-Control": "no-cache", // Evita cache da requisição
       },
       body: JSON.stringify({
-        technician: userData.name,
-        status: "open",
-        hours: horaFormatada,
-        date: dataFormatada,
-        mail: ticketMAIL,
+        technician: userData.name, // Nome do técnico que está reabrindo o chamado
+        status: "open", // Novo status do chamado
+        hours: horaFormatada, // Hora de reabertura
+        date: dataFormatada, // Data de reabertura
+        mail: ticketMAIL, // E-mail associado ao chamado
       }),
     })
       .then((response) => {
         if (response.status === 304) {
+          // Se o status for 304, o chamado não pertence ao usuário
           setMessage(true);
-          setMessageError("Ticket não percetence a você");
+          setMessageError("Ticket não pertence a você");
           setTypeError("Permissão Negada");
         } else if (response.status === 200) {
+          // Se a resposta for bem-sucedida, recarrega a página
           window.location.reload();
         } else {
+          // Para outros status, tenta converter a resposta em JSON e exibir uma mensagem de erro
           return response.json();
         }
       })
-      .then((data) => {
-        return console.log(data);
-      })
       .catch((err) => {
-        setMessageError("Erro ao finalizar o Chamado");
+        // Trata erros de requisição e exibe uma mensagem de erro
+        setMessageError("Erro ao reabrir o Chamado");
         setTypeError("FATAL ERROR");
         setMessage(true);
-        return console.log(err);
+        console.log(err); // Exibe o erro no console para depuração
       });
   }
 
+  /**
+   * Altera o status de um chamado para "em aguardo", registrando a data e a hora da alteração.
+   *
+   * Esta função realiza uma requisição POST para o endpoint `/helpdesk/ticket/{ticketID}`, onde `{ticketID}` é o ID do chamado que está sendo alterado.
+   * O corpo da requisição inclui informações sobre o técnico responsável, a data e hora da alteração, e o e-mail associado ao chamado.
+   * Após a requisição, a função trata as respostas do servidor e pode recarregar a página ou exibir uma mensagem de erro ao usuário.
+   *
+   * @description
+   * A função envia uma requisição para atualizar o status de um chamado para "stop". Se a resposta for bem-sucedida, a página será recarregada.
+   * Caso contrário, exibe uma mensagem de erro adequada. Se a resposta for um erro de permissão, uma mensagem específica é exibida.
+   *
+   * @returns {void}
+   */
   function stopTicket() {
     var date = new Date();
+
+    // Adiciona um zero à frente de números menores que 10 para formatar corretamente a data e hora
     function adicionaZero(numero) {
       if (numero < 10) {
         return "0" + numero;
       }
       return numero;
     }
+
+    // Obtém e formata a data e hora atuais
     var day = date.getDate();
     var month = date.getMonth() + 1;
     var year = date.getFullYear();
-
     var dataFormatada = adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
     var horaFormatada = adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
+
+    // Faz uma requisição POST para atualizar o status do chamado para "stop"
     fetch("/helpdesk/ticket/" + ticketID, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "X-CSRFToken": token,
+        "X-CSRFToken": token, // Inclui o token CSRF para segurança
+        "Cache-Control": "no-cache", // Evita cache da requisição
       },
       body: JSON.stringify({
-        technician: userData.name,
-        status: "stop",
-        hours: horaFormatada,
-        date: dataFormatada,
-        mail: ticketMAIL,
+        technician: userData.name, // Nome do técnico que está alterando o status
+        status: "stop", // Novo status do chamado
+        hours: horaFormatada, // Hora da alteração
+        date: dataFormatada, // Data da alteração
+        mail: ticketMAIL, // E-mail associado ao chamado
       }),
     })
       .then((response) => {
-        console.log(response.status);
         if (response.status === 304) {
-          setMessageError("Ticket não percetence a você");
+          // Se o status for 304, o chamado não pertence ao usuário
+          setMessageError("Ticket não pertence a você");
           setTypeError("Permissão Negada");
           setMessage(true);
-          return;
-        }
-
-        if (response.status === 200) {
-          return window.location.reload();
+        } else if (response.status === 200) {
+          // Se a resposta for bem-sucedida, recarrega a página
+          window.location.reload();
         } else {
+          // Para outros status, tenta converter a resposta em JSON e exibir uma mensagem de erro
           return response.json();
         }
       })
-      .then((data) => {
-        console.log("return data");
-        return;
-      })
       .catch((err) => {
-        setMessageError("Erro ao finalizar o Ticket");
+        // Trata erros de requisição e exibe uma mensagem de erro
+        setMessageError("Erro ao atualizar o Chamado");
         setTypeError("FATAL ERROR");
         setMessage(true);
-        return console.log(err);
+        console.log(err); // Exibe o erro no console para depuração
       });
   }
 
+  /**
+   * Adiciona novos arquivos à lista de arquivos a serem enviados para o chamado.
+   *
+   * Esta função é acionada quando o usuário seleciona arquivos para upload. Ela adiciona os arquivos selecionados à lista existente
+   * e atualiza o estado dos arquivos a serem enviados.
+   *
+   * @param {Event} evt - O evento de alteração do input de arquivo, que contém os arquivos selecionados pelo usuário.
+   *
+   * @description
+   * A função `UploadNewFiles` realiza as seguintes operações:
+   * 1. Adiciona os arquivos selecionados pelo usuário ao array `UpNwfile`.
+   * 2. Itera sobre o array `UpNwfile` e atualiza o estado `uploadNewFiles` com a lista completa de arquivos, incluindo os novos arquivos selecionados.
+   * 3. Utiliza a função `setUploadNewFiles` para garantir que o estado seja atualizado de forma imutável, preservando os arquivos já existentes e incluindo os novos.
+   *
+   * @returns {void}
+   */
   function UploadNewFiles(evt) {
+    // Adiciona os novos arquivos ao array UpNwfile
     UpNwfile.push(evt.target.files);
+
+    // Itera sobre os arquivos no array UpNwfile
     for (let i = 0; i < UpNwfile.length; i++) {
-      setUploadNewFiles((uploadNewFiles) => [...uploadNewFiles, UpNwfile[i]]);
+      // Atualiza o estado dos arquivos a serem enviados
+      setUploadNewFiles((uploadNewFiles) => [...uploadNewFiles, ...UpNwfile[i]]);
     }
+
+    // A função não retorna nenhum valor
     return;
   }
 
+  /**
+   * Efeito colateral para atualizar a visualização dos arquivos selecionados para envio.
+   *
+   * Este `useEffect` é executado sempre que a lista `uploadNewFiles` é atualizada. Ele gera a representação visual dos arquivos que foram selecionados,
+   * exibindo uma lista de arquivos com um botão de exclusão ao lado de cada um. O botão de exclusão permite remover um arquivo da lista de arquivos
+   * selecionados. Após atualizar a lista de arquivos exibidos, o estado `nameNWFiles` é atualizado para refletir as mudanças e o estado `newFiles`
+   * é ajustado para indicar que há arquivos novos.
+   *
+   * @description
+   * O efeito realiza as seguintes operações:
+   * 1. Verifica se há arquivos na lista `uploadNewFiles`. Se houver, inicia o processo de renderização.
+   * 2. Itera sobre o array de arquivos e cria um array de elementos JSX para cada arquivo. Cada elemento JSX contém:
+   *    - Nome do arquivo.
+   *    - Um botão de exclusão que remove o arquivo da lista de arquivos selecionados.
+   * 3. Para remover um arquivo, o efeito usa `DataTransfer` para criar um novo array de arquivos sem o arquivo excluído e atualiza o estado `uploadNewFiles`.
+   * 4. Atualiza o estado `nameNWFiles` com o novo array de elementos JSX.
+   * 5. Define `newFiles` como `true` para indicar que novos arquivos foram selecionados.
+   *
+   * @param {Array<File>} uploadNewFiles - Lista de arquivos selecionados para envio.
+   *
+   * @returns {void}
+   */
   useEffect(() => {
     let paragraphs = [];
     if (uploadNewFiles.length >= 1) {
+      // Obtém a lista de arquivos do primeiro item em uploadNewFiles
       const fileNM = uploadNewFiles[0];
 
+      // Itera sobre cada arquivo na lista
       for (let i = 0; i < fileNM.length; i++) {
         const file = fileNM[i];
 
+        // Adiciona um elemento JSX para cada arquivo
         paragraphs.push(
           <div key={file.name} className="d-flex w-100 justify-content-center">
             <DivNameFile key={i}>
@@ -2245,17 +2498,18 @@ export default function DashboardTI() {
               <BtnFile
                 type="button"
                 onClick={() => {
+                  // Cria uma cópia do array de arquivos e remove o arquivo atual
                   const newArray = Array.from(fileNM);
                   newArray.splice(i, 1);
 
+                  // Cria um novo DataTransfer para atualizar a lista de arquivos
                   const dataTransfer = new DataTransfer();
-
                   newArray.forEach((file) => {
                     dataTransfer.items.add(file);
                   });
 
+                  // Atualiza o estado com a nova lista de arquivos
                   const newFileList = dataTransfer.files;
-
                   setUploadNewFiles([newFileList]);
                 }}
               >
@@ -2266,67 +2520,151 @@ export default function DashboardTI() {
         );
       }
 
+      // Atualiza o estado com a nova lista de elementos JSX
       setNameNWFiles(paragraphs);
 
+      // Indica que novos arquivos foram selecionados
       setNewFiles(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [uploadNewFiles]);
 
+  /**
+   * Fecha a tela de visualização e limpa a lista de arquivos selecionados.
+   *
+   * Esta função é acionada para fechar a tela de envio de novos arquivos e limpar os dados relacionados aos arquivos selecionados.
+   * Ela redefine o estado `uploadNewFiles` para uma string vazia, indicando que não há arquivos selecionados. Além disso, define o
+   * estado `newFiles` como `false`, indicando que não há novos arquivos a serem processados.
+   *
+   * @description
+   * A função `closeNWFiles` realiza as seguintes operações:
+   * 1. Limpa o estado `uploadNewFiles`, que contém a lista de arquivos selecionados, definindo-o como uma string vazia.
+   * 2. Define o estado `newFiles` como `false`, sinalizando que não há novos arquivos selecionados para upload.
+   * 3. Esta função é geralmente chamada quando o usuário decide cancelar o envio de arquivos ou fechar a tela de visualização de arquivos.
+   *
+   * @returns {void}
+   */
   function closeNWFiles() {
-    setUploadNewFiles("");
+    // Limpa a lista de arquivos selecionados
+    setUploadNewFiles([]);
+
+    // Indica que não há novos arquivos a serem processados
     setNewFiles(false);
   }
 
+  /**
+   * Envia os novos arquivos selecionados para o servidor e atualiza a interface com as novas informações.
+   *
+   * Esta função prepara e envia os arquivos selecionados pelo usuário para o servidor, incluindo dados adicionais como a data e hora atuais.
+   * Após o envio, a função recarrega a visualização dos arquivos associados ao chamado atual e atualiza o chat com as novas informações.
+   *
+   * @description
+   * A função `submitNewFiles` realiza as seguintes operações:
+   * 1. Cria uma instância de `FormData` para enviar os arquivos e dados adicionais ao servidor.
+   * 2. Itera sobre os arquivos selecionados e adiciona cada um ao `FormData` com a chave "files".
+   * 3. Obtém a data e hora atuais e formata esses valores como strings. Adiciona essas informações ao `FormData` com as chaves "date" e "hours".
+   * 4. Envia uma requisição `POST` para o endpoint `upload-new-files/{ticketID}`, onde `{ticketID}` é o identificador do chamado atual. Inclui o `FormData` no corpo da requisição.
+   * 5. No sucesso da requisição, atualiza o estado `newFiles` para `false`, recarrega a visualização dos arquivos e o chat com as novas informações recebidas da resposta do servidor.
+   * 6. Em caso de erro, exibe uma mensagem de erro para o usuário e loga o erro no console.
+   *
+   * @returns {void}
+   */
   function submitNewFiles() {
+    // Cria um objeto FormData para enviar os arquivos e informações adicionais
     const formData = new FormData();
+
+    // Adiciona os arquivos selecionados ao FormData
     for (let i = 0; i < uploadNewFiles[0].length; i++) {
       const file = uploadNewFiles[0][i];
       formData.append("files", file);
     }
-    var date = new Date();
+
+    // Função para adicionar zero à esquerda de números menores que 10
     function adicionaZero(numero) {
       if (numero < 10) {
         return "0" + numero;
       }
       return numero;
     }
+
+    // Obtém e formata a data e a hora atuais
+    var date = new Date();
     var day = date.getDate();
     var month = date.getMonth() + 1;
     var year = date.getFullYear();
-
     var dataFormatada = adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
     var horaFormatada = adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
 
+    // Adiciona a data e hora ao FormData
     formData.append("date", dataFormatada);
     formData.append("hours", horaFormatada);
+
+    // Envia os arquivos e dados ao servidor
     fetch("upload-new-files/" + ticketID, {
       method: "POST",
       headers: {
         "X-CSRFToken": token,
+        "Cache-Control": "no-cache",
       },
       body: formData,
     })
       .then((response) => {
+        // Converte a resposta para JSON
         return response.json();
       })
       .then((data) => {
+        // Atualiza o estado para indicar que não há novos arquivos
         setNewFiles(false);
+
+        // Recarrega a visualização dos arquivos e o chat com as novas informações
         const chat = data.chat;
-        reloadFiles({ files: data.files, name_file: data.name_file, content_file: data.content_file });
+        reloadFiles({
+          files: data.files,
+          name_file: data.name_file,
+          content_file: data.content_file,
+        });
         reloadChat({ data: chat });
       })
       .catch((err) => {
+        // Exibe mensagem de erro e loga o erro no console
         setMessageError(err);
         setTypeError("FATAL ERROR");
         setMessage(true);
-        return console.log(err);
+        console.log(err);
       });
   }
 
+  /**
+   * Recarrega a exibição dos arquivos associados ao chamado com base nas informações fornecidas.
+   *
+   * Esta função processa a lista de arquivos recebidos e atualiza a visualização dos mesmos na interface do usuário.
+   * Cada tipo de arquivo é tratado de maneira específica e é criado um componente de visualização apropriado para cada tipo.
+   * Após criar a representação dos arquivos, a função atualiza o estado `fileTicket` com esses componentes.
+   *
+   * @description
+   * A função `reloadFiles` realiza as seguintes operações:
+   * 1. Itera sobre a lista de arquivos e determina o tipo de cada arquivo.
+   * 2. Para cada tipo de arquivo, cria um componente visual com a imagem ou ícone apropriado e um botão para download.
+   *    - Arquivos de e-mail ("mail"): Exibe um ícone de e-mail com um botão para download do conteúdo.
+   *    - Arquivos Excel ("excel"): Exibe um ícone de planilha com um botão para download do arquivo Excel.
+   *    - Arquivos ZIP ("zip"): Exibe um ícone de arquivo compactado com um botão para download do arquivo ZIP.
+   *    - Arquivos TXT ("txt"): Exibe um ícone de documento de texto com um botão para download do arquivo TXT.
+   *    - Arquivos Word ("word"): Exibe um ícone de documento Word com um botão para download do arquivo.
+   *    - Arquivos PDF ("pdf"): Exibe um ícone de PDF com um botão para download do arquivo PDF.
+   *    - Arquivos de imagem: Exibe a imagem em si com um botão para download e uma funcionalidade para abrir a imagem em uma visualização maior.
+   * 3. Cada componente criado é adicionado ao estado `fileTicket` para ser renderizado na interface.
+   *
+   * @param {Object} param0 - Objeto contendo informações sobre os arquivos a serem exibidos.
+   * @param {Array} param0.files - Lista dos tipos de arquivos.
+   * @param {Array} param0.name_file - Lista dos nomes dos arquivos.
+   * @param {Array} param0.content_file - Lista do conteúdo dos arquivos.
+   * @returns {void}
+   */
   function reloadFiles({ files, name_file, content_file }) {
+    // Itera sobre cada arquivo e processa com base no tipo
     for (let i = 0; i < files.length; i++) {
       var file = files[i];
+      // Cria um componente de visualização baseado no tipo de arquivo
       if (file === "mail") {
         const contentFileMail = content_file[i];
         const nameFileMail = name_file[i];
@@ -2536,40 +2874,88 @@ export default function DashboardTI() {
     }
   }
 
+  /**
+   * Solicita e baixa o PDF do chamado atual.
+   *
+   * Esta função faz uma solicitação POST para o endpoint do chamado, solicitando o download do PDF associado ao chamado.
+   * Após receber a resposta, que deve conter o conteúdo do PDF em formato base64, a função cria um blob a partir desse conteúdo,
+   * gera um URL de objeto e cria um link temporário para iniciar o download do arquivo PDF.
+   *
+   * @description
+   * A função `downloadTicket` realiza as seguintes etapas:
+   * 1. Envia uma solicitação POST para o endpoint "/helpdesk/ticket/{ticketID}" com o cabeçalho "Download-Ticket" e o token CSRF.
+   *    - A solicitação inclui um corpo JSON com a chave "download" definida como "download".
+   * 2. Após a resposta, converte o conteúdo para JSON.
+   * 3. Cria um blob com o conteúdo do PDF retornado pela resposta e define o tipo MIME como "application/pdf".
+   * 4. Gera um URL de objeto a partir do blob e cria um link de download temporário.
+   * 5. Define o nome do arquivo a ser baixado como "Chamado: {ticketID}" e simula um clique no link para iniciar o download.
+   * 6. Remove o link temporário do DOM após o download.
+   *
+   * @returns {void}
+   */
   function downloadTicket() {
     fetch("/helpdesk/ticket/" + ticketID, {
       method: "POST",
       headers: {
         "X-CSRFToken": token,
         "Download-Ticket": "download Ticket",
+        "Cache-Control": "no-cache",
       },
       body: JSON.stringify({ download: "download" }),
     })
-      .then((response) => {
-        return response.json();
-      })
+      .then((response) => response.json())
       .then((data) => {
+        // Cria um blob com o conteúdo do PDF e define o tipo MIME
         const blob = downloadMail({
           data: "application/pdf",
           content: data.pdf,
         });
 
+        // Gera um URL de objeto para o blob
         const url = window.URL.createObjectURL(blob);
+
+        // Cria um link temporário para o download do PDF
         const a = document.createElement("a");
         a.href = url;
         a.download = "Chamado: " + ticketID;
         document.body.appendChild(a);
+
+        // Simula um clique no link para iniciar o download
         a.click();
+
+        // Remove o link temporário do DOM
         document.body.removeChild(a);
       })
       .catch((err) => {
+        // Define a mensagem de erro e o tipo de erro em caso de falha
         setMessageError(err);
         setTypeError("FATAL ERROR");
         setMessage(true);
-        return console.log(err);
+
+        // Registra o erro no console
+        console.log(err);
       });
   }
 
+  /**
+   * Controla a visibilidade de um menu de configuração com base na interação do usuário.
+   *
+   * Esta função é acionada por um evento de clique e determina se o menu de configuração deve ser exibido ou oculto.
+   * A visibilidade do menu é controlada pela classe CSS `visually-hidden`. Se o elemento de conteúdo estiver oculto
+   * e o clique for feito em um dos identificadores especificados, o menu será exibido. Caso contrário, o menu será ocultado.
+   *
+   * @description
+   * A função `OpenConfig` realiza as seguintes etapas:
+   * 1. Verifica se o clique foi feito em um dos identificadores de alvo específicos (`"drp"` ou `"imd"`) e se o menu de conteúdo
+   *    está atualmente oculto (ou seja, possui a classe `visually-hidden`).
+   * 2. Se ambas as condições forem verdadeiras, remove a classe `visually-hidden` para tornar o menu visível.
+   * 3. Se as condições não forem atendidas, adiciona a classe `visually-hidden` para ocultar o menu.
+   *
+   * @param {Object} event - O evento de clique que aciona a função.
+   * @param {Object} event.target - O alvo do clique que contém o identificador do evento.
+   *
+   * @returns {void}
+   */
   function OpenConfig(event) {
     if ((event.target.id === "drp" && dropCont.current.classList.contains("visually-hidden")) || (event.target.id === "imd" && dropCont.current.classList.contains("visually-hidden"))) {
       dropCont.current.classList.remove("visually-hidden");
@@ -2578,12 +2964,29 @@ export default function DashboardTI() {
     }
   }
 
-  function TicketModify() {
-    setModifyTicket(true);
-  }
-
+  /**
+   * Busca e exibe os detalhes técnicos de um chamado específico.
+   *
+   * Esta função realiza uma requisição GET para o endpoint `/details/{ticketID}`, onde `{ticketID}` é o ID do chamado para o qual
+   * os detalhes técnicos estão sendo requisitados. O cabeçalho da requisição inclui `Accept: "application/json"` para indicar que
+   * o cliente espera uma resposta no formato JSON e `Cache-Control: "no-cache"` para garantir que a resposta não seja obtida do cache.
+   *
+   * Após a resposta ser recebida, a função verifica o status da resposta:
+   * - Se o status for 200 (OK), a função converte a resposta para JSON e passa os dados para a função `MountChatDetails`.
+   * - Se o status não for 200, a função ainda tenta converter a resposta para JSON (embora, idealmente, deve-se tratar adequadamente os erros HTTP).
+   *
+   * Em caso de erro na requisição, a função captura a exceção e a imprime no console para depuração.
+   *
+   * @description
+   * A função `TechDetails` realiza as seguintes etapas:
+   * 1. Envia uma requisição GET para buscar os detalhes técnicos de um chamado específico.
+   * 2. Verifica o status da resposta. Se for 200, processa os dados JSON e chama a função `MountChatDetails` com os detalhes técnicos.
+   * 3. Em caso de falha, registra o erro no console para revisão.
+   *
+   * @returns {void}
+   */
   function TechDetails() {
-    fetch("details/" + ticketID, { method: "GET", headers: { Accept: "application/json" } })
+    fetch("details/" + ticketID, { method: "GET", headers: { Accept: "application/json", "Cache-Control": "no-cache" } })
       .then((response) => {
         const status = response.status;
         if (status === 200) {
@@ -2599,228 +3002,154 @@ export default function DashboardTI() {
       });
   }
 
+  /**
+   * Atualiza o estado com base na opção selecionada.
+   *
+   * @param {boolean} infra - Define se a opção Infraestrutura deve ser ativada.
+   * @param {boolean} system - Define se a opção Sistema deve ser ativada.
+   * @param {string} sector - Define o setor com base na seleção.
+   * @param {boolean} occurrenceFake - Define se o estado occurrenceFake deve ser ativado.
+   */
+  function updateState(infra, system, sector, occurrenceFake) {
+    setInfra(infra);
+    setSystem(system);
+    setBackup(false);
+    setMail(false);
+    setEquip(false);
+    setInternet(false);
+    setFolder(false);
+    setsector(sector);
+    setMBI(false);
+    setSAP(false);
+    setOffice(false);
+    setSynch(false);
+    setEng(false);
+    setFake(true);
+    setOcurrenceFake(occurrenceFake);
+  }
   function handleSelect() {
     const option = selectForm.current.options[selectForm.current.selectedIndex].value;
 
     switch (option) {
-      default:
-        break;
       case "infra":
-        setInfra(true);
-        setBackup(false);
-        setMail(false);
-        setEquip(false);
-        setInternet(false);
-        setFolder(false);
-        setsector("Infraestrutura");
-        setSystem(false);
-        setMBI(false);
-        setSAP(false);
-        setOffice(false);
-        setSynch(false);
-        setEng(false);
-        setFake(true);
-        setOcurrenceFake(false);
+        updateState(true, false, "Infraestrutura", false);
         break;
       case "sistema":
-        setSystem(true);
-        setInfra(false);
-        setBackup(false);
-        setMail(false);
-        setEquip(false);
-        setInternet(false);
-        setFolder(false);
-        setsector("Sistema");
-        setMBI(false);
-        setSAP(false);
-        setSynch(false);
-        setOffice(false);
-        setEng(false);
-        setFake(true);
-        setOcurrenceFake(false);
+        updateState(false, true, "Sistema", false);
         break;
       case "none":
-        setInfra(false);
-        setSystem(false);
-        setBackup(false);
-        setMail(false);
-        setEquip(false);
-        setInternet(false);
-        setFolder(false);
-        setsector("");
-        setMBI(false);
-        setSAP(false);
-        setSynch(false);
-        setOffice(false);
-        setEng(false);
-        setFake(true);
-        setOcurrenceFake(true);
+        updateState(false, false, "", true);
         break;
-    }
-  }
-
-  function selectProblem() {
-    const option = selectError.current.options[selectError.current.selectedIndex].value;
-
-    switch (option) {
       default:
         break;
-      case "backup":
-        setBackup(true);
-        setMail(false);
-        setEquip(false);
-        setInternet(false);
-        setFolder(false);
-        setOccurrence("Backup");
-        setSAP(false);
-        setMBI(false);
-        setSynch(false);
-        setOffice(false);
-        setEng(false);
-        setFake(false);
-        break;
-      case "mail":
-        setMail(true);
-        setBackup(false);
-        setEquip(false);
-        setInternet(false);
-        setFolder(false);
-        setOccurrence("E-mail");
-        setSAP(false);
-        setMBI(false);
-        setSynch(false);
-        setOffice(false);
-        setEng(false);
-        setFake(false);
-        break;
-      case "equip":
-        setEquip(true);
-        setBackup(false);
-        setMail(false);
-        setInternet(false);
-        setFolder(false);
-        setOccurrence("Equipamento");
-        setSAP(false);
-        setMBI(false);
-        setSynch(false);
-        setOffice(false);
-        setEng(false);
-        setFake(false);
-        break;
-      case "internet":
-        setInternet(true);
-        setBackup(false);
-        setMail(false);
-        setEquip(false);
-        setFolder(false);
-        setOccurrence("Internet");
-        setSAP(false);
-        setMBI(false);
-        setSynch(false);
-        setOffice(false);
-        setEng(false);
-        setFake(false);
-        break;
-      case "folder":
-        setFolder(true);
-        setBackup(false);
-        setMail(false);
-        setEquip(false);
-        setInternet(false);
-        setOccurrence("Permissão");
-        setSAP(false);
-        setMBI(false);
-        setSynch(false);
-        setOffice(false);
-        setEng(false);
-        setFake(false);
-        break;
-      case "none":
-        setBackup(false);
-        setMail(false);
-        setEquip(false);
-        setFake(true);
-        setInternet(false);
-        setFolder(false);
-        setSAP(false);
-        setMBI(false);
-        setSynch(false);
-        setOffice(false);
-        setEng(false);
-        break;
-      case "sap":
-        setSAP(true);
-        setMBI(false);
-        setSynch(false);
-        setOffice(false);
-        setBackup(false);
-        setMail(false);
-        setEquip(false);
-        setInternet(false);
-        setFolder(false);
-        setOccurrence("SAP");
-        setEng(false);
-        setFake(false);
-        break;
-      case "mbi":
-        setMBI(true);
-        setSAP(false);
-        setBackup(false);
-        setMail(false);
-        setEquip(false);
-        setInternet(false);
-        setFolder(false);
-        setOccurrence("MBI");
-        setSynch(false);
-        setOffice(false);
-        setEng(false);
-        setFake(false);
-        break;
-      case "synch":
-        setFake(false);
-        setSynch(true);
-        setMBI(false);
-        setSAP(false);
-        setBackup(false);
-        setMail(false);
-        setEquip(false);
-        setInternet(false);
-        setFolder(false);
-        setOccurrence("Synchro");
-        setOffice(false);
-        setEng(false);
-        break;
-      case "office":
-        setFake(false);
-        setOffice(true);
-        setSynch(false);
-        setMBI(false);
-        setSAP(false);
-        setBackup(false);
-        setMail(false);
-        setEquip(false);
-        setInternet(false);
-        setFolder(false);
-        setEng(false);
-        setOccurrence("Office");
-        break;
-      case "eng":
-        setFake(false);
-        setEng(true);
-        setOffice(false);
-        setSynch(false);
-        setMBI(false);
-        setSAP(false);
-        setBackup(false);
-        setMail(false);
-        setEquip(false);
-        setInternet(false);
-        setFolder(false);
-        setOccurrence("Softwares de Eng");
-        break;
     }
   }
 
+  /**
+   * Atualiza o estado dos problemas com base na seleção do usuário.
+   *
+   * Esta função é acionada quando o usuário seleciona uma opção em um formulário. Ela ajusta o estado dos problemas
+   * para exibir a opção correta, desativando outras opções e configurando o texto do campo de ocorrência.
+   *
+   * Dependendo da seleção, a função realiza as seguintes ações:
+   *
+   * - **Backup**: Define `backup` como `true`, `fake` como `false` e configura a ocorrência como "Backup".
+   * - **Mail**: Define `mail` como `true`, `fake` como `false` e configura a ocorrência como "E-mail".
+   * - **Equip**: Define `equip` como `true`, `fake` como `false` e configura a ocorrência como "Equipamento".
+   * - **Internet**: Define `internet` como `true`, `fake` como `false` e configura a ocorrência como "Internet".
+   * - **Folder**: Define `folder` como `true`, `fake` como `false` e configura a ocorrência como "Permissão".
+   * - **SAP**: Define `SAP` como `true`, `fake` como `false` e configura a ocorrência como "SAP".
+   * - **MBI**: Define `MBI` como `true`, `fake` como `false` e configura a ocorrência como "MBI".
+   * - **Synch**: Define `synch` como `true`, `fake` como `false` e configura a ocorrência como "Synchro".
+   * - **Office**: Define `office` como `true`, `fake` como `false` e configura a ocorrência como "Office".
+   * - **Eng**: Define `eng` como `true`, `fake` como `false` e configura a ocorrência como "Softwares de Eng".
+   * - **None**: Desativa todas as opções e define `fake` como `true`.
+   *
+   * @param {boolean} backup - Define se a opção Backup deve ser ativada.
+   * @param {boolean} mail - Define se a opção Mail deve ser ativada.
+   * @param {boolean} equip - Define se a opção Equip deve ser ativada.
+   * @param {boolean} internet - Define se a opção Internet deve ser ativada.
+   * @param {boolean} folder - Define se a opção Folder deve ser ativada.
+   * @param {boolean} SAP - Define se a opção SAP deve ser ativada.
+   * @param {boolean} MBI - Define se a opção MBI deve ser ativada.
+   * @param {boolean} synch - Define se a opção Synch deve ser ativada.
+   * @param {boolean} office - Define se a opção Office deve ser ativada.
+   * @param {boolean} eng - Define se a opção Eng deve ser ativada.
+   * @param {string} occurrence - Define o texto da ocorrência com base na seleção.
+   * @param {boolean} fake - Define se a opção Fake deve ser ativada.
+   */
+  function updateProblemState({
+    backup = false,
+    mail = false,
+    equip = false,
+    internet = false,
+    folder = false,
+    SAP = false,
+    MBI = false,
+    synch = false,
+    office = false,
+    eng = false,
+    occurrence = "",
+    fake = false,
+  }) {
+    setBackup(backup);
+    setMail(mail);
+    setEquip(equip);
+    setInternet(internet);
+    setFolder(folder);
+    setSAP(SAP);
+    setMBI(MBI);
+    setSynch(synch);
+    setOffice(office);
+    setEng(eng);
+    setOccurrence(occurrence);
+    setFake(fake);
+  }
+  function selectProblem() {
+    if (selectError) {
+      const option = selectError.current.options[selectError.current.selectedIndex].value;
+
+      switch (option) {
+        case "backup":
+          updateProblemState({ backup: true, occurrence: "Backup", fake: false });
+          break;
+        case "mail":
+          updateProblemState({ mail: true, occurrence: "E-mail", fake: false });
+          break;
+        case "equip":
+          updateProblemState({ equip: true, occurrence: "Equipamento", fake: false });
+          break;
+        case "internet":
+          updateProblemState({ internet: true, occurrence: "Internet", fake: false });
+          break;
+        case "folder":
+          updateProblemState({ folder: true, occurrence: "Permissão", fake: false });
+          break;
+        case "sap":
+          updateProblemState({ SAP: true, occurrence: "SAP", fake: false });
+          break;
+        case "mbi":
+          updateProblemState({ MBI: true, occurrence: "MBI", fake: false });
+          break;
+        case "synch":
+          updateProblemState({ synch: true, occurrence: "Synchro", fake: false });
+          break;
+        case "office":
+          updateProblemState({ office: true, occurrence: "Office", fake: false });
+          break;
+        case "eng":
+          updateProblemState({ eng: true, occurrence: "Softwares de Eng", fake: false });
+          break;
+        case "none":
+          updateProblemState({ fake: true });
+          break;
+        default:
+          break;
+      }
+    }
+  }
+
+  // Função que trata a seleção de problemas relacionados a backup
   function selectBackup() {
     const optionBackup = selectBackup0.current.options[selectBackup0.current.selectedIndex].value;
 
@@ -2828,187 +3157,354 @@ export default function DashboardTI() {
       case "pasta":
         setProblemn("Restaurar pasta");
         break;
-      default:
-        break;
       case "mail":
         setProblemn("Restaurar e-mail");
         break;
       case "none":
+        // Se não há problema a ser definido para "none", você pode remover a linha ou adicionar uma ação.
+        break;
+      default:
+        // Aqui você pode lidar com casos inesperados, se necessário.
         break;
     }
   }
 
+  // Função que trata a seleção de problemas relacionados a e-mail
   function selectMail() {
+    // Obtém a opção selecionada no elemento <select> referenciado por selectMail0
     const optionMail = selectMail0.current.options[selectMail0.current.selectedIndex].value;
 
+    // Usa um switch para lidar com diferentes valores da opção selecionada
     switch (optionMail) {
+      // Caso padrão: não faz nada
       default:
         break;
+
+      // Caso em que a opção selecionada é "maxcap"
       case "maxcap":
+        // Define o problema como "Aumentar capacidade de e-mail"
         setProblemn("Aumentar capacidade de e-mail");
         break;
+
+      // Caso em que a opção selecionada é "conect"
       case "conect":
+        // Define o problema como "Problema com conexão"
         setProblemn("Problema com conexão");
         break;
+
+      // Caso em que a opção selecionada é "none"
       case "none":
+        // Não faz nada (ou opcionalmente pode definir um valor padrão, como uma string vazia)
         break;
     }
   }
 
+  // Função que trata a seleção de problemas relacionados a equipamentos
   function selectEquip() {
+    // Obtém a opção selecionada no elemento <select> referenciado por selectEquip0
     const optionEquip = selectEquip0.current.options[selectEquip0.current.selectedIndex].value;
 
+    // Usa um switch para lidar com diferentes valores da opção selecionada
     switch (optionEquip) {
+      // Caso padrão: não faz nada
       default:
         break;
+
+      // Caso em que a opção selecionada é "none"
       case "none":
+        // Não faz nada (ou opcionalmente pode definir um valor padrão, como uma string vazia)
         break;
+
+      // Caso em que a opção selecionada é "off"
       case "off":
+        // Define o problema como "Equipamento não liga"
         setProblemn("Equipamento não liga");
         break;
+
+      // Caso em que a opção selecionada é "printer"
       case "printer":
+        // Define o problema como "Problema com a impressora"
         setProblemn("Problema com a impressora");
         break;
+
+      // Caso em que a opção selecionada é "roaming"
       case "roaming":
-        setProblemn("Mudanca de local de trabalho");
+        // Define o problema como "Mudança de local de trabalho"
+        setProblemn("Mudança de local de trabalho");
         break;
+
+      // Caso em que a opção selecionada é "usb"
       case "usb":
+        // Define o problema como "USB"
         setProblemn("USB");
         break;
+
+      // Caso em que a opção selecionada é "change"
       case "change":
+        // Define o problema como "Trocar Equipamento"
         setProblemn("Trocar Equipamento");
         break;
     }
   }
 
+  // Função que trata a seleção de problemas relacionados à internet
   function selectInternet() {
+    // Obtém a opção selecionada no elemento <select> referenciado por selectInternet0
     const option = selectInternet0.current.options[selectInternet0.current.selectedIndex].value;
 
+    // Usa um switch para lidar com diferentes valores da opção selecionada
     switch (option) {
+      // Caso padrão: não faz nada
       default:
         break;
+
+      // Caso em que a opção selecionada é "none"
       case "none":
+        // Não faz nada (ou opcionalmente pode definir um valor padrão, como uma string vazia)
         break;
+
+      // Caso em que a opção selecionada é "lib"
       case "lib":
-        setProblemn("Liberacao de site");
+        // Define o problema como "Liberação de site"
+        setProblemn("Liberação de site");
         break;
+
+      // Caso em que a opção selecionada é "block"
       case "block":
+        // Define o problema como "Bloqueio de site"
         setProblemn("Bloqueio de site");
         break;
     }
   }
 
+  // Função que trata a seleção de problemas relacionados a pastas
   function selectFolder() {
+    // Obtém a opção selecionada no elemento <select> referenciado por selectFolder0
     const option = selectFolder0.current.options[selectFolder0.current.selectedIndex].value;
 
+    // Usa um switch para lidar com diferentes valores da opção selecionada
     switch (option) {
+      // Caso padrão: não faz nada
       default:
         break;
+
+      // Caso em que a opção selecionada é "none"
       case "none":
+        // Não faz nada (ou opcionalmente pode definir um valor padrão, como uma string vazia)
         break;
+
+      // Caso em que a opção selecionada é "lib"
       case "lib":
+        // Define o problema como "Liberar pasta"
         setProblemn("Liberar pasta");
         break;
+
+      // Caso em que a opção selecionada é "block"
       case "block":
+        // Define o problema como "Bloquear pasta"
         setProblemn("Bloquear pasta");
         break;
     }
   }
 
+  // Função que trata a seleção de problemas relacionados ao SAP
   function selectSAP() {
+    // Obtém a opção selecionada no elemento <select> referenciado por selectSAPO
     const optionSAP = selectSAPO.current.options[selectSAPO.current.selectedIndex].value;
 
+    // Usa um switch para lidar com diferentes valores da opção selecionada
     switch (optionSAP) {
+      // Caso padrão: não faz nada
       default:
         break;
+
+      // Caso em que a opção selecionada é "none"
       case "none":
+        // Não faz nada (ou opcionalmente pode definir um valor padrão, como uma string vazia)
         break;
+
+      // Caso em que a opção selecionada é "user"
       case "user":
+        // Define o problema como "Criação/exclusão usuário"
         setProblemn("Criação/exclusão usuário");
         break;
+
+      // Caso em que a opção selecionada é "access"
       case "access":
+        // Define o problema como "Liberação/bloqueio de acessos"
         setProblemn("Liberação/bloqueio de acessos");
         break;
+
+      // Caso em que a opção selecionada é "quest"
       case "quest":
+        // Define o problema como "Dúvidas operacionais"
         setProblemn("Dúvidas operacionais");
         break;
+
+      // Caso em que a opção selecionada é "error"
       case "error":
+        // Define o problema como "Correção de falhas"
         setProblemn("Correção de falhas");
         break;
     }
   }
 
+  // Função que trata a seleção de problemas relacionados ao MBI
   function selectMBI() {
+    // Obtém a opção selecionada no elemento <select> referenciado por selectMBIO
     const optionMBI = selectMBIO.current.options[selectMBIO.current.selectedIndex].value;
 
+    // Usa um switch para lidar com diferentes valores da opção selecionada
     switch (optionMBI) {
+      // Caso padrão: não faz nada
       default:
         break;
+
+      // Caso em que a opção selecionada é "none"
       case "none":
+        // Não faz nada (ou opcionalmente pode definir um valor padrão, como uma string vazia)
         break;
+
+      // Caso em que a opção selecionada é "user"
       case "user":
+        // Define o problema como "Criação/exclusão usuário"
         setProblemn("Criação/exclusão usuário");
         break;
+
+      // Caso em que a opção selecionada é "access"
       case "access":
+        // Define o problema como "Liberação/bloqueio de acessos"
         setProblemn("Liberação/bloqueio de acessos");
         break;
+
+      // Caso em que a opção selecionada é "quest"
       case "quest":
+        // Define o problema como "Dúvidas operacionais"
         setProblemn("Dúvidas operacionais");
         break;
+
+      // Caso em que a opção selecionada é "error"
       case "error":
+        // Define o problema como "Correção de falhas"
         setProblemn("Correção de falhas");
         break;
     }
   }
 
+  // Função que trata a seleção de problemas relacionados ao Office
   function selectOffice() {
+    // Obtém a opção selecionada no elemento <select> referenciado por selectOfficeO
     const optionOffice = selectOfficeO.current.options[selectOfficeO.current.selectedIndex].value;
 
+    // Usa um switch para lidar com diferentes valores da opção selecionada
     switch (optionOffice) {
+      // Caso padrão: não faz nada
       default:
         break;
+
+      // Caso em que a opção selecionada é "none"
       case "none":
+        // Não faz nada (ou opcionalmente pode definir um valor padrão, como uma string vazia)
         break;
+
+      // Caso em que a opção selecionada é "buy"
       case "buy":
+        // Define o problema como "Aquisição de software/licenciamento"
         setProblemn("Aquisição de software/licenciamento");
         break;
+
+      // Caso em que a opção selecionada é "error"
       case "error":
+        // Define o problema como "Correção de falhas"
         setProblemn("Correção de falhas");
         break;
     }
   }
 
+  // Função que trata a seleção de problemas relacionados ao Eng
   function selectEng() {
+    // Obtém a opção selecionada no elemento <select> referenciado por selectEngO
     const optionEng = selectEngO.current.options[selectEngO.current.selectedIndex].value;
 
+    // Usa um switch para lidar com diferentes valores da opção selecionada
     switch (optionEng) {
+      // Caso padrão: não faz nada
       default:
         break;
+
+      // Caso em que a opção selecionada é "none"
       case "none":
+        // Não faz nada (ou opcionalmente pode definir um valor padrão, como uma string vazia)
         break;
+
+      // Caso em que a opção selecionada é "buy"
       case "buy":
+        // Define o problema como "Aquisição de software/licenciamento"
         setProblemn("Aquisição de software/licenciamento");
         break;
+
+      // Caso em que a opção selecionada é "error"
       case "error":
+        // Define o problema como "Correção de falhas"
         setProblemn("Correção de falhas");
         break;
     }
   }
 
+  /**
+   * Realiza a modificação de um chamado com base nas informações fornecidas pelo usuário.
+   *
+   * Esta função é acionada quando o usuário deseja modificar um chamado existente. Ela verifica se todos os dados necessários
+   * foram fornecidos, formata a data e a hora atuais, e envia uma solicitação para atualizar o chamado. Dependendo da resposta,
+   * a função exibe mensagens de erro ou atualiza a página.
+   *
+   * Dependendo das condições e respostas da solicitação, a função realiza as seguintes ações:
+   *
+   * - **Validação de Dados**: Verifica se todos os campos obrigatórios (`sector`, `occurrence` e `problemn`) estão preenchidos.
+   *   - Se algum dos campos obrigatórios estiver vazio, define uma mensagem de erro indicando a falta de dados e retorna sem enviar a solicitação.
+   *
+   * - **Formatação de Data e Hora**: Obtém a data e hora atuais, e formata para o formato `dd/mm/yyyy` e `hh:mm`.
+   *
+   * - **Solicitação de Atualização**: Envia uma solicitação `POST` para o servidor com os dados do chamado, incluindo informações antigas e novas.
+   *   - Adiciona um cabeçalho personalizado `Modify-Ticket` com valor `"modify"`.
+   *
+   * - **Tratamento da Resposta**: Dependendo do status da resposta:
+   *   - **304 (Não Modificado)**: Exibe uma mensagem de erro indicando que o chamado não pertence ao usuário.
+   *   - **402 (Erro de Dados)**: Exibe uma mensagem de erro indicando que a modificação é idêntica à atual e foi cancelada.
+   *   - **200 (Sucesso)**: Atualiza a página para refletir as mudanças.
+   *
+   * - **Tratamento de Erros**: Se ocorrer um erro durante a solicitação, exibe uma mensagem de erro fatal e imprime o erro no console.
+   *
+   * @param {string} sector - O setor responsável pelo chamado.
+   * @param {string} occurrence - Descrição da ocorrência.
+   * @param {string} problemn - Descrição do problema.
+   * @param {string} ticketID - ID do chamado a ser modificado.
+   * @param {string} token - Token CSRF para autenticação.
+   * @param {Object} userData - Dados do usuário que está fazendo a modificação.
+   * @param {string} ticketSECTOR - Setor antigo do chamado.
+   * @param {string} ticketOCCURRENCE - Ocorrência antiga do chamado.
+   * @param {string} ticketPROBLEMN - Problema antigo do chamado.
+   */
   function uploadModify() {
+    // Obtém a data e hora atuais
     var date = new Date();
+
+    // Função para adicionar zero à esquerda de números menores que 10
     function adicionaZero(numero) {
       if (numero < 10) {
         return "0" + numero;
       }
       return numero;
     }
+
+    // Formata a data e hora
     var day = date.getDate();
     var month = date.getMonth() + 1;
     var year = date.getFullYear();
-
     var dataFormatada = adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
     var horaFormatada = adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
+
+    // Valida os dados fornecidos
     if (sector.length < 1) {
       setMessage(true);
       setTypeError("Dados Insuficientes");
@@ -3026,6 +3522,7 @@ export default function DashboardTI() {
       return;
     }
 
+    // Envia a solicitação para modificar o chamado
     fetch("/helpdesk/ticket/" + ticketID, {
       method: "POST",
       headers: {
@@ -3047,6 +3544,7 @@ export default function DashboardTI() {
       .then((response) => {
         response.json();
 
+        // Verifica o status da resposta
         if (response.status === 304) {
           setMessage(true);
           setTypeError("Operação Inválida");
@@ -3058,6 +3556,7 @@ export default function DashboardTI() {
           setMessageError("Modificação Identica ao chamado atual Cancelada");
           return;
         } else if (response.status === 200) {
+          // Atualiza a página se a modificação for bem-sucedida
           return window.location.reload();
         }
       })
@@ -3134,18 +3633,6 @@ export default function DashboardTI() {
         <ZIndex className="position-fixed top-0 start-50 translate-middle-x mt-5">
           <Message TypeError={typeError} MessageError={messageError} CloseMessage={closeMessage2} />
         </ZIndex>
-      )}
-      {dropdownBTN && (
-        <DivDrop ref={settingsRef} className={`position-absolute top-0 start-0 ${classBlur}`}>
-          <Dropdown>
-            <DropdownButton onClick={dropdown} className="dropbtn"></DropdownButton>
-            <DropdownConten ref={myDropDown} className="dropdown-content">
-              <P1 className="d-block" onClick={equipamentForUser}>
-                Adicionar Equipamento
-              </P1>
-            </DropdownConten>
-          </Dropdown>
-        </DivDrop>
       )}
       <TitlePage className="text-center text-light mt-3">Central de Gerenciamento de Chamados TI</TitlePage>
       <div className={`d-flex flex-column justify-content-center w-100 ${classBlur}`}>
@@ -3339,7 +3826,7 @@ export default function DashboardTI() {
           </Button2>
         </DivSelectView>
       </DivFilter>
-      <section ref={sectionTicket} className="mt-3">
+      <section ref={sectionTicket} className="mt-3 position-relative">
         {loadingDash && (
           <div className="position-absolute top-50 start-50 translate-middle">
             <Loading />
@@ -3398,7 +3885,12 @@ export default function DashboardTI() {
                   >
                     Aguardar
                   </DropBTN>
-                  <DropBTN className="btn btn-danger w-100" onClick={TicketModify}>
+                  <DropBTN
+                    className="btn btn-danger w-100"
+                    onClick={() => {
+                      setModifyTicket(true);
+                    }}
+                  >
                     Modificar
                   </DropBTN>
                   <DropBTN className="btn btn-danger w-100" onClick={TechDetails}>
@@ -3525,7 +4017,6 @@ export default function DashboardTI() {
           </button>
         </div>
       )}
-      {equipamentforuser && <Registration token={token} equipamentforuser={equipamentforuser} CloseFunct={closeUpload} />}
       {imageopen && (
         <DivImageOpen className="position-fixed top-50 start-50 translate-middle">
           <div className="w-100 positon-relative">
@@ -3555,25 +4046,25 @@ export default function DashboardTI() {
               </div>
               <div className="d-flex justify-content-around">
                 <InputTicket type="text" value={`Setor: ${ticketSECTOR}`} disabled />
-                <Select className="form-select mb-3" aria-label="Default select example" ref={selectForm} onChange={handleSelect}>
+                <select className="form-select mb-3" aria-label="Default select example" ref={selectForm} onChange={handleSelect}>
                   <option value="none" disabled selected>
                     Selecione o Setor
                   </option>
                   <option value="infra">Infra</option>
                   <option value="sistema">Sistema</option>
-                </Select>
+                </select>
               </div>
               <div className="d-flex justify-content-around mt-3">
                 <InputTicket type="text" value={`Ocorrência: ${ticketOCCURRENCE}`} disabled />
                 {OcurrenceFake && (
-                  <Select className="form-select mb-3">
+                  <select className="form-select mb-3">
                     <option value="none" disabled selected>
                       Selecione a Ocorrência
                     </option>
-                  </Select>
+                  </select>
                 )}
                 {infra && (
-                  <Select className="form-select mb-3" aria-label="Default select example" ref={selectError} onChange={selectProblem}>
+                  <select className="form-select mb-3" aria-label="Default select example" ref={selectError} onChange={selectProblem}>
                     <option value="none" disabled selected>
                       Selecione a Ocorrência
                     </option>
@@ -3582,10 +4073,10 @@ export default function DashboardTI() {
                     <option value="equip">Equipamento</option>
                     <option value="internet">Internet</option>
                     <option value="folder">Pasta</option>
-                  </Select>
+                  </select>
                 )}
                 {system && (
-                  <Select className="form-select mb-3" aria-label="Default select example" id="select-error" onChange={selectProblem}>
+                  <select className="form-select mb-3" aria-label="Default select example" id="select-error" onChange={selectProblem}>
                     <option value="none" disabled selected>
                       Selecione o Sistema
                     </option>
@@ -3594,38 +4085,38 @@ export default function DashboardTI() {
                     <option value="synch">Synchro</option>
                     <option value="office">Office</option>
                     <option value="eng">Softwares de Engenharia</option>
-                  </Select>
+                  </select>
                 )}
               </div>
               <div className="d-flex justify-content-around mt-3">
                 <InputTicket type="text" value={`Problema: ${ticketPROBLEMN}`} disabled />
                 {fake && (
-                  <Select className="form-select mb-3" aria-label="Default select example">
+                  <select className="form-select mb-3" aria-label="Default select example">
                     <option value="none" disabled selected>
                       Selecione o problema ocorrido
                     </option>
-                  </Select>
+                  </select>
                 )}
                 {backup && (
-                  <Select className="form-select mb-3" aria-label="Default select example" ref={selectBackup0} onChange={selectBackup}>
+                  <select className="form-select mb-3" aria-label="Default select example" ref={selectBackup0} onChange={selectBackup}>
                     <option value="none" disabled selected>
                       Selecione o problema ocorrido
                     </option>
                     <option value="pasta">Pasta/Arquivo</option>
                     <option value="mail">E-mail</option>
-                  </Select>
+                  </select>
                 )}
                 {mail && (
-                  <Select className="form-select mb-3" aria-label="Default select example" ref={selectMail0} onChange={selectMail}>
+                  <select className="form-select mb-3" aria-label="Default select example" ref={selectMail0} onChange={selectMail}>
                     <option value="none" disabled selected>
                       Selecione o problema ocorrido
                     </option>
                     <option value="maxcap">Aumentar capacidade</option>
                     <option value="conect">Não conecta</option>
-                  </Select>
+                  </select>
                 )}
                 {equip && (
-                  <Select className="form-select mb-3" aria-label="Default select example" ref={selectEquip0} onChange={selectEquip}>
+                  <select className="form-select mb-3" aria-label="Default select example" ref={selectEquip0} onChange={selectEquip}>
                     <option value="none" disabled selected>
                       Selecione o problema ocorrido
                     </option>
@@ -3634,28 +4125,28 @@ export default function DashboardTI() {
                     <option value="roaming">Mudança de local de trabalho</option>
                     <option value="usb">Liberação/Bloqueio de USB</option>
                     <option value="change">Trocar Equipamento</option>
-                  </Select>
+                  </select>
                 )}
                 {internet && (
-                  <Select className="form-select mb-3" aria-label="Default select example" ref={selectInternet0} onChange={selectInternet}>
+                  <select className="form-select mb-3" aria-label="Default select example" ref={selectInternet0} onChange={selectInternet}>
                     <option value="none" disabled selected>
                       Selecione o problema ocorrido
                     </option>
                     <option value="lib">Liberação de site</option>
                     <option value="block">Bloqueio de site</option>
-                  </Select>
+                  </select>
                 )}
                 {folder && (
-                  <Select className="form-select mb-3" aria-label="Default select example" ref={selectFolder0} onChange={selectFolder}>
+                  <select className="form-select mb-3" aria-label="Default select example" ref={selectFolder0} onChange={selectFolder}>
                     <option value="none" disabled selected>
                       Selecione o problema ocorrido
                     </option>
                     <option value="lib">Liberação de Pasta</option>
                     <option value="block">Bloqueio de Pasta</option>
-                  </Select>
+                  </select>
                 )}
                 {sap && (
-                  <Select className="form-select mb-3" aria-label="Default select example" ref={selectSAPO} onChange={selectSAP}>
+                  <select className="form-select mb-3" aria-label="Default select example" ref={selectSAPO} onChange={selectSAP}>
                     <option value="none" disabled selected>
                       Selecione o Problema
                     </option>
@@ -3663,10 +4154,10 @@ export default function DashboardTI() {
                     <option value="access">Liberação/bloqueio de acessos</option>
                     <option value="quest">Dúvidas operacionais</option>
                     <option value="error">Correção de falhas</option>
-                  </Select>
+                  </select>
                 )}
                 {mbi && (
-                  <Select className="form-select mb-3" aria-label="Default select example" ref={selectMBIO} onChange={selectMBI}>
+                  <select className="form-select mb-3" aria-label="Default select example" ref={selectMBIO} onChange={selectMBI}>
                     <option value="none" disabled selected>
                       Selecione o Problema
                     </option>
@@ -3674,10 +4165,10 @@ export default function DashboardTI() {
                     <option value="access">Liberação/bloqueio de acessos</option>
                     <option value="quest">Dúvidas operacionais</option>
                     <option value="error">Correção de falhas</option>
-                  </Select>
+                  </select>
                 )}
                 {synch && (
-                  <Select className="form-select mb-3" aria-label="Default select example" ref={selectSynchO} onChange={selectSynch}>
+                  <select className="form-select mb-3" aria-label="Default select example" ref={selectSynchO} onChange={selectSynch}>
                     <option value="none" disabled selected>
                       Selecione o Problema
                     </option>
@@ -3685,25 +4176,25 @@ export default function DashboardTI() {
                     <option value="access">Liberação/bloqueio de acessos</option>
                     <option value="quest">Dúvidas operacionais</option>
                     <option value="error">Correção de falhas</option>
-                  </Select>
+                  </select>
                 )}
                 {office && (
-                  <Select className="form-select mb-3" aria-label="Default select example" ref={selectOfficeO} onChange={selectOffice}>
+                  <select className="form-select mb-3" aria-label="Default select example" ref={selectOfficeO} onChange={selectOffice}>
                     <option value="none" disabled selected>
                       Selecione o Problema
                     </option>
                     <option value="buy">Aquisição de software/licenciamento</option>
                     <option value="error">Correção de falhas</option>
-                  </Select>
+                  </select>
                 )}
                 {eng && (
-                  <Select className="form-select mb-3" aria-label="Default select example" ref={selectEngO} onChange={selectEng}>
+                  <select className="form-select mb-3" aria-label="Default select example" ref={selectEngO} onChange={selectEng}>
                     <option value="none" disabled selected>
                       Selecione o Problema
                     </option>
                     <option value="buy">Aquisição de software/licenciamento</option>
                     <option value="error">Correção de falhas</option>
-                  </Select>
+                  </select>
                 )}
               </div>
               <div className="d-flex justify-content-center">

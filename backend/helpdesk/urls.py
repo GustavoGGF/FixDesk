@@ -23,5 +23,11 @@ urlpatterns = [
         views.getTicketFilterStatus,
         name="central-get-ticket-filter-words",
     ),
+    # URL para pegar os equipamentos para alocagem
+    path(
+        "equipaments-for-alocate/",
+        views.equipamentsForAlocate,
+        name="central-equipaments-for-alocate",
+    ),
     # path("<path:unknown_path>", views.redirect_to_specific_url),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

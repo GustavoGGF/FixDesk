@@ -30,9 +30,9 @@ export default function DashboardBar() {
    * - typeError: estado que define o tipo de erro ocorrido.
    * - messageError: estado que armazena a mensagem de erro a ser exibida.
    */
-  const [loadingHistogram, setLoadingHistogram] = useState(true);
   const [histogramData, setHistogramData] = useState([]);
   const [labeldash, setLabelDash] = useState("");
+  const [loadingHistogram, setLoadingHistogram] = useState(true);
   const [myChart, setMyChart] = useState(null);
   const [message, setMessage] = useState(false);
   const [typeError, setTypeError] = useState("");
@@ -79,6 +79,7 @@ export default function DashboardBar() {
       method: "GET",
       headers: {
         Accept: "application/json",
+        "Cache-Control": "no-cache",
       },
     })
       .then((response) => {
@@ -97,14 +98,10 @@ export default function DashboardBar() {
         return response.json();
       })
       .then((data) => {
-        try {
-          barChartData = "week";
-          setLabelDash("Chamados da Semana");
-          CallNewBar();
-          setHistogramData(data);
-        } catch (err) {
-          console.log(err);
-        }
+        barChartData = "week";
+        setLabelDash("Chamados da Semana");
+        CallNewBar();
+        setHistogramData(data);
       })
       .catch((err) => {
         setMessage(true);
@@ -128,20 +125,17 @@ export default function DashboardBar() {
       method: "GET",
       headers: {
         Accept: "application/json",
+        "Cache-Control": "no-cache",
       },
     })
       .then((response) => {
         if (response.status === 210) {
-          try {
-            selectPeriod.current.value = "3";
-            setMessage(true);
-            setTypeError("Falta de Dados");
-            setMessageError("Buscando Chamados do Ano");
-            barChartData = "";
-            periodYear();
-          } catch (err) {
-            console.log(err);
-          }
+          selectPeriod.current.value = "3";
+          setMessage(true);
+          setTypeError("Falta de Dados");
+          setMessageError("Buscando Chamados do Ano");
+          barChartData = "";
+          periodYear();
         }
         if (response.status === 302) {
           return window.location.href("/login");
@@ -149,14 +143,10 @@ export default function DashboardBar() {
         return response.json();
       })
       .then((data) => {
-        try {
-          barChartData = "month";
-          setLabelDash("Chamados do Mês");
-          setHistogramData(data);
-          CallNewBar();
-        } catch (err) {
-          console.log(err);
-        }
+        barChartData = "month";
+        setLabelDash("Chamados do Mês");
+        setHistogramData(data);
+        CallNewBar();
       })
       .catch((err) => {
         setMessage(true);
@@ -180,32 +170,25 @@ export default function DashboardBar() {
       method: "GET",
       headers: {
         Accept: "application/json",
+        "Cache-Control": "no-cache",
       },
     })
       .then((response) => {
         if (response.status === 210) {
-          try {
-            selectPeriod.current.value = "4";
-            setMessage(true);
-            setTypeError("Falta de Dados");
-            setMessageError("Buscando Todos os Chamados");
-            barChartData = "";
-            periodAll();
-          } catch (err) {
-            console.log(err);
-          }
+          selectPeriod.current.value = "4";
+          setMessage(true);
+          setTypeError("Falta de Dados");
+          setMessageError("Buscando Todos os Chamados");
+          barChartData = "";
+          periodAll();
         }
         return response.json();
       })
       .then((data) => {
-        try {
-          barChartData = "year";
-          setLabelDash("Chamados deste Ano");
-          setHistogramData(data);
-          CallNewBar();
-        } catch (err) {
-          console.log(err);
-        }
+        barChartData = "year";
+        setLabelDash("Chamados deste Ano");
+        setHistogramData(data);
+        CallNewBar();
       })
       .catch((err) => {
         setMessage(true);
@@ -227,32 +210,25 @@ export default function DashboardBar() {
       method: "GET",
       headers: {
         Accept: "application/json",
+        "Cache-Control": "no-cache",
       },
     })
       .then((response) => {
         if (response.status === 210) {
-          try {
-            selectPeriod.current.value = "4";
-            setMessage(true);
-            setTypeError("Falta de Dados");
-            setMessageError("Nenhum Chamado Foi Criado");
-            setLoadingHistogram(false);
-            barChartData = "";
-          } catch (err) {
-            console.log(err);
-          }
+          selectPeriod.current.value = "4";
+          setMessage(true);
+          setTypeError("Falta de Dados");
+          setMessageError("Nenhum Chamado Foi Criado");
+          setLoadingHistogram(false);
+          barChartData = "";
         }
         return response.json();
       })
       .then((data) => {
-        try {
-          barChartData = "all";
-          setLabelDash("Todos os Chamados");
-          setHistogramData(data);
-          CallNewBar();
-        } catch (err) {
-          console.log(err);
-        }
+        barChartData = "all";
+        setLabelDash("Todos os Chamados");
+        setHistogramData(data);
+        CallNewBar();
       })
       .catch((err) => {
         setMessage(true);

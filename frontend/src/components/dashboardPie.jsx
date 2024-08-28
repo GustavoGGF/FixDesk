@@ -47,6 +47,7 @@ export default function DashBoardPie({ sector, clss }) {
           method: "GET",
           headers: {
             Accept: "application/json",
+            "Cache-Control": "no-cache",
           },
         });
 
@@ -125,6 +126,7 @@ export default function DashBoardPie({ sector, clss }) {
           method: "GET",
           headers: {
             Accept: "application/json",
+            "Cache-Control": "no-cache",
           },
         });
 

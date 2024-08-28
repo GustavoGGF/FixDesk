@@ -31,6 +31,10 @@ import re
 import logging
 from django.views.decorators.http import require_http_methods
 from django.db import transaction
+from django.views.decorators.cache import never_cache
+from contextlib import contextmanager
+import mysql.connector
+from decouple import config
 
 # Configuração básica de logging
 logging.basicConfig(level=logging.INFO)
@@ -76,6 +80,7 @@ def sendMail(mail, msgm1, msgm2):
 
 # Create your views here.
 @csrf_exempt
+@never_cache
 # @login_required(login_url="/login")
 def firstView(request):
     if request.method == "POST":
@@ -154,6 +159,7 @@ def firstView(request):
 @login_required(login_url="/login")
 @require_http_methods(["POST"])
 @transaction.atomic
+@never_cache
 # Função que trata o envio de chamados (tickets) para o banco de dados
 def submitTicket(request):
     # Inicializando as variáveis com valor None
@@ -467,8 +473,10 @@ def submitTicket(request):
             print(e)
             return
 
+
 @csrf_exempt
 @login_required(login_url="/login")
+@never_cache
 def history(request):
     if request.method == "POST":
         csrf = None
@@ -536,53 +544,53 @@ def history(request):
 
 @login_required(login_url="/login")
 @requires_csrf_token
+@require_http_methods(["GET"])
+@never_cache
 def toDashboard(request):
-    if request.method == "POST":
-        return
-    if request.method == "GET":
-        UserFront = None
-        user = None
-        groups = None
-        group1 = None
-        group2 = None
-        try:
-            UserFront = request.user
-            group1 = getenv("DJANGO_GROUP_USER")
-            group2 = getenv("DJANGO_GROUP_TECH")
+    UserFront = None
+    user = None
+    groups = None
+    group1 = None
+    group2 = None
+    try:
+        UserFront = request.user
+        group1 = getenv("DJANGO_GROUP_USER")
+        group2 = getenv("DJANGO_GROUP_TECH")
 
-            user = User.objects.get(username=UserFront)
+        user = User.objects.get(username=UserFront)
 
-            groups = user.groups.all()
+        groups = user.groups.all()
 
-            for group in groups:
-                if group.name == group1:
-                    return JsonResponse(
-                        {"status": "Credentials Invalid"}, status=403, safe=True
-                    )
-                elif group.name == group2:
-                    return JsonResponse(
-                        {"status": "Credentials Invalid"}, status=203, safe=True
-                    )
-        except Exception as e:
-            print(e)
+        for group in groups:
+            if group.name == group1:
+                return JsonResponse(
+                    {"status": "Credentials Invalid"}, status=403, safe=True
+                )
+            elif group.name == group2:
+                return JsonResponse(
+                    {"status": "Credentials Invalid"}, status=203, safe=True
+                )
+    except Exception as e:
+        print(e)
 
 
 @csrf_exempt
+@never_cache
+@require_http_methods(["GET"])
 def exit(request):
-    if request.method == "POST":
-        return
-    if request.method == "GET":
-        try:
-            logout(request)
-            return redirect("/")
-        except Exception as e:
-            print(e)
+    try:
+        logout(request)
+        return redirect("/")
+    except Exception as e:
+        print(e)
 
 
 @login_required(
     login_url="/login"
 )  # Decorador que exige que o usuário esteja autenticado. Redireciona para a página de login se não estiver.
 @requires_csrf_token  # Decorador que assegura que o token CSRF seja verificado para evitar ataques CSRF.
+@never_cache
+@transaction.atomic
 def ticket(
     request, id
 ):  # Função para obter ou enviar dados para os chamados, recebendo a requisição e o ID do ticket.
@@ -1541,432 +1549,354 @@ def ticket(
             print(e)
 
 
+@never_cache
+@require_http_methods(["GET"])
 @login_required(login_url="/login")
 def update_chat(request, id):
-    if request.method == "GET":
-        ticket = None
-        chat = None
-        try:
-            ticket = SupportTicket.objects.get(id=id)
+    ticket = None
+    chat = None
+    try:
+        ticket = SupportTicket.objects.get(id=id)
 
-            chat = ticket.chat
+        chat = ticket.chat
 
-            return JsonResponse({"chat": chat}, status=200, safe=True)
-        except Exception as e:
-            print(e)
-    if request.method == "POST":
-        return
+        return JsonResponse({"chat": chat}, status=200, safe=True)
+    except Exception as e:
+        print(e)
 
 
+@require_http_methods(["GET"])
 @login_required(login_url="/login")
+@never_cache
 def moreTicket(request):
-    if request.method == "POST":
-        return
-    if request.method == "GET":
-        username = None
-        newCount = None
-        count = 10
-        ticket_list = []
-        ticket_data = None
-        ticket_json = None
-        try:
-            newCount = int(request.META.get("HTTP_TICKET_CURRENT"))
-            count = count + newCount
+    username = None
+    newCount = None
+    count = 10
+    ticket_list = []
+    ticket_data = None
+    ticket_json = None
+    try:
+        newCount = int(request.META.get("HTTP_TICKET_CURRENT"))
+        count = count + newCount
 
-            if "HTTP_ORDER_BY" in request.META:
-                order = request.META.get("HTTP_ORDER_BY")
-                if "HTTP_TECH_DASH" in request.META:
-                    if order == "-id":
-                        ticket_data = SupportTicket.objects.order_by("-id")[:count]
-
-                    else:
-                        ticket_data = SupportTicket.objects[:count]
-                else:
-                    username = request.META.get("HTTP_USER_DATA")
-                    if order == "-id":
-                        ticket_data = SupportTicket.objects.filter(
-                            ticketRequester=username
-                        ).order_by("-id")[:count]
-
-                    else:
-                        ticket_data = SupportTicket.objects.filter(
-                            ticketRequester=username
-                        )[:count]
-
-            else:
-                ticket_data = SupportTicket.objects.filter(ticketRequester=username)[
-                    :count
-                ]
-
-            for ticket in ticket_data:
-                ticket_json = serialize("json", [ticket])
-                ticket_list.append(ticket_json)
-
-        except Exception as e:
-            print(e)
-
-        ticket_objects = []
-        try:
-            for ticket in ticket_list:
-                ticket_data = loads(ticket)[0]["fields"]
-                ticket_data["id"] = loads(ticket)[0]["pk"]
-                ticket_objects.append(ticket_data)
-
-            return JsonResponse(
-                {"tickets": ticket_objects, "count": count}, status=200, safe=True
-            )
-
-        except Exception as e:
-            print(e)
-
-
-@login_required(login_url="/login")
-def getTicketFilter(request):
-    if request.method == "GET":
-        username = None
-        Quantity_tickets = None
-        ticket_data = None
-        ticket_list = []
-        ticket_json = None
-        order = None
-        problemnFront = None
-        sectorFront = None
-        status = ""
-        try:
-            username = request.META.get("HTTP_DATA_USER")
-            Quantity_tickets = int(request.META.get("HTTP_QUANTITY_TICKETS"))
+        if "HTTP_ORDER_BY" in request.META:
             order = request.META.get("HTTP_ORDER_BY")
-            sectorFront = request.META.get("HTTP_SECTOR_TICKET")
-            problemnFront = request.META.get("HTTP_PROBLEMN_TICKET")
-            status = request.META.get("HTTP_STATUS_TICKET")
-
-            if status == "open":
-                status = True
-            elif status == "close":
-                status = False
-            elif status == "all":
-                status = ""
-
-            if (
-                "HTTP_ORDER_BY" in request.META
-                and sectorFront == "null"
-                and problemnFront == "null"
-            ):
-                order = request.META.get("HTTP_ORDER_BY")
+            if "HTTP_TECH_DASH" in request.META:
                 if order == "-id":
-                    if status != "":
-                        ticket_data = SupportTicket.objects.filter(
-                            ticketRequester=username, open=status
-                        ).order_by("-id")[:Quantity_tickets]
-                    else:
-                        ticket_data = SupportTicket.objects.filter(
-                            ticketRequester=username
-                        ).order_by("-id")[:Quantity_tickets]
+                    ticket_data = SupportTicket.objects.order_by("-id")[:count]
+
+                else:
+                    ticket_data = SupportTicket.objects[:count]
+            else:
+                username = request.META.get("HTTP_USER_DATA")
+                if order == "-id":
+                    ticket_data = SupportTicket.objects.filter(
+                        ticketRequester=username
+                    ).order_by("-id")[:count]
 
                 else:
                     ticket_data = SupportTicket.objects.filter(
+                        ticketRequester=username
+                    )[:count]
+
+        else:
+            ticket_data = SupportTicket.objects.filter(ticketRequester=username)[:count]
+
+        for ticket in ticket_data:
+            ticket_json = serialize("json", [ticket])
+            ticket_list.append(ticket_json)
+
+    except Exception as e:
+        print(e)
+
+    ticket_objects = []
+    try:
+        for ticket in ticket_list:
+            ticket_data = loads(ticket)[0]["fields"]
+            ticket_data["id"] = loads(ticket)[0]["pk"]
+            ticket_objects.append(ticket_data)
+
+        return JsonResponse(
+            {"tickets": ticket_objects, "count": count}, status=200, safe=True
+        )
+
+    except Exception as e:
+        print(e)
+
+
+@require_http_methods(["GET"])
+@login_required(login_url="/login")
+@never_cache
+def getTicketFilter(request):
+    username = None
+    Quantity_tickets = None
+    ticket_data = None
+    ticket_list = []
+    ticket_json = None
+    order = None
+    problemnFront = None
+    sectorFront = None
+    status = ""
+    try:
+        username = request.META.get("HTTP_DATA_USER")
+        Quantity_tickets = int(request.META.get("HTTP_QUANTITY_TICKETS"))
+        order = request.META.get("HTTP_ORDER_BY")
+        sectorFront = request.META.get("HTTP_SECTOR_TICKET")
+        problemnFront = request.META.get("HTTP_PROBLEMN_TICKET")
+        status = request.META.get("HTTP_STATUS_TICKET")
+
+        if status == "open":
+            status = True
+        elif status == "close":
+            status = False
+        elif status == "all":
+            status = ""
+
+        if (
+            "HTTP_ORDER_BY" in request.META
+            and sectorFront == "null"
+            and problemnFront == "null"
+        ):
+            order = request.META.get("HTTP_ORDER_BY")
+            if order == "-id":
+                if status != "":
+                    ticket_data = SupportTicket.objects.filter(
+                        ticketRequester=username, open=status
+                    ).order_by("-id")[:Quantity_tickets]
+                else:
+                    ticket_data = SupportTicket.objects.filter(
+                        ticketRequester=username
+                    ).order_by("-id")[:Quantity_tickets]
+
+            else:
+                ticket_data = SupportTicket.objects.filter(
+                    ticketRequester=username, open=status
+                )[:Quantity_tickets]
+
+        elif "HTTP_SECTOR_TICKET" in request.META and sectorFront == "all":
+            if order == "-id":
+                if status != "":
+                    ticket_data = SupportTicket.objects.filter(
+                        ticketRequester=username, open=status
+                    ).order_by("-id")[:Quantity_tickets]
+                else:
+                    ticket_data = SupportTicket.objects.filter(
+                        ticketRequester=username
+                    ).order_by("-id")[:Quantity_tickets]
+
+            else:
+                if status != "":
+                    ticket_data = SupportTicket.objects.filter(
                         ticketRequester=username, open=status
                     )[:Quantity_tickets]
-
-            elif "HTTP_SECTOR_TICKET" in request.META and sectorFront == "all":
-                if order == "-id":
-                    if status != "":
-                        ticket_data = SupportTicket.objects.filter(
-                            ticketRequester=username, open=status
-                        ).order_by("-id")[:Quantity_tickets]
-                    else:
-                        ticket_data = SupportTicket.objects.filter(
-                            ticketRequester=username
-                        ).order_by("-id")[:Quantity_tickets]
-
                 else:
-                    if status != "":
-                        ticket_data = SupportTicket.objects.filter(
-                            ticketRequester=username, open=status
-                        )[:Quantity_tickets]
-                    else:
-                        ticket_data = SupportTicket.objects.filter(
-                            ticketRequester=username
-                        )[:Quantity_tickets]
+                    ticket_data = SupportTicket.objects.filter(
+                        ticketRequester=username
+                    )[:Quantity_tickets]
 
-            elif (
-                "HTTP_SECTOR_TICKET" in request.META
-                and sectorFront != "null"
-                and problemnFront == "all"
-            ):
-                if order == "-id":
-                    if status != "":
-                        ticket_data = SupportTicket.objects.filter(
-                            ticketRequester=username, sector=sectorFront, open=status
-                        ).order_by("-id")[:Quantity_tickets]
-                    else:
-                        ticket_data = SupportTicket.objects.filter(
-                            ticketRequester=username, sector=sectorFront
-                        ).order_by("-id")[:Quantity_tickets]
-
+        elif (
+            "HTTP_SECTOR_TICKET" in request.META
+            and sectorFront != "null"
+            and problemnFront == "all"
+        ):
+            if order == "-id":
+                if status != "":
+                    ticket_data = SupportTicket.objects.filter(
+                        ticketRequester=username, sector=sectorFront, open=status
+                    ).order_by("-id")[:Quantity_tickets]
                 else:
-                    if status != "":
-                        ticket_data = SupportTicket.objects.filter(
-                            ticketRequester=username, sector=sectorFront, open=status
-                        )[:Quantity_tickets]
-                    else:
-                        ticket_data = SupportTicket.objects.filter(
-                            ticketRequester=username, sector=sectorFront
-                        )[:Quantity_tickets]
+                    ticket_data = SupportTicket.objects.filter(
+                        ticketRequester=username, sector=sectorFront
+                    ).order_by("-id")[:Quantity_tickets]
 
-            elif (
-                "HTTP_SECTOR_TICKET" in request.META
-                and sectorFront != "null"
-                and problemnFront == "null"
-            ):
-                order = request.META.get("HTTP_ORDER_BY")
-
-                if order == "-id":
-                    if status != "":
-                        ticket_data = SupportTicket.objects.filter(
-                            ticketRequester=username, sector=sectorFront, open=status
-                        ).order_by("-id")[:Quantity_tickets]
-                    else:
-                        ticket_data = SupportTicket.objects.filter(
-                            ticketRequester=username, sector=sectorFront
-                        ).order_by("-id")[:Quantity_tickets]
-
+            else:
+                if status != "":
+                    ticket_data = SupportTicket.objects.filter(
+                        ticketRequester=username, sector=sectorFront, open=status
+                    )[:Quantity_tickets]
                 else:
-                    if status != "":
-                        ticket_data = SupportTicket.objects.filter(
-                            ticketRequester=username, sector=sectorFront, open=status
-                        )[:Quantity_tickets]
-                    else:
-                        ticket_data = SupportTicket.objects.filter(
-                            ticketRequester=username, sector=sectorFront
-                        )[:Quantity_tickets]
+                    ticket_data = SupportTicket.objects.filter(
+                        ticketRequester=username, sector=sectorFront
+                    )[:Quantity_tickets]
 
-            elif (
-                "HTTP_SECTOR_TICKET" in request.META
-                and sectorFront != "null"
-                and problemnFront != "null"
-            ):
-                if order == "-id":
-                    if status != "":
-                        ticket_data = SupportTicket.objects.filter(
-                            ticketRequester=username,
-                            sector=sectorFront,
-                            occurrence=problemnFront,
-                            open=status,
-                        ).order_by("-id")[:Quantity_tickets]
-                    else:
-                        ticket_data = SupportTicket.objects.filter(
-                            ticketRequester=username,
-                            sector=sectorFront,
-                            occurrence=problemnFront,
-                        ).order_by("-id")[:Quantity_tickets]
+        elif (
+            "HTTP_SECTOR_TICKET" in request.META
+            and sectorFront != "null"
+            and problemnFront == "null"
+        ):
+            order = request.META.get("HTTP_ORDER_BY")
 
+            if order == "-id":
+                if status != "":
+                    ticket_data = SupportTicket.objects.filter(
+                        ticketRequester=username, sector=sectorFront, open=status
+                    ).order_by("-id")[:Quantity_tickets]
                 else:
-                    if status != "":
-                        ticket_data = SupportTicket.objects.filter(
-                            ticketRequester=username,
-                            sector=sectorFront,
-                            occurrence=problemnFront,
-                            open=status,
-                        )[:Quantity_tickets]
-                    else:
-                        ticket_data = SupportTicket.objects.filter(
-                            ticketRequester=username,
-                            sector=sectorFront,
-                            occurrence=problemnFront,
-                        )[:Quantity_tickets]
+                    ticket_data = SupportTicket.objects.filter(
+                        ticketRequester=username, sector=sectorFront
+                    ).order_by("-id")[:Quantity_tickets]
 
-            for ticket in ticket_data:
-                ticket_json = serialize("json", [ticket])
-                ticket_list.append(ticket_json)
+            else:
+                if status != "":
+                    ticket_data = SupportTicket.objects.filter(
+                        ticketRequester=username, sector=sectorFront, open=status
+                    )[:Quantity_tickets]
+                else:
+                    ticket_data = SupportTicket.objects.filter(
+                        ticketRequester=username, sector=sectorFront
+                    )[:Quantity_tickets]
 
-        except Exception as e:
-            print(e)
+        elif (
+            "HTTP_SECTOR_TICKET" in request.META
+            and sectorFront != "null"
+            and problemnFront != "null"
+        ):
+            if order == "-id":
+                if status != "":
+                    ticket_data = SupportTicket.objects.filter(
+                        ticketRequester=username,
+                        sector=sectorFront,
+                        occurrence=problemnFront,
+                        open=status,
+                    ).order_by("-id")[:Quantity_tickets]
+                else:
+                    ticket_data = SupportTicket.objects.filter(
+                        ticketRequester=username,
+                        sector=sectorFront,
+                        occurrence=problemnFront,
+                    ).order_by("-id")[:Quantity_tickets]
 
-        ticket_objects = []
-        try:
-            for ticket in ticket_list:
-                ticket_data = loads(ticket)[0]["fields"]
-                ticket_data["id"] = loads(ticket)[0]["pk"]
-                ticket_objects.append(ticket_data)
+            else:
+                if status != "":
+                    ticket_data = SupportTicket.objects.filter(
+                        ticketRequester=username,
+                        sector=sectorFront,
+                        occurrence=problemnFront,
+                        open=status,
+                    )[:Quantity_tickets]
+                else:
+                    ticket_data = SupportTicket.objects.filter(
+                        ticketRequester=username,
+                        sector=sectorFront,
+                        occurrence=problemnFront,
+                    )[:Quantity_tickets]
 
-            return JsonResponse({"tickets": ticket_objects}, status=200, safe=True)
+        for ticket in ticket_data:
+            ticket_json = serialize("json", [ticket])
+            ticket_list.append(ticket_json)
 
-        except Exception as e:
-            print(e)
+    except Exception as e:
+        print(e)
 
-    if request.method == "POST":
-        return
+    ticket_objects = []
+    try:
+        for ticket in ticket_list:
+            ticket_data = loads(ticket)[0]["fields"]
+            ticket_data["id"] = loads(ticket)[0]["pk"]
+            ticket_objects.append(ticket_data)
+
+        return JsonResponse({"tickets": ticket_objects}, status=200, safe=True)
+
+    except Exception as e:
+        print(e)
 
 
 @login_required(login_url="/login")
+@require_http_methods(["GET"])
+@never_cache
 def getTicketFilterWords(request):
-    if request.method == "GET":
-        username = None
-        magic_word = None
-        ticket_data = None
-        ticket_list = []
-        ticket_json = None
-        magic_word_int = None
-        order = None
-        Quantity_tickets = None
-        try:
-            magic_word = request.META.get("HTTP_WORD_FILTER")
-            order = request.META.get("HTTP_ORDER_BY")
-            Quantity_tickets = int(request.META.get("HTTP_QUANTITY_TICKETS"))
-            username = request.META.get("HTTP_DATA_USER")
-            magic_word_int = int(magic_word)
-            sector_ticket = request.META.get("HTTP_SECTOR_FILTER")
-            occurrence_ticket = request.META.get("HTTP_PROBLEM_FILTER")
-            if sector_ticket != None:
-                if occurrence_ticket != None:
-                    try:
-                        magic_word_int = int(magic_word)
-                        if order == "-id":
-                            ticket_data = SupportTicket.objects.filter(
-                                respective_area="TI",
-                                id=magic_word_int,
-                                sector=sector_ticket,
-                                occurrence=occurrence_ticket,
-                                ticketRequester=username,
-                            ).order_by("-id")[:Quantity_tickets]
+    username = None
+    magic_word = None
+    ticket_data = None
+    ticket_list = []
+    ticket_json = None
+    magic_word_int = None
+    order = None
+    Quantity_tickets = None
+    try:
+        magic_word = request.META.get("HTTP_WORD_FILTER")
+        order = request.META.get("HTTP_ORDER_BY")
+        Quantity_tickets = int(request.META.get("HTTP_QUANTITY_TICKETS"))
+        username = request.META.get("HTTP_DATA_USER")
+        magic_word_int = int(magic_word)
+        sector_ticket = request.META.get("HTTP_SECTOR_FILTER")
+        occurrence_ticket = request.META.get("HTTP_PROBLEM_FILTER")
+        if sector_ticket != None:
+            if occurrence_ticket != None:
+                try:
+                    magic_word_int = int(magic_word)
+                    if order == "-id":
+                        ticket_data = SupportTicket.objects.filter(
+                            respective_area="TI",
+                            id=magic_word_int,
+                            sector=sector_ticket,
+                            occurrence=occurrence_ticket,
+                            ticketRequester=username,
+                        ).order_by("-id")[:Quantity_tickets]
 
-                        else:
-                            ticket_data = SupportTicket.objects.filter(
-                                respective_area="TI",
-                                id=magic_word_int,
-                                sector=sector_ticket,
-                                occurrence=occurrence_ticket,
-                                ticketRequester=username,
-                            )[:Quantity_tickets]
+                    else:
+                        ticket_data = SupportTicket.objects.filter(
+                            respective_area="TI",
+                            id=magic_word_int,
+                            sector=sector_ticket,
+                            occurrence=occurrence_ticket,
+                            ticketRequester=username,
+                        )[:Quantity_tickets]
 
-                        for ticket in ticket_data:
-                            ticket_json = serialize("json", [ticket])
-                            ticket_list.append(ticket_json)
+                    for ticket in ticket_data:
+                        ticket_json = serialize("json", [ticket])
+                        ticket_list.append(ticket_json)
 
-                        for ticket in ticket_list:
-                            ticket_data = loads(ticket)[0]["fields"]
-                            ticket_data["id"] = loads(ticket)[0]["pk"]
-                            ticket_objects.append(ticket_data)
+                    for ticket in ticket_list:
+                        ticket_data = loads(ticket)[0]["fields"]
+                        ticket_data["id"] = loads(ticket)[0]["pk"]
+                        ticket_objects.append(ticket_data)
 
-                        return JsonResponse(
-                            {"tickets": ticket_objects}, status=200, safe=True
-                        )
-                    except ValueError:
-                        if order == "-id":
-                            ticket_data = SupportTicket.objects.filter(
-                                Q(ticketRequester__icontains=username)
-                                | Q(occurrence__icontains=occurrence_ticket)
-                                | Q(ticketRequester=magic_word)
-                                | Q(problemn__icontains=magic_word)
-                                | Q(observation__icontains=magic_word)
-                                | Q(respective_area__icontains=magic_word)
-                                | Q(responsible_technician__icontains=magic_word),
-                            ).order_by("-id")[:Quantity_tickets]
+                    return JsonResponse(
+                        {"tickets": ticket_objects}, status=200, safe=True
+                    )
+                except ValueError:
+                    if order == "-id":
+                        ticket_data = SupportTicket.objects.filter(
+                            Q(ticketRequester__icontains=username)
+                            | Q(occurrence__icontains=occurrence_ticket)
+                            | Q(ticketRequester=magic_word)
+                            | Q(problemn__icontains=magic_word)
+                            | Q(observation__icontains=magic_word)
+                            | Q(respective_area__icontains=magic_word)
+                            | Q(responsible_technician__icontains=magic_word),
+                        ).order_by("-id")[:Quantity_tickets]
 
-                        else:
-                            ticket_data = SupportTicket.objects.filter(
-                                Q(ticketRequester__icontains=username)
-                                | Q(ticketRequester=magic_word)
-                                | Q(problemn__icontains=magic_word)
-                                | Q(observation__icontains=magic_word)
-                                | Q(respective_area__icontains=magic_word)
-                                | Q(responsible_technician__icontains=magic_word),
-                            )[:Quantity_tickets]
+                    else:
+                        ticket_data = SupportTicket.objects.filter(
+                            Q(ticketRequester__icontains=username)
+                            | Q(ticketRequester=magic_word)
+                            | Q(problemn__icontains=magic_word)
+                            | Q(observation__icontains=magic_word)
+                            | Q(respective_area__icontains=magic_word)
+                            | Q(responsible_technician__icontains=magic_word),
+                        )[:Quantity_tickets]
 
-                        for ticket in ticket_data:
-                            ticket_json = serialize("json", [ticket])
-                            ticket_list.append(ticket_json)
+                    for ticket in ticket_data:
+                        ticket_json = serialize("json", [ticket])
+                        ticket_list.append(ticket_json)
 
-                        ticket_objects = []
+                    ticket_objects = []
 
-                        for ticket in ticket_list:
-                            ticket_data = loads(ticket)[0]["fields"]
-                            ticket_data["id"] = loads(ticket)[0]["pk"]
-                            ticket_objects.append(ticket_data)
+                    for ticket in ticket_list:
+                        ticket_data = loads(ticket)[0]["fields"]
+                        ticket_data["id"] = loads(ticket)[0]["pk"]
+                        ticket_objects.append(ticket_data)
 
-                        return JsonResponse(
-                            {"tickets": ticket_objects}, status=200, safe=True
-                        )
+                    return JsonResponse(
+                        {"tickets": ticket_objects}, status=200, safe=True
+                    )
 
-                    except Exception as e:
-                        print(e)
-                        return JsonResponse(
-                            {"tickets": ticket_objects}, status=200, safe=True
-                        )
-                else:
-                    try:
-                        magic_word_int = int(magic_word)
-                        if order == "-id":
-                            ticket_data = SupportTicket.objects.filter(
-                                respective_area="TI",
-                                id=magic_word_int,
-                                sector=sector_ticket,
-                                ticketRequester=username,
-                            ).order_by("-id")[:Quantity_tickets]
-
-                        else:
-                            ticket_data = SupportTicket.objects.filter(
-                                respective_area="TI",
-                                id=magic_word_int,
-                                sector=sector_ticket,
-                                ticketRequester=username,
-                            )[:Quantity_tickets]
-
-                        for ticket in ticket_data:
-                            ticket_json = serialize("json", [ticket])
-                            ticket_list.append(ticket_json)
-
-                        for ticket in ticket_list:
-                            ticket_data = loads(ticket)[0]["fields"]
-                            ticket_data["id"] = loads(ticket)[0]["pk"]
-                            ticket_objects.append(ticket_data)
-
-                        return JsonResponse(
-                            {"tickets": ticket_objects}, status=200, safe=True
-                        )
-                    except ValueError:
-                        if order == "-id":
-                            ticket_data = SupportTicket.objects.filter(
-                                Q(ticketRequester__icontains=username)
-                                | Q(occurrence__icontains=magic_word)
-                                | Q(ticketRequester=magic_word)
-                                | Q(problemn__icontains=magic_word)
-                                | Q(observation__icontains=magic_word)
-                                | Q(respective_area__icontains=magic_word)
-                                | Q(responsible_technician__icontains=magic_word),
-                            ).order_by("-id")[:Quantity_tickets]
-
-                        else:
-                            ticket_data = SupportTicket.objects.filter(
-                                Q(ticketRequester__icontains=username)
-                                | Q(ticketRequester=magic_word)
-                                | Q(problemn__icontains=magic_word)
-                                | Q(observation__icontains=magic_word)
-                                | Q(respective_area__icontains=magic_word)
-                                | Q(responsible_technician__icontains=magic_word),
-                            )[:Quantity_tickets]
-
-                        for ticket in ticket_data:
-                            ticket_json = serialize("json", [ticket])
-                            ticket_list.append(ticket_json)
-
-                        ticket_objects = []
-
-                        for ticket in ticket_list:
-                            ticket_data = loads(ticket)[0]["fields"]
-                            ticket_data["id"] = loads(ticket)[0]["pk"]
-                            ticket_objects.append(ticket_data)
-
-                        return JsonResponse(
-                            {"tickets": ticket_objects}, status=200, safe=True
-                        )
-
-                    except Exception as e:
-                        print(e)
-                        return JsonResponse(
-                            {"tickets": ticket_objects}, status=200, safe=True
-                        )
+                except Exception as e:
+                    print(e)
+                    return JsonResponse(
+                        {"tickets": ticket_objects}, status=200, safe=True
+                    )
             else:
                 try:
                     magic_word_int = int(magic_word)
@@ -1986,18 +1916,18 @@ def getTicketFilterWords(request):
                             ticketRequester=username,
                         )[:Quantity_tickets]
 
-                        for ticket in ticket_data:
-                            ticket_json = serialize("json", [ticket])
-                            ticket_list.append(ticket_json)
+                    for ticket in ticket_data:
+                        ticket_json = serialize("json", [ticket])
+                        ticket_list.append(ticket_json)
 
-                        for ticket in ticket_list:
-                            ticket_data = loads(ticket)[0]["fields"]
-                            ticket_data["id"] = loads(ticket)[0]["pk"]
-                            ticket_objects.append(ticket_data)
+                    for ticket in ticket_list:
+                        ticket_data = loads(ticket)[0]["fields"]
+                        ticket_data["id"] = loads(ticket)[0]["pk"]
+                        ticket_objects.append(ticket_data)
 
-                        return JsonResponse(
-                            {"tickets": ticket_objects}, status=200, safe=True
-                        )
+                    return JsonResponse(
+                        {"tickets": ticket_objects}, status=200, safe=True
+                    )
                 except ValueError:
                     if order == "-id":
                         ticket_data = SupportTicket.objects.filter(
@@ -2035,84 +1965,197 @@ def getTicketFilterWords(request):
                         {"tickets": ticket_objects}, status=200, safe=True
                     )
 
-        except Exception as e:
-            print(e)
-            return JsonResponse({"tickets": ticket_objects}, status=200, safe=True)
+                except Exception as e:
+                    print(e)
+                    return JsonResponse(
+                        {"tickets": ticket_objects}, status=200, safe=True
+                    )
+        else:
+            try:
+                magic_word_int = int(magic_word)
+                if order == "-id":
+                    ticket_data = SupportTicket.objects.filter(
+                        respective_area="TI",
+                        id=magic_word_int,
+                        sector=sector_ticket,
+                        ticketRequester=username,
+                    ).order_by("-id")[:Quantity_tickets]
+
+                else:
+                    ticket_data = SupportTicket.objects.filter(
+                        respective_area="TI",
+                        id=magic_word_int,
+                        sector=sector_ticket,
+                        ticketRequester=username,
+                    )[:Quantity_tickets]
+
+                    for ticket in ticket_data:
+                        ticket_json = serialize("json", [ticket])
+                        ticket_list.append(ticket_json)
+
+                    for ticket in ticket_list:
+                        ticket_data = loads(ticket)[0]["fields"]
+                        ticket_data["id"] = loads(ticket)[0]["pk"]
+                        ticket_objects.append(ticket_data)
+
+                    return JsonResponse(
+                        {"tickets": ticket_objects}, status=200, safe=True
+                    )
+            except ValueError:
+                if order == "-id":
+                    ticket_data = SupportTicket.objects.filter(
+                        Q(ticketRequester__icontains=username)
+                        | Q(occurrence__icontains=magic_word)
+                        | Q(ticketRequester=magic_word)
+                        | Q(problemn__icontains=magic_word)
+                        | Q(observation__icontains=magic_word)
+                        | Q(respective_area__icontains=magic_word)
+                        | Q(responsible_technician__icontains=magic_word),
+                    ).order_by("-id")[:Quantity_tickets]
+
+                else:
+                    ticket_data = SupportTicket.objects.filter(
+                        Q(ticketRequester__icontains=username)
+                        | Q(ticketRequester=magic_word)
+                        | Q(problemn__icontains=magic_word)
+                        | Q(observation__icontains=magic_word)
+                        | Q(respective_area__icontains=magic_word)
+                        | Q(responsible_technician__icontains=magic_word),
+                    )[:Quantity_tickets]
+
+                for ticket in ticket_data:
+                    ticket_json = serialize("json", [ticket])
+                    ticket_list.append(ticket_json)
+
+                ticket_objects = []
+
+                for ticket in ticket_list:
+                    ticket_data = loads(ticket)[0]["fields"]
+                    ticket_data["id"] = loads(ticket)[0]["pk"]
+                    ticket_objects.append(ticket_data)
+
+                return JsonResponse({"tickets": ticket_objects}, status=200, safe=True)
+
+    except Exception as e:
+        print(e)
+        return JsonResponse({"tickets": ticket_objects}, status=200, safe=True)
 
 
 @login_required(login_url="/login")
+@require_http_methods(["GET"])
+@never_cache
 def getTicketFilterStatus(request):
-    if request.method == "GET":
-        username = None
-        order = None
-        Quantity_tickets = None
-        Status = None
-        ticket_data = None
-        try:
-            username = request.META.get("HTTP_DATA_USER")
-            order = request.META.get("HTTP_ORDER_BY")
-            Quantity_tickets = int(request.META.get("HTTP_QUANTITY_TICKETS"))
-            Status = request.META.get("HTTP_STATUS_REQUEST")
+    username = None
+    order = None
+    Quantity_tickets = None
+    Status = None
+    ticket_data = None
+    try:
+        username = request.META.get("HTTP_DATA_USER")
+        order = request.META.get("HTTP_ORDER_BY")
+        Quantity_tickets = int(request.META.get("HTTP_QUANTITY_TICKETS"))
+        Status = request.META.get("HTTP_STATUS_REQUEST")
 
-            if order == "-id":
-                if Status == "open":
-                    ticket_data = SupportTicket.objects.filter(
-                        ticketRequester=username, open=True
-                    ).order_by("-id")[:Quantity_tickets]
-                elif Status == "close":
-                    ticket_data = SupportTicket.objects.filter(
-                        ticketRequester=username, open=None
-                    ).order_by("-id")[:Quantity_tickets]
-                elif Status == "stop":
-                    ticket_data = SupportTicket.objects.filter(
-                        ticketRequester=username, open=False
-                    ).order_by("-id")[:Quantity_tickets]
-                elif Status == "all":
-                    ticket_data = SupportTicket.objects.filter(
-                        ticketRequester=username
-                    ).order_by("-id")[:Quantity_tickets]
-            else:
-                if Status == "open":
-                    ticket_data = SupportTicket.objects.filter(
-                        ticketRequester=username, open=True
-                    )[:Quantity_tickets]
-                if Status == "stop":
-                    ticket_data = SupportTicket.objects.filter(
-                        ticketRequester=username, open=None
-                    )[:Quantity_tickets]
-                elif Status == "close":
-                    ticket_data = SupportTicket.objects.filter(
-                        ticketRequester=username, open=False
-                    )[:Quantity_tickets]
-                elif Status == "all":
-                    ticket_data = SupportTicket.objects.filter(
-                        ticketRequester=username
-                    )[:Quantity_tickets]
+        if order == "-id":
+            if Status == "open":
+                ticket_data = SupportTicket.objects.filter(
+                    ticketRequester=username, open=True
+                ).order_by("-id")[:Quantity_tickets]
+            elif Status == "close":
+                ticket_data = SupportTicket.objects.filter(
+                    ticketRequester=username, open=None
+                ).order_by("-id")[:Quantity_tickets]
+            elif Status == "stop":
+                ticket_data = SupportTicket.objects.filter(
+                    ticketRequester=username, open=False
+                ).order_by("-id")[:Quantity_tickets]
+            elif Status == "all":
+                ticket_data = SupportTicket.objects.filter(
+                    ticketRequester=username
+                ).order_by("-id")[:Quantity_tickets]
+        else:
+            if Status == "open":
+                ticket_data = SupportTicket.objects.filter(
+                    ticketRequester=username, open=True
+                )[:Quantity_tickets]
+            elif Status == "stop":
+                ticket_data = SupportTicket.objects.filter(
+                    ticketRequester=username, open=None
+                )[:Quantity_tickets]
+            elif Status == "close":
+                ticket_data = SupportTicket.objects.filter(
+                    ticketRequester=username, open=False
+                )[:Quantity_tickets]
+            elif Status == "all":
+                ticket_data = SupportTicket.objects.filter(ticketRequester=username)[
+                    :Quantity_tickets
+                ]
 
-        except Exception as e:
-            print(e)
+    except Exception as e:
+        print(e)
 
-        ticket_list = []
-        ticket_json = None
-        try:
-            for ticket in ticket_data:
-                ticket_json = serialize("json", [ticket])
-                ticket_list.append(ticket_json)
+    ticket_list = []
+    ticket_json = None
+    try:
+        for ticket in ticket_data:
+            ticket_json = serialize("json", [ticket])
+            ticket_list.append(ticket_json)
 
-            ticket_objects = []
-            for ticket in ticket_list:
-                ticket_data = loads(ticket)[0]["fields"]
-                ticket_data["id"] = loads(ticket)[0]["pk"]
-                ticket_objects.append(ticket_data)
+        ticket_objects = []
+        for ticket in ticket_list:
+            ticket_data = loads(ticket)[0]["fields"]
+            ticket_data["id"] = loads(ticket)[0]["pk"]
+            ticket_objects.append(ticket_data)
 
-            return JsonResponse({"tickets": ticket_objects}, status=200, safe=True)
+        return JsonResponse({"tickets": ticket_objects}, status=200, safe=True)
 
-        except Exception as e:
-            print(e)
+    except Exception as e:
+        print(e)
 
         return
-    if request.method == "POST":
-        return
+
+
+@transaction.atomic
+@contextmanager
+@never_cache
+def get_database_connection():
+    """Context manager for managing database connections."""
+    connection = None
+    try:
+        connection = mysql.connector.connect(
+            host=config("DB_HOST"),
+            database=config("DB_NAME"),
+            user=config("DB_USER"),
+            password=config("DB_PASSWORD"),
+        )
+        yield connection
+    except mysql.connector.Error as err:
+        logger.error(f"Database connection error: {err}")
+        raise
+    finally:
+        if connection and connection.is_connected():
+            connection.close()
+
+
+@login_required(login_url="/login")
+@require_http_methods(["GET"])
+@never_cache
+def equipamentsForAlocate(request):
+    connection = None
+    cursor = None
+    query = None
+    result = None
+    try:
+        with get_database_connection() as connection:
+            cursor = connection.cursor()
+            query = "SELECT COUNT(*) FROM machines WHERE system_name LIKE '%windows%'"
+            cursor.execute(query)
+            result = cursor.fetchone()
+
+            # Converta os resultados para uma lista de dicionários
+            totalWindows = result[0]
+    except Exception as e:
+        print(e)
 
 
 # Função para converter a lista de strings em uma lista de dicionários
