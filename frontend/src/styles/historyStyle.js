@@ -145,47 +145,6 @@ export const BtnOpen = styled.button`
   -webkit-margin: 1em; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
 `;
 
-export const DivAlocate = styled.div`
-  margin: 10px;
-  -webkit-margin: 10px; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
-`;
-
-export const IMGFiles2 = styled.img`
-  width: 80px;
-  height: 80px;
-  border: 5px solid; /* Adicionado o estilo de borda completo */
-  cursor: pointer;
-  transition: 0.7s;
-  &:hover {
-    transform: scale(1.5);
-  }
-  -webkit-width: 80px; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
-  -webkit-height: 80px; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
-  -webkit-border: 5px solid; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
-  -webkit-cursor: pointer; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
-  -webkit-transition: 0.7s; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
-`;
-
-export const Calendar = styled.div`
-  width: 100%;
-  height: 100%;
-  align-items: center;
-  justify-content: center;
-  -webkit-width: 100%; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
-  -webkit-height: 100%; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
-  -webkit-align-items: center; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
-  -webkit-justify-content: center; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
-`;
-
-export const DivINp = styled.div`
-  display: flex;
-  width: 100%;
-  justify-content: center;
-  -webkit-display: flex; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
-  -webkit-width: 100%; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
-  -webkit-justify-content: center; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
-`;
-
 export const DivFilter = styled.div`
   margin: 0 auto;
   width: 90% !important;
@@ -472,18 +431,6 @@ export const BtnNF = styled.button`
   -webkit-background-color: transparent; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   -webkit-cursor: pointer; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   -webkit-border: none; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
-`;
-
-export const PBloq = styled.p`
-  margin: 10px;
-  -webkit-margin: 10px; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
-`;
-
-export const DivCal = styled.div`
-  display: flex;
-  justify-content: center;
-  -webkit-display: flex; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
-  -webkit-justify-content: center; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
 `;
 
 export const PChatHourR = styled.div`

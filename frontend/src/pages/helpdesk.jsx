@@ -5,7 +5,7 @@ import Loading from "../components/loading";
 import Message from "../components/message";
 import NavBar from "../components/navbar";
 import "react-day-picker/dist/style.css";
-import React, { useEffect, useRef, useState, createContext } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import "../styles/bootstrap/css/bootstrap.css";
 import {
   BtnFile,
@@ -35,8 +35,8 @@ import {
   Span3,
 } from "../styles/helpdeskStyle";
 import TicketsOptions from "../components/ticketsOptions";
+import { TickerContext } from "../services/TickerContext";
 
-export const ValorContext = createContext();
 export default function Helpdesk() {
   useEffect(() => {
     // Este useEffect é executado uma vez após o componente ser montado.
@@ -69,19 +69,25 @@ export default function Helpdesk() {
   const [nameOnDropFiles, setNameOnDropFiles] = useState("");
   const [nameOnInutFiles, setNameOnInputFiles] = useState("");
   const [observation, setObservation] = useState("");
-  const [messagetitle, setMessagetitle] = useState("");
-  const [sector, setSector] = useState("");
-  const [occurrence, setOccurrence] = useState("");
-  const [problemn, setProblemn] = useState("");
-  const [equipamentSelected, setEquipamentSelected] = useState("");
-  const [typeError, setTypeError] = useState("");
   const [theme, setTheme] = useState("");
   const [themeTicket, setThemeTicket] = useState("");
-  const [respectiveArea, setRespectiveArea] = useState("");
-  const [messageinfo1, setMessageinfo1] = useState("");
-  const [messageinfo2, setMessageinfo2] = useState("");
-  // Declarando variaveis de estado Boolean
+  const [typeError, setTypeError] = useState("");
 
+  const { messagetitle } = useContext(TickerContext);
+  const { setMessagetitle } = useContext(TickerContext);
+  const { alert } = useContext(TickerContext);
+  const { alertverify } = useContext(TickerContext);
+  const { setAlertVerify } = useContext(TickerContext);
+  const { sector } = useContext(TickerContext);
+  const { occurrence } = useContext(TickerContext);
+  const { problemn } = useContext(TickerContext);
+  const { respectiveArea } = useContext(TickerContext);
+  const { machineAlocate } = useContext(TickerContext);
+  const { messageinfo1 } = useContext(TickerContext);
+  const { messageinfo2 } = useContext(TickerContext);
+  const { selectedDay } = useContext(TickerContext);
+
+  // Declarando variaveis de estado Boolean
   const [dashboard, setDashboard] = useState(false);
   const [fileSizeNotify, setFileSizeNotify] = useState(false);
   const [info, setInfo] = useState(false);
@@ -91,15 +97,12 @@ export default function Helpdesk() {
   const [reset, setReset] = useState(false);
   const [message, setMessage] = useState(false);
   const [navbar, setNavbar] = useState(false);
-  const [alertverify, setAlertVerify] = useState(false);
-  const [alert, setAlert] = useState(false);
 
   // Declarando variaveis de estado Vazias
   const [dataUser, setdataUser] = useState();
 
   // Declarando varaiveis de estado array
   const [arrayInput, setArrayInput] = useState([]);
-  const [daysForAlocate, setDaysForAlocate] = useState([]);
   const [fileimg, setFileImg] = useState([]);
   const [filename, setFileName] = useState([]);
 
@@ -328,17 +331,20 @@ export default function Helpdesk() {
         total_size += file.size;
         formdataUser.append("image", file);
       }
-    } else if (daysForAlocate.length > 0) {
-      for (let dateObj of daysForAlocate) {
+    }
+    if (selectedDay.length > 0) {
+      for (let dateObj of selectedDay) {
         const day = dateObj.getDate().toString().padStart(2, "0");
         const month = (dateObj.getMonth() + 1).toString().padStart(2, "0");
         const year = dateObj.getFullYear();
         const dateFormated = `${year}-${month}-${day}`;
         NewDatesAlocate.push(dateFormated);
       }
-      formdataUser.append("id_equipament", equipamentSelected);
+      formdataUser.append("id_equipament", machineAlocate);
       formdataUser.append("days_alocated", NewDatesAlocate);
     }
+    console.log(machineAlocate);
+
     if (total_size > 10 * 1024 * 1024) {
       setMessage(true);
       setTypeError("Capacidade Máxima Ultrapassada");
@@ -397,27 +403,6 @@ export default function Helpdesk() {
           setMessage(true);
           setTypeError("Dados Inválidos");
           setMessageError("Arquivo Anexado Inválido");
-          return window.scrollTo({
-            top: 0,
-            behavior: "smooth",
-          });
-        } else if (Status === 310) {
-          setDaysForAlocate([]);
-          const dates = dataUser.dates;
-          var btn = document.querySelectorAll(".rdp-day");
-          btn.forEach(function (b) {
-            for (var i = 0; i < dates.length; i++) {
-              var date = dates[i].slice(-2);
-              if (b.textContent === date) {
-                b.classList.remove("rdp-day_selected");
-                b.disabled = true;
-              }
-            }
-          });
-
-          setMessage(true);
-          setTypeError("Dados Inválidos");
-          setMessageError("dataUser de Alocação Indisponivel");
           return window.scrollTo({
             top: 0,
             behavior: "smooth",
@@ -576,67 +561,6 @@ export default function Helpdesk() {
     setInfo(false);
   }
 
-  // Pega a variavel de estado typeError
-  const getTypeError = (value) => {
-    setTypeError(value);
-  };
-
-  // Pega a variavel de estado messageError
-  const getMessageError = (value) => {
-    setMessageError(value);
-  };
-
-  // Pega a variavel de estado sector
-  const getSector = (value) => {
-    setSector(value);
-  };
-
-  // Pega a variavel de estado ocurrence
-  const getOccurrence = (value) => {
-    setOccurrence(value);
-  };
-
-  // Pega a variavel de estado problemn
-  const getProblemn = (value) => {
-    setProblemn(value);
-  };
-
-  // Pega a variavel de estado equipamentSelected
-  const getEquipamentSelected = (value) => {
-    setEquipamentSelected(value);
-  };
-
-  // Pega a variavel de estado messageInfo2
-  const getMessageInfo2 = (value) => {
-    setMessageinfo2(value);
-  };
-
-  // Pega a variavel de estado messageInfo1
-  const getMessageInfo1 = (value) => {
-    setMessageinfo1(value);
-  };
-
-  // Pega a variavel de estado messageTitle
-  const getMessageTitle = (value) => {
-    setMessagetitle(value);
-  };
-
-  // Pega a variavel de estado alertVerify
-  const getAlertVerify = (value) => {
-    setAlertVerify(value);
-  };
-
-  // Pega a variavel de estado alert
-  const getAlert = (value) => {
-    setAlert(value);
-  };
-
-  // Pega a variavel de estado respectiveArea
-  const getRespectiveArea = (value) => {
-    setRespectiveArea(value);
-    console.log(value);
-  };
-
   return (
     <Div className={theme}>
       {navbar && <NavBar Name={dataUser.name} JobTitle={dataUser.job_title} />}
@@ -679,36 +603,8 @@ export default function Helpdesk() {
             </label>
             <Input type="text" className="form-control" id="companyInput" value={dataUser.company || ""} disabled={dataUser.company} />
           </div>
-          <ValorContext.Provider
-            value={{
-              respectiveArea,
-              setRespectiveArea: getRespectiveArea,
-              alert,
-              setAlert: getAlert,
-              messagetitle,
-              setMessagetitle: getMessageTitle,
-              messageinfo1,
-              setMessageinfo1: getMessageInfo1,
-              messageinfo2,
-              setMessageinfo2: getMessageInfo2,
-              typeError,
-              setTypeError: getTypeError,
-              messageError,
-              setMessageError: getMessageError,
-              sector,
-              setSector: getSector,
-              occurrence,
-              setOccurrence: getOccurrence,
-              problemn,
-              setProblemn: getProblemn,
-              alertverify,
-              setAlertVerify: getAlertVerify,
-              equipamentSelected,
-              setEquipamentSelected: getEquipamentSelected,
-            }}
-          >
-            <TicketsOptions reset={reset} />
-          </ValorContext.Provider>
+
+          <TicketsOptions reset={reset} />
           {alert && (
             <div className="alert alert-info d-flex flex-column" role="alert">
               <h5 className="fw-bold">{messagetitle}</h5>

@@ -26,22 +26,8 @@ class SupportTicket(models.Model):
     PID = models.IntegerField(null=False, blank=False)
     open = models.BooleanField(null=True, blank=False)
     chat = models.TextField(max_length=10000, blank=True, null=True)
-    equipament = models.ForeignKey(
-        Equipaments, blank=True, null=True, on_delete=models.SET_NULL
-    )
+    equipament = models.TextField(max_length=30, blank=True, null=True)
     date_alocate = models.TextField(max_length=1000, blank=True, null=False)
-    name_new_user = models.TextField(max_length=15, blank=True, null=False)
-    sector_new_user = models.TextField(max_length=30, blank=True, null=False)
-    where_from = models.TextField(max_length=30, blank=True, null=False)
-    machine_new_user = models.BooleanField(blank=True, null=True)
-    company_new_user = models.TextField(max_length=15, blank=True, null=False)
-    software_new_user = models.TextField(max_length=300, blank=True, null=False)
-    cost_center = models.IntegerField(null=False, blank=False, default=False)
-    job_title_new_user = models.TextField(max_length=50, blank=True, null=False)
-    start_work_new_user = models.TextField(max_length=60, blank=True, null=False)
-    copy_profile_new_user = models.TextField(max_length=50, blank=True, null=False)
-    mail_tranfer = models.TextField(max_length=30, blank=True, null=False)
-    old_files = models.TextField(max_length=400, blank=True, null=False)
     details = models.TextField(max_length=1000, blank=True, null=True)
 
     def __str__(self):

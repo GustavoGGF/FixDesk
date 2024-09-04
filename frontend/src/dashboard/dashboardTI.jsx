@@ -5,9 +5,7 @@
  * - ptBR: localização em português brasileiro para o componente DayPicker.
  * - "react-day-picker/dist/style.css": estilos CSS para o componente DayPicker.
  */
-import React, { useEffect, useState, useRef } from "react";
-import { DayPicker } from "react-day-picker";
-import ptBR from "date-fns/locale/pt";
+import React, { useEffect, useState, useRef, useContext } from "react";
 import "react-day-picker/dist/style.css";
 
 /**
@@ -37,7 +35,7 @@ import "react-day-picker/dist/style.css";
  * - DashboardBar: componente de barra do painel de instrumentos.
  * - Mail, XLS, ZIP, TXT, WORD, PDF, Download, Exclude, DownTick, Seeting, Send: importações de imagens de componentes.
  */
-import { ButtonDet, Div, DivChatDetails, DivDetaisl, DivFilter, DivModify, DropBTN, DropContent2, IMGConfig, ImgSend, InputTicket, TextObersavation, ZIndex } from "../styles/dashboardTI.js";
+import { ButtonDet, Div, DivChatDetails, DivDetaisl, DivFilter, DivModify, DropBTN, DropContent2, IMGConfig, ImgSend, InputTicket, TextObersavation, ZIndex, BtnClose } from "../styles/dashboardTI.js";
 import DashBoardPie from "../components/dashboardPie";
 import Loading from "../components/loading";
 import Navbar from "../components/navbar";
@@ -48,11 +46,8 @@ import {
   BtnNF,
   Button1,
   Button2,
-  Calendar,
   Close,
   CloseBTN,
-  DivAlocate,
-  DivCal,
   DivCard,
   DivChat,
   DivContainerImages,
@@ -60,7 +55,6 @@ import {
   DivFlex1,
   DivFlex2,
   DivHR,
-  DivINp,
   DivImageOpen,
   DivImages,
   DivNewFiles,
@@ -68,7 +62,6 @@ import {
   DivSelectView,
   H5Card,
   IMGFiles,
-  IMGFiles2,
   IMGS1,
   ImageFile,
   ImageOpen,
@@ -76,7 +69,6 @@ import {
   ImgSelectView,
   Input1,
   InputFile,
-  PBloq,
   PChatHourL,
   PChatHourR,
   PNWFile,
@@ -116,7 +108,8 @@ import TXT from "../images/components/arquivo-txt.png";
 import WORD from "../images/components/palavra.png";
 import XLS from "../images/components/xlsx.png";
 import ZIP from "../images/components/zip.jpg";
-
+import TicketsOptions from "../components/ticketsOptions";
+import { TickerContext } from "../services/TickerContext.js";
 /**
  * Função para ajustar o tema com base na configuração de tema armazenada.
  * - Utiliza o hook useEffect para executar a lógica uma vez após a renderização inicial.
@@ -125,6 +118,7 @@ import ZIP from "../images/components/zip.jpg";
  *   - Se não houver configuração de tema ou se for "black", define o tema como "black" e chama a função ThemeBlack().
  *   - Caso contrário, chama a função ThemeLight().
  */
+
 export default function DashboardTI() {
   useEffect(() => {
     document.title = "DashBoard TI";
@@ -144,38 +138,24 @@ export default function DashboardTI() {
   /**
    * Variáveis de estado Boolean
    */
-  const [backup, setBackup] = useState(false);
   const [btnmore, setBtnMore] = useState(true);
   const [chat, setChat] = useState(true);
   const [dataModify, setDataModify] = useState(true);
-  const [eng, setEng] = useState(false);
-  const [equip, setEquip] = useState(false);
-  const [fake, setFake] = useState(true);
   const [fakeSelect, setFakeSelect] = useState(true);
   const [fetchChat, setFetchChat] = useState(false);
-  const [folder, setFolder] = useState(false);
   const [imageopen, setImageOpen] = useState(false);
   const [inCard, setInCard] = useState(false);
-  const [infra, setInfra] = useState(false);
   const [inList, setInList] = useState(false);
-  const [internet, setInternet] = useState(false);
   const [loading, setLoading] = useState(true);
   const [loadingChat, setLoadingChat] = useState(false);
   const [loadingDash, setLoadingDash] = useState(true);
-  const [mail, setMail] = useState(false);
-  const [mbi, setMBI] = useState(false);
   const [message, setMessage] = useState(false);
   const [messageChat, setMessageChat] = useState(false);
   const [modifyTicket, setModifyTicket] = useState(false);
   const [navbar, setNavbar] = useState(false);
   const [newFiles, setNewFiles] = useState(false);
-  const [OcurrenceFake, setOcurrenceFake] = useState(true);
-  const [office, setOffice] = useState(false);
   const [problemInfra, setProblemInfra] = useState(false);
   const [problemSyst, setProblemSyst] = useState(false);
-  const [sap, setSAP] = useState(false);
-  const [synch, setSynch] = useState(false);
-  const [system, setSystem] = useState(false);
   const [techDetails, setTechDetails] = useState(false);
   const [ticketWindow, setTicketWindow] = useState(false);
   /**
@@ -183,24 +163,11 @@ export default function DashboardTI() {
    */
   const [classBlur, setClassBlur] = useState("");
   const [colorTheme, setColorTheme] = useState("");
-  const [companynewuser, setCompanyNewUser] = useState("");
-  const [copyprofilenewuser, setCopyProfileNewUser] = useState("");
-  const [costcenter, setCostCenter] = useState("");
   const [detailsChat, setDetailsChat] = useState("");
-  const [equipamentLocate, setEquipamentLocate] = useState("");
-  const [jobtitlenewuser, setJobTitleNewUser] = useState("");
   const [lifeTime, setLifetime] = useState("");
-  const [mailtranfer, setMailTranfer] = useState("");
   const [messageError, setMessageError] = useState("");
   const [mountDetails, setMountDetails] = useState("");
-  const [namenewuser, setNameNewUser] = useState("");
-  const [occurrence, setOccurrence] = useState("");
-  const [oldfile, setOldFiles] = useState("");
-  const [problemn, setProblemn] = useState("");
-  const [sector, setsector] = useState("");
-  const [sectornewuser, setSectorNewUser] = useState("undefined");
   const [selectedTech, setSelectedTech] = useState("");
-  const [softwarenewuser, setSoftwareNewUser] = useState("");
   const [status, setStatus] = useState("open");
   const [textChat, setTextChat] = useState("");
   const [theme, setTheme] = useState("");
@@ -217,18 +184,13 @@ export default function DashboardTI() {
   const [ticketSECTOR, setTicketSECTOR] = useState("");
   const [token, setToken] = useState("");
   const [typeError, setTypeError] = useState("");
-  const [wherefrom, setWhereFrom] = useState("");
   /**
    * Variáveis de estado Void.
    */
   const [countChat, setCountChat] = useState();
-  const [daysLocated, setDaysLocated] = useState();
-  const [imageEquipament, setImageEquipament] = useState();
   const [imageurl, setImageUrl] = useState();
   const [initUpdateChat, setInitUpdateChat] = useState();
-  const [machinenewuser, setMachineNewUser] = useState();
   const [nameNWFiles, setNameNWFiles] = useState();
-  const [startworknewuser, setStartWorkNewUser] = useState();
   const [ticketOpen, setTicketOpen] = useState();
   /**
    * Variáveis de estado Int.
@@ -258,32 +220,26 @@ export default function DashboardTI() {
   const btnClose = useRef(null);
   const btnOpen = useRef(null);
   const btnStop = useRef(null);
-  const calendarALT = useRef(null);
   const dropCont = useRef(null);
   const inputChat = useRef(null);
   const inputRef = useRef(null);
   const fiftyView = useRef(null);
   const fiveView = useRef(null);
-  const selectBackup0 = useRef(null);
   const selectBo = useRef(null);
-  const selectEngO = useRef(null);
-  const selectError = useRef(null);
-  const selectEquip0 = useRef(null);
-  const selectFolder0 = useRef(null);
-  const selectForm = useRef(null);
-  const selectMail0 = useRef(null);
-  const selectInternet0 = useRef(null);
-  const selectMBIO = useRef(null);
   const selectOcorrence = useRef(null);
-  const selectOfficeO = useRef(null);
   const selectOrderO = useRef(null);
-  const selectSAPO = useRef(null);
-  const selectSynchO = useRef(null);
   const sectionTicket = useRef(null);
   const selectViewCard = useRef(null);
   const selectViewList = useRef(null);
   const textareaRef = useRef(null);
   const thenView = useRef(null);
+
+  // Declarando variaveis de Contexto
+  const { sector } = useContext(TickerContext);
+  const { occurrence } = useContext(TickerContext);
+  const { problemn } = useContext(TickerContext);
+  const { setCreate_user_acess } = useContext(TickerContext);
+  const { setAlocate_Machine_Acess } = useContext(TickerContext);
 
   /**
    * Função ativada quando a tela de ticket for ativada.
@@ -341,7 +297,6 @@ export default function DashboardTI() {
   let timeoutId; // Variável para armazenar identificador de tempo limite.
   const UpNwfile = []; // Array para armazenar novos arquivos.
   let colorBorder = ""; // Variável para armazenar cor da borda.
-  let daysLCT = []; // Array para armazenar dias de última modificação.
 
   /**
    * Função para aumentar o contador de atualização de conversas no chat do chamado ativo.
@@ -685,43 +640,6 @@ export default function DashboardTI() {
         setTicketResponsible_Technician(data.responsible_technician);
         setTicketID(data.id);
         setTicketOpen(data.open);
-        setNameNewUser(data.name_new_user);
-        if (data.sector_new_user.length > 1) {
-          setSectorNewUser(data.sector_new_user);
-        } else {
-          setSectorNewUser("undefined");
-        }
-        setWhereFrom(data.where_from);
-        setMachineNewUser(data.machine_new_user);
-        setCompanyNewUser(data.company_new_user);
-        setSoftwareNewUser(data.software_new_user);
-        setCostCenter(data.cost_center);
-        setJobTitleNewUser(data.job_title_new_user);
-        var nwdate = new Date(data.start_work_new_user);
-        setStartWorkNewUser(nwdate);
-        setCopyProfileNewUser(data.copy_profile_new_user);
-        setMailTranfer(data.mail_tranfer);
-        setOldFiles(data.old_files);
-
-        // Verifica se há um equipamento no chamado e gera-o na tela, se aplicável.
-        if (data.equipament["image"] !== undefined) {
-          // Verifica se há uma imagem de equipamento definida.
-          const Div = (
-            <DivAlocate className="d-flex flex-column w-100 align-items-center">
-              <p className="text-center">Modelo: {data.equipament["model"]}</p>
-              <IMGFiles2 src={`data:image/jpeg;base64,${data.equipament["image"]}`} onClick={openImage} alt="" />
-            </DivAlocate>
-          );
-          setImageEquipament(Div); // Define o equipamento com imagem no estado correspondente.
-          setEquipamentLocate(data.equipament["company"]); // Define a empresa do equipamento no estado correspondente.
-          for (let NWdate of data.days_alocated) {
-            // Percorre as datas alocadas.
-            var date = new Date(NWdate); // Converte cada data para um objeto Date.
-            daysLCT.push(date); // Adiciona as datas ao array de dias localizados.
-          }
-          setDaysLocated(daysLCT); // Define os dias localizados no estado correspondente.
-          calendarALT.current.classList.add("AdjustWid"); // Adiciona uma classe para ajustar a largura do calendário.
-        }
 
         var name_verify = userData.name;
 
@@ -3003,455 +2921,6 @@ export default function DashboardTI() {
   }
 
   /**
-   * Atualiza o estado com base na opção selecionada.
-   *
-   * @param {boolean} infra - Define se a opção Infraestrutura deve ser ativada.
-   * @param {boolean} system - Define se a opção Sistema deve ser ativada.
-   * @param {string} sector - Define o setor com base na seleção.
-   * @param {boolean} occurrenceFake - Define se o estado occurrenceFake deve ser ativado.
-   */
-  function updateState(infra, system, sector, occurrenceFake) {
-    setInfra(infra);
-    setSystem(system);
-    setBackup(false);
-    setMail(false);
-    setEquip(false);
-    setInternet(false);
-    setFolder(false);
-    setsector(sector);
-    setMBI(false);
-    setSAP(false);
-    setOffice(false);
-    setSynch(false);
-    setEng(false);
-    setFake(true);
-    setOcurrenceFake(occurrenceFake);
-  }
-  function handleSelect() {
-    const option = selectForm.current.options[selectForm.current.selectedIndex].value;
-
-    switch (option) {
-      case "infra":
-        updateState(true, false, "Infraestrutura", false);
-        break;
-      case "sistema":
-        updateState(false, true, "Sistema", false);
-        break;
-      case "none":
-        updateState(false, false, "", true);
-        break;
-      default:
-        break;
-    }
-  }
-
-  /**
-   * Atualiza o estado dos problemas com base na seleção do usuário.
-   *
-   * Esta função é acionada quando o usuário seleciona uma opção em um formulário. Ela ajusta o estado dos problemas
-   * para exibir a opção correta, desativando outras opções e configurando o texto do campo de ocorrência.
-   *
-   * Dependendo da seleção, a função realiza as seguintes ações:
-   *
-   * - **Backup**: Define `backup` como `true`, `fake` como `false` e configura a ocorrência como "Backup".
-   * - **Mail**: Define `mail` como `true`, `fake` como `false` e configura a ocorrência como "E-mail".
-   * - **Equip**: Define `equip` como `true`, `fake` como `false` e configura a ocorrência como "Equipamento".
-   * - **Internet**: Define `internet` como `true`, `fake` como `false` e configura a ocorrência como "Internet".
-   * - **Folder**: Define `folder` como `true`, `fake` como `false` e configura a ocorrência como "Permissão".
-   * - **SAP**: Define `SAP` como `true`, `fake` como `false` e configura a ocorrência como "SAP".
-   * - **MBI**: Define `MBI` como `true`, `fake` como `false` e configura a ocorrência como "MBI".
-   * - **Synch**: Define `synch` como `true`, `fake` como `false` e configura a ocorrência como "Synchro".
-   * - **Office**: Define `office` como `true`, `fake` como `false` e configura a ocorrência como "Office".
-   * - **Eng**: Define `eng` como `true`, `fake` como `false` e configura a ocorrência como "Softwares de Eng".
-   * - **None**: Desativa todas as opções e define `fake` como `true`.
-   *
-   * @param {boolean} backup - Define se a opção Backup deve ser ativada.
-   * @param {boolean} mail - Define se a opção Mail deve ser ativada.
-   * @param {boolean} equip - Define se a opção Equip deve ser ativada.
-   * @param {boolean} internet - Define se a opção Internet deve ser ativada.
-   * @param {boolean} folder - Define se a opção Folder deve ser ativada.
-   * @param {boolean} SAP - Define se a opção SAP deve ser ativada.
-   * @param {boolean} MBI - Define se a opção MBI deve ser ativada.
-   * @param {boolean} synch - Define se a opção Synch deve ser ativada.
-   * @param {boolean} office - Define se a opção Office deve ser ativada.
-   * @param {boolean} eng - Define se a opção Eng deve ser ativada.
-   * @param {string} occurrence - Define o texto da ocorrência com base na seleção.
-   * @param {boolean} fake - Define se a opção Fake deve ser ativada.
-   */
-  function updateProblemState({
-    backup = false,
-    mail = false,
-    equip = false,
-    internet = false,
-    folder = false,
-    SAP = false,
-    MBI = false,
-    synch = false,
-    office = false,
-    eng = false,
-    occurrence = "",
-    fake = false,
-  }) {
-    setBackup(backup);
-    setMail(mail);
-    setEquip(equip);
-    setInternet(internet);
-    setFolder(folder);
-    setSAP(SAP);
-    setMBI(MBI);
-    setSynch(synch);
-    setOffice(office);
-    setEng(eng);
-    setOccurrence(occurrence);
-    setFake(fake);
-  }
-  function selectProblem() {
-    if (selectError) {
-      const option = selectError.current.options[selectError.current.selectedIndex].value;
-
-      switch (option) {
-        case "backup":
-          updateProblemState({ backup: true, occurrence: "Backup", fake: false });
-          break;
-        case "mail":
-          updateProblemState({ mail: true, occurrence: "E-mail", fake: false });
-          break;
-        case "equip":
-          updateProblemState({ equip: true, occurrence: "Equipamento", fake: false });
-          break;
-        case "internet":
-          updateProblemState({ internet: true, occurrence: "Internet", fake: false });
-          break;
-        case "folder":
-          updateProblemState({ folder: true, occurrence: "Permissão", fake: false });
-          break;
-        case "sap":
-          updateProblemState({ SAP: true, occurrence: "SAP", fake: false });
-          break;
-        case "mbi":
-          updateProblemState({ MBI: true, occurrence: "MBI", fake: false });
-          break;
-        case "synch":
-          updateProblemState({ synch: true, occurrence: "Synchro", fake: false });
-          break;
-        case "office":
-          updateProblemState({ office: true, occurrence: "Office", fake: false });
-          break;
-        case "eng":
-          updateProblemState({ eng: true, occurrence: "Softwares de Eng", fake: false });
-          break;
-        case "none":
-          updateProblemState({ fake: true });
-          break;
-        default:
-          break;
-      }
-    }
-  }
-
-  // Função que trata a seleção de problemas relacionados a backup
-  function selectBackup() {
-    const optionBackup = selectBackup0.current.options[selectBackup0.current.selectedIndex].value;
-
-    switch (optionBackup) {
-      case "pasta":
-        setProblemn("Restaurar pasta");
-        break;
-      case "mail":
-        setProblemn("Restaurar e-mail");
-        break;
-      case "none":
-        // Se não há problema a ser definido para "none", você pode remover a linha ou adicionar uma ação.
-        break;
-      default:
-        // Aqui você pode lidar com casos inesperados, se necessário.
-        break;
-    }
-  }
-
-  // Função que trata a seleção de problemas relacionados a e-mail
-  function selectMail() {
-    // Obtém a opção selecionada no elemento <select> referenciado por selectMail0
-    const optionMail = selectMail0.current.options[selectMail0.current.selectedIndex].value;
-
-    // Usa um switch para lidar com diferentes valores da opção selecionada
-    switch (optionMail) {
-      // Caso padrão: não faz nada
-      default:
-        break;
-
-      // Caso em que a opção selecionada é "maxcap"
-      case "maxcap":
-        // Define o problema como "Aumentar capacidade de e-mail"
-        setProblemn("Aumentar capacidade de e-mail");
-        break;
-
-      // Caso em que a opção selecionada é "conect"
-      case "conect":
-        // Define o problema como "Problema com conexão"
-        setProblemn("Problema com conexão");
-        break;
-
-      // Caso em que a opção selecionada é "none"
-      case "none":
-        // Não faz nada (ou opcionalmente pode definir um valor padrão, como uma string vazia)
-        break;
-    }
-  }
-
-  // Função que trata a seleção de problemas relacionados a equipamentos
-  function selectEquip() {
-    // Obtém a opção selecionada no elemento <select> referenciado por selectEquip0
-    const optionEquip = selectEquip0.current.options[selectEquip0.current.selectedIndex].value;
-
-    // Usa um switch para lidar com diferentes valores da opção selecionada
-    switch (optionEquip) {
-      // Caso padrão: não faz nada
-      default:
-        break;
-
-      // Caso em que a opção selecionada é "none"
-      case "none":
-        // Não faz nada (ou opcionalmente pode definir um valor padrão, como uma string vazia)
-        break;
-
-      // Caso em que a opção selecionada é "off"
-      case "off":
-        // Define o problema como "Equipamento não liga"
-        setProblemn("Equipamento não liga");
-        break;
-
-      // Caso em que a opção selecionada é "printer"
-      case "printer":
-        // Define o problema como "Problema com a impressora"
-        setProblemn("Problema com a impressora");
-        break;
-
-      // Caso em que a opção selecionada é "roaming"
-      case "roaming":
-        // Define o problema como "Mudança de local de trabalho"
-        setProblemn("Mudança de local de trabalho");
-        break;
-
-      // Caso em que a opção selecionada é "usb"
-      case "usb":
-        // Define o problema como "USB"
-        setProblemn("USB");
-        break;
-
-      // Caso em que a opção selecionada é "change"
-      case "change":
-        // Define o problema como "Trocar Equipamento"
-        setProblemn("Trocar Equipamento");
-        break;
-    }
-  }
-
-  // Função que trata a seleção de problemas relacionados à internet
-  function selectInternet() {
-    // Obtém a opção selecionada no elemento <select> referenciado por selectInternet0
-    const option = selectInternet0.current.options[selectInternet0.current.selectedIndex].value;
-
-    // Usa um switch para lidar com diferentes valores da opção selecionada
-    switch (option) {
-      // Caso padrão: não faz nada
-      default:
-        break;
-
-      // Caso em que a opção selecionada é "none"
-      case "none":
-        // Não faz nada (ou opcionalmente pode definir um valor padrão, como uma string vazia)
-        break;
-
-      // Caso em que a opção selecionada é "lib"
-      case "lib":
-        // Define o problema como "Liberação de site"
-        setProblemn("Liberação de site");
-        break;
-
-      // Caso em que a opção selecionada é "block"
-      case "block":
-        // Define o problema como "Bloqueio de site"
-        setProblemn("Bloqueio de site");
-        break;
-    }
-  }
-
-  // Função que trata a seleção de problemas relacionados a pastas
-  function selectFolder() {
-    // Obtém a opção selecionada no elemento <select> referenciado por selectFolder0
-    const option = selectFolder0.current.options[selectFolder0.current.selectedIndex].value;
-
-    // Usa um switch para lidar com diferentes valores da opção selecionada
-    switch (option) {
-      // Caso padrão: não faz nada
-      default:
-        break;
-
-      // Caso em que a opção selecionada é "none"
-      case "none":
-        // Não faz nada (ou opcionalmente pode definir um valor padrão, como uma string vazia)
-        break;
-
-      // Caso em que a opção selecionada é "lib"
-      case "lib":
-        // Define o problema como "Liberar pasta"
-        setProblemn("Liberar pasta");
-        break;
-
-      // Caso em que a opção selecionada é "block"
-      case "block":
-        // Define o problema como "Bloquear pasta"
-        setProblemn("Bloquear pasta");
-        break;
-    }
-  }
-
-  // Função que trata a seleção de problemas relacionados ao SAP
-  function selectSAP() {
-    // Obtém a opção selecionada no elemento <select> referenciado por selectSAPO
-    const optionSAP = selectSAPO.current.options[selectSAPO.current.selectedIndex].value;
-
-    // Usa um switch para lidar com diferentes valores da opção selecionada
-    switch (optionSAP) {
-      // Caso padrão: não faz nada
-      default:
-        break;
-
-      // Caso em que a opção selecionada é "none"
-      case "none":
-        // Não faz nada (ou opcionalmente pode definir um valor padrão, como uma string vazia)
-        break;
-
-      // Caso em que a opção selecionada é "user"
-      case "user":
-        // Define o problema como "Criação/exclusão usuário"
-        setProblemn("Criação/exclusão usuário");
-        break;
-
-      // Caso em que a opção selecionada é "access"
-      case "access":
-        // Define o problema como "Liberação/bloqueio de acessos"
-        setProblemn("Liberação/bloqueio de acessos");
-        break;
-
-      // Caso em que a opção selecionada é "quest"
-      case "quest":
-        // Define o problema como "Dúvidas operacionais"
-        setProblemn("Dúvidas operacionais");
-        break;
-
-      // Caso em que a opção selecionada é "error"
-      case "error":
-        // Define o problema como "Correção de falhas"
-        setProblemn("Correção de falhas");
-        break;
-    }
-  }
-
-  // Função que trata a seleção de problemas relacionados ao MBI
-  function selectMBI() {
-    // Obtém a opção selecionada no elemento <select> referenciado por selectMBIO
-    const optionMBI = selectMBIO.current.options[selectMBIO.current.selectedIndex].value;
-
-    // Usa um switch para lidar com diferentes valores da opção selecionada
-    switch (optionMBI) {
-      // Caso padrão: não faz nada
-      default:
-        break;
-
-      // Caso em que a opção selecionada é "none"
-      case "none":
-        // Não faz nada (ou opcionalmente pode definir um valor padrão, como uma string vazia)
-        break;
-
-      // Caso em que a opção selecionada é "user"
-      case "user":
-        // Define o problema como "Criação/exclusão usuário"
-        setProblemn("Criação/exclusão usuário");
-        break;
-
-      // Caso em que a opção selecionada é "access"
-      case "access":
-        // Define o problema como "Liberação/bloqueio de acessos"
-        setProblemn("Liberação/bloqueio de acessos");
-        break;
-
-      // Caso em que a opção selecionada é "quest"
-      case "quest":
-        // Define o problema como "Dúvidas operacionais"
-        setProblemn("Dúvidas operacionais");
-        break;
-
-      // Caso em que a opção selecionada é "error"
-      case "error":
-        // Define o problema como "Correção de falhas"
-        setProblemn("Correção de falhas");
-        break;
-    }
-  }
-
-  // Função que trata a seleção de problemas relacionados ao Office
-  function selectOffice() {
-    // Obtém a opção selecionada no elemento <select> referenciado por selectOfficeO
-    const optionOffice = selectOfficeO.current.options[selectOfficeO.current.selectedIndex].value;
-
-    // Usa um switch para lidar com diferentes valores da opção selecionada
-    switch (optionOffice) {
-      // Caso padrão: não faz nada
-      default:
-        break;
-
-      // Caso em que a opção selecionada é "none"
-      case "none":
-        // Não faz nada (ou opcionalmente pode definir um valor padrão, como uma string vazia)
-        break;
-
-      // Caso em que a opção selecionada é "buy"
-      case "buy":
-        // Define o problema como "Aquisição de software/licenciamento"
-        setProblemn("Aquisição de software/licenciamento");
-        break;
-
-      // Caso em que a opção selecionada é "error"
-      case "error":
-        // Define o problema como "Correção de falhas"
-        setProblemn("Correção de falhas");
-        break;
-    }
-  }
-
-  // Função que trata a seleção de problemas relacionados ao Eng
-  function selectEng() {
-    // Obtém a opção selecionada no elemento <select> referenciado por selectEngO
-    const optionEng = selectEngO.current.options[selectEngO.current.selectedIndex].value;
-
-    // Usa um switch para lidar com diferentes valores da opção selecionada
-    switch (optionEng) {
-      // Caso padrão: não faz nada
-      default:
-        break;
-
-      // Caso em que a opção selecionada é "none"
-      case "none":
-        // Não faz nada (ou opcionalmente pode definir um valor padrão, como uma string vazia)
-        break;
-
-      // Caso em que a opção selecionada é "buy"
-      case "buy":
-        // Define o problema como "Aquisição de software/licenciamento"
-        setProblemn("Aquisição de software/licenciamento");
-        break;
-
-      // Caso em que a opção selecionada é "error"
-      case "error":
-        // Define o problema como "Correção de falhas"
-        setProblemn("Correção de falhas");
-        break;
-    }
-  }
-
-  /**
    * Realiza a modificação de um chamado com base nas informações fornecidas pelo usuário.
    *
    * Esta função é acionada quando o usuário deseja modificar um chamado existente. Ela verifica se todos os dados necessários
@@ -3566,29 +3035,6 @@ export default function DashboardTI() {
         setMessage(true);
         return console.log(err);
       });
-  }
-
-  function selectSynch() {
-    const optionSynch = selectSynchO.current.options[selectSynchO.current.selectedIndex].value;
-
-    switch (optionSynch) {
-      default:
-        break;
-      case "none":
-        break;
-      case "user":
-        setProblemn("Criação/exclusão usuário");
-        break;
-      case "access":
-        setProblemn("Liberação/bloqueio de acessos");
-        break;
-      case "quest":
-        setProblemn("Dúvidas operacionais");
-        break;
-      case "error":
-        setProblemn("Correção de falhas");
-        break;
-    }
   }
 
   function closeModify() {
@@ -3888,6 +3334,8 @@ export default function DashboardTI() {
                   <DropBTN
                     className="btn btn-danger w-100"
                     onClick={() => {
+                      setCreate_user_acess(false);
+                      setAlocate_Machine_Acess(false);
                       setModifyTicket(true);
                     }}
                   >
@@ -3928,36 +3376,6 @@ export default function DashboardTI() {
               <input type="text" value={"Setor: " + ticketSECTOR} className="form-control" disabled />
               <input type="text" value={"Ocorrência: " + ticketOCCURRENCE} className="form-control" disabled />
               <input type="text" value={"Problema: " + ticketPROBLEMN} className="form-control" disabled />
-              <input type="text" value={"Nome: " + namenewuser} className="form-control" disabled hidden={namenewuser.length > 1 ? false : true} />
-              <input type="text" value={"Setor: " + sectornewuser} className="form-control" disabled hidden={sectornewuser === "undefined" ? true : false} />
-              <input type="text" value={"Remanejamento: " + wherefrom} className="form-control" disabled hidden={wherefrom.length > 1 ? false : true} />
-              <input type="text" value="Necessita-se de máquina" className="form-control" disabled hidden={machinenewuser === true ? false : true} />
-              <input type="text" value={"Filial: " + companynewuser} className="form-control" disabled hidden={companynewuser.length > 1 ? false : true} />
-              <input type="text" value={"Softwares Necessisarios: " + softwarenewuser} className="form-control" disabled hidden={softwarenewuser.length > 1 ? false : true} />
-              <input type="text" value={"Centro de custo: " + costcenter} className="form-control" disabled hidden={costcenter.length > 1 ? false : true} />
-              <input type="text" value={"Cargo: " + jobtitlenewuser} className="form-control" disabled hidden={jobtitlenewuser.length > 1 ? false : true} />
-              <input type="text" value={"Centro de custo: " + costcenter} className="form-control" disabled hidden={costcenter.length > 1 ? false : true} />
-              <input type="text" value={"Transferir e-mails para: " + mailtranfer} className="form-control" disabled hidden={mailtranfer.length > 1 ? false : true} />
-              <input type="text" value={"Transferir dados para: " + oldfile} className="form-control" disabled hidden={oldfile.length > 1 ? false : true} />
-              <PBloq hidden={jobtitlenewuser.length > 1 || mailtranfer.length > 1 ? false : true}>
-                {jobtitlenewuser.length > 1 ? "Funcionario iniciara as atividades dia:" : "Bloquear acesso a partir de:"}
-              </PBloq>
-              <DivCal hidden={jobtitlenewuser.length > 1 || mailtranfer.length > 1 ? false : true}>
-                <DayPicker ref={calendarALT} fixedWeeks showOutsideDays selected={startworknewuser} className="cald" mode="single" />
-              </DivCal>
-              <input type="text" value={"Copiar usuario de: " + copyprofilenewuser} className="form-control" disabled hidden={copyprofilenewuser.length > 1 ? false : true} />
-              <DivINp hidden={imageEquipament === undefined}>
-                {imageEquipament}
-                <DivAlocate className="d-flex flex-column">
-                  <p className="text-center">Unidade: {equipamentLocate}</p>
-                </DivAlocate>
-                <Calendar className="d-flex flex-column">
-                  <p className="text-center">Data de alocação</p>
-                  <div>
-                    <DayPicker ref={calendarALT} fixedWeeks showOutsideDays selected={daysLocated} mode="multiple" localte={ptBR} />
-                  </div>
-                </Calendar>
-              </DivINp>
               <TextObersavation ref={textareaRef} name="observation" disabled></TextObersavation>
               <input type="text" value={"tempo de vida do chamado: " + lifeTime + " dias"} className="form-control" disabled />
               <DivFile hidden={fileticket.length >= 1 ? false : true} className="w-100">
@@ -4041,161 +3459,20 @@ export default function DashboardTI() {
                   <h5>Modificação do Chamado {ticketID}</h5>
                 </div>
                 <div className="d-flex justify-content-center">
-                  <button onClick={closeModify}>X</button>
+                  <BtnClose onClick={closeModify}>
+                    <Close src={CloseIMG} alt="" />
+                  </BtnClose>
                 </div>
               </div>
               <div className="d-flex justify-content-around">
-                <InputTicket type="text" value={`Setor: ${ticketSECTOR}`} disabled />
-                <select className="form-select mb-3" aria-label="Default select example" ref={selectForm} onChange={handleSelect}>
-                  <option value="none" disabled selected>
-                    Selecione o Setor
-                  </option>
-                  <option value="infra">Infra</option>
-                  <option value="sistema">Sistema</option>
-                </select>
-              </div>
-              <div className="d-flex justify-content-around mt-3">
-                <InputTicket type="text" value={`Ocorrência: ${ticketOCCURRENCE}`} disabled />
-                {OcurrenceFake && (
-                  <select className="form-select mb-3">
-                    <option value="none" disabled selected>
-                      Selecione a Ocorrência
-                    </option>
-                  </select>
-                )}
-                {infra && (
-                  <select className="form-select mb-3" aria-label="Default select example" ref={selectError} onChange={selectProblem}>
-                    <option value="none" disabled selected>
-                      Selecione a Ocorrência
-                    </option>
-                    <option value="backup">Backup/Restore</option>
-                    <option value="mail">E-mail</option>
-                    <option value="equip">Equipamento</option>
-                    <option value="internet">Internet</option>
-                    <option value="folder">Pasta</option>
-                  </select>
-                )}
-                {system && (
-                  <select className="form-select mb-3" aria-label="Default select example" id="select-error" onChange={selectProblem}>
-                    <option value="none" disabled selected>
-                      Selecione o Sistema
-                    </option>
-                    <option value="sap">SAP</option>
-                    <option value="mbi">MBI</option>
-                    <option value="synch">Synchro</option>
-                    <option value="office">Office</option>
-                    <option value="eng">Softwares de Engenharia</option>
-                  </select>
-                )}
-              </div>
-              <div className="d-flex justify-content-around mt-3">
-                <InputTicket type="text" value={`Problema: ${ticketPROBLEMN}`} disabled />
-                {fake && (
-                  <select className="form-select mb-3" aria-label="Default select example">
-                    <option value="none" disabled selected>
-                      Selecione o problema ocorrido
-                    </option>
-                  </select>
-                )}
-                {backup && (
-                  <select className="form-select mb-3" aria-label="Default select example" ref={selectBackup0} onChange={selectBackup}>
-                    <option value="none" disabled selected>
-                      Selecione o problema ocorrido
-                    </option>
-                    <option value="pasta">Pasta/Arquivo</option>
-                    <option value="mail">E-mail</option>
-                  </select>
-                )}
-                {mail && (
-                  <select className="form-select mb-3" aria-label="Default select example" ref={selectMail0} onChange={selectMail}>
-                    <option value="none" disabled selected>
-                      Selecione o problema ocorrido
-                    </option>
-                    <option value="maxcap">Aumentar capacidade</option>
-                    <option value="conect">Não conecta</option>
-                  </select>
-                )}
-                {equip && (
-                  <select className="form-select mb-3" aria-label="Default select example" ref={selectEquip0} onChange={selectEquip}>
-                    <option value="none" disabled selected>
-                      Selecione o problema ocorrido
-                    </option>
-                    <option value="off">Computador não liga</option>
-                    <option value="printer">Problema com a impressora</option>
-                    <option value="roaming">Mudança de local de trabalho</option>
-                    <option value="usb">Liberação/Bloqueio de USB</option>
-                    <option value="change">Trocar Equipamento</option>
-                  </select>
-                )}
-                {internet && (
-                  <select className="form-select mb-3" aria-label="Default select example" ref={selectInternet0} onChange={selectInternet}>
-                    <option value="none" disabled selected>
-                      Selecione o problema ocorrido
-                    </option>
-                    <option value="lib">Liberação de site</option>
-                    <option value="block">Bloqueio de site</option>
-                  </select>
-                )}
-                {folder && (
-                  <select className="form-select mb-3" aria-label="Default select example" ref={selectFolder0} onChange={selectFolder}>
-                    <option value="none" disabled selected>
-                      Selecione o problema ocorrido
-                    </option>
-                    <option value="lib">Liberação de Pasta</option>
-                    <option value="block">Bloqueio de Pasta</option>
-                  </select>
-                )}
-                {sap && (
-                  <select className="form-select mb-3" aria-label="Default select example" ref={selectSAPO} onChange={selectSAP}>
-                    <option value="none" disabled selected>
-                      Selecione o Problema
-                    </option>
-                    <option value="user">Criação/exclusão de usuários</option>
-                    <option value="access">Liberação/bloqueio de acessos</option>
-                    <option value="quest">Dúvidas operacionais</option>
-                    <option value="error">Correção de falhas</option>
-                  </select>
-                )}
-                {mbi && (
-                  <select className="form-select mb-3" aria-label="Default select example" ref={selectMBIO} onChange={selectMBI}>
-                    <option value="none" disabled selected>
-                      Selecione o Problema
-                    </option>
-                    <option value="user">Criação/exclusão de usuários</option>
-                    <option value="access">Liberação/bloqueio de acessos</option>
-                    <option value="quest">Dúvidas operacionais</option>
-                    <option value="error">Correção de falhas</option>
-                  </select>
-                )}
-                {synch && (
-                  <select className="form-select mb-3" aria-label="Default select example" ref={selectSynchO} onChange={selectSynch}>
-                    <option value="none" disabled selected>
-                      Selecione o Problema
-                    </option>
-                    <option value="user">Criação/exclusão de usuários</option>
-                    <option value="access">Liberação/bloqueio de acessos</option>
-                    <option value="quest">Dúvidas operacionais</option>
-                    <option value="error">Correção de falhas</option>
-                  </select>
-                )}
-                {office && (
-                  <select className="form-select mb-3" aria-label="Default select example" ref={selectOfficeO} onChange={selectOffice}>
-                    <option value="none" disabled selected>
-                      Selecione o Problema
-                    </option>
-                    <option value="buy">Aquisição de software/licenciamento</option>
-                    <option value="error">Correção de falhas</option>
-                  </select>
-                )}
-                {eng && (
-                  <select className="form-select mb-3" aria-label="Default select example" ref={selectEngO} onChange={selectEng}>
-                    <option value="none" disabled selected>
-                      Selecione o Problema
-                    </option>
-                    <option value="buy">Aquisição de software/licenciamento</option>
-                    <option value="error">Correção de falhas</option>
-                  </select>
-                )}
+                <div className="d-flex flex-column">
+                  <InputTicket type="text" value={`Setor: ${ticketSECTOR}`} disabled />
+                  <InputTicket type="text" value={`Ocorrência: ${ticketOCCURRENCE}`} disabled />
+                  <InputTicket type="text" value={`Problema: ${ticketPROBLEMN}`} disabled />
+                </div>
+                <div>
+                  <TicketsOptions />
+                </div>
               </div>
               <div className="d-flex justify-content-center">
                 <button className="btn btn-warning mt-5" onClick={uploadModify}>

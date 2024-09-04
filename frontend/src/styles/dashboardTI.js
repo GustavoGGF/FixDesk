@@ -99,7 +99,7 @@ export const DivModify = styled.div`
 `;
 
 export const InputTicket = styled.input`
-  width: 50%;
+  width: 100%;
 `;
 
 export const ZIndex = styled.div`
@@ -140,4 +140,12 @@ export const TextObersavation = styled.textarea`
 export const ButtonDet = styled.button`
   border: none;
   background-color: transparent;
+`;
+
+export const BtnClose = styled.button`
+  border: none;
+  background: transparent;
+  -webkit-border: none; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
+  -webkit-background: transparent; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
+  margin: 0.8em;
 `;

@@ -9,13 +9,10 @@ import {
   BtnOpen,
   Button1,
   Button2,
-  Calendar,
   Close,
   CloseBTN,
   Div,
-  DivAlocate,
   DivCard,
-  DivCal,
   DivChat,
   DivContainerImages,
   DivFile,
@@ -25,14 +22,12 @@ import {
   DivHR,
   DivImageOpen,
   DivImages,
-  DivINp,
   DivNewFiles,
   DivOnBoardFile,
   DivSelectView,
   H5Card,
   IMGS1,
   IMGFiles,
-  IMGFiles2,
   ImageFile,
   ImageOpen,
   ImgBTNCls,
@@ -41,7 +36,6 @@ import {
   InputFile,
   PChatHourL,
   PChatHourR,
-  PBloq,
   PNWFile,
   PQuantity,
   PSelectView,
@@ -55,7 +49,6 @@ import {
   TRSPACE,
 } from "../styles/historyStyle";
 import { BtnFile, DivNameFile, ImgFile, TitlePage } from "../styles/helpdeskStyle";
-import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import Card from "../images/components/identificacao.png";
 import CloseIMG from "../images/components/close.png";
@@ -73,7 +66,6 @@ import TXT from "../images/components/arquivo-txt.png";
 import WORD from "../images/components/palavra.png";
 import XLS from "../images/components/xlsx.png";
 import ZIP from "../images/components/zip.jpg";
-import ptBR from "date-fns/locale/pt";
 import { TextObersavation } from "../styles/dashboardTI";
 
 export default function History() {
@@ -95,19 +87,9 @@ export default function History() {
 
   // Variaveis de estado String
   const [blurNav, setBlurNav] = useState("");
-  const [companynewuser, setCompanyNewUser] = useState("");
   const [colorTheme, setColorTheme] = useState("");
-  const [costcenter, setCostCenter] = useState("");
-  const [copyprofilenewuser, setCopyProfileNewUser] = useState("");
-  const [equipamentLocate, setEquipamentLocate] = useState("");
-  const [jobtitlenewuser, setJobTitleNewUser] = useState("");
   const [lifeTime, setLifetime] = useState("");
-  const [mailtranfer, setMailTranfer] = useState("");
-  const [namenewuser, setNameNewUser] = useState("");
-  const [oldfile, setOldFiles] = useState("");
-  const [sectornewuser, setSectorNewUser] = useState("undefined");
   const [status, setStatus] = useState("open");
-  const [softwarenewuser, setSoftwareNewUser] = useState("");
   const [textChat, setTextChat] = useState("");
   const [theme, setTheme] = useState("");
   const [themeCard, setThemeCard] = useState("");
@@ -124,7 +106,6 @@ export default function History() {
   const [token, setToken] = useState("");
   const [typeError, setTypeError] = useState("");
   const [messageError, setMessageError] = useState("");
-  const [wherefrom, setWhereFrom] = useState("");
 
   // Declarando variaveis de estado Boolean
   const [btnmore, setBtnMore] = useState(false);
@@ -154,12 +135,8 @@ export default function History() {
 
   // Varaiveis de estado Vazias
   const [countchat, setCountChat] = useState();
-  const [daysLocated, setDaysLocated] = useState();
-  const [imageEquipament, setImageEquipament] = useState();
   const [imageurl, setImageUrl] = useState();
-  const [machinenewuser, setMachineNewUser] = useState();
   const [nameNWFiles, setNameNWFiles] = useState();
-  const [startworknewuser, setStartWorkNewUser] = useState();
   const [initUpdateChat, setInitUpdateChat] = useState();
 
   // Variaveis de estado Number
@@ -174,7 +151,6 @@ export default function History() {
 
   let colorBorder = "";
   let count = 0;
-  let daysLCT = [];
   let timeoutId;
 
   const dashBoard = useRef(null);
@@ -384,45 +360,6 @@ export default function History() {
         setLifetime(lifetime);
         setTicketResponsible_Technician(data.responsible_technician);
         setTicketID(data.id);
-        setNameNewUser(data.name_new_user);
-        if (data.sector_new_user.length > 1) {
-          setSectorNewUser(data.sector_new_user);
-        } else {
-          setSectorNewUser("undefined");
-        }
-        setWhereFrom(data.where_from);
-        setMachineNewUser(data.machine_new_user);
-        setCompanyNewUser(data.company_new_user);
-        setSoftwareNewUser(data.software_new_user);
-        setCostCenter(data.cost_center);
-        setJobTitleNewUser(data.job_title_new_user);
-        var nwdate = new Date(data.start_work_new_user);
-        setStartWorkNewUser(nwdate);
-        setCopyProfileNewUser(data.copy_profile_new_user);
-        setMailTranfer(data.mail_tranfer);
-        setOldFiles(data.old_files);
-        if (data.equipament["image"] !== undefined) {
-          const Div = (
-            <DivAlocate className="d-flex flex-column w-100 align-items-center">
-              <p className="text-center">Modelo: {data.equipament["model"]}</p>
-              <IMGFiles2 src={`data:image/jpeg;base64,${data.equipament["image"]}`} onClick={openImage} alt="" />
-            </DivAlocate>
-          );
-
-          setImageEquipament(Div);
-          setEquipamentLocate(data.equipament["company"]);
-
-          for (let NWdate of data.days_alocated) {
-            var date = new Date(NWdate);
-            daysLCT.push(date);
-          }
-
-          setDaysLocated(daysLCT);
-
-          const calendar = document.getElementById("calendarALT");
-          calendar.classList.add("AdjustWid");
-        }
-
         if (data.file !== null && data.file.length >= 1) {
           const files = data.file;
           for (let i = 0; i < files.length; i++) {
@@ -808,11 +745,8 @@ export default function History() {
     setFetchChat(false);
     setImageUrl("");
     setFileTicket("");
-    setImageEquipament();
-    setJobTitleNewUser("");
     count = 0;
     clearTimeout(timeoutId);
-    daysLCT = [];
     return;
   }
 
@@ -2251,36 +2185,6 @@ export default function History() {
               <input type="text" value={"Setor: " + ticketSECTOR} className="form-control" disabled />
               <input type="text" value={"Ocorrência: " + ticketOCCURRENCE} className="form-control" disabled />
               <input type="text" value={"Problema: " + ticketPROBLEMN} className="form-control" disabled />
-              <input type="text" value={"Nome: " + namenewuser} className="form-control" disabled hidden={namenewuser.length > 1 ? false : true} />
-              <input type="text" value={"Setor: " + sectornewuser} className="form-control" disabled hidden={sectornewuser === "undefined" ? true : false} />
-              <input type="text" value={"Remanejamento: " + wherefrom} className="form-control" disabled hidden={wherefrom.length > 1 ? false : true} />
-              <input type="text" value="Necessita-se de máquina" className="form-control" disabled hidden={machinenewuser === true ? false : true} />
-              <input type="text" value={"Filial: " + companynewuser} className="form-control" disabled hidden={companynewuser.length > 1 ? false : true} />
-              <input type="text" value={"Softwares Necessisarios: " + softwarenewuser} className="form-control" disabled hidden={softwarenewuser.length > 1 ? false : true} />
-              <input type="text" value={"Centro de custo: " + costcenter} className="form-control" disabled hidden={costcenter.length > 1 ? false : true} />
-              <input type="text" value={"Cargo: " + jobtitlenewuser} className="form-control" disabled hidden={jobtitlenewuser.length > 1 ? false : true} />
-              <input type="text" value={"Centro de custo: " + costcenter} className="form-control" disabled hidden={costcenter.length > 1 ? false : true} />
-              <input type="text" value={"Transferir e-mails para: " + mailtranfer} className="form-control" disabled hidden={mailtranfer.length > 1 ? false : true} />
-              <input type="text" value={"Transferir dados para: " + oldfile} className="form-control" disabled hidden={oldfile.length > 1 ? false : true} />
-              <PBloq hidden={jobtitlenewuser.length > 1 || mailtranfer.length > 1 ? false : true}>
-                {jobtitlenewuser.length > 1 ? "Funcionario iniciara as atividades dia:" : "Bloquear acesso a partir de:"}
-              </PBloq>
-              <DivCal hidden={jobtitlenewuser.length > 1 || mailtranfer.length > 1 ? false : true}>
-                <DayPicker id="calendarALT" fixedWeeks showOutsideDays selected={startworknewuser} className="cald" mode="single" locale={ptBR} />
-              </DivCal>
-              <input type="text" value={"Copiar usuario de: " + copyprofilenewuser} className="form-control" disabled hidden={copyprofilenewuser.length > 1 ? false : true} />
-              <DivINp hidden={imageEquipament === undefined}>
-                {imageEquipament}
-                <DivAlocate className="d-flex flex-column">
-                  <p className="text-center">Unidade: {equipamentLocate}</p>
-                </DivAlocate>
-                <Calendar className="d-flex flex-column">
-                  <p className="text-center">Data de alocação</p>
-                  <div>
-                    <DayPicker id="calendarALT" fixedWeeks showOutsideDays selected={daysLocated} mode="multiple" localte={ptBR} />
-                  </div>
-                </Calendar>
-              </DivINp>
               <TextObersavation ref={textareaRef} name="observation" className="autosize-textarea" disabled></TextObersavation>
               <input type="text" value={"tempo de vida do chamado: " + lifeTime + " dias"} className="form-control" disabled />
               <DivFile hidden={fileticket.length >= 1 ? false : true} className="w-100">

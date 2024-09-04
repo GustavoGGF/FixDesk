@@ -29,5 +29,11 @@ urlpatterns = [
         views.equipamentsForAlocate,
         name="central-equipaments-for-alocate",
     ),
+    # URL que verifica se os equipamentos focam locados.
+    path(
+        "date-equipaments-alocate/<str:mac>",
+        views.dateEquipamentsAlocate,
+        name="central-date-equipaments-alocate",
+    ),
     # path("<path:unknown_path>", views.redirect_to_specific_url),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

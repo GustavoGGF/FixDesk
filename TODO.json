@@ -18,7 +18,7 @@
   },
   "History": {
     "Upgrade": {},
-    "HotFix": {}
+    "HotFix": { "TICKPTNV": "Chamados aberto deveria mostrar até os que não foram atendidos" }
   },
   "Dashboard": {
     "Upgrade": {},

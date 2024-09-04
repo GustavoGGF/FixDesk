@@ -42,7 +42,7 @@
 .eye:first-child {
   left: 12px;
   top: 50%;
-  background: repeating-linear-gradient(65deg, var(-aqua-mist) 0px, var(--aqua-mist) 1px, white 2px);
+  background: repeating-linear-gradient(65deg, #9bdaeb 0px, #9bdaeb 1px, white 2px);
   box-shadow: inset 0px 0px 5px #04b8d5, 0px 0px 15px 1px #0bdaeb;
   transform: translate(0, -50%) rotate(-65deg);
 }

@@ -1,10 +1,12 @@
-// /* eslint-disable no-unused-vars */
 import React, { useRef, useState, useContext, useEffect } from "react";
-import { Select, DivEquip, ImageEquip, Contract } from "../styles/ticketsOptionsStyle";
+import { Select, DivMachine, Contract } from "../styles/ticketsOptionsStyle";
 import Close from "../images/components/close.png";
-import { ValorContext } from "../pages/helpdesk";
+import { TickerContext } from "../services/TickerContext";
 import RoboGlimpse from "./robotGlimpse";
-export default function TicketsOptions({ reset, Helpdesk, Name }) {
+import { DayPicker } from "react-day-picker";
+import "react-day-picker/src/style.css";
+
+export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
   const [respectiveTI, setRespectiveTI] = useState(false);
   const [infra, setInfra] = useState(false);
   const [backup, setBackup] = useState(false);
@@ -20,41 +22,38 @@ export default function TicketsOptions({ reset, Helpdesk, Name }) {
   const [dateequip, setDateEquip] = useState(false);
   const [dadosCase, setDados] = useState(false);
   const [softAPP, setSoftAPP] = useState(false);
-  const [otherEquipaments, setOtherEquipaments] = useState(false);
-  const [otherMouse, setOtherMouse] = useState(false);
-  const [otherRede, setOtherRede] = useState(false);
-  const [otherTeclado, setOtherTeclado] = useState(false);
-  const [confirmOtherEquipaments, SetConfirmOtherEquipaments] = useState(true);
   const [comodato, setComodato] = useState(false);
   const [loadingoFetchingEquipaments, setLoadingoFetchingEquipaments] = useState(true);
 
-  // eslint-disable-next-line no-unused-vars
-  const { messagetitle, setMessagetitle } = useContext(ValorContext);
-  // eslint-disable-next-line no-unused-vars
-  const { respectiveArea, setRespectiveArea } = useContext(ValorContext);
-  // eslint-disable-next-line no-unused-vars
-  const { alert, setAlert } = useContext(ValorContext);
-  // eslint-disable-next-line no-unused-vars
-  const { messageinfo1, setMessageinfo1 } = useContext(ValorContext);
-  // eslint-disable-next-line no-unused-vars
-  const { messageinfo2, setMessageinfo2 } = useContext(ValorContext);
-  // eslint-disable-next-line no-unused-vars
-  const { typeError, setTypeError } = useContext(ValorContext);
-  // eslint-disable-next-line no-unused-vars
-  const { messageError, setMessageError } = useContext(ValorContext);
-  // eslint-disable-next-line no-unused-vars
-  const { sector, setSector } = useContext(ValorContext);
-  // eslint-disable-next-line no-unused-vars
-  const { ocurrence, setOccurrence } = useContext(ValorContext);
-  // eslint-disable-next-line no-unused-vars
-  const { problemn, setProblemn } = useContext(ValorContext);
-  // eslint-disable-next-line no-unused-vars
-  const { alertverify, setAlertVerify } = useContext(ValorContext);
-  // eslint-disable-next-line no-unused-vars
-  const { equipamentSelected, setEquipamentSelected } = useContext(ValorContext);
+  const { setMessagetitle } = useContext(TickerContext);
+  const { setRespectiveArea } = useContext(TickerContext);
+  const { setAlert } = useContext(TickerContext);
+  const { setMessageinfo1 } = useContext(TickerContext);
+  const { setMessageinfo2 } = useContext(TickerContext);
+  const { setSector } = useContext(TickerContext);
+  const { setOccurrence } = useContext(TickerContext);
+  const { setProblemn } = useContext(TickerContext);
+  const { setAlertVerify } = useContext(TickerContext);
+  const { setSelectedDay } = useContext(TickerContext);
+  const { setMachineAlocate } = useContext(TickerContext);
+  const { create_user_acess } = useContext(TickerContext);
+  const { alocate_machine_acess } = useContext(TickerContext);
+
+  const [selectedInternal, setSelectedInternal] = useState([]);
+
+  const [disabledDates, setDisabledDates] = useState([]);
 
   const [dashequipaments, setDashEquipaments] = useState("");
-  const [equipaments, setEquipaments] = useState();
+  const [equipaments, setEquipaments] = useState("");
+  const [dashEquipamentSelected, setDashEquipamentSelected] = useState("");
+
+  const footer =
+    selectedInternal.length > 0
+      ? `Datas de Locação: ${selectedInternal
+          .sort((a, b) => a - b) // Ordena as datas em ordem crescente
+          .map((date) => date.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" })) // Formata como dd/mm/yyyy
+          .join(", ")}` // Junta as datas formatadas em uma string
+      : "Selecione pelo menos um dia.";
 
   const selectAR = useRef(null);
 
@@ -257,6 +256,7 @@ export default function TicketsOptions({ reset, Helpdesk, Name }) {
         setMessageinfo2("");
         setProblemn("Restaurar e-mail");
         setAlertVerify(false);
+
         break;
       case "none":
         setAlert(false);
@@ -347,6 +347,8 @@ export default function TicketsOptions({ reset, Helpdesk, Name }) {
         break;
       case "alocate":
         setDashEquipaments("");
+        setEquipaments("");
+        setDashEquipamentSelected("");
         setAlert(true);
         setMessagetitle("Caso de Alocação de equipamento");
         setMessageinfo1("1. Selecionar o equipamento desejado");
@@ -354,6 +356,8 @@ export default function TicketsOptions({ reset, Helpdesk, Name }) {
         setAlertVerify(false);
         setAlocate(true);
         setLoadingoFetchingEquipaments(true);
+        setDisabledDates([]);
+        setSelectedInternal([]);
         fetch("equipaments-for-alocate", {
           method: "GET",
           headers: {
@@ -365,39 +369,15 @@ export default function TicketsOptions({ reset, Helpdesk, Name }) {
             return response.json();
           })
           .then((data) => {
-            console.log(data);
+            if (data.machines) {
+              setEquipaments(data.machines);
+            }
           })
           .catch((err) => {
             console.log(err);
           });
         setProblemn("Alocação de Máquina");
-        if (equipaments && Object.keys(equipaments).length > 0) {
-          equipaments.forEach((equipament) => {
-            const Div = (
-              <DivEquip
-                className="equipsclass"
-                onClick={(event) => {
-                  selectEquipament({
-                    element: event.currentTarget,
-                    id: equipament.id,
-                  });
-                  setOtherEquipaments(true);
-                }}
-              >
-                <ImageEquip src={`data:image/jpeg;base64,${equipament.image}`} alt="" />
-                <p>Modelo: {equipament.model}</p>
-                <p>Empresa: {equipament.company}</p>
-              </DivEquip>
-            );
-
-            setDashEquipaments((prvDiv) => [...prvDiv, Div]);
-          });
-          break;
-        } else {
-          setTypeError("Falta de Dados");
-          setMessageError("Nenhum equipamento Cadastrado");
-          break;
-        }
+        break;
       case "change":
         setAlert(true);
         setMessagetitle("Caso de Troca de Equipamento");
@@ -409,20 +389,77 @@ export default function TicketsOptions({ reset, Helpdesk, Name }) {
     }
   }
 
-  function selectEquipament({ element, id }) {
-    // Define o equipamento selecionado
-    setEquipamentSelected(id);
+  useEffect(() => {
+    if (equipaments.length > 0) {
+      const newDashEquipaments = equipaments.map((element) => (
+        <DivMachine
+          key={element.mac_address}
+          onClick={() => {
+            selectMachine(element.mac_address);
+          }}
+        >
+          <h3>{element.model}</h3>
+          <span>{element.manufacturer}</span>
+          <span>{element.distribution}</span>
+        </DivMachine>
+      ));
 
-    // Remove a borda de todos os elementos
-    document.querySelectorAll(".equipsclass").forEach((el) => {
-      el.classList.remove("borderEquip");
-    });
+      setDashEquipaments(newDashEquipaments);
+      setLoadingoFetchingEquipaments(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [equipaments]);
 
-    // Adiciona a borda ao elemento selecionado
-    element.classList.add("borderEquip");
+  const findEquipamentByMacAddress = (macAddress) => {
+    return equipaments.find((equipament) => equipament.mac_address === macAddress);
+  };
 
-    // Define a data do equipamento como verdadeira
+  function selectMachine(mac) {
+    setLoadingoFetchingEquipaments(true);
+    setDashEquipaments("");
+    const foundEquipament = findEquipamentByMacAddress(mac);
+
+    const newDashEquipaments = (
+      <DivMachine
+        key={foundEquipament.mac_address}
+        onClick={() => {
+          selectMachine(foundEquipament.mac_address);
+        }}
+      >
+        <h3>{foundEquipament.model}</h3>
+        <span>{foundEquipament.manufacturer}</span>
+        <span>{foundEquipament.distribution}</span>
+      </DivMachine>
+    );
+
+    setDashEquipamentSelected(newDashEquipaments);
     setDateEquip(true);
+    fetch("date-equipaments-alocate/" + mac, {
+      method: "GET",
+      headers: { Accept: "application/json", "Cache-Control": "no-cache" },
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        if (data.dates) {
+          // Itera sobre cada item em data.dates
+          data.dates.forEach((dateString) => {
+            // Divide as datas por vírgulas para garantir que todas sejam separadas corretamente
+            const dates = dateString.split(",");
+
+            // Para cada data, converte para um objeto Date e adiciona ao estado
+            dates.forEach((date) => {
+              setDisabledDates((prevDates) => [...prevDates, new Date(date)]);
+            });
+          });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    setLoadingoFetchingEquipaments(false);
+    setMachineAlocate(mac);
   }
 
   function selectUser() {
@@ -644,175 +681,12 @@ export default function TicketsOptions({ reset, Helpdesk, Name }) {
     }
   }
 
-  function selectCompanyEquip() {
-    setDashEquipaments("");
-    const select = document.getElementById("select-company-equip");
-    const option = select.options[select.selectedIndex].value;
-
-    switch (option) {
-      default:
-        break;
-      case "csc":
-        equipaments.forEach((equipament) => {
-          if (equipament.company === "CSC") {
-            const Div = (
-              <DivEquip
-                className="equipsclass"
-                onClick={(event) =>
-                  selectEquipament({
-                    element: event.currentTarget,
-                    id: equipament.id,
-                  })
-                }
-              >
-                <ImageEquip src={`data:image/jpeg;base64,${equipament.image}`} alt={`equipamento ${equipament.model}`} />
-                <p>Modelo: {equipament.model}</p>
-                <p>Empresa: {equipament.company}</p>
-              </DivEquip>
-            );
-
-            setDashEquipaments((prvDiv) => [...prvDiv, Div]);
-          }
-        });
-        break;
-      case "fiber":
-        equipaments.forEach((equipament) => {
-          if (equipament.company === "FIBER") {
-            const Div = (
-              <DivEquip
-                className="equipsclass"
-                onClick={(event) =>
-                  selectEquipament({
-                    element: event.currentTarget,
-                    id: equipament.id,
-                  })
-                }
-              >
-                <ImageEquip src={`dataUser:image/jpeg;base64,${equipament.image}`} alt="" />
-                <p>Modelo: {equipament.model}</p>
-                <p>Empresa: {equipament.company}</p>
-              </DivEquip>
-            );
-
-            setDashEquipaments((prvDiv) => [...prvDiv, Div]);
-          }
-        });
-        break;
-      case "vera":
-        equipaments.forEach((equipament) => {
-          if (equipament.company === "VERA") {
-            const Div = (
-              <DivEquip
-                className="equipsclass"
-                onClick={(event) =>
-                  selectEquipament({
-                    element: event.currentTarget,
-                    id: equipament.id,
-                  })
-                }
-              >
-                <ImageEquip src={`dataUser:image/jpeg;base64,${equipament.image}`} alt="" />
-                <p>Modelo: {equipament.model}</p>
-                <p>Empresa: {equipament.company}</p>
-              </DivEquip>
-            );
-
-            setDashEquipaments((prvDiv) => [...prvDiv, Div]);
-          }
-        });
-        break;
-      case "ropes":
-        equipaments.forEach((equipament) => {
-          if (equipament.company === "ROPES") {
-            const Div = (
-              <DivEquip
-                className="equipsclass"
-                onClick={(event) =>
-                  selectEquipament({
-                    element: event.currentTarget,
-                    id: equipament.id,
-                  })
-                }
-              >
-                <ImageEquip src={`dataUser:image/jpeg;base64,${equipament.image}`} alt="" />
-                <p>Modelo: {equipament.model}</p>
-                <p>Empresa: {equipament.company}</p>
-              </DivEquip>
-            );
-
-            setDashEquipaments((prvDiv) => [...prvDiv, Div]);
-          }
-        });
-        break;
-      case "mna":
-        equipaments.forEach((equipament) => {
-          if (equipament.company === "MNA") {
-            const Div = (
-              <DivEquip
-                className="equipsclass"
-                onClick={(event) =>
-                  selectEquipament({
-                    element: event.currentTarget,
-                    id: equipament.id,
-                  })
-                }
-              >
-                <ImageEquip src={`dataUser:image/jpeg;base64,${equipament.image}`} alt="" />
-                <p>Modelo: {equipament.model}</p>
-                <p>Empresa: {equipament.company}</p>
-              </DivEquip>
-            );
-
-            setDashEquipaments((prvDiv) => [...prvDiv, Div]);
-          }
-        });
-        break;
-      case "all":
-        equipaments.forEach((equipament) => {
-          const Div = (
-            <DivEquip
-              className="equipsclass"
-              onClick={(event) =>
-                selectEquipament({
-                  element: event.currentTarget,
-                  id: equipament.id,
-                })
-              }
-            >
-              <ImageEquip src={`dataUser:image/jpeg;base64,${equipament.image}`} alt="" />
-              <p>Modelo: {equipament.model}</p>
-              <p>Empresa: {equipament.company}</p>
-            </DivEquip>
-          );
-
-          setDashEquipaments((prvDiv) => [...prvDiv, Div]);
-        });
-        break;
-    }
-  }
-
-  function selectOtherEquips(event) {
-    if (event.target.checked) {
-      switch (event.target.value) {
-        default:
-          setOtherMouse(false);
-          setOtherRede(false);
-          setOtherTeclado(false);
-          break;
-        case "Mouse":
-          setOtherMouse(true);
-          break;
-        case "Teclado":
-          setOtherTeclado(true);
-          break;
-        case "Rede":
-          setOtherRede(true);
-          break;
-      }
-    }
-
-    return otherMouse && otherRede && otherTeclado;
-  }
+  // Atualiza o contexto e o estado local ao selecionar datas
+  const handleSelect = (dates) => {
+    console.log(dates);
+    setSelectedInternal(dates);
+    setSelectedDay(dates);
+  };
 
   return (
     <>
@@ -839,8 +713,10 @@ export default function TicketsOptions({ reset, Helpdesk, Name }) {
           <option value="backup">Backup/Restore</option>
           <option value="mail">E-mail</option>
           <option value="equip">Equipamento</option>
-          <option value="user">Gerenciamento de usuário</option>
-          <option value="internet">Internet</option>
+          <option value="user" hidden={!create_user_acess}>
+            Gerenciamento de usuário
+          </option>
+          )<option value="internet">Internet</option>
           <option value="folder">Pasta</option>
           <option value="soft">Software e Aplicativos</option>
           <option value="dados">Integridade de Dados</option>
@@ -874,7 +750,9 @@ export default function TicketsOptions({ reset, Helpdesk, Name }) {
           <option value="printer">Problema com a impressora</option>
           <option value="roaming">Mudança de local de trabalho</option>
           <option value="usb">Liberação/Bloqueio de USB</option>
-          <option value="alocate">Alocar equipamento</option>
+          <option value="alocate" hidden={!alocate_machine_acess}>
+            Alocar equipamento
+          </option>
           <option value="change">Trocar Equipamento</option>
         </Select>
       )}
@@ -959,7 +837,7 @@ export default function TicketsOptions({ reset, Helpdesk, Name }) {
       {alocate && (
         <div className="w-100">
           <div className="d-flex justify-content-center">
-            <Select className="form-select mb-3" aria-label="Default select example" id="select-company-equip" onChange={selectCompanyEquip}>
+            <Select className="form-select mb-3" aria-label="Default select example" id="select-company-equip" onChange={"selectCompanyEquip"}>
               <option value="none" disabled selected>
                 Selecione uma Unidade
               </option>
@@ -972,66 +850,12 @@ export default function TicketsOptions({ reset, Helpdesk, Name }) {
             </Select>
           </div>
           <div className="d-flex flex-wrap justify-content-center position-relative">
+            <div className="d-flex flex-column">
+              {dashEquipamentSelected}
+              {dateequip && <DayPicker mode="multiple" disabled={disabledDates} onSelect={handleSelect} selected={selectedInternal} showOutsideDays footer={footer} />}
+            </div>
             {dashequipaments} {loadingoFetchingEquipaments && <RoboGlimpse />}
           </div>
-          {otherEquipaments && (
-            <div className="d-flex flex-column">
-              <h4 className="text-center">Marque caso precise de algum dos itens adicionais</h4>
-              <div class="form-check d-flex justify-content-center">
-                <input
-                  class="form-check-input"
-                  type="checkbox"
-                  value="Mouse"
-                  id="checkMouse"
-                  onChange={(event) => {
-                    selectOtherEquips(event);
-                  }}
-                />
-                <label class="form-check-label" for="checkMouse">
-                  Mouse
-                </label>
-              </div>
-              <div class="form-check d-flex justify-content-center">
-                <input
-                  class="form-check-input"
-                  type="checkbox"
-                  value="Teclado"
-                  id="checkTeclado"
-                  onChange={(event) => {
-                    selectOtherEquips(event);
-                  }}
-                />
-                <label class="form-check-label" for="checkTeclado">
-                  Teclado
-                </label>
-              </div>
-              <div class="form-check d-flex justify-content-center">
-                <input
-                  class="form-check-input"
-                  type="checkbox"
-                  value="Rede"
-                  id="checkRede"
-                  onChange={(event) => {
-                    selectOtherEquips(event);
-                  }}
-                />
-                <label class="form-check-label" for="checkRede">
-                  Cabo de Rede
-                </label>
-              </div>
-              {confirmOtherEquipaments && (
-                <button
-                  onClick={() => {
-                    SetConfirmOtherEquipaments(false);
-                    setComodato(true);
-                  }}
-                  class="w-25 btn btn-success d-flex m-auto"
-                >
-                  Confirmar
-                </button>
-              )}
-            </div>
-          )}
         </div>
       )}
       {comodato && (
@@ -1049,8 +873,8 @@ export default function TicketsOptions({ reset, Helpdesk, Name }) {
           <div class="d-flex flex-column">
             <h3 class="mt-3">INSTRUMENTO PARTICULAR DE COMODATO</h3>
             <span class="mt-3">
-              <b>LUPATECH S.A. - EM RECUPERAÇÃO JUDICIAL, </b>à, Rua Dalton Lanh dos reis, 201, bairro Distrito Industrial, no Município de Caxias do Sul, Estado de Rio Grande do Sul – CEP 95112-090,
-              regularmente inscrita no CNPJ/MF sob o nº89.463.822/0012-75, doravante denominada simplesmente de <b>COMODANTE.</b>
+              <b>LUPATECH S.A. - EM RECUPERAÇÃO JUDICIAL, </b>à, Rua Dalton Lanh dos reis, 201, bairro Distrito Industrial, no Município de Caxias do Sul, Estado de Rio Grande do Sul &ndash; CEP
+              95112-090, regularmente inscrita no CNPJ/MF sob o nº89.463.822/0012-75, doravante denominada simplesmente de <b>COMODANTE.</b>
             </span>
             <span class="mt-3">e</span>
             <span class="mt-3">

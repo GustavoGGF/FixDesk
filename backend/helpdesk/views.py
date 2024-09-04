@@ -289,32 +289,10 @@ def submitTicket(request):
 
     elif "id_equipament" in request.POST:
         equipament_id = None
-        equipament = None
-        old_dates = None
         try:
             equipament_id = request.POST.get("id_equipament")
 
             days = request.POST.get("days_alocated")
-
-            exist_equipament = SupportTicket.objects.filter(equipament=equipament_id)
-
-            for ee in exist_equipament:
-                old_dates = ee.date_alocate.split(",")
-                status = ee.open
-
-            new_dates = days.split(",")
-
-            if exist_equipament:
-                for Odates in old_dates:
-                    for Ndates in new_dates:
-                        if Odates == Ndates and status == True:
-                            return JsonResponse(
-                                {"status": "Invalid Date", "dates": old_dates},
-                                status=310,
-                                safe=True,
-                            )
-
-            equipament = Equipaments.objects.get(id=equipament_id)
 
             Ticket = SupportTicket(
                 ticketRequester=ticketRequester,
@@ -328,7 +306,7 @@ def submitTicket(request):
                 observation=observation,
                 start_date=start_date,
                 PID=pid,
-                equipament=equipament,
+                equipament=equipament_id,
                 date_alocate=days,
                 open=True,
             )
@@ -1355,10 +1333,7 @@ def ticket(
         pil_image = None
         img_bytes = None
         image_data = []
-        equipaments = ""
-        equipament_image = None
         act_dir = None
-        dates_for_alocate = None
         name_file = []
         file_type = None
         content_file = []
@@ -1485,28 +1460,6 @@ def ticket(
                     except Exception as e:
                         print(e)
 
-            if t.equipament:
-                equipament_image = t.equipament.equipament
-
-                with equipament_image.open() as img:
-                    pil_image = Image.open(img)
-
-                    img_bytes = BytesIO()
-
-                    pil_image.save(img_bytes, format="PNG")
-
-                    image_equip = b64encode(img_bytes.getvalue()).decode("utf-8")
-
-                equipaments = {
-                    "image": image_equip,
-                    "model": t.equipament.model,
-                    "company": t.equipament.company,
-                }
-
-                dates_for_alocate = t.date_alocate.split(",")
-
-                image_data = None
-
             serialized_ticket.append(
                 {
                     "ticketRequester": t.ticketRequester,
@@ -1523,20 +1476,6 @@ def ticket(
                     "id": t.id,
                     "chat": t.chat,
                     "file": image_data,
-                    "equipament": equipaments,
-                    "days_alocated": dates_for_alocate,
-                    "name_new_user": t.name_new_user,
-                    "sector_new_user": t.sector_new_user,
-                    "where_from": t.where_from,
-                    "machine_new_user": t.machine_new_user,
-                    "company_new_user": t.company_new_user,
-                    "software_new_user": t.software_new_user,
-                    "cost_center": t.cost_center,
-                    "job_title_new_user": t.job_title_new_user,
-                    "start_work_new_user": t.start_work_new_user,
-                    "copy_profile_new_user": t.copy_profile_new_user,
-                    "mail_tranfer": t.mail_tranfer,
-                    "old_files": t.old_files,
                     "open": t.open,
                     "name_file": name_file,
                     "content_file": content_file,
@@ -2115,9 +2054,7 @@ def getTicketFilterStatus(request):
         return
 
 
-@transaction.atomic
 @contextmanager
-@never_cache
 def get_database_connection():
     """Context manager for managing database connections."""
     connection = None
@@ -2145,17 +2082,33 @@ def equipamentsForAlocate(request):
     cursor = None
     query = None
     result = None
+    results_list = None
     try:
         with get_database_connection() as connection:
             cursor = connection.cursor()
-            query = "SELECT COUNT(*) FROM machines WHERE system_name LIKE '%windows%'"
+            query = "SELECT * from machines WHERE alocate = 0"
             cursor.execute(query)
-            result = cursor.fetchone()
+            result = cursor.fetchall()
 
             # Converta os resultados para uma lista de dicionários
-            totalWindows = result[0]
+            results_list = [
+                {
+                    "mac_address": row[0],
+                    "distribution": row[3],
+                    "manufacturer": row[9],
+                    "model": row[10],
+                }
+                for row in result
+            ]
     except Exception as e:
         print(e)
+        return
+    finally:
+        if connection.is_connected():
+            cursor.close()
+            connection.close()
+
+    return JsonResponse({"machines": results_list}, status=200, safe=True)
 
 
 # Função para converter a lista de strings em uma lista de dicionários
@@ -2184,6 +2137,25 @@ def convert_to_dict(chat_data):
         return print(e)
 
     return dictionaries
+
+
+def dateEquipamentsAlocate(request, mac):
+    tickets = None
+    alocate_dates = None
+    try:
+        tickets = SupportTicket.objects.filter(equipament=mac)
+
+        # Em seguida, extraia os valores do campo 'alocate_date' em um array
+        alocate_dates = tickets.values_list("date_alocate", flat=True)
+
+        # O resultado será um queryset contendo apenas os valores de 'alocate_date'
+        # Você pode converter para uma lista, se necessário
+        alocate_dates_list = list(alocate_dates)
+
+        return JsonResponse({"dates": alocate_dates_list}, status=200, safe=True)
+    except Exception as e:
+        print(e)
+        return
 
 
 @csrf_exempt
