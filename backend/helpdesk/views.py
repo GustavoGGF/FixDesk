@@ -1479,6 +1479,7 @@ def ticket(
                     "open": t.open,
                     "name_file": name_file,
                     "content_file": content_file,
+                    "equipament": t.equipament,
                 }
             )
 

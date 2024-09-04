@@ -106,6 +106,7 @@ export default function History() {
   const [token, setToken] = useState("");
   const [typeError, setTypeError] = useState("");
   const [messageError, setMessageError] = useState("");
+  const [equipament, setEquipament] = useState("");
 
   // Declarando variaveis de estado Boolean
   const [btnmore, setBtnMore] = useState(false);
@@ -124,6 +125,7 @@ export default function History() {
   const [problemInfra, setProblemInfra] = useState(false);
   const [problemSyst, setProblemSyst] = useState(false);
   const [ticketWindow, setTicketWindow] = useState(false);
+  const [showEquipament, setShowEquipament] = useState(false);
 
   // Varaiveis de estado Array
   const [Data, setData] = useState([]);
@@ -356,6 +358,10 @@ export default function History() {
         setTicketSECTOR(data.sector);
         setTicketOCCURRENCE(data.occurrence);
         setTicketPROBLEMN(data.problemn);
+        if (data.problemn === "Alocação de Máquina") {
+          setEquipament(data.equipament);
+          setShowEquipament(true);
+        }
         textareaRef.current.value = "Observação: " + data.observation;
         setLifetime(lifetime);
         setTicketResponsible_Technician(data.responsible_technician);
@@ -2184,7 +2190,13 @@ export default function History() {
               <input type="text" value={"Unidade: " + ticketCOMPANY} className="form-control" disabled />
               <input type="text" value={"Setor: " + ticketSECTOR} className="form-control" disabled />
               <input type="text" value={"Ocorrência: " + ticketOCCURRENCE} className="form-control" disabled />
-              <input type="text" value={"Problema: " + ticketPROBLEMN} className="form-control" disabled />
+              <input type="text" hidden={!showEquipament} value={"Detalhes: " + ticketPROBLEMN} className="form-control" disabled />
+              {showEquipament && (
+                <div>
+                  <input type="text" value={"Detalhes: " + ticketPROBLEMN} className="form-control" disabled />
+                  <input value={"ID do Equipamento: " + equipament} className="form-control" disabled />
+                </div>
+              )}
               <TextObersavation ref={textareaRef} name="observation" className="autosize-textarea" disabled></TextObersavation>
               <input type="text" value={"tempo de vida do chamado: " + lifeTime + " dias"} className="form-control" disabled />
               <DivFile hidden={fileticket.length >= 1 ? false : true} className="w-100">

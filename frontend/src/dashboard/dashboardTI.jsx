@@ -158,6 +158,7 @@ export default function DashboardTI() {
   const [problemSyst, setProblemSyst] = useState(false);
   const [techDetails, setTechDetails] = useState(false);
   const [ticketWindow, setTicketWindow] = useState(false);
+  const [showEquipament, setShowEquipament] = useState(false);
   /**
    * Variáveis de estado String
    */
@@ -184,6 +185,7 @@ export default function DashboardTI() {
   const [ticketSECTOR, setTicketSECTOR] = useState("");
   const [token, setToken] = useState("");
   const [typeError, setTypeError] = useState("");
+  const [equipament, setEquipament] = useState("");
   /**
    * Variáveis de estado Void.
    */
@@ -635,6 +637,10 @@ export default function DashboardTI() {
         setTicketSECTOR(data.sector);
         setTicketOCCURRENCE(data.occurrence);
         setTicketPROBLEMN(data.problemn);
+        if (data.problemn === "Alocação de Máquina") {
+          setEquipament(data.equipament);
+          setShowEquipament(true);
+        }
         textareaRef.current.value = "Observação: " + data.observation;
         setLifetime(lifetime);
         setTicketResponsible_Technician(data.responsible_technician);
@@ -3376,6 +3382,12 @@ export default function DashboardTI() {
               <input type="text" value={"Setor: " + ticketSECTOR} className="form-control" disabled />
               <input type="text" value={"Ocorrência: " + ticketOCCURRENCE} className="form-control" disabled />
               <input type="text" value={"Problema: " + ticketPROBLEMN} className="form-control" disabled />
+              {showEquipament && (
+                <div>
+                  <input type="text" value={"Detalhes: " + ticketPROBLEMN} className="form-control" disabled />
+                  <a href={`http://sappp01:3000/home/computers/view-machine/${equipament}`}>Equipamento</a>
+                </div>
+              )}
               <TextObersavation ref={textareaRef} name="observation" disabled></TextObersavation>
               <input type="text" value={"tempo de vida do chamado: " + lifeTime + " dias"} className="form-control" disabled />
               <DivFile hidden={fileticket.length >= 1 ? false : true} className="w-100">
