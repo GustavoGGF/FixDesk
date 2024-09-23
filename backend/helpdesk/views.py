@@ -506,7 +506,6 @@ def history(request):
                 ticket_data["id"] = loads(ticket)[0]["pk"]
                 ticket_objects.append(ticket_data)
 
-            print(ticket_objects)
             return JsonResponse(
                 {"token": csrf, "tickets": ticket_objects},
                 status=200,
@@ -620,7 +619,7 @@ def ticket(
 
                     ticket.save()
 
-                    return JsonResponse({}, status=200, safe=True)
+                    return JsonResponse({"chat":ticket.chat, "technician": ticket.responsible_technician}, status=200, safe=True)
 
                 except Exception as e:
                     print(e)
@@ -693,10 +692,10 @@ def ticket(
                         task.start()
 
                     else:
+                        print("4")
                         return JsonResponse({}, status=304, safe=True)
 
                 elif status == "open":
-                    ticket.open = True
                     ticket.chat += f",[[Date:{date}],[System: {technician} Reabriu e atendeu o Chamado],[Hours:{hours}]]"
 
                     ticket.save()

@@ -1124,14 +1124,20 @@ export default function DashboardTI() {
         }),
       })
         .then((response) => {
-          response.json();
-
           if (response.status === 200) {
-            return window.location.reload();
-          } else if (response.status === 304) {
+            return response.json();
+          }
+          if (response.status === 304) {
             setTypeError("Operação Inválida");
             setMessageError("O Chamado Já está com você");
             return setMessage(true);
+          }
+        })
+        .then((data) => {
+          if (data) {
+            setTicketResponsible_Technician(data.tech);
+            reloadChat({ data: data });
+            return;
           }
         })
         .catch((err) => {
