@@ -29,12 +29,12 @@ from django.core.files.base import ContentFile
 from fpdf import FPDF
 import re
 import logging
-from django.views.decorators.http import require_http_methods
 from django.db import transaction
 from django.views.decorators.cache import never_cache
 from contextlib import contextmanager
 import mysql.connector
 from decouple import config
+from django.views.decorators.http import require_POST, require_GET
 
 # Configuração básica de logging
 logging.basicConfig(level=logging.INFO)
@@ -81,7 +81,6 @@ def sendMail(mail, msgm1, msgm2):
 # Create your views here.
 @csrf_exempt
 @never_cache
-# @login_required(login_url="/login")
 def firstView(request):
     if request.method == "POST":
         csrf = None
@@ -157,7 +156,7 @@ def firstView(request):
 # Se o usuário não estiver autenticado, será redirecionado para a página de login
 @requires_csrf_token
 @login_required(login_url="/login")
-@require_http_methods(["POST"])
+@require_POST
 @transaction.atomic
 @never_cache
 # Função que trata o envio de chamados (tickets) para o banco de dados
@@ -522,7 +521,7 @@ def history(request):
 
 @login_required(login_url="/login")
 @requires_csrf_token
-@require_http_methods(["GET"])
+@require_GET
 @never_cache
 def toDashboard(request):
     UserFront = None
@@ -554,7 +553,7 @@ def toDashboard(request):
 
 @csrf_exempt
 @never_cache
-@require_http_methods(["GET"])
+@require_GET
 def exit(request):
     try:
         logout(request)
@@ -1490,7 +1489,7 @@ def ticket(
 
 
 @never_cache
-@require_http_methods(["GET"])
+@require_GET
 @login_required(login_url="/login")
 def update_chat(request, id):
     ticket = None
@@ -1505,7 +1504,7 @@ def update_chat(request, id):
         print(e)
 
 
-@require_http_methods(["GET"])
+@require_GET
 @login_required(login_url="/login")
 @never_cache
 def moreTicket(request):
@@ -1564,7 +1563,7 @@ def moreTicket(request):
         print(e)
 
 
-@require_http_methods(["GET"])
+@require_GET
 @login_required(login_url="/login")
 @never_cache
 def getTicketFilter(request):
@@ -1742,7 +1741,7 @@ def getTicketFilter(request):
 
 
 @login_required(login_url="/login")
-@require_http_methods(["GET"])
+@require_GET
 @never_cache
 def getTicketFilterWords(request):
     username = None
@@ -1982,7 +1981,7 @@ def getTicketFilterWords(request):
 
 
 @login_required(login_url="/login")
-@require_http_methods(["GET"])
+@require_GET
 @never_cache
 def getTicketFilterStatus(request):
     username = None
@@ -2076,7 +2075,7 @@ def get_database_connection():
 
 
 @login_required(login_url="/login")
-@require_http_methods(["GET"])
+@require_GET
 @never_cache
 def equipamentsForAlocate(request):
     connection = None

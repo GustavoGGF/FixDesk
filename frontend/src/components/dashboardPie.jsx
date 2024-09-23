@@ -57,8 +57,8 @@ export default function DashBoardPie({ sector, clss }) {
         }
 
         const data = await response.json();
+
         setDataPie(data);
-        // setLoading(false);
         CallNewBar();
         return;
       } catch (err) {

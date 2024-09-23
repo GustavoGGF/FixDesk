@@ -12,7 +12,6 @@ from django.contrib.auth import login
 import logging
 from django.views.decorators.http import require_POST
 from django.views.decorators.cache import never_cache
-from django.views.decorators.http import require_http_methods
 
 # Configuração básica de logging
 logging.basicConfig(level=logging.INFO)
@@ -98,7 +97,7 @@ def CreateOrVerifyUser(user, password, request, helpdesk, name_create_user):
 # Função que acessar o AD
 @csrf_exempt
 @never_cache
-@require_http_methods(["POST"])
+@require_POST
 def validation(request):
     load_dotenv()
 

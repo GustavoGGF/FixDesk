@@ -6,7 +6,7 @@ services:
     volumes:
       - /node/FixDesk/backend:/FixDesk
     env_file:
-      - ./env
+      - ./.env
     networks:
       - backend
 

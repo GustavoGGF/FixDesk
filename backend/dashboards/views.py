@@ -20,18 +20,14 @@ from django.core.files.base import ContentFile
 from PIL import Image, UnidentifiedImageError
 from io import BytesIO
 from base64 import b64encode
-from django.db.models.functions import TruncDate
-from django.utils.timezone import make_aware
-import pytz
 from django.views.decorators.cache import never_cache
-from django.views.decorators.http import require_http_methods
+from django.views.decorators.http import require_POST, require_GET
 from django.db import transaction
 
 
 # Create your views here.
 @csrf_exempt
 @login_required(login_url="/login")
-@never_cache
 def dashboard_TI(request):
     if request.method == "POST":
         csrf = None
@@ -92,8 +88,7 @@ def dashboard_TI(request):
 
 
 @login_required(login_url="/login")
-@never_cache
-@require_http_methods(["GET"])
+@require_GET
 def getDashBoardPie(request, sector):
     if sector == "TI":
         boardpie = None
@@ -152,7 +147,7 @@ def getDashBoardPie(request, sector):
 
 @login_required(login_url="/login")
 @never_cache
-@require_http_methods(["GET"])
+@require_GET
 def get_ticket_TI(request):
     ticket_list = []
     ticket_data = None
@@ -184,7 +179,7 @@ def get_ticket_TI(request):
 
 @login_required(login_url="/login")
 @never_cache
-@require_http_methods(["GET"])
+@require_GET
 def getTicketFilter(request):
 
     # Inicializa a variável Quantity_tickets com valor None.
@@ -365,7 +360,7 @@ def getTicketFilter(request):
 
 
 @never_cache
-@require_http_methods(["GET"])
+@require_GET
 @login_required(login_url="/login")
 def getTicketFilterWords(request):
     magic_word = None
@@ -594,7 +589,7 @@ def getTicketFilterWords(request):
 
 @login_required(login_url="/login")
 @never_cache
-@require_http_methods(["GET"])
+@require_GET
 def moreTicket(request):
     newCount = None
     count = 10
@@ -641,7 +636,7 @@ def moreTicket(request):
 
 
 @never_cache
-@require_http_methods(["GET"])
+@require_GET
 @login_required(login_url="/login")
 def getDashBoardBar(request):
     histogram_data = None
@@ -698,7 +693,7 @@ def getDashBoardBar(request):
 
 @login_required(login_url="/login")
 @never_cache
-@require_http_methods(["GET"])
+@require_GET
 def getDashBoardBarMonth(request):
     tickets_data = None
     current_month = None
@@ -760,7 +755,7 @@ def getDashBoardBarMonth(request):
 
 @login_required(login_url="/login")
 @never_cache
-@require_http_methods(["GET"])
+@require_GET
 def getDashBoardBarYear(request):
     tickets_data = None
     values = None
@@ -825,7 +820,7 @@ def getDashBoardBarYear(request):
 
 @login_required(login_url="/login")
 @never_cache
-@require_http_methods(["GET"])
+@require_GET
 def getDashBoardBarAll(request):
     tickets_data = None
     tickets_year = None
@@ -872,7 +867,7 @@ def getDashBoardBarAll(request):
 
 @login_required(login_url="/login")
 @never_cache
-@require_http_methods(["GET"])
+@require_GET
 def getTicketFilterStatus(request):
     order = None
     Quantity_tickets = None
@@ -941,7 +936,7 @@ def getTicketFilterStatus(request):
 )  # Decorador que exige que o usuário esteja autenticado. Redireciona para a página de login se não estiver.
 @requires_csrf_token  # Decorador que assegura que o token CSRF seja verificado para evitar ataques CSRF.
 @never_cache
-@require_http_methods(["POST"])
+@require_POST
 @transaction.atomic
 def upload_new_files(
     request, id
@@ -1102,7 +1097,7 @@ def upload_new_files(
 
 @login_required(login_url="/login")
 @never_cache
-@require_http_methods(["GET"])
+@require_GET
 def detailsChat(request, id):
     UserFront = None
     user = None
@@ -1136,7 +1131,7 @@ def detailsChat(request, id):
 
 @login_required(login_url="/login")
 @never_cache
-@require_http_methods(["GET"])
+@require_GET
 def getTicketFilterTech(request):
     tech = None
     ticket_data = None

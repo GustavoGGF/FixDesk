@@ -371,7 +371,9 @@ export default function DashboardTI() {
         .then((data) => {
           setCountTicket(10); // Define a contagem inicial de chamados como 10.
           setOrderBy("-id"); // Define a ordenação inicial dos chamados.
-          thenView.current.style.backgroundColor = "#00B4D8"; // Define o estilo de visualização atual.
+          if (thenView.current) {
+            thenView.current.style.backgroundColor = "#00B4D8"; // Define o estilo de visualização atual.
+          }
           setTickets(data.tickets); // Define os chamados no estado correspondente.
         })
         .catch((err) => {
