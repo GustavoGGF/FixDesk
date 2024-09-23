@@ -1,6 +1,6 @@
 {
   "All Site": {
-    "Upgrades": { "SCR": "Implementar Content-Security-Policy, X-Frame-Options, X-Content-Type-Options: nosniff, Strict-Transport-Security (HSTS), X-XSS-Protection: 1; mode=block" },
+    "Upgrades": { "SCR": "Implementar , X-Frame-Options, X-Content-Type-Options: nosniff, Strict-Transport-Security (HSTS), X-XSS-Protection: 1; mode=block" },
     "HotFix's": { "VRV": "verificar arquivos json" },
     "Study Possibility": { "REQ": "debounce ou throttle" }
   },
