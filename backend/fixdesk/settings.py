@@ -16,6 +16,8 @@ DEBUG = True
 
 X_FRAME_OPTIONS = "SAMEORIGIN"
 
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
 ALLOWED_HOSTS = ["localhost", "sappp01.lupatech.com.br", "sappp01", "10.1.1.73"]
 
 CSRF_TRUSTED_ORIGINS = [
