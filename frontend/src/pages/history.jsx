@@ -252,13 +252,13 @@ export default function History() {
         setData(dataInfo.data);
 
         const formData = new FormData();
+
         formData.append("name", dataInfo.data.name);
 
         const response = await fetch("", {
           method: "POST",
           headers: {
             Accept: "application/json",
-            "Content-Type": "application/json",
           },
           body: formData,
         });

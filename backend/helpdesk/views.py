@@ -506,6 +506,7 @@ def history(request):
                 ticket_data["id"] = loads(ticket)[0]["pk"]
                 ticket_objects.append(ticket_data)
 
+            print(ticket_objects)
             return JsonResponse(
                 {"token": csrf, "tickets": ticket_objects},
                 status=200,
