@@ -10,10 +10,10 @@
   "HelpDesk": {
     "Upgrade": {},
     "HotFix": {}
-  },
+  },KO
   "History": {
     "Upgrade": {},
-    "HotFix": {}
+    "HotFix": { "TCS": "Status do chamdo quando é atentido não é mudado a cor" }
   },
   "Dashboard": {
     "Upgrade": {},

@@ -696,6 +696,8 @@ def ticket(
                         return JsonResponse({}, status=304, safe=True)
 
                 elif status == "open":
+                    
+                    ticket.open = True
                     ticket.chat += f",[[Date:{date}],[System: {technician} Reabriu e atendeu o Chamado],[Hours:{hours}]]"
 
                     ticket.save()
