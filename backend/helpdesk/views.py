@@ -619,7 +619,7 @@ def ticket(
 
                     ticket.save()
 
-                    return JsonResponse({"chat":ticket.chat, "technician": ticket.responsible_technician}, status=200, safe=True)
+                    return JsonResponse({"chat":ticket.chat, "technician": ticket.responsible_technician, "id": id}, status=200, safe=True)
 
                 except Exception as e:
                     print(e)

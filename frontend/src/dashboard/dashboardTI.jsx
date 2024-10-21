@@ -235,6 +235,7 @@ export default function DashboardTI() {
   const selectViewList = useRef(null);
   const textareaRef = useRef(null);
   const thenView = useRef(null);
+  const divRefs = useRef({});
 
   // Declarando variaveis de Contexto
   const { sector } = useContext(TickerContext);
@@ -480,6 +481,7 @@ export default function DashboardTI() {
       const Div = (
         <DivCard
           key={ticket["id"]}
+          ref={(el) => (divRefs.current[`tck${ticket.id}`] = el)}
           className={`animate__animated animate__zoomInDown ${colorBorder} ${themeCard}`}
           onClick={() => {
             helpdeskPage({ id: ticket["id"] });
@@ -572,6 +574,7 @@ export default function DashboardTI() {
       const Div = (
         <TR
           key={ticket["id"]}
+          ref={(el) => (divRefs.current[`tck${ticket.id}`] = el)}
           className={`animate__animated animate__backInUp ${colorBorder}`}
           onClick={() => {
             helpdeskPage({ id: ticket["id"] });
@@ -1135,8 +1138,19 @@ export default function DashboardTI() {
         })
         .then((data) => {
           if (data) {
-            setTicketResponsible_Technician(data.tech);
+            setTicketResponsible_Technician(data.technician);
             reloadChat({ data: data });
+            const divToChange = divRefs.current[`tck${data.id}`];
+            console.log(divRefs);
+
+            if (divToChange) {
+              console.log(divToChange);
+            }
+            divToChange.classList.remove("ticketStop");
+            divToChange.classList.remove("ticektOpenInView");
+            divToChange.classList.remove("ticketUrgent");
+            divToChange.classList.add("ticektOpenInView");
+            dropCont.current.classList.add("visually-hidden");
             return;
           }
         })
