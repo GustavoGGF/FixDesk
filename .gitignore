@@ -13,3 +13,5 @@
 /backend/certs
 
 *.conf
+
+/backend/helpdesk/__pycache__
