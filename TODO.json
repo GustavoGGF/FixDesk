@@ -13,7 +13,7 @@
   },
   "History": {
     "Upgrade": {},
-    "HotFix": { "TCS": "Status do chamdo quando é atentido não é mudado a cor" }
+    "HotFix": {}
   },
   "Dashboard": {
     "Upgrade": {},
@@ -24,7 +24,6 @@
   },
   "Chat": {},
   "Tickets": {
-    "CHST": "Apos mudar status do chamado, não atualizar a tela",
     "USFUNF": "UseEffect que atua com uploadNewFiles, utilizar key com o nome do arquivo, assim evita enviar o mesmo arquivo 2x, fazer este tratamento via view",
     "VLDD": "Validação em submitNewFiles() se contem arquivos"
   }

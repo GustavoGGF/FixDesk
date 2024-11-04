@@ -34,13 +34,13 @@ export const CloseBTN = styled.button`
   width: 2em;
   border: none;
   position: absolute;
-  background-color: var(--light-white3);
+  background-color: transparent;
   margin-right: 1.5em;
   margin-top: 0.5em;
   -webkit-width: 2em; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   -webkit-border: none; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   -webkit-position: absolute; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
-  -webkit-background-color: var(--light-white3); /* Adicionado para compatibilidade com navegadores baseados em WebKit */
+  -webkit-background-color: transparent;
   -webkit-margin-right: 1.5em; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   -webkit-margin-top: 0.5em; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
 `;
@@ -63,6 +63,7 @@ export const DivChat = styled.div`
   -webkit-margin: 0 auto; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   -webkit-overflow-y: scroll; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   -webkit-overflow-x: hidden; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
+  position: relative;
 `;
 
 export const BtnChat = styled.button`

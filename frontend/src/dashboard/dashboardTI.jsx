@@ -110,6 +110,7 @@ import XLS from "../images/components/xlsx.png";
 import ZIP from "../images/components/zip.jpg";
 import TicketsOptions from "../components/ticketsOptions";
 import { TickerContext } from "../services/TickerContext.js";
+import LoadingChat from "../components/loadingChat.jsx";
 /**
  * Função para ajustar o tema com base na configuração de tema armazenada.
  * - Utiliza o hook useEffect para executar a lógica uma vez após a renderização inicial.
@@ -1232,7 +1233,6 @@ export default function DashboardTI() {
   // Função para montar o chat técnico.
   function MountChatDetails(chat) {
     setTechDetails(true); // Define que o chat técnico está sendo exibido.
-    setLoadingChat(true); // Define que o carregamento do chat está em andamento.
 
     // Verifica se há mensagens no chat.
     if (chat !== null && chat !== undefined && chat !== "undefined") {
@@ -1352,8 +1352,9 @@ export default function DashboardTI() {
   // Função para recarregar o chat após o envio de uma mensagem.
   function reloadChat({ data }) {
     if (data.chat !== null && data.chat !== undefined && data.chat !== "undefined") {
+      setFetchChat(false);
       setCountChat(data.chat.length);
-      setFetchChat(true);
+      setLoadingChat(true);
 
       const regex = /\[\[([^[\]]+?)\],\[([^[\]]+?)\],\[([^[\]]+?)\]\]/g;
 
@@ -1432,11 +1433,13 @@ export default function DashboardTI() {
         }
         return groupedItems;
       };
-
-      // Atualiza o estado do chat com as novas mensagens.
+      setFetchChat(true);
+      aumentarCount();
+      setLoadingChat(false);
+      // // Atualiza o estado do chat com as novas mensagens.
       setMountChat(renderGroupedItems());
-
       setChat(true);
+      // return fetchChat && loadingChat && mountChat && chat;
     }
   }
 
@@ -2399,7 +2402,7 @@ export default function DashboardTI() {
     }
 
     // A função não retorna nenhum valor
-    return;
+    return uploadNewFiles;
   }
 
   /**
@@ -2428,17 +2431,13 @@ export default function DashboardTI() {
     let paragraphs = [];
     if (uploadNewFiles.length >= 1) {
       // Obtém a lista de arquivos do primeiro item em uploadNewFiles
-      const fileNM = uploadNewFiles[0];
+      const fileNM = uploadNewFiles;
 
-      // Itera sobre cada arquivo na lista
-      for (let i = 0; i < fileNM.length; i++) {
-        const file = fileNM[i];
-
-        // Adiciona um elemento JSX para cada arquivo
+      if (fileNM instanceof File) {
         paragraphs.push(
-          <div key={file.name} className="d-flex w-100 justify-content-center">
-            <DivNameFile key={i}>
-              <PNWFile>{file.name}</PNWFile>
+          <div key={fileNM.name} className="d-flex w-100 justify-content-center">
+            <DivNameFile key={0}>
+              <PNWFile>{fileNM.name}</PNWFile>
             </DivNameFile>
             <div>
               <BtnFile
@@ -2446,7 +2445,7 @@ export default function DashboardTI() {
                 onClick={() => {
                   // Cria uma cópia do array de arquivos e remove o arquivo atual
                   const newArray = Array.from(fileNM);
-                  newArray.splice(i, 1);
+                  newArray.splice(0, 1);
 
                   // Cria um novo DataTransfer para atualizar a lista de arquivos
                   const dataTransfer = new DataTransfer();
@@ -2464,6 +2463,41 @@ export default function DashboardTI() {
             </div>
           </div>
         );
+      } else if (fileNM.length) {
+        // Itera sobre cada arquivo na lista
+        for (let i = 0; i < fileNM.length; i++) {
+          const file = fileNM[i];
+          // Adiciona um elemento JSX para cada arquivo
+          paragraphs.push(
+            <div key={file.name} className="d-flex w-100 justify-content-center">
+              <DivNameFile key={i}>
+                <PNWFile>{file.name}</PNWFile>
+              </DivNameFile>
+              <div>
+                <BtnFile
+                  type="button"
+                  onClick={() => {
+                    // Cria uma cópia do array de arquivos e remove o arquivo atual
+                    const newArray = Array.from(fileNM);
+                    newArray.splice(i, 1);
+
+                    // Cria um novo DataTransfer para atualizar a lista de arquivos
+                    const dataTransfer = new DataTransfer();
+                    newArray.forEach((file) => {
+                      dataTransfer.items.add(file);
+                    });
+
+                    // Atualiza o estado com a nova lista de arquivos
+                    const newFileList = dataTransfer.files;
+                    setUploadNewFiles([newFileList]);
+                  }}
+                >
+                  <ImgFile src={Exclude} alt="Excluir arquivo" />
+                </BtnFile>
+              </div>
+            </div>
+          );
+        }
       }
 
       // Atualiza o estado com a nova lista de elementos JSX
@@ -2520,8 +2554,9 @@ export default function DashboardTI() {
     const formData = new FormData();
 
     // Adiciona os arquivos selecionados ao FormData
-    for (let i = 0; i < uploadNewFiles[0].length; i++) {
-      const file = uploadNewFiles[0][i];
+    for (let i = 0; i < uploadNewFiles.length; i++) {
+      const file = uploadNewFiles[i];
+
       formData.append("files", file);
     }
 
@@ -2558,18 +2593,19 @@ export default function DashboardTI() {
         // Converte a resposta para JSON
         return response.json();
       })
-      .then((data) => {
+      .then(async (data) => {
+        setUploadNewFiles([]);
+        setNameNWFiles();
         // Atualiza o estado para indicar que não há novos arquivos
         setNewFiles(false);
 
         // Recarrega a visualização dos arquivos e o chat com as novas informações
-        const chat = data.chat;
         reloadFiles({
           files: data.files,
           name_file: data.name_file,
           content_file: data.content_file,
         });
-        reloadChat({ data: chat });
+        reloadChat({ data: data.chat });
       })
       .catch((err) => {
         // Exibe mensagem de erro e loga o erro no console
@@ -2606,7 +2642,7 @@ export default function DashboardTI() {
    * @param {Array} param0.content_file - Lista do conteúdo dos arquivos.
    * @returns {void}
    */
-  function reloadFiles({ files, name_file, content_file }) {
+  async function reloadFiles({ files, name_file, content_file }) {
     // Itera sobre cada arquivo e processa com base no tipo
     for (let i = 0; i < files.length; i++) {
       var file = files[i];
@@ -3418,6 +3454,7 @@ export default function DashboardTI() {
               <input type="text" value={"Tecnico responsavel: " + (ticketResponsible_Technician ? ticketResponsible_Technician : "Nenhum técnico atribuído")} className="form-control" disabled />
             </div>
             <DivChat id="chatDiv">
+              {loadingChat && <LoadingChat />}
               {mountChat}
               {messageChat && (
                 <div className="w-100 h-100 d-flex justify-content-center align-items-center">
@@ -3529,14 +3566,7 @@ export default function DashboardTI() {
               </ButtonDet>
             </div>
           </div>
-          <div className="overflow-y-auto w-100 h-100 position relative">
-            {loadingChat && (
-              <div className="position-absolute top-50 start-50 translate-middle">
-                <Loading />
-              </div>
-            )}
-            {mountDetails}
-          </div>
+          <div className="overflow-y-auto w-100 h-100 position relative">{mountDetails}</div>
           <div>
             <DivChatDetails>
               <input className="w-100 form-control" type="text" onKeyUp={NewChatDetails} ref={inputRef} />

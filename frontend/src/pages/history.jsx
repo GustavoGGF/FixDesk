@@ -67,6 +67,7 @@ import WORD from "../images/components/palavra.png";
 import XLS from "../images/components/xlsx.png";
 import ZIP from "../images/components/zip.jpg";
 import { TextObersavation } from "../styles/dashboardTI";
+import Exclude from "../images/components/close.png";
 
 export default function History() {
   useEffect(() => {
@@ -195,42 +196,85 @@ export default function History() {
   }
 
   useEffect(() => {
-    if (uploadNewFiles.length < 1) {
-      setNameNWFiles([]);
-      setNewFiles(false);
-      return;
+    let paragraphs = [];
+    if (uploadNewFiles.length >= 1) {
+      // Obtém a lista de arquivos do primeiro item em uploadNewFiles
+      const fileNM = uploadNewFiles;
+
+      if (fileNM instanceof File) {
+        paragraphs.push(
+          <div key={fileNM.name} className="d-flex w-100 justify-content-center">
+            <DivNameFile key={0}>
+              <PNWFile>{fileNM.name}</PNWFile>
+            </DivNameFile>
+            <div>
+              <BtnFile
+                type="button"
+                onClick={() => {
+                  // Cria uma cópia do array de arquivos e remove o arquivo atual
+                  const newArray = Array.from(fileNM);
+                  newArray.splice(0, 1);
+
+                  // Cria um novo DataTransfer para atualizar a lista de arquivos
+                  const dataTransfer = new DataTransfer();
+                  newArray.forEach((file) => {
+                    dataTransfer.items.add(file);
+                  });
+
+                  // Atualiza o estado com a nova lista de arquivos
+                  const newFileList = dataTransfer.files;
+                  setUploadNewFiles([newFileList]);
+                }}
+              >
+                <ImgFile src={Exclude} alt="Excluir arquivo" />
+              </BtnFile>
+            </div>
+          </div>
+        );
+      } else if (fileNM.length) {
+        // Itera sobre cada arquivo na lista
+        for (let i = 0; i < fileNM.length; i++) {
+          const file = fileNM[i];
+          // Adiciona um elemento JSX para cada arquivo
+          paragraphs.push(
+            <div key={file.name} className="d-flex w-100 justify-content-center">
+              <DivNameFile key={i}>
+                <PNWFile>{file.name}</PNWFile>
+              </DivNameFile>
+              <div>
+                <BtnFile
+                  type="button"
+                  onClick={() => {
+                    // Cria uma cópia do array de arquivos e remove o arquivo atual
+                    const newArray = Array.from(fileNM);
+                    newArray.splice(i, 1);
+
+                    // Cria um novo DataTransfer para atualizar a lista de arquivos
+                    const dataTransfer = new DataTransfer();
+                    newArray.forEach((file) => {
+                      dataTransfer.items.add(file);
+                    });
+
+                    // Atualiza o estado com a nova lista de arquivos
+                    const newFileList = dataTransfer.files;
+                    setUploadNewFiles([newFileList]);
+                  }}
+                >
+                  <ImgFile src={Exclude} alt="Excluir arquivo" />
+                </BtnFile>
+              </div>
+            </div>
+          );
+        }
+      }
+
+      // Atualiza o estado com a nova lista de elementos JSX
+      setNameNWFiles(paragraphs);
+
+      // Indica que novos arquivos foram selecionados
+      setNewFiles(true);
     }
-
-    // Cria a lista de elementos JSX para os arquivos
-    const paragraphs = uploadNewFiles[0].map((file, index) => (
-      <div className="d-flex w-100 justify-content-center" key={file.name}>
-        <DivNameFile>
-          <PNWFile>{file.name}</PNWFile>
-        </DivNameFile>
-        <div>
-          <BtnFile
-            type="button"
-            onClick={() => {
-              // Remove o arquivo atual da lista
-              const updatedFiles = uploadNewFiles[0].filter((_, i) => i !== index);
-
-              // Cria um novo objeto DataTransfer para atualizar a lista de arquivos
-              const dataTransfer = new DataTransfer();
-              updatedFiles.forEach((file) => dataTransfer.items.add(file));
-
-              // Atualiza o estado com a nova lista de arquivos
-              setUploadNewFiles([dataTransfer.files]);
-            }}
-          >
-            <ImgFile src={CloseIMG} alt="Excluir arquivo" />
-          </BtnFile>
-        </div>
-      </div>
-    ));
-
-    // Atualiza o estado com a lista de arquivos
-    setNameNWFiles(paragraphs);
-    setNewFiles(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [uploadNewFiles]);
 
   function aumentarCount() {
@@ -1663,10 +1707,17 @@ export default function History() {
   }
 
   function UploadNewFiles(evt) {
+    // Adiciona os novos arquivos ao array UpNwfile
     UpNwfile.push(evt.target.files);
+
+    // Itera sobre os arquivos no array UpNwfile
     for (let i = 0; i < UpNwfile.length; i++) {
-      setUploadNewFiles((uploadNewFiles) => [...uploadNewFiles, UpNwfile[i]]);
+      // Atualiza o estado dos arquivos a serem enviados
+      setUploadNewFiles((uploadNewFiles) => [...uploadNewFiles, ...UpNwfile[i]]);
     }
+
+    // A função não retorna nenhum valor
+    return uploadNewFiles;
   }
 
   function closeNWFiles() {
@@ -1675,48 +1726,69 @@ export default function History() {
   }
 
   function submitNewFiles() {
+    // Cria um objeto FormData para enviar os arquivos e informações adicionais
     const formData = new FormData();
-    for (let i = 0; i < uploadNewFiles[0].length; i++) {
-      const file = uploadNewFiles[0][i];
+
+    // Adiciona os arquivos selecionados ao FormData
+    for (let i = 0; i < uploadNewFiles.length; i++) {
+      const file = uploadNewFiles[i];
+
       formData.append("files", file);
     }
-    var date = new Date();
+
+    // Função para adicionar zero à esquerda de números menores que 10
     function adicionaZero(numero) {
       if (numero < 10) {
         return "0" + numero;
       }
       return numero;
     }
+
+    // Obtém e formata a data e a hora atuais
+    var date = new Date();
     var day = date.getDate();
     var month = date.getMonth() + 1;
     var year = date.getFullYear();
-
     var dataFormatada = adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
     var horaFormatada = adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
-    formData.append("hours", horaFormatada);
+
+    // Adiciona a data e hora ao FormData
     formData.append("date", dataFormatada);
+    formData.append("hours", horaFormatada);
+
+    // Envia os arquivos e dados ao servidor
     fetch("/dashboard_TI/upload-new-files/" + ticketID, {
       method: "POST",
       headers: {
         "X-CSRFToken": token,
+        "Cache-Control": "no-cache",
       },
       body: formData,
     })
       .then((response) => {
-        console.log(response);
+        // Converte a resposta para JSON
         return response.json();
       })
-      .then((data) => {
+      .then(async (data) => {
+        setUploadNewFiles([]);
+        setNameNWFiles();
+        // Atualiza o estado para indicar que não há novos arquivos
         setNewFiles(false);
-        const chat = data.chat;
-        reloadFiles({ files: data.files, name_file: data.name_file, content_file: data.content_file });
-        reloadChat({ data: chat });
+
+        // Recarrega a visualização dos arquivos e o chat com as novas informações
+        reloadFiles({
+          files: data.files,
+          name_file: data.name_file,
+          content_file: data.content_file,
+        });
+        reloadChat({ data: data.chat });
       })
       .catch((err) => {
+        // Exibe mensagem de erro e loga o erro no console
         setMessageError(err);
-        setTypeError("Fatal ERROR");
+        setTypeError("FATAL ERROR");
         setMessage(true);
-        return console.log(err);
+        console.log(err);
       });
   }
 

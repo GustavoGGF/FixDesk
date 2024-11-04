@@ -931,13 +931,13 @@ def getTicketFilterStatus(request):
     return
 
 
-@login_required(
-    login_url="/login"
-)  # Decorador que exige que o usuário esteja autenticado. Redireciona para a página de login se não estiver.
-@requires_csrf_token  # Decorador que assegura que o token CSRF seja verificado para evitar ataques CSRF.
-@never_cache
+# @login_required(
+#     login_url="/login"
+# )  # Decorador que exige que o usuário esteja autenticado. Redireciona para a página de login se não estiver.
+# @requires_csrf_token  # Decorador que assegura que o token CSRF seja verificado para evitar ataques CSRF.
+# @never_cache
 @require_POST
-@transaction.atomic
+# @transaction.atomic
 def upload_new_files(
     request, id
 ):  # Função para realizar upload de novos arquivos, recebendo a requisição e o ID do ticket.
@@ -960,52 +960,44 @@ def upload_new_files(
     try:
         load_dotenv()
         other_files = request.FILES.getlist("files")
+        ticket = SupportTicket.objects.get(id=id)
+        date = request.POST.get("date")
+        hours = request.POST.get("hours")
+        if other_files:
+            for unit_file in other_files:
 
-        for unit_file in other_files:
-            image_bytes = unit_file.read()
-
-            mime = Magic()
-
-            file_type = mime.from_buffer(image_bytes)
-
-            types_str = getenv("VALID_TYPES")
-
-            types_str = types_str.strip("[]")
-
-            types = [type.strip() for type in types_str.split(",")]
-
-            valid = False
-
-            for typeUn in types:
-                if typeUn.replace('"', "").lower() in file_type.lower():
-                    valid = True
-                    break
-
-            if not valid:
-                image_str = str(unit_file)
-
-                other_image = mimetypes.guess_type(image_str)
+                image_bytes = unit_file.read()
+                mime = Magic()
+                file_type = mime.from_buffer(image_bytes)
+                types_str = getenv("VALID_TYPES")
+                types_str = types_str.strip("[]")
+                types = [type.strip() for type in types_str.split(",")]
+                valid = False
 
                 for typeUn in types:
-                    if (
-                        typeUn.replace('"', "").lower()
-                        in other_image[0].replace('"', "").lower()
-                    ):
+                    if typeUn.replace('"', "").lower() in file_type.lower():
                         valid = True
                         break
 
-            if valid:
-                Ticket = SupportTicket.objects.get(id=id)
-                ticket_file = TicketFile(ticket=Ticket)
+                if not valid:
+                    image_str = str(unit_file)
 
-                ticket_file.file.save(str(unit_file), ContentFile(image_bytes))
+                    other_image = mimetypes.guess_type(image_str)
 
-        ticket = SupportTicket.objects.get(id=id)
+                    for typeUn in types:
+                        if (
+                            typeUn.replace('"', "").lower()
+                            in other_image[0].replace('"', "").lower()
+                        ):
+                            valid = True
+                            break
 
-        date = request.POST.get("date")
-        hours = request.POST.get("hours")
+                if valid:
+                    Ticket = SupportTicket.objects.get(id=id)
+                    ticket_file = TicketFile(ticket=Ticket)
+                    ticket.chat += f",[[Date:{date}],[System:{request.user.first_name} {request.user.last_name} Anexou o arquivo {unit_file}],[Hours:{hours}]]"
+                    ticket_file.file.save(str(unit_file), ContentFile(image_bytes))
 
-        ticket.chat += f",[[Date:{date}],[System:{request.user.first_name} {request.user.last_name} Anexou o arquivo {unit_file}],[Hours:{hours}]]"
         ticket.save()
         ticket_file.save()
 
@@ -1080,7 +1072,6 @@ def upload_new_files(
                     print(e)
                     return JsonResponse({"error": e}, status=666)
         ticket = SupportTicket.objects.get(id=id)
-
         return JsonResponse(
             {
                 "chat": ticket.chat,
