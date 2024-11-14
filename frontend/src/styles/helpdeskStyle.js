@@ -162,6 +162,11 @@ export const BodyFiles = styled.div`
   text-align: center;
   padding: 5em 0;
   padding-bottom: 3em;
+  position: relative;
+`;
+
+export const InputFiles = styled.input`
+  visibility: hidden;
 `;
 
 export const PFiles2 = styled.p`
@@ -174,10 +179,6 @@ export const PFiles2 = styled.p`
 export const B1 = styled.b`
   color: var(--ocean-green);
   -webkit-text-fill-color: var(--ocean-green); /* Garante a cor do texto em navegadores WebKit */
-`;
-
-export const InputFiles = styled.input`
-  visibility: hidden;
 `;
 
 export const IMGFile2 = styled.img`

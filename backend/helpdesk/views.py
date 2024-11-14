@@ -682,7 +682,7 @@ def ticket(
 
                         mail = body["mail"]
                         msg = f"{technician} Finalizou o Chamado"
-                        msg2 = f"Finalizamento do chamado {ticket.id}"
+                        msg2 = f"Chamado {ticket.id} finalizado com sucesso!!"
 
                         task = Thread(
                             target=sendMail,

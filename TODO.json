@@ -23,8 +23,5 @@
     "HotFix": {}
   },
   "Chat": {},
-  "Tickets": {
-    "USFUNF": "UseEffect que atua com uploadNewFiles, utilizar key com o nome do arquivo, assim evita enviar o mesmo arquivo 2x, fazer este tratamento via view",
-    "VLDD": "Validação em submitNewFiles() se contem arquivos"
-  }
+  "Tickets": {}
 }

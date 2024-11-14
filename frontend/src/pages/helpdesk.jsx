@@ -26,13 +26,13 @@ import {
   HeaderFiles,
   IMGFile,
   IMGFile2,
-  InputFiles,
   ListFiles,
   PFiles,
   PFiles2,
   Span1,
   Span2,
   Span3,
+  InputFiles,
 } from "../styles/helpdeskStyle";
 import TicketsOptions from "../components/ticketsOptions";
 import { TickerContext } from "../services/TickerContext";
@@ -112,8 +112,6 @@ export default function Helpdesk() {
 
   let file_name = [];
 
-  // const respectiveAr = useContext(ValorContext);
-
   // Função que muda o tema pra escuro
   function ThemeBlack() {
     setThemeTicket("");
@@ -179,27 +177,44 @@ export default function Helpdesk() {
       App.init = (function () {
         //Init
         function handleFileSelect(evt) {
-          const files = evt.target.files; // FileList object
+          evt.preventDefault();
 
-          //files template
-          let template = `${Object.keys(files).join("")}`;
+          // Verifica se é o Firefox
+          const isFirefox = navigator.userAgent.toLowerCase().includes("firefox");
 
-          if (fileimg.length <= 0) {
+          // Obtém os arquivos dependendo do navegador
+          const files = isFirefox
+            ? Array.from(evt.dataTransfer.items)
+                .map((item) => item.getAsFile())
+                .filter((file) => file)
+            : evt.target.files;
+
+          if (!files || files.length <= 0) {
             return;
           }
 
-          $("#drop").classList.add("hidden");
-          $("footer").classList.add("hasFiles");
-          $(".importar").classList.add("active");
+          // Template dos arquivos (aqui assumimos que os arquivos têm `name` para o template)
+          let template = `${Object.keys(files)
+            .map((fileIndex) => files[fileIndex].name)
+            .join("")}`;
+
+          document.querySelector("#drop").classList.add("hidden");
+          document.querySelector("footer").classList.add("hasFiles");
+          document.querySelector(".importar").classList.add("active");
+
           setTimeout(() => {
-            $("#list-files").innerHTML = template;
+            document.querySelector("#list-files").innerHTML = template;
           }, 1000);
 
-          Object.keys(files).forEach((file) => {
-            let load = 2000 + file * 2000; // fake load
+          Object.keys(files).forEach((fileIndex) => {
+            let load = 2000 + fileIndex * 2000; // Simula um carregamento
+
             setTimeout(() => {
-              $(`.file--${file}`).querySelector(".progress").classList.remove("active");
-              $(`.file--${file}`).querySelector(".done").classList.add("anim");
+              const fileElement = document.querySelector(`.file--${fileIndex}`);
+              if (fileElement) {
+                fileElement.querySelector(".progress").classList.remove("active");
+                fileElement.querySelector(".done").classList.add("anim");
+              }
             }, load);
           });
         }
@@ -419,9 +434,14 @@ export default function Helpdesk() {
     setMessage(false);
   }
 
-  // Apos soltar um arquivo para upload é chamado essa função que mostra qual arquivo foi anexado
-  // e seu tamanho
   function inputDrop() {
+    const isFirefox = navigator.userAgent.toLowerCase().includes("firefox");
+
+    if (isFirefox) {
+      setMessagetitle("Ação Indisponível");
+      setMessageError("O FireFox Bloqueia esse tipo de Ação!!");
+      setMessage(true);
+    }
     setInputDropControl(true);
     setInputManualControl(false);
     file_name = fileimg.map((fileItem) => fileItem.name);
