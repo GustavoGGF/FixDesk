@@ -122,6 +122,36 @@ import LoadingChat from "../components/loadingChat.jsx";
 
 export default function DashboardTI() {
   useEffect(() => {
+    // Função para desabilitar o menu de contexto (botão direito do mouse)
+    const handleContextMenu = (event) => {
+      // Previne o comportamento padrão de exibir o menu de contexto
+      event.preventDefault();
+    };
+
+    // Função para desabilitar atalhos de teclado específicos, como F12 e Ctrl+Shift+I
+    const handleKeyDown = (event) => {
+      // Verifica se a tecla pressionada é F12 ou o atalho Ctrl+Shift+I (inspecionar elemento)
+      if (event.key === "F12" || (event.ctrlKey && event.shiftKey && event.key === "I")) {
+        // Previne o comportamento padrão associado a essas teclas
+        event.preventDefault();
+      }
+    };
+
+    // Adiciona o listener para desabilitar o menu de contexto
+    document.addEventListener("contextmenu", handleContextMenu);
+    // Adiciona o listener para desabilitar atalhos de teclado específicos
+    document.addEventListener("keydown", handleKeyDown);
+
+    // Cleanup para remover os listeners ao desmontar o componente
+    return () => {
+      // Remove o listener do menu de contexto para evitar vazamentos de memória
+      document.removeEventListener("contextmenu", handleContextMenu);
+      // Remove o listener de atalhos de teclado para garantir que o comportamento padrão seja restaurado
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []); // Dependências vazias garantem que este efeito será executado apenas uma vez no ciclo de vida do componente
+
+  useEffect(() => {
     document.title = "DashBoard TI";
     const theme = localStorage.getItem("Theme");
     if (theme === null || theme === "black") {
