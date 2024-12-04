@@ -1221,6 +1221,10 @@ export default function DashboardTI() {
 
   // Função que envia mensagens para o chat de detalhes técnicos.
   function SendDetails() {
+    inputRef.current.value = ""; // Limpa o valor do campo de entrada.
+    if (detailsChat.length === 0) {
+      return;
+    }
     // Implementação para enviar mensagens para o chat de detalhes técnicos.
     // Pega a data, dia, mês e ano e ajusta.
     var date = new Date();
@@ -1236,8 +1240,6 @@ export default function DashboardTI() {
 
     var dataFormatada = adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
     var horaFormatada = adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
-
-    inputRef.current.value = ""; // Limpa o valor do campo de entrada.
 
     // Enviar informações do chat.
     fetch("/helpdesk/ticket/" + ticketID, {
