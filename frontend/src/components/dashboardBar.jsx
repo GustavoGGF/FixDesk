@@ -85,12 +85,12 @@ export default function DashboardBar() {
       .then((response) => {
         if (response.status === 210) {
           try {
-            selectPeriod.current.value = "2";
-            setMessage(true);
-            setTypeError("Falta de Dados");
-            setMessageError("Buscando Chamados do Mês");
-            barChartData = "";
-            periodMonth();
+            // selectPeriod.current.value = "2";
+            // setMessage(true);
+            // setTypeError("Falta de Dados");
+            // setMessageError("Buscando Chamados do Mês");
+            // barChartData = "";
+            // periodMonth();
           } catch (err) {
             console.log(err);
           }

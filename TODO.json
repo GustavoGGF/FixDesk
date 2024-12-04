@@ -17,7 +17,7 @@
   },
   "Dashboard": {
     "Upgrade": {},
-    "HotFix": {}
+    "HotFix": { "DLHJTCH": "Ao apertar enter depois de enviar uma mensagem envia novamente a mesma sem ter escrito nada, conferir se o chat tambem faz isso" }
   },
   "Navbar": {
     "HotFix": {}

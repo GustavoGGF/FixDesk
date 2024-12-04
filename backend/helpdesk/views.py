@@ -35,6 +35,7 @@ from contextlib import contextmanager
 import mysql.connector
 from decouple import config
 from django.views.decorators.http import require_POST, require_GET
+from django.utils.timezone import make_aware
 
 # Configuração básica de logging
 logging.basicConfig(level=logging.INFO)
@@ -175,6 +176,7 @@ def submitTicket(request):
     start_date = None  # Data de início convertida para o formato de data
     start_date_str = None  # Data de início como string
     ticketRequester = None  # Solicitante do chamado
+    naive_datetime = None
     try:
         company = request.POST.get("company")
         department = request.POST.get("department")
@@ -190,7 +192,8 @@ def submitTicket(request):
             new_date = datetime.now()
             start_date = new_date.strftime("%Y-%m-%d %H:%M")
         else:
-            start_date = datetime.strptime(start_date_str, "%Y-%m-%d %H:%M")
+            naive_datetime = datetime.strptime(start_date_str, "%Y-%m-%d %H:%M")
+            start_date = make_aware(naive_datetime)
         ticketRequester = request.POST.get("ticketRequester")
 
         if pid:
@@ -619,7 +622,15 @@ def ticket(
 
                     ticket.save()
 
-                    return JsonResponse({"chat":ticket.chat, "technician": ticket.responsible_technician, "id": id}, status=200, safe=True)
+                    return JsonResponse(
+                        {
+                            "chat": ticket.chat,
+                            "technician": ticket.responsible_technician,
+                            "id": id,
+                        },
+                        status=200,
+                        safe=True,
+                    )
 
                 except Exception as e:
                     print(e)
@@ -696,7 +707,7 @@ def ticket(
                         return JsonResponse({}, status=304, safe=True)
 
                 elif status == "open":
-                    
+
                     ticket.open = True
                     ticket.chat += f",[[Date:{date}],[System: {technician} Reabriu e atendeu o Chamado],[Hours:{hours}]]"
 
