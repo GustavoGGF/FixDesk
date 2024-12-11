@@ -77,6 +77,7 @@ def sendMail(mail, msgm1, msgm2):
 
     except Exception as e:
         print(e)
+        return JsonResponse({"Erro": f"Erro ao enviar email {e}"}, status=123)
 
 
 # Create your views here.
@@ -119,8 +120,7 @@ def firstView(request):
                 safe=True,
             )
         except Exception as e:
-            logger.info(e)
-            logger.info("Deu ruim help")
+            print(e)
             return JsonResponse({"status": str(e)}, status=300, safe=True)
 
     if request.method == "GET":
@@ -141,14 +141,12 @@ def firstView(request):
                 ):
                     return render(request, "index.html", {})
                 else:
-                    logger.info("Auth")
                     return redirect("/login")
             except Exception as e:
                 json_error = str(e)
                 logger.info(e)
                 return JsonResponse({"status": json_error}, status=300, safe=True)
         else:
-            logger.info("not logged")
             return redirect("/login")
 
 
@@ -159,7 +157,6 @@ def firstView(request):
 @login_required(login_url="/login")
 @require_POST
 @transaction.atomic
-@never_cache
 # Função que trata o envio de chamados (tickets) para o banco de dados
 def submitTicket(request):
     # Inicializando as variáveis com valor None
@@ -177,6 +174,7 @@ def submitTicket(request):
     start_date_str = None  # Data de início como string
     ticketRequester = None  # Solicitante do chamado
     naive_datetime = None
+    error = None
     try:
         company = request.POST.get("company")
         department = request.POST.get("department")
@@ -195,7 +193,6 @@ def submitTicket(request):
             naive_datetime = datetime.strptime(start_date_str, "%Y-%m-%d %H:%M")
             start_date = make_aware(naive_datetime)
         ticketRequester = request.POST.get("ticketRequester")
-
         if pid:
             pass
         else:
@@ -203,7 +200,9 @@ def submitTicket(request):
 
     except Exception as e:
         print(e)
-        return
+        return JsonResponse(
+            {"error": f" Erro na Obtenção dos dados: {error}"}, status=300, safe=True
+        )
 
     # Inicializando variáveis adicionais com valor None
     # Estas variáveis serão utilizadas para armazenar dados adicionais do chamado e informações sobre arquivos de imagem
@@ -280,12 +279,17 @@ def submitTicket(request):
                     new_id = None
 
                 else:
-                    return JsonResponse({"status": "Invalid"}, status=320, safe=True)
+                    return JsonResponse({"error": "Invalid"}, status=300, safe=True)
 
                 new_id = Ticket.id
 
             except Exception as e:
                 print(e)
+                return JsonResponse(
+                    {"error": f"erro no processamento de imagem {e}"},
+                    status=300,
+                    safe=True,
+                )
 
         return JsonResponse({"id": new_id}, status=200, safe=True)
 
@@ -322,6 +326,11 @@ def submitTicket(request):
             return JsonResponse({"id": new_id}, status=200, safe=True)
         except Exception as e:
             print(e)
+            return JsonResponse(
+                {"error": f"erro no processamento de equipamento {e}"},
+                status=300,
+                safe=True,
+            )
 
     elif "company_new_user" in request.POST:
         name_new_user = None
@@ -385,6 +394,11 @@ def submitTicket(request):
             return JsonResponse({"id": new_id}, status=200, safe=True)
         except Exception as e:
             print(e)
+            return JsonResponse(
+                {"error": f"erro no processamento de novo usuario {e}"},
+                status=300,
+                safe=True,
+            )
 
     elif "mail_tranfer" in request.POST:
         name_new_user = None
@@ -424,11 +438,26 @@ def submitTicket(request):
             return JsonResponse({"id": new_id}, status=200, safe=True)
         except Exception as e:
             print(e)
-            return
+            return JsonResponse(
+                {"error": f"erro no processamento de transferencia de email {e}"},
+                status=300,
+                safe=True,
+            )
 
     else:
-
         try:
+            logger.info("ticketRequester: ", ticketRequester)
+            logger.info("department: ", department)
+            logger.info("mail: ", mail)
+            logger.info("company: ", company)
+            logger.info("sector: ", sector)
+            logger.info("respective_area: ", respective_area)
+            logger.info("occurrence: ", occurrence)
+            logger.info("problemn: ", problemn)
+            logger.info("observation: ", observation)
+            logger.info("start_date: ", start_date)
+            logger.info("pid: ", pid)
+
             Ticket = SupportTicket(
                 ticketRequester=ticketRequester,
                 department=department,
@@ -451,7 +480,9 @@ def submitTicket(request):
             return JsonResponse({"id": new_id}, status=200, safe=True)
         except Exception as e:
             print(e)
-            return
+            return JsonResponse(
+                {"error": f"erro ao salvar o ticket {e}"}, status=300, safe=True
+            )
 
 
 @csrf_exempt
@@ -501,6 +532,7 @@ def history(request):
 
         except Exception as e:
             print(e)
+            return JsonResponse({"Error": f"Erro inesperado {e}"}, status=301)
 
         ticket_objects = []
         try:
@@ -517,6 +549,7 @@ def history(request):
 
         except Exception as e:
             print(e)
+            return JsonResponse({"Error": f"Erro inesperado {e}"}, status=301)
 
     if request.method == "GET":
         return render(request, "index.html", {})
@@ -552,6 +585,7 @@ def toDashboard(request):
                 )
     except Exception as e:
         print(e)
+        return JsonResponse({"Error": f"Erro inesperado {e}"}, status=302)
 
 
 @csrf_exempt
@@ -563,6 +597,7 @@ def exit(request):
         return redirect("/")
     except Exception as e:
         print(e)
+        return JsonResponse({"Error": f"Erro inesperado {e}"}, status=303)
 
 
 @login_required(
@@ -655,6 +690,9 @@ def ticket(
                         )
                     except Exception as e:
                         print(e)
+                        return JsonResponse(
+                            {"Error": f"Erro inesperado {e}"}, status=304
+                        )
 
                 if "User" in body:
                     chat = body["chat"]
@@ -703,7 +741,6 @@ def ticket(
                         task.start()
 
                     else:
-                        print("4")
                         return JsonResponse({}, status=304, safe=True)
 
                 elif status == "open":
@@ -1022,7 +1059,10 @@ def ticket(
                                     new_date = f"{date}/{number_into_mouth}/{year}"
 
                         except Exception as e:
-                            return print(e)
+                            print(e)
+                            return JsonResponse(
+                                {"Error": f"Erro inesperado {e}"}, status=304
+                            )
 
                         pdf.cell(
                             200,
@@ -1104,7 +1144,10 @@ def ticket(
                                     new_date = f"{date}/{number_into_mouth}/{year}"
 
                         except Exception as e:
-                            return print(e)
+                            print(e)
+                            return JsonResponse(
+                                {"Error": f"Erro inesperado {e}"}, status=304
+                            )
 
                         pdf.cell(
                             200,
@@ -1192,10 +1235,16 @@ def ticket(
                                         )
 
                                 except Exception as e:
-                                    return print(e)
+                                    print(e)
+                                    return JsonResponse(
+                                        {"Error": f"Erro inesperado {e}"}, status=304
+                                    )
 
                         except Exception as e:
                             print(e)
+                            return JsonResponse(
+                                {"Error": f"Erro inesperado {e}"}, status=304
+                            )
 
                     pdf_output = pdf.output(dest="S")
                     pdf_base64 = b64encode(pdf_output).decode("utf-8")
@@ -1204,7 +1253,7 @@ def ticket(
                     )
                 except Exception as e:
                     print(e)
-                    return
+                    return JsonResponse({"Error": f"Erro inesperado {e}"}, status=304)
 
             if "HTTP_MODIFY_TICKET" in request.META:
                 tech = None
@@ -1255,7 +1304,7 @@ def ticket(
                     return JsonResponse({"status": "ok"}, status=200, safe=True)
                 except Exception as e:
                     print(e)
-                    return
+                    return JsonResponse({"Error": f"Erro inesperado {e}"}, status=304)
 
             if "HTTP_TECH_DETAILS" in request.META:
                 detailsChat = None
@@ -1280,11 +1329,12 @@ def ticket(
 
                     return JsonResponse({"chat": chat}, status=200, safe=True)
                 except Exception as e:
-                    return print(e)
+                    print(e)
+                    return JsonResponse({"Error": f"Erro inesperado {e}"}, status=304)
 
         except Exception as e:
             print(e)
-            return
+            return JsonResponse({"Error": f"Erro inesperado {e}"}, status=304)
 
     if request.method == "GET":
         ticket = None
@@ -1298,6 +1348,7 @@ def ticket(
 
         except Exception as e:
             print(e)
+            return JsonResponse({"Error": f"Erro inesperado {e}"}, status=304)
 
         try:
             validation = str(pid)
@@ -1306,6 +1357,7 @@ def ticket(
 
         except Exception as e:
             print(e)
+            return JsonResponse({"Error": f"Erro inesperado {e}"}, status=304)
 
         UserFront = None
         group1 = None
@@ -1337,8 +1389,12 @@ def ticket(
 
                     except Exception as e:
                         print(e)
+                        return JsonResponse(
+                            {"Error": f"Erro inesperado {e}"}, status=304
+                        )
         except Exception as e:
             print(e)
+            return JsonResponse({"Error": f"Erro inesperado {e}"}, status=304)
 
         serialized_ticket = []
         image = ""
@@ -1468,9 +1524,15 @@ def ticket(
 
                         except Exception as e:
                             print(e)
+                            return JsonResponse(
+                                {"Error": f"Erro inesperado {e}"}, status=304
+                            )
 
                     except Exception as e:
                         print(e)
+                        return JsonResponse(
+                            {"Error": f"Erro inesperado {e}"}, status=304
+                        )
 
             serialized_ticket.append(
                 {
@@ -1499,6 +1561,7 @@ def ticket(
 
         except Exception as e:
             print(e)
+            return JsonResponse({"Error": f"Erro inesperado {e}"}, status=304)
 
 
 @never_cache
@@ -1515,6 +1578,7 @@ def update_chat(request, id):
         return JsonResponse({"chat": chat}, status=200, safe=True)
     except Exception as e:
         print(e)
+        return JsonResponse({"Error": f"Erro inesperado {e}"}, status=305)
 
 
 @require_GET
@@ -1560,6 +1624,7 @@ def moreTicket(request):
 
     except Exception as e:
         print(e)
+        return JsonResponse({"Error": f"Erro inesperado {e}"}, status=306)
 
     ticket_objects = []
     try:
@@ -1574,6 +1639,7 @@ def moreTicket(request):
 
     except Exception as e:
         print(e)
+        return JsonResponse({"Error": f"Erro inesperado {e}"}, status=306)
 
 
 @require_GET
@@ -1739,6 +1805,7 @@ def getTicketFilter(request):
 
     except Exception as e:
         print(e)
+        return JsonResponse({"Error": f"Erro inesperado {e}"}, status=308)
 
     ticket_objects = []
     try:
@@ -1751,6 +1818,7 @@ def getTicketFilter(request):
 
     except Exception as e:
         print(e)
+        return JsonResponse({"Error": f"Erro inesperado {e}"}, status=308)
 
 
 @login_required(login_url="/login")
@@ -2045,6 +2113,7 @@ def getTicketFilterStatus(request):
 
     except Exception as e:
         print(e)
+        return JsonResponse({"Error": f"Erro inesperado {e}"}, status=309)
 
     ticket_list = []
     ticket_json = None
@@ -2063,8 +2132,7 @@ def getTicketFilterStatus(request):
 
     except Exception as e:
         print(e)
-
-        return
+        return JsonResponse({"Error": f"Erro inesperado {e}"}, status=309)
 
 
 @contextmanager
@@ -2115,7 +2183,7 @@ def equipamentsForAlocate(request):
             ]
     except Exception as e:
         print(e)
-        return
+        return JsonResponse({"Error": f"Erro inesperado {e}"}, status=310)
     finally:
         if connection.is_connected():
             cursor.close()
@@ -2147,7 +2215,8 @@ def convert_to_dict(chat_data):
             dictionaries.append(dictionary)
 
     except Exception as e:
-        return print(e)
+        print(e)
+        return JsonResponse({"Error": f"Erro inesperado {e}"}, status=311)
 
     return dictionaries
 
@@ -2168,7 +2237,7 @@ def dateEquipamentsAlocate(request, mac):
         return JsonResponse({"dates": alocate_dates_list}, status=200, safe=True)
     except Exception as e:
         print(e)
-        return
+        return JsonResponse({"Error": f"Erro inesperado {e}"}, status=312)
 
 
 @csrf_exempt

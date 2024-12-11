@@ -23,5 +23,5 @@
     "HotFix": {}
   },
   "Chat": {},
-  "Tickets": {}
+  "Tickets": { "ENDTF": "Ao finalizar o chamado não salva o data de fechamento" }
 }

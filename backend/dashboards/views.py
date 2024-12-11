@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.views.decorators.csrf import csrf_exempt, requires_csrf_token
+from django.views.decorators.csrf import csrf_exempt
 from os import getenv
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -10,7 +10,6 @@ from json import loads
 from django.core.serializers import serialize
 from django.middleware.csrf import get_token
 from django.contrib.auth.models import Group, User
-from .models import Equipaments
 from datetime import date, datetime, timedelta
 from django.db.models import Q
 import calendar
@@ -22,7 +21,6 @@ from io import BytesIO
 from base64 import b64encode
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_POST, require_GET
-from django.db import transaction
 
 
 # Create your views here.
@@ -63,6 +61,9 @@ def dashboard_TI(request):
             )
         except Exception as e:
             print(e)
+            return JsonResponse(
+                {"Error": f"Erro ao obter csrf e lista tecnica: {e}"}, status=330
+            )
 
     if request.method == "GET":
         UserFront = None
@@ -85,6 +86,7 @@ def dashboard_TI(request):
             return render(request, "index.html", {})
         except Exception as e:
             print(e)
+            return JsonResponse({"Error": f"Erro inesperado: {e}"}, status=330)
 
 
 @login_required(login_url="/login")
@@ -143,6 +145,10 @@ def getDashBoardPie(request, sector):
 
         except Exception as e:
             print(e)
+            return JsonResponse(
+                {"Error": f"Erro ao obter os chamados para DashBoardPie {e}"},
+                status=331,
+            )
 
 
 @login_required(login_url="/login")
@@ -163,6 +169,7 @@ def get_ticket_TI(request):
 
     except Exception as e:
         print(e)
+        return JsonResponse({"Error": f"Erro ao obter os chamados {e}"}, status=332)
 
     ticket_objects = []
     try:
@@ -175,6 +182,7 @@ def get_ticket_TI(request):
 
     except Exception as e:
         print(e)
+        return JsonResponse({"Error": f"Erro ao montar os chamados {e}"}, status=332)
 
 
 @login_required(login_url="/login")
@@ -345,6 +353,9 @@ def getTicketFilter(request):
 
     except Exception as e:
         print(e)
+        return JsonResponse(
+            {"Error": f"Erro ao obter os chamados filtrados {e}"}, status=333
+        )
 
     ticket_objects = []
     try:
@@ -357,6 +368,9 @@ def getTicketFilter(request):
 
     except Exception as e:
         print(e)
+        return JsonResponse(
+            {"Error": f"Erro ao montar os chamados filtrados {e}"}, status=333
+        )
 
 
 @never_cache
@@ -619,6 +633,7 @@ def moreTicket(request):
 
     except Exception as e:
         print(e)
+        return JsonResponse({"Error": f"Erro ao obter mais chamados {e}"}, status=334)
 
     ticket_objects = []
     try:
@@ -633,6 +648,7 @@ def moreTicket(request):
 
     except Exception as e:
         print(e)
+        return JsonResponse({"Error": f"Erro ao montar mais chamados {e}"}, status=334)
 
 
 @never_cache
@@ -659,7 +675,9 @@ def getDashBoardBar(request):
             ticket_day = ticket_get_date.date()
 
             if tickets_area == "TI":
+                print("entrou no 1° if")
                 if ticket_day.strftime("%U%Y") == today.strftime("%U%Y"):
+                    print("2° if")
                     try:
                         weekeds = [
                             "Segunda-feira",
@@ -678,17 +696,24 @@ def getDashBoardBar(request):
 
                     except Exception as e:
                         print(e)
+                        return JsonResponse(
+                            {"Error": f"Erro ao obter chamados para DashBoardBar {e}"},
+                            status=708,
+                        )
+                else:
+                    return JsonResponse({"data": None}, status=210, safe=True)
 
             else:
-                return JsonResponse({"data": None}, status=210, safe=True)
+                return JsonResponse({"data": None}, status=331, safe=True)
 
         if histogram_data == None:
-            return JsonResponse({"data": None}, status=210, safe=True)
+            return JsonResponse({"data": None}, status=331, safe=True)
 
         return JsonResponse(histogram_data, status=200, safe=True)
 
     except Exception as e:
         print(e)
+        return JsonResponse({"Error": f"Erro inesperado DashBoardBar {e}"}, status=331)
 
 
 @login_required(login_url="/login")
@@ -713,6 +738,10 @@ def getDashBoardBarMonth(request):
 
     except Exception as e:
         print(e)
+        return JsonResponse(
+            {"Error": f"Erro ao montar os dais, mes e anos DashBoardBarMonth {e}"},
+            status=336,
+        )
 
     today = None
     month_days = None
@@ -743,6 +772,12 @@ def getDashBoardBarMonth(request):
 
                     except Exception as e:
                         print(e)
+                        return JsonResponse(
+                            {
+                                "Error": f"Erro ao montar data e chamados DashBoardBarMonth {e}"
+                            },
+                            status=711,
+                        )
 
         if histogram_data == None:
             return JsonResponse({"data": None}, status=210, safe=True)
@@ -751,6 +786,9 @@ def getDashBoardBarMonth(request):
 
     except Exception as e:
         print(e)
+        return JsonResponse(
+            {"Error": f"Erro inesperado DashBoardBarMonth {e}"}, status=336
+        )
 
 
 @login_required(login_url="/login")
@@ -766,6 +804,9 @@ def getDashBoardBarYear(request):
 
     except Exception as e:
         print(e)
+        return JsonResponse(
+            {"Error": f"Erro inesperado DashBoardBarYear {e}"}, status=337
+        )
 
     today = None
     months = None
@@ -810,12 +851,15 @@ def getDashBoardBarYear(request):
                         print(e)
 
         if histogram_data == None:
-            return JsonResponse({"data": None}, status=210, safe=True)
+            return JsonResponse({"data": None}, status=337, safe=True)
 
         return JsonResponse(histogram_data, status=200, safe=True)
 
     except Exception as e:
         print(e)
+        return JsonResponse(
+            {"Error": f"Erro inesperado DashBoardBarYear {e}"}, status=337
+        )
 
 
 @login_required(login_url="/login")
@@ -840,6 +884,9 @@ def getDashBoardBarAll(request):
 
     except Exception as e:
         print(e)
+        return JsonResponse(
+            {"Error": f"Erro inesperado DashBoardBarAll {e}"}, status=338
+        )
 
     cont = None
     try:
@@ -855,7 +902,7 @@ def getDashBoardBarAll(request):
                 values[index] = values[index] + 1
 
         if not years or not values:
-            return JsonResponse({"data": None}, status=210, safe=True)
+            return JsonResponse({"data": None}, status=338, safe=True)
         else:
             histogram_data = {"days": years, "values": values}
 
@@ -863,6 +910,9 @@ def getDashBoardBarAll(request):
 
     except Exception as e:
         print(e)
+        return JsonResponse(
+            {"Error": f"Erro inesperado DashBoardBarAll {e}"}, status=338
+        )
 
 
 @login_required(login_url="/login")
@@ -909,6 +959,7 @@ def getTicketFilterStatus(request):
 
     except Exception as e:
         print(e)
+        return JsonResponse({"Error": f"Erro inesperado Filter Status {e}"}, status=339)
 
     ticket_list = []
     ticket_json = None
@@ -927,8 +978,7 @@ def getTicketFilterStatus(request):
 
     except Exception as e:
         print(e)
-
-    return
+        return JsonResponse({"Error": f"Erro inesperado Filter Status {e}"}, status=339)
 
 
 # @login_required(
@@ -1070,7 +1120,7 @@ def upload_new_files(
 
                 except Exception as e:
                     print(e)
-                    return JsonResponse({"error": e}, status=666)
+                    return JsonResponse({"error": e}, status=340)
         ticket = SupportTicket.objects.get(id=id)
         return JsonResponse(
             {
@@ -1084,6 +1134,9 @@ def upload_new_files(
         )
     except Exception as e:
         print(e)
+        return JsonResponse(
+            {"Error": f"Erro inesperado Upload New FIle {e}"}, status=340
+        )
 
 
 @login_required(login_url="/login")
@@ -1117,7 +1170,9 @@ def detailsChat(request, id):
 
     except Exception as e:
         print(e)
-    return
+        return JsonResponse(
+            {"Error": f"Erro inesperado Detalhes Tecnicos {e}"}, status=341
+        )
 
 
 @login_required(login_url="/login")
@@ -1147,7 +1202,10 @@ def getTicketFilterTech(request):
 
         return JsonResponse({"tickets": ticket_objects}, status=200, safe=True)
     except Exception as e:
-        return print(e)
+        print(e)
+        return JsonResponse(
+            {"Error": f"Erro inesperado Filtragem por tecnico {e}"}, status=341
+        )
 
 
 @csrf_exempt

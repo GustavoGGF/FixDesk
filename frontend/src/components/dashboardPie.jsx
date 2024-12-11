@@ -136,6 +136,8 @@ export default function DashBoardPie({ sector, clss }) {
         }
 
         const data = await response.json();
+        console.log(data);
+
         setDataPie(data);
         // setLoading(false);
         return;

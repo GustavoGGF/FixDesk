@@ -1,5 +1,4 @@
 from django.db import models
-from dashboards.models import Equipaments
 from os.path import join
 
 
@@ -8,7 +7,7 @@ def support_ticket_file_path(instance, filename):
 
 
 class SupportTicket(models.Model):
-    ticketRequester = models.CharField(max_length=30, blank=False)
+    ticketRequester = models.CharField(max_length=31, blank=False)
     department = models.CharField(max_length=10, null=True, blank=True)
     mail = models.EmailField(max_length=50, blank=False)
     company = models.CharField(max_length=15)
@@ -24,10 +23,10 @@ class SupportTicket(models.Model):
     )
     id = models.AutoField(primary_key=True)
     PID = models.IntegerField(null=False, blank=False)
-    open = models.BooleanField(null=True, blank=False)
     chat = models.TextField(max_length=10000, blank=True, null=True)
     equipament = models.TextField(max_length=30, blank=True, null=True)
-    date_alocate = models.TextField(max_length=1000, blank=True, null=False)
+    date_alocate = models.TextField(max_length=1000, blank=True, null=True)
+    open = models.BooleanField(null=True, blank=False)
     details = models.TextField(max_length=1000, blank=True, null=True)
 
     def __str__(self):

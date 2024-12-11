@@ -388,7 +388,6 @@ export default function Helpdesk() {
       formdataUser.append("id_equipament", machineAlocate);
       formdataUser.append("days_alocated", NewDatesAlocate);
     }
-    console.log(machineAlocate);
 
     if (total_size > 10 * 1024 * 1024) {
       setMessage(true);
