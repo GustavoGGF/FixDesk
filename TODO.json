@@ -1,7 +1,10 @@
 {
   "All Site": {
     "Upgrades": {},
-    "HotFix's": {},
+    "HotFix's": {
+      "ALTMSGOCS 1": "Ao mandar mensagem e ficar um certo determinado de tempo sem ter sido visualizado mandar notificação de msg nova",
+      "OCSCLS 2": "Apos ficar logado por um tempo da um erro te dereciona pra uma tela (quando expira o token)"
+    },
     "Study Possibility": {}
   },
   "Login": {
@@ -17,11 +20,13 @@
   },
   "Dashboard": {
     "Upgrade": {},
-    "HotFix": {}
+    "HotFix": { "WKCH 2": "chamados da semana com problema" }
   },
   "Navbar": {
     "HotFix": {}
   },
   "Chat": {},
-  "Tickets": { "ENDTF": "Ao finalizar o chamado não salva o data de fechamento" }
+  "Tickets": {
+    "ENDTF 3": "Ao finalizar o chamado não salva o data de fechamento"
+  }
 }

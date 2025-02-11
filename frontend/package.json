@@ -41,7 +41,6 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-    "@craco/craco": "^7.1.0",
     "date-fns": "^2.30.0",
     "react-day-picker": "^8.10.1",
     "styled-components": "^5.3.10",

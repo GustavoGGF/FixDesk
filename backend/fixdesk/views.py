@@ -2,7 +2,7 @@ import time
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from dotenv import load_dotenv
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect
 from json import loads
 from os import getenv
 from ldap3 import Connection, SAFE_SYNC, ALL_ATTRIBUTES
