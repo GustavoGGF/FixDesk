@@ -12,6 +12,8 @@
 
 /backend/certs
 
+/backend/build
+
 *.conf
 
 *__pycache__
