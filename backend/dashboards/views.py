@@ -675,7 +675,6 @@ def getDashBoardBar(request):
             ticket_day = ticket_get_date.date()
 
             if tickets_area == "TI":
-                print("entrou no 1° if")
                 if ticket_day.strftime("%U%Y") == today.strftime("%U%Y"):
                     print("2° if")
                     try:

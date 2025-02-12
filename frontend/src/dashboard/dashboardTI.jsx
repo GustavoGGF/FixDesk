@@ -636,10 +636,34 @@ export default function DashboardTI() {
   }
 
   /**
+   * Altera o último visualizador de um chamado no sistema de helpdesk.
+   *
+   * @param {Object} params - Parâmetros da função.
+   * @param {number} params.id - ID do chamado a ser atualizado.
+   * @param {string} params.tech - Nome do técnico responsável pelo chamado.
+   * @returns {Promise<Response>} - Retorna a resposta da requisição fetch.
+   */
+  async function changeLastVW({ id, tech }) {
+    return fetch(`/helpdesk/change-last-viewer/${id}`, {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": token, // Token CSRF para segurança da requisição
+        "Cache-Control": "no-cache", // Evita o uso de cache na requisição
+        "Content-Type": "application/json", // Define o formato do corpo da requisição como JSON
+      },
+      body: JSON.stringify({
+        viewer: userData.name, // Nome do usuário que está visualizando o chamado
+        technician: tech, // Nome do técnico associado ao chamado
+        requester: "tech", // Indica que a alteração foi feita por um usuário tecnico
+      }),
+    });
+  }
+
+  /**
    * Função para buscar os dados do chamado selecionado.
    * @param {object} id - O ID do chamado a ser buscado.
    */
-  function helpdeskPage({ id }) {
+  async function helpdeskPage({ id }) {
     fetch("/helpdesk/ticket/" + id, {
       method: "GET",
       headers: {
@@ -655,6 +679,13 @@ export default function DashboardTI() {
         setClassBlur("addBlur");
         sectionTicket.current.style.filter = "blur(3px)";
         const data = dataBack.data[0];
+        // Chama a função de forma assíncrona sem bloquear o restante do código
+        const callAsyncFunction = async () => {
+          await changeLastVW({ id: id, tech: data.responsible_technician });
+        };
+
+        // Chama a função, mas o código segue sem esperar a execução terminar
+        callAsyncFunction();
         setSelectedTech("");
         setMessageChat(false);
         setMountChat([]);

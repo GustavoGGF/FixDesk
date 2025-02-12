@@ -35,5 +35,9 @@ urlpatterns = [
         views.dateEquipamentsAlocate,
         name="central-date-equipaments-alocate",
     ),
-    # path("<path:unknown_path>", views.redirect_to_specific_url),
+    path(
+        "change-last-viewer/<int:id>",
+        views.changeLastViewer,
+        name="central-change-last-viewer",
+    ),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

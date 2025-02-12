@@ -2240,9 +2240,111 @@ def dateEquipamentsAlocate(request, mac):
         return JsonResponse({"Error": f"Erro inesperado {e}"}, status=312)
 
 
-@csrf_exempt
-def redirect_to_specific_url(request: HttpRequest, *args, **kwargs):
-    if request.method == "POST":
-        return redirect("/helpdesk")
-    if request.method == "GET":
-        return redirect("/helpdesk")
+@require_POST  # Garante que a função só será chamada com um POST
+@login_required(
+    login_url="/login"
+)  # Garante que o usuário está autenticado, redirecionando para login se necessário
+@requires_csrf_token  # Exige um token CSRF para proteger contra ataques CSRF
+def changeLastViewer(request, id):
+    # Inicializa variáveis para armazenar dados do chamado, chat, seções, e resultados de verificações
+    ticket_data = None
+    chat = None
+    sections = None
+    result = None
+    last_vw = None
+    body = None
+    grouped = None
+    try:
+        # Obtém os dados do chamado, filtrando pela área TI e pelo id fornecido
+        ticket_data = SupportTicket.objects.get(respective_area="TI", id=id)
+
+        # Verifica se o chamado tem chat associado
+        chat = ticket_data.chat
+        if chat == None:
+            # Se não houver chat, retorna um status indicando que o chamado não foi atendido
+            return JsonResponse(
+                {"status": "Chamado ainda não foi atendido"}, safe=True, status=201
+            )
+
+        # Divide o chat em seções, separando os dados entre as entradas com base nas vírgulas externas aos colchetes
+        sections = chat.split("],[")
+
+        # Adiciona os colchetes de volta para corrigir o primeiro e último item da lista
+        sections[0] = "[" + sections[0]
+        sections[-1] = sections[-1] + "]"
+
+        # Transforma as seções em arrays, separando os valores por vírgula
+        grouped = [section.split(",") for section in sections]
+
+        # Agrupa as seções em blocos de 3 elementos
+        result = [grouped[i : i + 3] for i in range(0, len(grouped), 3)]
+
+        if len(result) == 1:
+            # Se a lista de mensagens for composta por apenas uma entrada (do sistema), retorna que nenhuma mensagem foi enviada
+            return JsonResponse(
+                {"status": "Não houve mensagem enviada além do sistema"},
+                safe=True,
+                status=201,
+            )
+
+        # Carrega o corpo da requisição para obter dados adicionais
+        body = loads(request.body)
+        last_vw = body.get("viewer")  # Último visualizador
+        tech = body.get("technician")  # Nome do técnico
+        requester = body.get(
+            "requester"
+        )  # Quem está fazendo a requisição (técnico ou usuário)
+
+        # Verifica se o solicitante é o técnico
+        if requester == "tech":
+            # Chama a função de verificação de nomes para garantir que o chamado está sendo visualizado pelo técnico correto
+            verify = verify_names(last_vw, tech)
+            if not verify:
+                # Se o técnico não for o correto, retorna uma mensagem de erro
+                return JsonResponse(
+                    {"status": "O Chamado é de outro Técnico"},
+                    safe=True,
+                    status=201,
+                )
+
+        # Verifica se o solicitante é o usuário
+        elif requester == "user":
+            # Se o solicitante for o usuário, garante que o último visualizador seja o mesmo que o solicitante do chamado
+            if last_vw != ticket_data.ticketRequester:
+                return JsonResponse(
+                    {"status": "O Chamado não é desse usuário"},
+                    safe=True,
+                    status=201,
+                )
+
+        # Se todas as verificações passarem, atualiza o último visualizador do chamado
+        ticket_data.last_viewer = last_vw
+        ticket_data.save()
+
+        # Retorna sucesso
+        return JsonResponse({"status": "Last Viewer Alterado"}, safe=True, status=200)
+
+    except Exception as e:
+        # Em caso de erro, imprime a exceção e retorna um status de falha
+        print(e)
+        return JsonResponse({"status": "fail"}, safe=True, status=311)
+
+
+def verify_names(name_verify, responsible_technician):
+    # Divide o nome completo que será verificado em uma lista de palavras (nome e sobrenome)
+    name_ver = name_verify.split(" ")
+
+    # Verifica se existe um responsável técnico fornecido
+    if responsible_technician:
+        # Divide o nome completo do responsável técnico em uma lista de palavras (nome e sobrenome)
+        tech_ver = responsible_technician.split(" ")
+
+        # Verifica se todas as palavras do nome do responsável técnico estão presentes no nome a ser verificado
+        # 'all' retorna True se todos os elementos da expressão forem True
+        all_find = all(word in name_ver for word in tech_ver)
+
+        # Retorna True se todas as palavras do nome do responsável técnico estiverem no nome a ser verificado
+        return all_find
+
+    # Se não houver responsável técnico, retorna False indicando que a verificação falhou
+    return False

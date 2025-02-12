@@ -1,6 +1,6 @@
 {
   "All Site": {
-    "Upgrades": {},
+    "Upgrades": { "EML 4": "adicioanr o email do fixdesk como seguro" },
     "HotFix's": {
       "ALTMSGOCS 1": "Ao mandar mensagem e ficar um certo determinado de tempo sem ter sido visualizado mandar notificação de msg nova",
       "OCSCLS 2": "Apos ficar logado por um tempo da um erro te dereciona pra uma tela (quando expira o token)"
@@ -12,7 +12,7 @@
   },
   "HelpDesk": {
     "Upgrade": {},
-    "HotFix": {}
+    "HotFix": { "EQUI": "verificar problema de alicação de equipamento" }
   },
   "History": {
     "Upgrade": {},

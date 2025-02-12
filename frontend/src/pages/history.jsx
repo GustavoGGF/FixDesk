@@ -318,17 +318,23 @@ export default function History() {
   }
 
   useEffect(() => {
+    // Função assíncrona para buscar e processar os dados necessários ao iniciar o componente
     const fetchData = async () => {
       try {
+        // Obtém os dados armazenados localmente no navegador (localStorage)
         const dataInfo = JSON.parse(localStorage.getItem("dataInfo"));
+
+        // Se os dados não existirem, lança um erro e interrompe a execução
         if (!dataInfo) throw new Error("Informações de usuário não encontradas");
 
+        // Atualiza o estado `data` com as informações obtidas do localStorage
         setData(dataInfo.data);
 
+        // Criação de um objeto FormData para enviar dados ao backend
         const formData = new FormData();
-
         formData.append("name", dataInfo.data.name);
 
+        // Envia os dados para o servidor através de uma requisição POST
         const response = await fetch("", {
           method: "POST",
           headers: {
@@ -337,20 +343,26 @@ export default function History() {
           body: formData,
         });
 
+        // Caso o status da resposta seja 402 (não autorizado ou sessão expirada), redireciona para a página de login
         if (response.status === 402) {
           window.location.href = "/login";
-          return;
+          return; // Interrompe a execução do restante da função
         }
 
+        // Converte a resposta para JSON e armazena os dados retornados
         const data = await response.json();
+
+        // Atualiza os estados com os dados recebidos da API
         setToken(data.token);
         setTickets(data.tickets);
-        setCountTicket(10);
-        setOrderBy("-id");
+        setCountTicket(10); // Define um valor padrão para contagem de tickets
+        setOrderBy("-id"); // Define a ordenação padrão dos tickets
 
+        // Modifica o estilo do botão com ID "thenView", se ele existir
         const btn = document.getElementById("thenView");
         if (btn) btn.style.backgroundColor = "#00B4D8";
 
+        // Verifica se não há tickets e define mensagens de erro informativas para o usuário
         if (data.tickets.length === 0) {
           setTypeError("Falta de Dados");
           setMessageError("Você Ainda não abriu nenhum chamado");
@@ -360,21 +372,52 @@ export default function History() {
           setNavbar(true);
         }
       } catch (error) {
+        // Em caso de erro, define mensagens de erro e exibe no console para depuração
         setTypeError("Erro Fatal");
         setMessageError(error.message || "Erro desconhecido");
         setMessage(true);
         console.error("Erro na solicitação:", error);
       } finally {
+        // Garante que os estados de carregamento sejam atualizados, independentemente do sucesso ou falha da requisição
         setLoadingDash(false);
         setLoading(false);
       }
     };
 
+    // Chama a função fetchData assim que o componente for montado
     fetchData();
-  }, []);
+  }, []); // Dependências vazias garantem que o efeito será executado apenas uma vez, quando o componente for montado
 
+  /**
+   * Função responsável por habilitar a exibição da tela de imagem.
+   * Atualiza o estado `imageOpen` para `true`, sinalizando que a imagem deve ser exibida.
+   */
   function openImage() {
     setImageOpen(true);
+  }
+
+  /**
+   * Altera o último visualizador de um chamado no sistema de helpdesk.
+   *
+   * @param {Object} params - Parâmetros da função.
+   * @param {number} params.id - ID do chamado a ser atualizado.
+   * @param {string} params.tech - Nome do técnico responsável pelo chamado.
+   * @returns {Promise<Response>} - Retorna a resposta da requisição fetch.
+   */
+  async function changeLastVW({ id, tech }) {
+    return fetch(`/helpdesk/change-last-viewer/${id}`, {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": token, // Token CSRF para segurança da requisição
+        "Cache-Control": "no-cache", // Evita o uso de cache na requisição
+        "Content-Type": "application/json", // Define o formato do corpo da requisição como JSON
+      },
+      body: JSON.stringify({
+        viewer: Data.name, // Nome do usuário que está visualizando o chamado
+        technician: tech, // Nome do técnico associado ao chamado
+        requester: "user", // Indica que a alteração foi feita por um usuário comum
+      }),
+    });
   }
 
   /**
@@ -417,6 +460,13 @@ export default function History() {
         setMountChat([]);
         // Extrai a data do primeiro ticket de chamado
         const data = dataBack.data[0];
+        // Chama a função de forma assíncrona sem bloquear o restante do código
+        const callAsyncFunction = async () => {
+          await changeLastVW({ id: id, tech: data.responsible_technician });
+        };
+
+        // Chama a função, mas o código segue sem esperar a execução terminar
+        callAsyncFunction();
         const start_date = new Date(data.start_date);
         // Obtém a data atual
         var CurrentDate = new Date();
