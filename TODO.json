@@ -3,7 +3,8 @@
     "Upgrades": { "EML 4": "adicioanr o email do fixdesk como seguro" },
     "HotFix's": {
       "ALTMSGOCS 1": "Ao mandar mensagem e ficar um certo determinado de tempo sem ter sido visualizado mandar notificação de msg nova",
-      "OCSCLS 2": "Apos ficar logado por um tempo da um erro te dereciona pra uma tela (quando expira o token)"
+      "OCSCLS 2": "Apos ficar logado por um tempo da um erro te dereciona pra uma tela (quando expira o token)",
+      "ATMC": "Verificar todos os codigos que lidam com o banco de dados e por @transaction.atomic"
     },
     "Study Possibility": {}
   },
@@ -25,7 +26,10 @@
   "Navbar": {
     "HotFix": {}
   },
-  "Chat": {},
+  "Chat": {
+    "CLKBTN 5": "Votão de enviar menssagem envia messagens anterior que não estão mais escritas",
+    "TRONT 6": "quando enviar menssagem, mandar para baix do chat, deixar 3 pontinhos com animação ate atualizar o chat"
+  },
   "Tickets": {
     "ENDTF 3": "Ao finalizar o chamado não salva o data de fechamento"
   }

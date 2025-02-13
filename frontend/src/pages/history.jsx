@@ -1086,49 +1086,70 @@ export default function History() {
     }
   }
 
+  /**
+   * Função responsável por enviar e atualizar o chat de um chamado no sistema.
+   * Envia uma mensagem para o servidor e, em seguida, atualiza a visualização do chat.
+   */
   function SendChat() {
+    // Cria uma instância de data para capturar o momento atual
     var date = new Date();
+
+    // Função auxiliar para adicionar um zero à esquerda para números menores que 10
     function adicionaZero(numero) {
       if (numero < 10) {
         return "0" + numero;
       }
       return numero;
     }
+
+    // Obtém o dia, mês e ano atuais
     var day = date.getDate();
-    var month = date.getMonth() + 1;
+    var month = date.getMonth() + 1; // O mês é baseado em zero, então soma-se 1
     var year = date.getFullYear();
 
+    // Formata a data no formato DD/MM/AAAA
     var dataFormatada = adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
+
+    // Formata a hora no formato HH:MM
     var horaFormatada = adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
+
+    // Limpa o campo de entrada do chat
     const input = document.getElementById("input-chat");
     input.value = "";
+
+    // Se o texto do chat estiver vazio, não faz nada
     if (textChat.length === 0) {
       return;
     }
+
+    // Envia a mensagem do chat para o servidor
     fetch("/helpdesk/ticket/" + ticketID, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
-        "X-CSRFToken": token,
+        "Content-Type": "application/json", // Define o tipo de conteúdo como JSON
+        "X-CSRFToken": token, // Adiciona o token CSRF para segurança da requisição
       },
       body: JSON.stringify({
-        User: Data.name,
-        chat: textChat,
-        hours: horaFormatada,
-        date: dataFormatada,
+        User: Data.name, // Nome do usuário que está enviando a mensagem
+        chat: textChat, // O conteúdo do chat
+        hours: horaFormatada, // Hora formatada da mensagem
+        date: dataFormatada, // Data formatada da mensagem
       }),
     })
       .then((response) => {
+        // Converte a resposta para JSON
         return response.json();
       })
       .then((data) => {
+        // Atualiza a interface do chat com os novos dados
         reloadChat({ data: data });
       })
       .catch((err) => {
+        // Se ocorrer um erro, exibe a mensagem de erro no frontend
         setMessageError(err);
         setTypeError("Fatal ERROR");
         setMessage(true);
-        return console.log(err);
+        console.log(err); // Exibe o erro no console para depuração
       });
   }
 

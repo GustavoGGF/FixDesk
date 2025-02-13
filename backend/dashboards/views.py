@@ -21,6 +21,7 @@ from io import BytesIO
 from base64 import b64encode
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_POST, require_GET
+from django.db import transaction
 
 
 # Create your views here.
@@ -986,7 +987,7 @@ def getTicketFilterStatus(request):
 # @requires_csrf_token  # Decorador que assegura que o token CSRF seja verificado para evitar ataques CSRF.
 # @never_cache
 @require_POST
-# @transaction.atomic
+@transaction.atomic
 def upload_new_files(
     request, id
 ):  # Função para realizar upload de novos arquivos, recebendo a requisição e o ID do ticket.

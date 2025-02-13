@@ -1,8 +1,10 @@
 # Importando os módulos necessários para o funcionamento do código.
+import asyncio
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import smtplib
 from threading import Thread
+import threading
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt, requires_csrf_token
 from django.http import HttpRequest, JsonResponse
@@ -29,13 +31,14 @@ from django.core.files.base import ContentFile
 from fpdf import FPDF
 import re
 import logging
-from django.db import transaction
+from django.db import transaction, connection
 from django.views.decorators.cache import never_cache
 from contextlib import contextmanager
 import mysql.connector
 from decouple import config
 from django.views.decorators.http import require_POST, require_GET
 from django.utils.timezone import make_aware
+from asgiref.sync import sync_to_async
 
 # Configuração básica de logging
 logging.basicConfig(level=logging.INFO)
@@ -671,38 +674,98 @@ def ticket(
                     print(e)
                     str_err = str(e)
                     return JsonResponse({"error": str_err}, status=410, safe=True)
-
+            # Verifica se o corpo da requisição contém um campo 'chat'
+            # Verifica se o corpo da requisição contém um campo 'chat'
             if "chat" in body:
+                # Verifica se o corpo da requisição contém o campo 'technician', indicando que a mensagem é do técnico
                 if "technician" in body:
                     try:
-                        chat = body["chat"]
-                        date = body["date"]
-                        hours = body["hours"]
-                        ticket = SupportTicket.objects.get(id=id)
+                        # Extrai os dados do corpo da requisição
+                        chat = body["chat"]  # Mensagem do chat
+                        date = body["date"]  # Data da mensagem
+                        hours = body["hours"]  # Hora da mensagem
+                        technician = body["technician"]  # Técnico que enviou a mensagem
+                        ticket = SupportTicket.objects.get(
+                            id=id
+                        )  # Obtém o ticket com o id especificado
+
+                        # Adiciona a nova entrada de chat ao histórico do ticket
                         ticket.chat += (
                             f",[[Date:{date}],[Technician: {chat}],[Hours:{hours}]]"
                         )
 
+                        # Armazena o remetente anterior da mensagem
+                        old_last_sender = ticket.last_sender
+
+                        # Separa os valores da última mensagem pelo separador vírgula
+                        _, old_date_str = old_last_sender.split(", ")
+
+                        # Converte a string da data da última mensagem para objeto datetime
+                        old_date = datetime.strptime(old_date_str, "%d/%m/%Y %H:%M")
+
+                        # Converte a nova data e hora para o formato datetime
+                        new_date = datetime.strptime(
+                            f"{date} {hours}", "%d/%m/%Y %H:%M"
+                        )
+
+                        # Compara as datas para verificar se a nova data é mais recente que a anterior
+                        if old_date > new_date:
+                            pass  # Se a data anterior for mais recente, não faz alterações
+                        else:
+                            # Caso contrário, atualiza o remetente da última mensagem
+                            ticket.last_sender = f"{technician} , {date} {hours}"
+
+                        # Salva as mudanças feitas no ticket
                         ticket.save()
 
+                        # Retorna a resposta com o chat atualizado
                         return JsonResponse(
                             {"chat": ticket.chat}, status=200, safe=True
                         )
                     except Exception as e:
+                        # Caso ocorra algum erro, captura a exceção e retorna um erro
                         print(e)
                         return JsonResponse(
                             {"Error": f"Erro inesperado {e}"}, status=304
                         )
 
+                # Verifica se o corpo da requisição contém o campo 'User', indicando que a mensagem é do usuário
                 if "User" in body:
-                    chat = body["chat"]
-                    date = body["date"]
-                    hours = body["hours"]
-                    ticket = SupportTicket.objects.get(id=id)
+                    # Extrai os dados do corpo da requisição
+                    chat = body["chat"]  # Mensagem do chat
+                    date = body["date"]  # Data da mensagem
+                    hours = body["hours"]  # Hora da mensagem
+                    ticket = SupportTicket.objects.get(
+                        id=id
+                    )  # Obtém o ticket com o id especificado
+                    user = body["User"]  # Nome do usuário que enviou a mensagem
+
+                    # Adiciona a nova entrada de chat ao histórico do ticket
                     ticket.chat += f",[[Date:{date}],[User: {chat}],[Hours:{hours}]]"
 
+                    # Armazena o remetente anterior da mensagem
+                    old_last_sender = ticket.last_sender
+
+                    # Separa os valores da última mensagem pelo separador vírgula
+                    _, old_date_str = old_last_sender.split(", ")
+
+                    # Converte a string da data da última mensagem para objeto datetime
+                    old_date = datetime.strptime(old_date_str, "%d/%m/%Y %H:%M")
+
+                    # Converte a nova data e hora para o formato datetime
+                    new_date = datetime.strptime(f"{date} {hours}", "%d/%m/%Y %H:%M")
+
+                    # Compara as datas para verificar se a nova data é mais recente que a anterior
+                    if old_date > new_date:
+                        pass  # Se a data anterior for mais recente, não faz alterações
+                    else:
+                        # Caso contrário, atualiza o remetente da última mensagem
+                        ticket.last_sender = f"{user} , {date} {hours}"
+
+                    # Salva as mudanças feitas no ticket
                     ticket.save()
 
+                    # Retorna a resposta com o chat atualizado
                     return JsonResponse({"chat": ticket.chat}, status=200, safe=True)
 
             if "status" in body:
@@ -2245,6 +2308,7 @@ def dateEquipamentsAlocate(request, mac):
     login_url="/login"
 )  # Garante que o usuário está autenticado, redirecionando para login se necessário
 @requires_csrf_token  # Exige um token CSRF para proteger contra ataques CSRF
+@transaction.atomic
 def changeLastViewer(request, id):
     # Inicializa variáveis para armazenar dados do chamado, chat, seções, e resultados de verificações
     ticket_data = None
@@ -2330,6 +2394,10 @@ def changeLastViewer(request, id):
         return JsonResponse({"status": "fail"}, safe=True, status=311)
 
 
+def verifyNotificationCall():
+    return print("CHAMOU")
+
+
 def verify_names(name_verify, responsible_technician):
     # Divide o nome completo que será verificado em uma lista de palavras (nome e sobrenome)
     name_ver = name_verify.split(" ")
@@ -2348,3 +2416,6 @@ def verify_names(name_verify, responsible_technician):
 
     # Se não houver responsável técnico, retorna False indicando que a verificação falhou
     return False
+
+
+# verifyNotificationCall_sync = sync_to_async(verifyNotificationCall)

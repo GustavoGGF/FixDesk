@@ -1373,6 +1373,7 @@ export default function DashboardTI() {
 
     var dataFormatada = adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
     var horaFormatada = adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
+
     inputChat.current.value = "";
 
     // Verifica se o texto da mensagem está vazio.
