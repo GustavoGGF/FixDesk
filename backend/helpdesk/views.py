@@ -1,5 +1,4 @@
 # Importando os módulos necessários para o funcionamento do código.
-import asyncio
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import smtplib
@@ -31,14 +30,13 @@ from django.core.files.base import ContentFile
 from fpdf import FPDF
 import re
 import logging
-from django.db import transaction, connection
+from django.db import transaction
 from django.views.decorators.cache import never_cache
 from contextlib import contextmanager
 import mysql.connector
 from decouple import config
 from django.views.decorators.http import require_POST, require_GET
 from django.utils.timezone import make_aware
-from asgiref.sync import sync_to_async
 
 # Configuração básica de logging
 logging.basicConfig(level=logging.INFO)
@@ -697,27 +695,31 @@ def ticket(
                         # Armazena o remetente anterior da mensagem
                         old_last_sender = ticket.last_sender
 
-                        # Separa os valores da última mensagem pelo separador vírgula
-                        _, old_date_str = old_last_sender.split(", ")
+                        if old_last_sender != None:
+                            # Separa os valores da última mensagem pelo separador vírgula
+                            _, old_date_str = old_last_sender.split(", ")
 
-                        # Converte a string da data da última mensagem para objeto datetime
-                        old_date = datetime.strptime(old_date_str, "%d/%m/%Y %H:%M")
+                            # Converte a string da data da última mensagem para objeto datetime
+                            old_date = datetime.strptime(old_date_str, "%d/%m/%Y %H:%M")
 
-                        # Converte a nova data e hora para o formato datetime
-                        new_date = datetime.strptime(
-                            f"{date} {hours}", "%d/%m/%Y %H:%M"
-                        )
+                            # Converte a nova data e hora para o formato datetime
+                            new_date = datetime.strptime(
+                                f"{date} {hours}", "%d/%m/%Y %H:%M"
+                            )
 
-                        # Compara as datas para verificar se a nova data é mais recente que a anterior
-                        if old_date > new_date:
-                            pass  # Se a data anterior for mais recente, não faz alterações
+                            # Compara as datas para verificar se a nova data é mais recente que a anterior
+                            if old_date > new_date:
+                                pass  # Se a data anterior for mais recente, não faz alterações
+                            else:
+                                # Caso contrário, atualiza o remetente da última mensagem
+                                ticket.last_sender = f"{technician} , {date} {hours}"
                         else:
-                            # Caso contrário, atualiza o remetente da última mensagem
                             ticket.last_sender = f"{technician} , {date} {hours}"
 
                         # Salva as mudanças feitas no ticket
                         ticket.save()
 
+                        threading.Thread(target=verifyNotificationCall).start()
                         # Retorna a resposta com o chat atualizado
                         return JsonResponse(
                             {"chat": ticket.chat}, status=200, safe=True

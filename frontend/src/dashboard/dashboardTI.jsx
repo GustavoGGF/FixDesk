@@ -170,12 +170,13 @@ export default function DashboardTI() {
    * Variáveis de estado Boolean
    */
   const [btnmore, setBtnMore] = useState(true);
-  const [chat, setChat] = useState(true);
+  const [chat, setChat] = useState(false);
   const [dataModify, setDataModify] = useState(true);
   const [fakeSelect, setFakeSelect] = useState(true);
   const [fetchChat, setFetchChat] = useState(false);
   const [imageopen, setImageOpen] = useState(false);
   const [inCard, setInCard] = useState(false);
+  const [isAtButton, setIsAtButton] = useState(false);
   const [inList, setInList] = useState(false);
   const [loading, setLoading] = useState(true);
   const [loadingChat, setLoadingChat] = useState(false);
@@ -285,6 +286,16 @@ export default function DashboardTI() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ticketWindow]);
+
+  // useEffect que verifica se ouve mudança no chat
+  useEffect(() => {
+    if (chat && isAtButton) {
+      // entra na condição caso chat estejá ativo e caso o usuario tivesse na ultima menssagem do chat
+      var div = document.getElementById("chatDiv");
+      div.scrollTop = div.scrollHeight; //então mostra a ultima menssagem
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mountChat]);
 
   /**
    * Função para ajustar o tamanho do textarea com base no conteúdo.
@@ -689,6 +700,7 @@ export default function DashboardTI() {
         setSelectedTech("");
         setMessageChat(false);
         setMountChat([]);
+        setIsAtButton(false);
         setFileTicket([]);
 
         // Calculando o tempo de vida do chamado.
@@ -953,6 +965,7 @@ export default function DashboardTI() {
           }
 
           setMountChat([]); // Limpa os dados de montagem do chat.
+          setIsAtButton(false);
 
           const groupedByDate = {}; // Objeto para agrupar as mensagens por data.
 
@@ -1311,6 +1324,7 @@ export default function DashboardTI() {
       }
 
       setMountChat([]); // Limpa as mensagens já montadas.
+      setIsAtButton(false);
 
       const groupedByDate = {};
 
@@ -1415,6 +1429,10 @@ export default function DashboardTI() {
 
   // Função para recarregar o chat após o envio de uma mensagem.
   function reloadChat({ data }) {
+    const div = document.getElementById("chatDiv");
+
+    const varisAtBottom = div.scrollTop + div.clientHeight >= div.scrollHeight;
+
     if (data.chat !== null && data.chat !== undefined && data.chat !== "undefined") {
       setFetchChat(false);
       setCountChat(data.chat.length);
@@ -1431,6 +1449,7 @@ export default function DashboardTI() {
       }
 
       setMountChat([]);
+      setIsAtButton(false);
 
       const groupedByDate = {};
 
@@ -1501,9 +1520,17 @@ export default function DashboardTI() {
       aumentarCount();
       setLoadingChat(false);
       // // Atualiza o estado do chat com as novas mensagens.
+      if (varisAtBottom) {
+        setIsAtButton(true);
+      }
       setMountChat(renderGroupedItems());
       setChat(true);
-      // return fetchChat && loadingChat && mountChat && chat;
+      const callAsyncFunction = async () => {
+        await changeLastVW({ id: ticketID, tech: ticketResponsible_Technician });
+      };
+
+      // Chama a função, mas o código segue sem esperar a execução terminar
+      callAsyncFunction();
     }
   }
 

@@ -146,6 +146,7 @@ export default function History() {
   const [fetchchat, setFetchChat] = useState(false);
   const [imageopen, setImageOpen] = useState(false);
   const [inCard, setInCard] = useState(false);
+  const [isAtButton, setIsAtButton] = useState(false);
   const [inList, setInList] = useState(false);
   const [loading, setLoading] = useState(true);
   const [loadingDash, setLoadingDash] = useState(true);
@@ -197,6 +198,15 @@ export default function History() {
     }
     // A lista de dependências inclui ticketWindow para executar o efeito quando ticketWindow mudar
   }, [ticketWindow]); // Inclua aqui todas as dependências necessárias
+
+  useEffect(() => {
+    if (chat && isAtButton) {
+      // entra na condição caso chat estejá ativo e caso o usuario tivesse na ultima menssagem do chat
+      var div = document.getElementById("chatDiv");
+      div.scrollTop = div.scrollHeight; //então mostra a ultima menssagem
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mountChat]);
 
   function resizeTextarea(textarea) {
     // Obtém o estilo de altura da linha do textarea, assumindo que esteja definido em pixels
@@ -458,6 +468,7 @@ export default function History() {
         setMessageChat(false);
         // Reseta o estado do chat
         setMountChat([]);
+        setIsAtButton(false);
         // Extrai a data do primeiro ticket de chamado
         const data = dataBack.data[0];
         // Chama a função de forma assíncrona sem bloquear o restante do código
@@ -1154,6 +1165,9 @@ export default function History() {
   }
 
   async function reloadChat({ data }) {
+    const div = document.getElementById("chatDiv");
+
+    const varisAtBottom = div.scrollTop + div.clientHeight >= div.scrollHeight;
     if (data.chat !== null && data.chat !== undefined && data.chat !== "undefined") {
       setMessageError("");
       setTypeError("");
@@ -1172,6 +1186,7 @@ export default function History() {
       }
 
       setMountChat([]);
+      setIsAtButton(false);
 
       const groupedByDate = {};
 
@@ -1239,9 +1254,18 @@ export default function History() {
         return groupedItems;
       };
 
+      if (varisAtBottom) {
+        setIsAtButton(true);
+      }
       setMountChat(renderGroupedItems());
 
       setChat(true);
+      const callAsyncFunction = async () => {
+        await changeLastVW({ id: ticketID, tech: ticketResponsible_Technician });
+      };
+
+      // Chama a função, mas o código segue sem esperar a execução terminar
+      callAsyncFunction();
     }
   }
 
