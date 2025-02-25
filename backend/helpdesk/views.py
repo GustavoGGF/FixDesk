@@ -6,12 +6,12 @@ from threading import Thread
 import threading
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt, requires_csrf_token
-from django.http import HttpRequest, JsonResponse
+from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from os import getenv
 from json import loads
 from django.middleware.csrf import get_token
-from datetime import datetime, date
+from datetime import datetime
 from .models import SupportTicket, TicketFile
 from django.contrib.auth.models import User
 from .models import SupportTicket
@@ -37,6 +37,8 @@ import mysql.connector
 from decouple import config
 from django.views.decorators.http import require_POST, require_GET
 from django.utils.timezone import make_aware
+import time
+from threading import Lock
 
 # Configuração básica de logging
 logging.basicConfig(level=logging.INFO)
@@ -249,7 +251,8 @@ def submitTicket(request):
 
                 types_str = types_str.strip("[]")
 
-                types = [type.strip() for type in types_str.split(",")]
+                if types_str != None:
+                    types = [type.strip() for type in types_str.split(",")]
 
                 valid = False
 
@@ -619,6 +622,7 @@ def ticket(
         status = None
         date = None
         hours = None
+        mail = None
         try:
             body = loads(request.body)
 
@@ -628,6 +632,8 @@ def ticket(
                     technician = body["technician"]
                     date = body["date"]
                     hours = body["hour"]
+                    techMail = body["techMail"]
+
                     ticket = SupportTicket.objects.get(id=id)
 
                     current_responsible_technician = ticket.responsible_technician
@@ -655,6 +661,7 @@ def ticket(
                         ticket.chat += f",[[Date:{date}], [System:{technician} Transfereu o Chamado para {technician}], [Hours:{hours}]]"
 
                     ticket.responsible_technician = responsible_technician
+                    ticket.technician_mail = techMail
 
                     ticket.save()
 
@@ -719,7 +726,10 @@ def ticket(
                         # Salva as mudanças feitas no ticket
                         ticket.save()
 
-                        threading.Thread(target=verifyNotificationCall).start()
+                        threading.Thread(
+                            target=verifyNotificationCall,
+                            args=(id,),
+                        ).start()
                         # Retorna a resposta com o chat atualizado
                         return JsonResponse(
                             {"chat": ticket.chat}, status=200, safe=True
@@ -748,8 +758,9 @@ def ticket(
                     # Armazena o remetente anterior da mensagem
                     old_last_sender = ticket.last_sender
 
-                    # Separa os valores da última mensagem pelo separador vírgula
-                    _, old_date_str = old_last_sender.split(", ")
+                    if old_last_sender != None:
+                        # Separa os valores da última mensagem pelo separador vírgula
+                        _, old_date_str = old_last_sender.split(", ")
 
                     # Converte a string da data da última mensagem para objeto datetime
                     old_date = datetime.strptime(old_date_str, "%d/%m/%Y %H:%M")
@@ -767,6 +778,11 @@ def ticket(
                     # Salva as mudanças feitas no ticket
                     ticket.save()
 
+                    threading.Thread(
+                        target=verifyNotificationCall,
+                        args=(id,),
+                    ).start()
+
                     # Retorna a resposta com o chat atualizado
                     return JsonResponse({"chat": ticket.chat}, status=200, safe=True)
 
@@ -777,6 +793,7 @@ def ticket(
                 hours = body["hours"]
                 ticket = SupportTicket.objects.get(id=id)
                 current_responsible_technician = ticket.responsible_technician
+                techMail = body["techMail"]
                 msg = ""
 
                 if status == "close":
@@ -791,6 +808,7 @@ def ticket(
                     if presente:
                         ticket.open = False
                         ticket.chat += f",[[Date:{date}],[System: {technician} Finalizou o Chamado],[Hours:{hours}]]"
+                        ticket.technician_mail = None
 
                         ticket.save()
 
@@ -812,6 +830,7 @@ def ticket(
 
                     ticket.open = True
                     ticket.chat += f",[[Date:{date}],[System: {technician} Reabriu e atendeu o Chamado],[Hours:{hours}]]"
+                    ticket.technician_mail = techMail
 
                     ticket.save()
 
@@ -2326,7 +2345,7 @@ def changeLastViewer(request, id):
 
         # Verifica se o chamado tem chat associado
         chat = ticket_data.chat
-        if chat == None:
+        if chat == None or len(chat) <= 0:
             # Se não houver chat, retorna um status indicando que o chamado não foi atendido
             return JsonResponse(
                 {"status": "Chamado ainda não foi atendido"}, safe=True, status=201
@@ -2387,6 +2406,10 @@ def changeLastViewer(request, id):
         ticket_data.last_viewer = last_vw
         ticket_data.save()
 
+        threading.Thread(
+            target=verifyNotificationCall,
+            args=(id,),
+        ).start()
         # Retorna sucesso
         return JsonResponse({"status": "Last Viewer Alterado"}, safe=True, status=200)
 
@@ -2396,13 +2419,10 @@ def changeLastViewer(request, id):
         return JsonResponse({"status": "fail"}, safe=True, status=311)
 
 
-def verifyNotificationCall():
-    return print("CHAMOU")
-
-
 def verify_names(name_verify, responsible_technician):
-    # Divide o nome completo que será verificado em uma lista de palavras (nome e sobrenome)
-    name_ver = name_verify.split(" ")
+    if name_verify:
+        # Divide o nome completo que será verificado em uma lista de palavras (nome e sobrenome)
+        name_ver = name_verify.split(" ")
 
     # Verifica se existe um responsável técnico fornecido
     if responsible_technician:
@@ -2420,4 +2440,184 @@ def verify_names(name_verify, responsible_technician):
     return False
 
 
-# verifyNotificationCall_sync = sync_to_async(verifyNotificationCall)
+active_timers = {}
+timers_lock = Lock()
+
+
+class CountdownTimer:
+    def __init__(self, duration, callback, id):
+        """
+        duration: tempo em segundos (ex: 5 minutos = 300 segundos)
+        callback: função que será chamada quando o tempo terminar
+        """
+        self.duration = duration
+        self.callback = callback
+        self.id = id
+        self.timer = None
+        self.start_time = None  # Armazena o tempo de início
+
+    def start(self):
+        """Inicia o contador."""
+        self.start_time = time.time()
+        self.timer = threading.Timer(self.duration, self.callback)
+        self.timer.start()
+
+    def stop(self):
+        """Para o contador antes de completar."""
+        if self.timer:
+            self.timer.cancel()
+
+
+# Função que será chamada após 5 minutos
+def notify(id):
+    ticket = None
+    task = None
+    msg = None
+    last_sender = None
+    chat = None
+    message_ux = None
+    primary = None
+    status = None
+    mail_tech = None
+    mail_user = None
+    mailTo = None
+    split_value = None
+    try:
+        ticket = SupportTicket.objects.filter(id=id)
+
+        msg2 = f"Chamado {id}: Menssagem não Visualizada!"
+
+        for field in ticket:
+            last_sender, _ = field.last_sender.split(", ")
+            chat = field.chat
+            status = field.open
+            mail_tech = field.technician_mail
+            mail_user = field.mail
+
+        if not mail_tech or mail_tech == None:
+            print("email do tecnico não existe")
+            active_timers[id].stop()
+            del active_timers[id]
+            return
+
+        if not status or status == None:
+            print("Chamado não esta aberto")
+            active_timers[id].stop()
+            del active_timers[id]
+            return
+
+        # Divide o chat em seções, separando os dados entre as entradas com base nas vírgulas externas aos colchetes
+        sections = chat.split("],[")
+
+        # Adiciona os colchetes de volta para corrigir o primeiro e último item da lista
+        sections[0] = "[" + sections[0]
+        sections[-1] = sections[-1] + "]"
+
+        # # Transforma as seções em arrays, separando os valores por vírgula
+        # grouped = [section.split(",") for section in sections]
+
+        # Agrupa as seções em blocos de 3 elementos
+        result = [sections[i : i + 3] for i in range(0, len(sections), 3)]
+        message_ux = result[-1][1]
+
+        split_item = message_ux.split(":")  # Fazendo o split da string
+
+        if split_item[0] == "Technician":
+            primary = "Technician"
+            mailTo = mail_tech
+        elif split_item[0] == "User":
+            primary = "User"
+            mailTo = mail_user
+        else:
+            print("Erro ao detectar quem enviou a menssagem")
+            active_timers[id].stop()
+            del active_timers[id]
+            return
+
+        # Acessando os últimos 3 arrays de result
+        last_three = result[-5:]
+
+        messages = []  # Cria uma lista para armazenar as mensagens
+        # Iterando sobre os últimos 3 arrays
+        for item in last_three:
+            # Acessando o segundo valor do array interno (índice 1)
+            second_value = item[
+                1
+            ]  # item[0][1] porque cada item é uma lista de 3 sub-arrays
+
+            # Fazendo o split para separar a chave do valor
+            split_value = second_value.split(":")
+
+            if split_value[0].strip() == primary:
+                messages.append(split_value[1].strip())
+
+        # Criando a string msg2 com as mensagens separadas por novas linhas
+        msg = f"{last_sender} enviou uma mensagem.\n{chr(10).join(messages)}"
+
+        task = Thread(
+            target=sendMail,
+            args=(mailTo, msg, msg2),
+        )
+
+        task.start()
+
+        active_timers[id].stop()
+        del active_timers[id]
+        return
+    except Exception as e:
+        print(e)
+
+    finally:
+        if id in active_timers:
+            active_timers[id].stop()
+            del active_timers[id]
+
+
+def callTimer(id, status):
+    global active_timers, timers_lock
+
+    with timers_lock:  # Bloqueia o acesso a active_timers
+        if status == "start":
+            if id in active_timers:
+                return
+            else:
+                timer = CountdownTimer(10800, lambda: notify(id), id)
+                timer.start()
+                active_timers[id] = timer
+                return
+        elif status == "stop":
+            if id in active_timers:
+                active_timers[id].stop()
+                del active_timers[id]
+            return
+
+
+def verifyNotificationCall(
+    id,
+):
+    ticket = None
+    last_sender = None
+    last_viewer = None
+    last_sender_adjust_string = None
+    last_viewer_adjust_string = None
+    try:
+        ticket = SupportTicket.objects.filter(id=id)
+
+        for field in ticket:
+            # Separa os valores da última mensagem pelo separador vírgula
+            if field.last_sender:
+                last_sender, _ = field.last_sender.split(", ")
+                last_sender_adjust_string = last_sender.replace(" ", "")
+            if field.last_viewer:
+                last_viewer = field.last_viewer
+                last_viewer_adjust_string = last_viewer.replace(" ", "")
+
+        if last_sender_adjust_string == last_viewer_adjust_string:
+            print("START")
+            return callTimer(id, "start")
+        else:
+            print("STOP")
+            return callTimer(id, "stop")
+
+    except Exception as e:
+        return print(e)

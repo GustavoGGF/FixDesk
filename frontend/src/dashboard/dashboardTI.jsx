@@ -666,6 +666,7 @@ export default function DashboardTI() {
         viewer: userData.name, // Nome do usuário que está visualizando o chamado
         technician: tech, // Nome do técnico associado ao chamado
         requester: "tech", // Indica que a alteração foi feita por um usuário tecnico
+        mail: userData.mail,
       }),
     });
   }
@@ -1199,6 +1200,7 @@ export default function DashboardTI() {
           date: dataFormatada,
           hour: horaFormatada,
           mail: ticketMAIL,
+          techMail: userData.mail,
         }),
       })
         .then((response) => {
@@ -2371,6 +2373,7 @@ export default function DashboardTI() {
         hours: horaFormatada, // Hora de reabertura
         date: dataFormatada, // Data de reabertura
         mail: ticketMAIL, // E-mail associado ao chamado
+        techMail: userData.mail,
       }),
     })
       .then((response) => {

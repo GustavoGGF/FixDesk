@@ -1145,6 +1145,7 @@ export default function History() {
         chat: textChat, // O conteúdo do chat
         hours: horaFormatada, // Hora formatada da mensagem
         date: dataFormatada, // Data formatada da mensagem
+        mail: Data.mail,
       }),
     })
       .then((response) => {

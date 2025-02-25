@@ -30,7 +30,7 @@ class SupportTicket(models.Model):
     details = models.TextField(max_length=1000, blank=True, null=True)
     last_sender = models.TextField(max_length=31, blank=False, null=True)
     last_viewer = models.TextField(max_length=10000, blank=False, null=True)
-    message_notification = models.BooleanField(null=True, blank=True)
+    technician_mail = models.EmailField(max_length=50, blank=True, null=True)
 
     def __str__(self):
         return str(self.id)
