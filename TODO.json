@@ -1,6 +1,6 @@
 {
   "All Site": {
-    "Upgrades": { "EML 4": "adicioanr o email do fixdesk como seguro" },
+    "Upgrades": { "EML 4": "adicioanr o email do fixdesk como seguro", "MYSQL 12": "mudar db.sqlite3 para mysql ou outro DB" },
     "HotFix's": {
       "OCSCLS 2": "Apos ficar logado por um tempo da um erro te dereciona pra uma tela (quando expira o token)",
       "ATMC": "Verificar todos os codigos que lidam com o banco de dados e por @transaction.atomic",
