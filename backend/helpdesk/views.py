@@ -147,7 +147,7 @@ def firstView(request):
                     return redirect("/login")
             except Exception as e:
                 json_error = str(e)
-                logger.info(e)
+                logger.e(e)
                 return JsonResponse({"status": json_error}, status=300, safe=True)
         else:
             return redirect("/login")
@@ -450,18 +450,6 @@ def submitTicket(request):
 
     else:
         try:
-            logger.info("ticketRequester: ", ticketRequester)
-            logger.info("department: ", department)
-            logger.info("mail: ", mail)
-            logger.info("company: ", company)
-            logger.info("sector: ", sector)
-            logger.info("respective_area: ", respective_area)
-            logger.info("occurrence: ", occurrence)
-            logger.info("problemn: ", problemn)
-            logger.info("observation: ", observation)
-            logger.info("start_date: ", start_date)
-            logger.info("pid: ", pid)
-
             Ticket = SupportTicket(
                 ticketRequester=ticketRequester,
                 department=department,
@@ -793,7 +781,7 @@ def ticket(
                 hours = body["hours"]
                 ticket = SupportTicket.objects.get(id=id)
                 current_responsible_technician = ticket.responsible_technician
-                techMail = body["techMail"]
+                techMail = body["mail"]
                 msg = ""
 
                 if status == "close":
@@ -2470,18 +2458,7 @@ class CountdownTimer:
 
 # Função que será chamada após 5 minutos
 def notify(id):
-    ticket = None
-    task = None
-    msg = None
-    last_sender = None
-    chat = None
-    message_ux = None
-    primary = None
-    status = None
     mail_tech = None
-    mail_user = None
-    mailTo = None
-    split_value = None
     try:
         ticket = SupportTicket.objects.filter(id=id)
 
@@ -2524,10 +2501,10 @@ def notify(id):
 
         if split_item[0] == "Technician":
             primary = "Technician"
-            mailTo = mail_tech
+            mailTo = mail_user
         elif split_item[0] == "User":
             primary = "User"
-            mailTo = mail_user
+            mailTo = mail_tech
         else:
             print("Erro ao detectar quem enviou a menssagem")
             active_timers[id].stop()
@@ -2554,6 +2531,11 @@ def notify(id):
         # Criando a string msg2 com as mensagens separadas por novas linhas
         msg = f"{last_sender} enviou uma mensagem.\n{chr(10).join(messages)}"
 
+        if id in active_timers:
+            pass
+        else:
+            return
+
         task = Thread(
             target=sendMail,
             args=(mailTo, msg, msg2),
@@ -2575,7 +2557,6 @@ def notify(id):
 
 def callTimer(id, status):
     global active_timers, timers_lock
-
     with timers_lock:  # Bloqueia o acesso a active_timers
         if status == "start":
             if id in active_timers:
@@ -2589,17 +2570,12 @@ def callTimer(id, status):
             if id in active_timers:
                 active_timers[id].stop()
                 del active_timers[id]
-            return
+                return
 
 
 def verifyNotificationCall(
     id,
 ):
-    ticket = None
-    last_sender = None
-    last_viewer = None
-    last_sender_adjust_string = None
-    last_viewer_adjust_string = None
     try:
         ticket = SupportTicket.objects.filter(id=id)
 
@@ -2613,10 +2589,8 @@ def verifyNotificationCall(
                 last_viewer_adjust_string = last_viewer.replace(" ", "")
 
         if last_sender_adjust_string == last_viewer_adjust_string:
-            print("START")
             return callTimer(id, "start")
         else:
-            print("STOP")
             return callTimer(id, "stop")
 
     except Exception as e:

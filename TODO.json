@@ -1,6 +1,19 @@
 {
   "All Site": {
-    "Upgrades": { "EML 4": "adicioanr o email do fixdesk como seguro", "MYSQL 12": "mudar db.sqlite3 para mysql ou outro DB" },
+    "Upgrades": {
+      "EML 4": "adicioanr o email do fixdesk como seguro",
+      "MYSQL 12": "mudar db.sqlite3 para mysql ou outro DB",
+      "ADDCJHG 12": "Implementar @cache_page nas def",
+      "ADDSVPP 13": "Implementar @sensitive_variables e @sensitive_post_parameters em senhas",
+      "ADDTHCLS 14": "Implementar @throttle_classes",
+      "ADDAPVW 15": "Implementar @api_view",
+      "ADDPMSC 16": "Implementar @permission_classes",
+      "ADDRNCLS 17": "Implementar @renderer_classes",
+      "ADDSHC 18": "Implementar @schema",
+      "ADDRTKN 19": "Implementar @ratelimit",
+      "ADDCHCTL 20": "Implementar @cache_control",
+      "ADDLRU 21": "Implementar @lru_cache(maxsize=128)"
+    },
     "HotFix's": {
       "OCSCLS 2": "Apos ficar logado por um tempo da um erro te dereciona pra uma tela (quando expira o token)",
       "ATMC": "Verificar todos os codigos que lidam com o banco de dados e por @transaction.atomic",
@@ -34,6 +47,7 @@
     "ENDTF 3": "Ao finalizar o chamado não salva o data de fechamento",
     "ROT 7 9": "Validar erros ao abrir chamados com usuario patolino",
     "NTOPT 10": "Quando esta com um ticket aberto não pode abrir outro (clicando por fora do chamado)",
-    "IMGTCK 11": "Imagem enviado no chamado esta zoado"
+    "IMGTCK 11": "Imagem enviado no chamado esta zoado",
+    "CNMWL 21": "Cancelar envio de email se fechar chamado"
   }
 }

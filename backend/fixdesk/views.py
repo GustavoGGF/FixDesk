@@ -1,142 +1,151 @@
-import time
+from time import sleep
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from dotenv import load_dotenv
-from django.shortcuts import redirect
 from json import loads
 from os import getenv
 from ldap3 import Connection, SAFE_SYNC, ALL_ATTRIBUTES
 from threading import Thread
 from django.contrib.auth.models import User, Group
 from django.contrib.auth import login
-import logging
 from django.views.decorators.http import require_POST
 from django.views.decorators.cache import never_cache
+from django.db import transaction
 
-# Configuração básica de logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+load_dotenv()
+dominio = getenv("DOMAIN_NAME_HELPDESK")
+server = getenv("SERVER1")
+tech_user = getenv("TECH_USER")
+tech_ti = getenv("TECH_TECH_TI")
+tech_leader = getenv("TECH_LEADER")
+name_create_user = None
 
 
-# Função que cria usuario no /admin
+@transaction.atomic
 def CreateOrVerifyUser(user, password, request, helpdesk, name_create_user):
-    global Valid
+    """Cria ou verifica um usuário e ajusta seus grupos de acordo com a função."""
 
-    userAuthentic = None
-    Back_User = None
-    Back_Tech = None
-    Back_Leader = None
-    group_user = None
-    group_tech = None
-    Valid = None
-
+    # Obtém ou cria o usuário
     try:
-        userAuthentic = User.objects.get(username=user)
-
+        user_auth = User.objects.get(username=user)
     except User.DoesNotExist:
-        name_create_user = name_create_user.split()
-
-        userAuthentic = User.objects.create_user(
-            username=user,
-            password=password,
-            first_name=name_create_user[0],
-            last_name=name_create_user[1],
+        first_name, last_name = (name_create_user.split() + [""])[
+            :2
+        ]  # Evita erro se houver apenas um nome
+        user_auth = User.objects.create_user(
+            username=user, password=password, first_name=first_name, last_name=last_name
         )
-        userAuthentic.save()
 
-    Back_User = getenv("DJANGO_GROUP_USER")
-    Back_Tech = getenv("DJANGO_GROUP_TECH")
-    Back_Leader = getenv("DJANGO_GROUP_LEADER")
+    # Dicionário de papéis e seus grupos
+    group_map = {
+        "User": ["Helpdesk_User"],
+        "Tecnico TI": ["Helpdesk_Technician_TI"],
+        "Gestor": ["Helpdesk_Leader_TI", "Helpdesk_Technician_TI"],
+    }
 
+    # Obtém grupos existentes no banco de dados
     try:
-        group_user = Group.objects.get(name=Back_User)
-        group_tech = Group.objects.get(name=Back_Tech)
-        group_leader = Group.objects.get(name=Back_Leader)
-        if helpdesk == "User":
-            userAuthentic.groups.add(group_user)
-            userAuthentic.groups.remove(group_tech)
-            userAuthentic.groups.remove(group_leader)
-            group_user.save()
-            group_tech.save()
-            group_leader.save()
-            login(request, userAuthentic)
-            Valid = True
-        elif helpdesk == "Tecnico TI":
-            userAuthentic.groups.add(group_tech)
-            userAuthentic.groups.remove(group_user)
-            userAuthentic.groups.remove(group_leader)
-            group_user.save()
-            group_tech.save()
-            group_leader.save()
-            login(request, userAuthentic)
-            Valid = True
-        elif helpdesk == "Gestor":
-            userAuthentic.groups.add(group_leader)
-            userAuthentic.groups.remove(group_user)
-            userAuthentic.groups.add(group_tech)
-            group_user.save()
-            group_tech.save()
-            group_leader.save()
-            login(request, userAuthentic)
-            Valid = True
-        else:
-            userAuthentic.groups.remove(group_user)
-            userAuthentic.groups.remove(group_tech)
-            userAuthentic.groups.remove(group_leader)
-            group_user.save()
-            group_tech.save()
-            group_leader.save()
-            Valid = False
+        all_groups = {
+            group.name: group
+            for group in Group.objects.filter(
+                name__in=[
+                    "Helpdesk_User",
+                    "Helpdesk_Technician_TI",
+                    "Helpdesk_Technician_TI",
+                ]
+            )
+        }
     except Exception as e:
-        logger.info("Deu ruim autenticação")
-        Valid = False
-        logger.info("Validação não validada: ", e)
-        return JsonResponse({"status": "error"}, status=400, safe=True)
-
-
-# Função que acessar o AD
-@csrf_exempt
-@never_cache
-@require_POST
-def validation(request):
-    load_dotenv()
-
-    body = None
-    user = None
-    password = None
+        print(e)
+        return False, e  # Retorna erro silencioso caso haja problema nos grupos
 
     try:
+        # Ajusta os grupos do usuário
+        user_auth.groups.clear()  # Remove de todos os grupos antes de adicionar novos
+        if helpdesk in group_map:
+            user_auth.groups.add(
+                *(all_groups[g] for g in group_map[helpdesk] if g in all_groups)
+            )
+            login(request, user_auth)  # Autentica o usuário
+            return True, ""
+    except Exception as e:
+        return False, e
+
+
+# Importação de decoradores para segurança e controle de cache
+@csrf_exempt  # Desativa a proteção CSRF para esta view, permitindo requisições sem token CSRF
+@never_cache  # Garante que a resposta não será armazenada em cache
+@require_POST  # Restringe a view para aceitar apenas requisições do tipo POST
+@transaction.atomic  # Garante que todas as operações no banco de dados dentro da view sejam atômicas
+def validation(request):
+    """
+    Função para validar as credenciais do usuário via autenticação LDAP e retornar seus dados.
+
+    Fluxo:
+    1. Obtém e valida os dados da requisição (usuário e senha).
+    2. Conecta ao LDAP para autenticação.
+    3. Se autenticado, extrai as informações do usuário e instancia a classe correspondente.
+    4. Retorna os dados do usuário em formato JSON para o frontend.
+
+    :param request: Objeto da requisição HTTP contendo as credenciais do usuário.
+    :return: JsonResponse com status e dados do usuário autenticado ou erro correspondente.
+    """
+    try:
+        # Decodifica o corpo da requisição e extrai usuário e senha
         body = loads(request.body)
         user = str(body["user"])
         password = str(body["password"])
-
     except Exception as e:
-        logger.info(e)
+        # Retorna erro caso ocorra falha na extração dos dados da requisição
+        print(e)
         erro = str(e)
-        logger.info(erro, flush=True)
-        return JsonResponse({"status": e}, status=1, safe=True)
+        return JsonResponse({"status": erro}, status=400, safe=True)
 
-    dominio = None
-    server1 = None
+    # Chama a função de conexão com o LDAP para validar o usuário
+    response = connect_ldap(user, password)
 
+    if response == 401:
+        # Retorna erro caso o acesso ao LDAP seja negado
+        return JsonResponse({"status": "invalid access"}, status=401, safe=True)
+
+    # Extração dos dados do usuário autenticado no LDAP
+    extractor = response[2][0]
+
+    # Criação da instância do usuário com os dados extraídos do LDAP
+    data_class, error_class_user = create_class_user(extractor)
+
+    if data_class == 400:
+        # Retorna erro caso haja falha na criação da classe de usuário
+        return JsonResponse({"status": error_class_user}, status=400, safe=True)
+
+    helpdesk = data_class.helpdesk
+
+    create_user, error = CreateOrVerifyUser(
+        user, password, request, helpdesk, name_create_user
+    )
+
+    if create_user:
+        pass
+    else:
+        return JsonResponse({"Error": error}, status=400, safe=True)
+
+    # Montagem do dicionário com os dados relevantes do usuário para envio ao frontend
+    client_data = {
+        "name": data_class.name,
+        "departament": data_class.department,
+        "job_title": data_class.job_title,
+        "mail": data_class.mail,
+        "company": data_class.company,
+        "helpdesk": data_class.helpdesk,
+        "pid": data_class.pid,
+    }
+
+    # Retorna os dados do usuário autenticado em formato JSON
+    return JsonResponse({"data": client_data}, status=200, safe=True)
+
+
+def connect_ldap(user, password):
     try:
-        dominio = getenv("DOMAIN_NAME_HELPDESK")
-
-        server1 = getenv("SERVER1")
-
-    except Exception as e:
-        logger.info(e)
-        erro = str(e)
-        logger.info(erro, flush=True)
-        return JsonResponse({"status": e}, status=2)
-
-    server = None
-    conn = None
-    base_ldap = None
-    response = None
-    try:
-        server = server1
-
         conn = Connection(
             server,
             f"{dominio}\{user}",
@@ -159,19 +168,15 @@ def validation(request):
                 types_only=False,
             )
 
+        return response
+
     except Exception as e:
-        logger.info(e)
-        return JsonResponse({"status": "invalid access"}, status=401, safe=True)
+        print(e)
+        return 401
 
-    extractor = None
-    information = None
-    task = None
-    tech_user = None
-    tech_ti = None
-    tech_leader = None
 
+def create_class_user(extractor):
     try:
-        extractor = response[2][0]
         information = extractor.get("attributes")
 
         class UserHelpDesk:
@@ -193,13 +198,9 @@ def validation(request):
                 self.helpdesk = helpdesk
                 self.pid = pid if pid is not None else ""
 
-        tech_user = getenv("TECH_USER")
-        tech_ti = getenv("TECH_TECH_TI")
-        tech_leader = getenv("TECH_LEADER")
-
     except Exception as e:
-        logger.info(e)
-        return JsonResponse({"status": e}, status=400)
+        print(e)
+        return 400, e
 
     helpdesk = ""
     name = ""
@@ -209,12 +210,9 @@ def validation(request):
     company = ""
     pid = ""
     groups = None
+    client = None
 
     try:
-        name_create_user_fn = information["givenName"]
-        name_create_user_ln = information["sn"]
-        name_create_user = name_create_user_fn + " " + name_create_user_ln
-
         # groups = information["memberOf"]
 
         groups = information.get("memberOf", [])
@@ -230,12 +228,6 @@ def validation(request):
             elif tech_leader in item:
                 helpdesk = "Gestor"
                 break  # Se encontrou, não precisa continuar procurando
-        task = Thread(
-            target=CreateOrVerifyUser,
-            args=(user, password, request, helpdesk, name_create_user),
-        )
-
-        task.start()
 
         if "displayName" in information:
             name = information["displayName"]
@@ -263,38 +255,14 @@ def validation(request):
             pid = ""
 
     except Exception as e:
-        logger.info(e)
-        return JsonResponse({"status": e}, status=400)
+        print(e)
+        return 400, e
 
-    client = None
-    client_data = None
-
+    client = UserHelpDesk(name, department, job_title, mail, company, helpdesk, pid)
     try:
-        client = UserHelpDesk(name, department, job_title, mail, company, helpdesk, pid)
-
-        client_data = {
-            "name": client.name,
-            "departament": client.department,
-            "job_title": client.job_title,
-            "mail": client.mail,
-            "company": client.company,
-            "helpdesk": client.helpdesk,
-            "pid": client.pid,
-        }
-
-        while not Valid:
-            if Valid:
-                break
-            time.sleep(0.1)
-        # return render(request, "index.html")
-        return JsonResponse({"data": client_data}, status=200, safe=True)
+        return client, 200
 
     except Exception as e:
-        logger.info("Não foi")
         error_message = str(e)
-        logger.info(error_message)
-        return JsonResponse({"status": error_message}, status=400)
-
-
-def handler404(request, exception):
-    return redirect("/login")
+        print(e)
+        return 400, error_message
