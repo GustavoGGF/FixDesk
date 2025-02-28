@@ -12,7 +12,7 @@
       "ADDSHC 18": "Implementar @schema",
       "ADDRTKN 19": "Implementar @ratelimit",
       "ADDCHCTL 20": "Implementar @cache_control",
-      "ADDLRU 21": "Implementar @lru_cache(maxsize=128)"
+      "ADDLRU 22": "Implementar @lru_cache(maxsize=128)"
     },
     "HotFix's": {
       "OCSCLS 2": "Apos ficar logado por um tempo da um erro te dereciona pra uma tela (quando expira o token)",
@@ -22,7 +22,7 @@
     "Study Possibility": {}
   },
   "Login": {
-    "HotFix's": {}
+    "HotFix's": { "ATR 23": "Procurar por atributos especificos invez de todos na função connect_ldap" }
   },
   "HelpDesk": {
     "Upgrade": {},
