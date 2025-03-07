@@ -12,12 +12,20 @@
       "ADDSHC 18": "Implementar @schema",
       "ADDRTKN 19": "Implementar @ratelimit",
       "ADDCHCTL 20": "Implementar @cache_control",
-      "ADDLRU 22": "Implementar @lru_cache(maxsize=128)"
+      "ADDLRU 22": "Implementar @lru_cache(maxsize=128)",
+      "ADRT 23": "Implementar @retry",
+      "ADRH 24": "Implementar @validate_arguments",
+      "ADRLTM 25": "Implementar @log_execution_time",
+      "ADDVLD 26": "Implementar @validate_email:",
+      "ADDMSTM 27": "Implementar @measure_time: Para medir o tempo de execução da função.",
+      "ADDHDEX 28": "@handle_exceptions: Para tratar exceções de forma mais elegante",
+      "ATMDC 33": "Automatizar a Subida dos Dockers"
     },
     "HotFix's": {
       "OCSCLS 2": "Apos ficar logado por um tempo da um erro te dereciona pra uma tela (quando expira o token)",
       "ATMC": "Verificar todos os codigos que lidam com o banco de dados e por @transaction.atomic",
-      "ADRX 8": "Adicionar a telca esc para fechar algumas telas"
+      "ADRX 8": "Adicionar a telca esc para fechar algumas telas",
+      "ADHTML 39": "Mudar nomes de funções e variaveis para boas praticas"
     },
     "Study Possibility": {}
   },
@@ -26,11 +34,11 @@
   },
   "HelpDesk": {
     "Upgrade": {},
-    "HotFix": { "EQUI": "verificar problema de alicação de equipamento" }
+    "HotFix": { "EQUI 29": "verificar problema de alicação de equipamento", "ENVAR 30": "Ao envis arquivo no firefox pelo menos ele da um erro" }
   },
   "History": {
     "Upgrade": {},
-    "HotFix": {}
+    "HotFix": { "QNTCK 31": "Quantidade de ticketes que vem ao entrar na page" }
   },
   "Dashboard": {
     "Upgrade": {},
@@ -47,7 +55,13 @@
     "ENDTF 3": "Ao finalizar o chamado não salva o data de fechamento",
     "ROT 7 9": "Validar erros ao abrir chamados com usuario patolino",
     "NTOPT 10": "Quando esta com um ticket aberto não pode abrir outro (clicando por fora do chamado)",
-    "IMGTCK 11": "Imagem enviado no chamado esta zoado",
-    "CNMWL 21": "Cancelar envio de email se fechar chamado"
+    "IMGTCK 11": "Imagem enviado no chamado esta zoado, ajustar para todos os tipos de arquivos permitidos e arrumar a borda que aparece na tela",
+    "CNMWL 21": "Cancelar envio de email se fechar chamado",
+    "PDFLD 32": "Ter teça de loading quando começar a baixar o chamado",
+    "PDFBNT 35": "Deixar PDF do chamado bonito",
+    "ALCTMH 34": "Deixar uma imagem no chamado que contem maquina alocada e no PDF tambem",
+    "CTRL 36": "Ajustar o salvamento dos filtros e quando atualizar a pagina fazer busca conforme os mesmos",
+    "RVFLT 37": "Fazer uma puta revisão nesses filtros",
+    "FTRLST 38": "Filtro de modo lista ta feio demais KKKKKk"
   }
 }

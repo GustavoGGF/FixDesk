@@ -120,7 +120,7 @@ export default function History() {
   const [blurNav, setBlurNav] = useState("");
   const [colorTheme, setColorTheme] = useState("");
   const [lifeTime, setLifetime] = useState("");
-  const [status, setStatus] = useState("open");
+  const [status, setStatus] = useState("null");
   const [textChat, setTextChat] = useState("");
   const [theme, setTheme] = useState("");
   const [themeCard, setThemeCard] = useState("");
@@ -138,6 +138,7 @@ export default function History() {
   const [typeError, setTypeError] = useState("");
   const [messageError, setMessageError] = useState("");
   const [equipament, setEquipament] = useState("");
+  const [orderby, setOrderBy] = useState("");
 
   // Declarando variaveis de estado Boolean
   const [btnmore, setBtnMore] = useState(false);
@@ -175,11 +176,7 @@ export default function History() {
 
   // Variaveis de estado Number
   const [countTicket, setCountTicket] = useState(0);
-
-  // Variaveis de estado Null
-  const [problemTicket, setProblemTicket] = useState(null);
-  const [orderby, setOrderBy] = useState(null);
-  const [sectorTicket, setSectorTicket] = useState(null);
+  const [quantityTickets, setQuantityTickets] = useState(0);
 
   const UpNwfile = [];
 
@@ -189,6 +186,17 @@ export default function History() {
 
   const dashBoard = useRef(null);
   const textareaRef = useRef(null);
+  const fiveView = useRef(null);
+  const thenView = useRef(null);
+  const fiftyView = useRef(null);
+  const allView = useRef(null);
+  const btnOpen = useRef(null);
+  const btnClose = useRef(null);
+  const btnStop = useRef(null);
+  const btnAll = useRef(null);
+  const dateSelect = useRef(null);
+  const selectOccurrence = useRef(null);
+  const selectProblem = useRef(null);
 
   useEffect(() => {
     // Verifica se a referência do textarea está definida e se o valor não está vazio
@@ -340,17 +348,39 @@ export default function History() {
         // Atualiza o estado `data` com as informações obtidas do localStorage
         setData(dataInfo.data);
 
-        // Criação de um objeto FormData para enviar dados ao backend
-        const formData = new FormData();
-        formData.append("name", dataInfo.data.name);
+        var quantity = localStorage.getItem("quantity");
+        if (quantity === null || quantity === "null") {
+          localStorage.setItem("quantity", 10);
+          quantity = 10;
+          setQuantityTickets(quantity);
+        }
+
+        var status_current = localStorage.getItem("status");
+        if (status_current === null || status_current === "null") {
+          localStorage.setItem("status", "open");
+          status_current = "open";
+          setStatus(status_current);
+        }
+
+        var order_current = localStorage.getItem("order");
+        if (order_current == null || order_current === "null") {
+          localStorage.setItem("order", "-id");
+          order_current = "-id";
+          setOrderBy("-id");
+        } else {
+          if (order_current === "id") {
+            dateSelect.current.value = "id";
+          } else {
+            dateSelect.current.value = "-id";
+          }
+        }
 
         // Envia os dados para o servidor através de uma requisição POST
-        const response = await fetch("", {
-          method: "POST",
+        const response = await fetch("/helpdesk/get-ticket/" + quantity + "/" + dataInfo.data.name + "/" + status_current + "/" + order_current, {
+          method: "GET",
           headers: {
             Accept: "application/json",
           },
-          body: formData,
         });
 
         // Caso o status da resposta seja 402 (não autorizado ou sessão expirada), redireciona para a página de login
@@ -361,17 +391,6 @@ export default function History() {
 
         // Converte a resposta para JSON e armazena os dados retornados
         const data = await response.json();
-
-        // Atualiza os estados com os dados recebidos da API
-        setToken(data.token);
-        setTickets(data.tickets);
-        setCountTicket(10); // Define um valor padrão para contagem de tickets
-        setOrderBy("-id"); // Define a ordenação padrão dos tickets
-
-        // Modifica o estilo do botão com ID "thenView", se ele existir
-        const btn = document.getElementById("thenView");
-        if (btn) btn.style.backgroundColor = "#00B4D8";
-
         // Verifica se não há tickets e define mensagens de erro informativas para o usuário
         if (data.tickets.length === 0) {
           setTypeError("Falta de Dados");
@@ -381,6 +400,46 @@ export default function History() {
           setMessage(true);
           setNavbar(true);
         }
+        // Atualiza os estados com os dados recebidos da API
+        setToken(data.token);
+        setTickets(data.tickets);
+        setCountTicket(10); // Define um valor padrão para contagem de tickets
+
+        // Mapeia valores de quantity para os refs correspondentes
+        const refMapQuantity = {
+          5: fiveView,
+          10: thenView,
+          50: fiftyView,
+          100000: allView, // Supondo que "all" seja um valor possível
+        };
+
+        // Obtém o ref correspondente ao valor de quantity
+        const selectedRefQuantity = refMapQuantity[quantity];
+
+        // Aplica o estilo apenas se o ref existir
+        if (selectedRefQuantity?.current) {
+          selectedRefQuantity.current.style.backgroundColor = "#00B4D8";
+        }
+
+        switch (status_current) {
+          default:
+            break;
+          case "open":
+            btnOpen.current.classList.add("btn-open"); // Marca o botão "Open" como ativo
+            break;
+          case "stop":
+            btnStop.current.classList.add("btn-light"); // Remove o estilo de luz do botão "Stop"
+            break;
+          case "close":
+            btnClose.current.classList.add("btn-success"); // Remove o estilo de sucesso do botão "Close"
+            break;
+          case "all":
+            btnAll.current.classList.add("btn-all"); // Remove o estilo do botão "All"
+            break;
+        }
+
+        setQuantityTickets(quantity);
+        return status;
       } catch (error) {
         // Em caso de erro, define mensagens de erro e exibe no console para depuração
         setTypeError("Erro Fatal");
@@ -396,6 +455,7 @@ export default function History() {
 
     // Chama a função fetchData assim que o componente for montado
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Dependências vazias garantem que o efeito será executado apenas uma vez, quando o componente for montado
 
   /**
@@ -470,14 +530,16 @@ export default function History() {
         setMountChat([]);
         setIsAtButton(false);
         // Extrai a data do primeiro ticket de chamado
-        const data = dataBack.data[0];
-        // Chama a função de forma assíncrona sem bloquear o restante do código
-        const callAsyncFunction = async () => {
-          await changeLastVW({ id: id, tech: data.responsible_technician });
-        };
+        const data = dataBack.data;
 
-        // Chama a função, mas o código segue sem esperar a execução terminar
-        callAsyncFunction();
+        // Chama a função de forma assíncrona sem bloquear o restante do código
+        if (data.responsible_technician !== null) {
+          const callAsyncFunction = async () => {
+            await changeLastVW({ id: id, tech: data.responsible_technician });
+          };
+          callAsyncFunction();
+        }
+
         const start_date = new Date(data.start_date);
         // Obtém a data atual
         var CurrentDate = new Date();
@@ -496,11 +558,14 @@ export default function History() {
         if (data.problemn === "Alocação de Máquina") {
           setEquipament(data.equipament);
           setShowEquipament(true);
+        } else {
+          setShowEquipament(false);
         }
         textareaRef.current.value = "Observação: " + data.observation;
         setLifetime(lifetime);
         setTicketResponsible_Technician(data.responsible_technician);
         setTicketID(data.id);
+
         if (data.file !== null && data.file.length >= 1) {
           const files = data.file;
           for (let i = 0; i < files.length; i++) {
@@ -1274,112 +1339,17 @@ export default function History() {
     setImageOpen(false);
   }
 
-  function enableProblem() {
-    const select = document.getElementById("selectOcorrence");
-    const option = select.options[select.selectedIndex].value;
-
-    switch (option) {
-      default:
-        break;
-      case "infra":
-        setFakeSelect(false);
-        setProblemInfra(true);
-        setProblemSyst(false);
-        setProblemTicket(null);
-        setSectorTicket("Infraestrutura");
-        getTicketFilterSector({ sector: "Infraestrutura" });
-        break;
-      case "system":
-        setFakeSelect(false);
-        setProblemInfra(false);
-        setProblemSyst(true);
-        setProblemTicket(null);
-        setSectorTicket("Sistema");
-        getTicketFilterSector({ sector: "Sistema" });
-        break;
-      case "null":
-        setFakeSelect(true);
-        setProblemInfra(false);
-        setProblemSyst(false);
-        setProblemTicket(null);
-        break;
-      case "all":
-        setFakeSelect(true);
-        setProblemInfra(false);
-        setProblemSyst(false);
-        setSectorTicket("all");
-        setProblemTicket(null);
-        getTicketFilterSector({ sector: "all" });
-        break;
-    }
-  }
-
-  function changeProblemn() {
-    const select = document.getElementById("selectBo");
-    const option = select.options[select.selectedIndex].value;
-
-    switch (option) {
-      default:
-        break;
-      case "backup":
-        setProblemTicket("Backup");
-        getTicketFilterProblemn({ problemn: "Backup" });
-        break;
-      case "mail":
-        setProblemTicket("E-mail");
-        getTicketFilterProblemn({ problemn: "E-mail" });
-        break;
-      case "equipamento":
-        setProblemTicket("Equipamento");
-        getTicketFilterProblemn({ problemn: "Equipamento" });
-        break;
-      case "user":
-        setProblemTicket("Gerenciamento de Usuario");
-        getTicketFilterProblemn({ problemn: "Gerenciamento de Usuario" });
-        break;
-      case "internet":
-        setProblemTicket("Internet");
-        getTicketFilterProblemn({ problemn: "Internet" });
-        break;
-      case "permissao":
-        setProblemTicket("Permissão");
-        getTicketFilterProblemn({ problemn: "Permissão" });
-        break;
-      case "all":
-        setProblemTicket("all");
-        getTicketFilterProblemn({ problemn: "all" });
-        break;
-      case "sap":
-        setProblemTicket("SAP");
-        getTicketFilterProblemn({ problemn: "SAP" });
-        break;
-      case "mbi":
-        setProblemTicket("MBI");
-        getTicketFilterProblemn({ problemn: "MBI" });
-        break;
-      case "synchro":
-        setProblemTicket("Synchro");
-        getTicketFilterProblemn({ problemn: "Synchro" });
-        break;
-      case "office":
-        setProblemTicket("Office");
-        getTicketFilterProblemn({ problemn: "Office" });
-        break;
-      case "eng":
-        setProblemTicket("Softwares de Eng");
-        getTicketFilterProblemn({ problemn: "Softwares de Eng" });
-        break;
-    }
-  }
-
   function moreTickets() {
-    fetch("/helpdesk/moreTicket/", {
+    var order = "";
+    if (orderby === "") {
+      order = localStorage.getItem("order");
+    } else {
+      order = orderby;
+    }
+    fetch("/helpdesk/moreTicket/" + countTicket + "/" + order + "/" + Data.name + "/" + null, {
       method: "GET",
       headers: {
         Accept: "application/json",
-        "Ticket-Current": countTicket,
-        "User-Data": Data.name,
-        "ORDER-BY": orderby,
       },
     })
       .then((response) => {
@@ -1398,216 +1368,99 @@ export default function History() {
       });
   }
 
-  function getTicketFilterSector({ sector }) {
+  function getTicketFilter({ id, quantity, statusTicket, search_query }) {
+    console.log(search_query);
+
     setTickets([]);
     setTicketsDash([]);
     setLoadingDash(true);
 
-    fetch("/helpdesk/getTicketFilter/", {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Data-User": Data.name,
-        "Quantity-tickets": countTicket,
-        "Order-by": orderby,
-        "Problemn-Ticket": problemTicket,
-        "Sector-Ticket": sector,
-        "Status-Ticket": status,
-      },
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        setLoadingDash(false);
-        if (data.tickets.length === 0) {
-          setMessage(true);
-          setTypeError("Falta de dados");
-          setMessageError("Nenhum ticket com esses Filtros");
-          setBtnMore(false);
-          return;
-        } else {
-          return setTickets(data.tickets);
-        }
-      })
-      .catch((err) => {
-        setMessageError(err);
-        setTypeError("Fatal ERROR");
-        setMessage(true);
-        return console.log(err);
-      });
-  }
+    if (id !== "null") {
+      switch (id) {
+        default:
+          break;
+        case "fiveView":
+          fiveView.current.style.backgroundColor = "#00B4D8";
+          thenView.current.style.backgroundColor = "transparent";
+          fiftyView.current.style.backgroundColor = "transparent";
+          allView.current.style.backgroundColor = "transparent";
+          break;
+        case "thenView":
+          fiveView.current.style.backgroundColor = "transparent";
+          thenView.current.style.backgroundColor = "#00B4D8";
+          fiftyView.current.style.backgroundColor = "transparent";
+          allView.current.style.backgroundColor = "transparent";
+          break;
+        case "fiftyView":
+          fiveView.current.style.backgroundColor = "transparent";
+          thenView.current.style.backgroundColor = "transparent";
+          fiftyView.current.style.backgroundColor = "#00B4D8";
+          allView.current.style.backgroundColor = "transparent";
+          break;
+        case "allView":
+          fiveView.current.style.backgroundColor = "transparent";
+          thenView.current.style.backgroundColor = "transparent";
+          fiftyView.current.style.backgroundColor = "transparent";
+          allView.current.style.backgroundColor = "#00B4D8";
+          break;
+      }
+    }
 
-  function getTicketFilterProblemn({ problemn }) {
-    setTickets([]);
-    setTicketsDash([]);
-    setLoadingDash(true);
-
-    fetch("/helpdesk/getTicketFilter/", {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Data-User": Data.name,
-        "Quantity-tickets": countTicket,
-        "Order-by": orderby,
-        "Problemn-Ticket": problemn,
-        "Sector-Ticket": sectorTicket,
-        "Status-Ticket": status,
-      },
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        if (data.tickets.length === 0) {
-          setMessage(true);
-          setTypeError("Falta de dados");
-          setMessageError("Nenhum ticket com esses Filtros");
-          setBtnMore(false);
-          return;
-        } else {
-          setLoadingDash(false);
-          return setTickets(data.tickets);
-        }
-      })
-      .catch((err) => {
-        setMessageError(err);
-        setTypeError("Fatal ERROR");
-        setMessage(true);
-        return console.log(err);
-      });
-  }
-
-  function getTicketFilter({ id, quantity }) {
-    setTickets([]);
-    setTicketsDash([]);
-    setLoadingDash(true);
-    const btn1 = document.getElementById("fiveView");
-    btn1.style.backgroundColor = "transparent";
-
-    const btn2 = document.getElementById("thenView");
-    btn2.style.backgroundColor = "transparent";
-
-    const btn3 = document.getElementById("fiftyView");
-    btn3.style.backgroundColor = "transparent";
-
-    const btn4 = document.getElementById("allView");
-    btn4.style.backgroundColor = "transparent";
-
-    const btn5 = document.getElementById(id);
-    btn5.style.backgroundColor = "#00B4D8";
-
-    fetch("/helpdesk/getTicketFilter/", {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Data-User": Data.name,
-        "Quantity-tickets": quantity,
-        "Order-by": orderby,
-        "Problemn-Ticket": problemTicket,
-        "Sector-Ticket": sectorTicket,
-        "Status-Ticket": status,
-      },
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        if (data.tickets.length === 0) {
-          setMessage(true);
-          setTypeError("Falta de dados");
-          setMessageError("Nenhum ticket com esses Filtros");
-          setBtnMore(false);
-          return;
-        } else {
-          setLoadingDash(false);
-          return setTickets(data.tickets);
-        }
-      })
-      .catch((err) => {
-        setMessageError(err);
-        setTypeError("Fatal ERROR");
-        setMessage(true);
-        return console.log(err);
-      });
-  }
-
-  function getTicketFilterOrderTime({ order }) {
-    setTickets([]);
-    setTicketsDash([]);
-    fetch("/helpdesk/getTicketFilter/", {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Data-User": Data.name,
-        "Quantity-tickets": countTicket,
-        "Order-By": order,
-        "Problemn-Ticket": problemTicket,
-        "Sector-Ticket": sectorTicket,
-        "Status-Ticket": status,
-      },
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        if (data.tickets.length === 0) {
-          setMessage(true);
-          setTypeError("Falta de dados");
-          setMessageError("Nenhum ticket com esses Filtros");
-          setBtnMore(false);
-          return;
-        } else {
-          setLoadingDash(false);
-          return setTickets(data.tickets);
-        }
-      })
-      .catch((err) => {
-        setMessageError(err);
-        setTypeError("Fatal ERROR");
-        setMessage(true);
-        return console.log(err);
-      });
-  }
-
-  function selectOrder() {
-    setTickets();
-    setTicketsDash([]);
-    const select = document.getElementById("select-order");
-    const option = select.options[select.selectedIndex].value;
-
-    switch (option) {
+    switch (statusTicket) {
       default:
         break;
-      case "recent":
-        getTicketFilterOrderTime({ order: "-id" });
-        setOrderBy("-id");
+      case "open":
+        btnOpen.current.classList.add("btn-open"); // Marca o botão "Open" como ativo
+        btnStop.current.classList.remove("btn-light");
+        btnClose.current.classList.remove("btn-success");
+        btnAll.current.classList.remove("btn-all");
         break;
-      case "ancient":
-        getTicketFilterOrderTime({ order: "id" });
-        setOrderBy("id");
+      case "stop":
+        btnOpen.current.classList.remove("btn-open"); // Marca o botão "Open" como ativo
+        btnStop.current.classList.add("btn-light");
+        btnClose.current.classList.remove("btn-success");
+        btnAll.current.classList.remove("btn-all");
+        break;
+      case "close":
+        btnOpen.current.classList.remove("btn-open"); // Marca o botão "Open" como ativo
+        btnStop.current.classList.remove("btn-light");
+        btnClose.current.classList.add("btn-success");
+        btnAll.current.classList.remove("btn-all");
+        break;
+      case "all":
+        btnOpen.current.classList.remove("btn-open"); // Marca o botão "Open" como ativo
+        btnStop.current.classList.remove("btn-light");
+        btnClose.current.classList.remove("btn-success");
+        btnAll.current.classList.add("btn-all");
         break;
     }
-  }
 
-  function getTicketKey(event) {
-    const newText = event.target.value;
+    var orderTicket = dateSelect.current.value;
 
-    const select1 = document.getElementById("selectOcorrence");
-    select1.value = null;
+    if (statusTicket === "null") {
+      statusTicket = localStorage.getItem("status");
+    }
 
-    setProblemSyst(false);
-    setProblemInfra(false);
-    setFakeSelect(true);
-    setTicketsDash([]);
-    fetch("/helpdesk/getTicketFilterWords/", {
+    var sector = selectOccurrence.current.value;
+    var occurrence = "null";
+    console.log(sector);
+
+    if (selectProblem.current) {
+      occurrence = selectProblem.current.value;
+    }
+
+    if (occurrence === "") {
+      occurrence = "null";
+    }
+
+    if (search_query === "") {
+      search_query = "null";
+    }
+
+    fetch("/helpdesk/get-ticket-filter/" + sector + "/" + occurrence + "/" + orderTicket + "/" + Data.name + "/" + quantity + "/" + statusTicket + "/" + search_query, {
       method: "GET",
       headers: {
         Accept: "application/json",
-        "Data-User": Data.name,
-        "Word-Filter": newText,
-        "Order-By": orderby,
-        "Quantity-tickets": countTicket,
       },
     })
       .then((response) => {
@@ -1622,6 +1475,12 @@ export default function History() {
           return;
         } else {
           setLoadingDash(false);
+          localStorage.setItem("quantity", quantity);
+          localStorage.setItem("status", statusTicket);
+          localStorage.setItem("order", orderTicket);
+          setOrderBy(orderTicket);
+          setStatus(statusTicket);
+          setQuantityTickets(quantity);
           return setTickets(data.tickets);
         }
       })
@@ -1631,205 +1490,6 @@ export default function History() {
         setMessage(true);
         return console.log(err);
       });
-
-    return;
-  }
-
-  function ticketOpen() {
-    setTickets();
-    setTicketsDash([]);
-    const btn = document.getElementById("btnopen");
-    btn.classList.add("btn-open");
-    const btn2 = document.getElementById("btnclose");
-    btn2.classList.remove("btn-success");
-    const btn3 = document.getElementById("btnstop");
-    btn3.classList.remove("btn-light");
-    const btn4 = document.getElementById("btnall");
-    btn4.classList.remove("btn-all");
-
-    fetch("/helpdesk/getTicketFilterStatus/", {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Data-User": Data.name,
-        "Order-By": orderby,
-        "Quantity-tickets": countTicket,
-        "Problemn-Ticket": problemTicket,
-        "Sector-Ticket": sectorTicket,
-        "Status-Request": "open",
-      },
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        if (data.tickets.length === 0) {
-          setMessage(true);
-          setTypeError("Falta de dados");
-          setMessageError("Nenhum ticket com esses Filtros");
-          setBtnMore(false);
-          return;
-        } else {
-          setLoadingDash(false);
-          setStatus("open");
-          return setTickets(data.tickets);
-        }
-      })
-      .catch((err) => {
-        setMessageError(err);
-        setTypeError("Fatal ERROR");
-        setMessage(true);
-        return console.log(err);
-      });
-
-    return;
-  }
-
-  function ticketClose() {
-    setTickets([]);
-    setTicketsDash([]);
-    const btn = document.getElementById("btnopen");
-    btn.classList.remove("btn-open");
-    const btn2 = document.getElementById("btnclose");
-    btn2.classList.add("btn-success");
-    const btn3 = document.getElementById("btnstop");
-    btn3.classList.remove("btn-light");
-    const btn4 = document.getElementById("btnall");
-    btn4.classList.remove("btn-all");
-
-    fetch("/helpdesk/getTicketFilterStatus/", {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Data-User": Data.name,
-        "Order-By": orderby,
-        "Quantity-tickets": countTicket,
-        "Problemn-Ticket": problemTicket,
-        "Sector-Ticket": sectorTicket,
-        "Status-Request": "close",
-      },
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        if (data.tickets.length === 0) {
-          setMessage(true);
-          setTypeError("Falta de dados");
-          setMessageError("Nenhum ticket com esses Filtros");
-          setBtnMore(false);
-          return;
-        } else {
-          setLoadingDash(false);
-          setStatus("close");
-          return setTickets(data.tickets);
-        }
-      })
-      .catch((err) => {
-        setMessageError(err);
-        setTypeError("Fatal ERROR");
-        setMessage(true);
-        return console.log(err);
-      });
-
-    return;
-  }
-
-  function ticketStop() {
-    setTickets([]);
-    setTickets([]);
-    const btn = document.getElementById("btnopen");
-    btn.classList.remove("btn-open");
-    const btn2 = document.getElementById("btnclose");
-    btn2.classList.remove("btn-success");
-    const btn3 = document.getElementById("btnstop");
-    btn3.classList.add("btn-light");
-    const btn4 = document.getElementById("btnall");
-    btn4.classList.remove("btn-all");
-
-    fetch("/helpdesk/getTicketFilterStatus/", {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Data-User": Data.name,
-        "Order-By": orderby,
-        "Quantity-tickets": countTicket,
-        "Problemn-Ticket": problemTicket,
-        "Sector-Ticket": sectorTicket,
-        "Status-Request": "stop",
-      },
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        if (data.tickets.length === 0) {
-          setMessage(true);
-          setTypeError("Falta de dados");
-          setMessageError("Nenhum ticket com esses Filtros");
-          setBtnMore(false);
-        } else {
-          setLoadingDash(false);
-          setStatus("close");
-          setTickets(data.tickets);
-        }
-      })
-      .catch((err) => {
-        setMessageError(err);
-        setTypeError("FATAL ERROR");
-        setMessage(true);
-        return console.log(err);
-      });
-  }
-
-  function statusTicketAll() {
-    setTickets([]);
-    setTicketsDash([]);
-    const btn = document.getElementById("btnopen");
-    btn.classList.remove("btn-open");
-    const btn2 = document.getElementById("btnclose");
-    btn2.classList.remove("btn-success");
-    const btn3 = document.getElementById("btnstop");
-    btn3.classList.remove("btn-light");
-    const btn4 = document.getElementById("btnall");
-    btn4.classList.add("btn-all");
-
-    fetch("/helpdesk/getTicketFilterStatus/", {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Data-User": Data.name,
-        "Order-By": orderby,
-        "Quantity-tickets": countTicket,
-        "Problemn-Ticket": problemTicket,
-        "Sector-Ticket": sectorTicket,
-        "Status-Request": "all",
-      },
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        if (data.tickets.length === 0) {
-          setMessage(true);
-          setTypeError("Falta de dados");
-          setMessageError("Nenhum ticket com esses Filtros");
-          setBtnMore(false);
-          return;
-        } else {
-          setLoadingDash(false);
-          setStatus("all");
-          return setTickets(data.tickets);
-        }
-      })
-      .catch((err) => {
-        setMessageError(err);
-        setTypeError("Fatal ERROR");
-        setMessage(true);
-        return console.log(err);
-      });
-
-    return;
   }
 
   function UploadNewFiles(evt) {
@@ -2164,6 +1824,32 @@ export default function History() {
       });
   }
 
+  function validateSelectFilter() {
+    if (selectOccurrence.current) {
+      switch (selectOccurrence.current.value) {
+        default:
+          break;
+        case "Infraestrutura":
+          setFakeSelect(false);
+          setProblemInfra(true);
+          setProblemSyst(false);
+          break;
+        case "Sistema":
+          setFakeSelect(false);
+          setProblemInfra(false);
+          setProblemSyst(true);
+          break;
+        case "all":
+          setFakeSelect(true);
+          setProblemInfra(false);
+          setProblemSyst(false);
+      }
+    }
+    if (selectProblem.current) {
+      selectProblem.current.value = "";
+    }
+  }
+
   return (
     <Div className={theme}>
       {navbar && (
@@ -2179,39 +1865,59 @@ export default function History() {
       <TitlePage className="text-center text-light mt-3">Histórico de Chamados</TitlePage>
       <DivFilter className={`${blurNav} ${themeFilter}`}>
         <div className="form-floating">
-          <Input1 type="text" className="form-control" id="floatingInput" onKeyDown={getTicketKey} />
+          <Input1
+            type="text"
+            className="form-control"
+            id="floatingInput"
+            onKeyUp={(event) => {
+              getTicketFilter({ id: "null", quantity: quantityTickets, statusTicket: status, search_query: event.target.value });
+            }}
+          />
           <label htmlFor="floatingInput">Ocorrência | Problema | Data...</label>
         </div>
-        <Select1 id="selectOcorrence" className="form-select" onChange={enableProblem}>
+        <Select1
+          id="selectOcorrence"
+          className="form-select"
+          ref={selectOccurrence}
+          onChange={() => {
+            validateSelectFilter();
+            getTicketFilter({ id: "null", quantity: quantityTickets, statusTicket: status, search_query: "null" });
+          }}
+        >
           <option value="null" selected disabled>
             Tipo de Ocorrência
           </option>
-          <option value="infra">Infra</option>
-          <option value="system">Sistema</option>
+          <option value="Infraestrutura">Infra</option>
+          <option value="Sistema">Sistema</option>
           <option value="all">Todos</option>
         </Select1>
         {fakeSelect && (
           <Select1 className="form-select" disabled>
-            <option selected>Problema</option>
+            <option selected value="null">
+              Problema
+            </option>
           </Select1>
         )}
         {problemInfra && (
           <Select1
             id="selectBo"
             className="form-select"
+            ref={selectProblem}
             onChange={() => {
-              changeProblemn();
+              getTicketFilter({ id: "null", quantity: quantityTickets, statusTicket: status, search_query: "null" });
             }}
           >
-            <option value="" selected disabled>
+            <option value="null" selected disabled>
               Problema
             </option>
-            <option value="backup">Backup/Restore</option>
-            <option value="mail">E-mail</option>
-            <option value="equipamento">Equipamento</option>
-            <option value="user">Gerenciamento de Usuario</option>
-            <option value="internet">Internet</option>
-            <option value="permissao">Pasta</option>
+            <option value="Backup">Backup/Restore</option>
+            <option value="E-mail">E-mail</option>
+            <option value="Equipamento">Equipamento</option>
+            <option value="Gerenciamento de Usuario">Gerenciamento de Usuario</option>
+            <option value="Internet">Internet</option>
+            <option value="Permissão">Pasta</option>
+            <option value="Novo SoftWare">Software e Aplicativos</option>
+            <option value="Integridade de Dados">Integridade de Dados</option>
             <option value="all">Todos</option>
           </Select1>
         )}
@@ -2219,38 +1925,46 @@ export default function History() {
           <Select1
             id="selectBo"
             className="form-select"
+            ref={selectProblem}
             onChange={() => {
-              changeProblemn();
+              getTicketFilter({ id: "null", quantity: quantityTickets, statusTicket: status, search_query: "null" });
             }}
           >
             <option value="" selected disabled>
               Problema
             </option>
-            <option value="sap">SAP</option>
-            <option value="mbi">MBI</option>
-            <option value="synchro">Synchro</option>
-            <option value="office">Office</option>
-            <option value="eng">Softwares de Eng</option>
+            <option value="SAP">SAP</option>
+            <option value="MBI">MBI</option>
+            <option value="Synchro">Synchro</option>
+            <option value="Office">Office</option>
+            <option value="Softwares de Eng">Softwares de Eng</option>
             <option value="all">Todos</option>
           </Select1>
         )}
-        <Select1 name="" id="select-order" className="form-select" onChange={selectOrder}>
+        <Select1
+          ref={dateSelect}
+          name=""
+          id="select-order"
+          className="form-select"
+          onChange={() => {
+            getTicketFilter({ id: "null", quantity: quantityTickets, statusTicket: status, search_query: "null" });
+          }}
+        >
           <option value="none" disabled>
             Ordernar
           </option>
-          <option selected value="recent">
-            Data Recente
-          </option>
-          <option value="ancient">Data Antiga</option>
+          <option value="-id">Data Recente</option>
+          <option value="id">Data Antiga</option>
         </Select1>
         <DivContainerImages className="d-flex">
           <PSelectView className="position-absolute top-0 start-0 translate-middle">Quantidade</PSelectView>
           <DivImages
             className="btn"
             id="fiveView"
+            ref={fiveView}
             onClick={() => {
               setCountTicket(5);
-              getTicketFilter({ id: "fiveView", quantity: 5 });
+              getTicketFilter({ id: "fiveView", quantity: 5, statusTicket: status, search_query: "null" });
             }}
           >
             <IMGS1 src={IMG1} alt="" />
@@ -2259,9 +1973,10 @@ export default function History() {
           <DivImages
             className="btn"
             id="thenView"
+            ref={thenView}
             onClick={() => {
               setCountTicket(10);
-              getTicketFilter({ id: "thenView", quantity: 10 });
+              getTicketFilter({ id: "thenView", quantity: 10, statusTicket: status, search_query: "null" });
             }}
           >
             <IMGS1 src={IMG2} alt="" />
@@ -2270,9 +1985,10 @@ export default function History() {
           <DivImages
             className="btn"
             id="fiftyView"
+            ref={fiftyView}
             onClick={() => {
               setCountTicket(50);
-              getTicketFilter({ id: "fiftyView", quantity: 50 });
+              getTicketFilter({ id: "fiftyView", quantity: 50, statusTicket: status, search_query: "null" });
             }}
           >
             <IMGS1 src={IMG3} alt="" />
@@ -2281,9 +1997,10 @@ export default function History() {
           <DivImages
             className="btn"
             id="allView"
+            ref={allView}
             onClick={() => {
               setCountTicket(100000);
-              getTicketFilter({ id: "allView", quantity: 100000 });
+              getTicketFilter({ id: "allView", quantity: 100000, statusTicket: status, search_query: "null" });
             }}
           >
             <IMGS1 src={IMG4} alt="" />
@@ -2302,10 +2019,11 @@ export default function History() {
         <DivSelectView>
           <PSelectView className="position-absolute top-0 start-0 translate-middle">Status</PSelectView>
           <Button1
-            className="btn btn-open"
+            className="btn"
             id="btnopen"
+            ref={btnOpen}
             onClick={() => {
-              ticketOpen();
+              getTicketFilter({ id: "null", quantity: quantityTickets, statusTicket: "open", search_query: "null" });
             }}
           >
             Aberto
@@ -2314,8 +2032,9 @@ export default function History() {
             className="btn"
             value="close"
             id="btnclose"
+            ref={btnClose}
             onClick={() => {
-              ticketClose();
+              getTicketFilter({ id: "null", quantity: quantityTickets, statusTicket: "close", search_query: "null" });
             }}
           >
             Fechado
@@ -2324,8 +2043,9 @@ export default function History() {
             className="btn"
             value="close"
             id="btnstop"
+            ref={btnStop}
             onClick={() => {
-              ticketStop();
+              getTicketFilter({ id: "null", quantity: quantityTickets, statusTicket: "stop", search_query: "null" });
             }}
           >
             Aguardo
@@ -2334,8 +2054,9 @@ export default function History() {
             className="btn"
             value="all"
             id="btnall"
+            ref={btnAll}
             onClick={() => {
-              statusTicketAll();
+              getTicketFilter({ id: "null", quantity: quantityTickets, statusTicket: "all", search_query: "null" });
             }}
           >
             Todos

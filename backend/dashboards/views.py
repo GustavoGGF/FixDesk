@@ -22,6 +22,11 @@ from base64 import b64encode
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_POST, require_GET
 from django.db import transaction
+import logging
+
+# Configuração básica de logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 # Create your views here.
@@ -155,35 +160,43 @@ def getDashBoardPie(request, sector):
 @login_required(login_url="/login")
 @never_cache
 @require_GET
-def get_ticket_TI(request):
-    ticket_list = []
-    ticket_data = None
-    ticket_json = None
+def get_ticket_TI(request, quantity, status):
+    """
+    Obtém os primeiros chamados de TI, com filtros de quantidade e status (aberto, fechado, etc.).
+
+    :param request: Objeto da requisição.
+    :param quantity: Quantidade fixa de tickets a serem retornados.
+    :param status: Status do ticket (aberto, fechado, parado ou todos).
+
+    :return: Retorna um JSON com os tickets ou um erro se ocorrer algum problema.
+    """
+    status_mapping = {"open": True, "close": False, "stop": None, "all": "All"}
+
+    # Define o status baseado no mapeamento
+    status_opng = status_mapping.get(status, None)
+
     try:
-        ticket_data = SupportTicket.objects.filter(
-            respective_area="TI", open=True
-        ).order_by("-id")[:10]
+        # Filtra os tickets conforme o status
+        if status_opng == "All":
+            ticket_data = SupportTicket.objects.filter(respective_area="TI").order_by(
+                "-id"
+            )[:quantity]
+        else:
+            ticket_data = SupportTicket.objects.filter(
+                respective_area="TI", open=status_opng
+            ).order_by("-id")[:quantity]
 
-        for ticket in ticket_data:
-            ticket_json = serialize("json", [ticket])
-            ticket_list.append(ticket_json)
-
-    except Exception as e:
-        print(e)
-        return JsonResponse({"Error": f"Erro ao obter os chamados {e}"}, status=332)
-
-    ticket_objects = []
-    try:
-        for ticket in ticket_list:
-            ticket_data = loads(ticket)[0]["fields"]
-            ticket_data["id"] = loads(ticket)[0]["pk"]
-            ticket_objects.append(ticket_data)
+        # Serializa os tickets e prepara a resposta
+        ticket_objects = [
+            {**loads(serialize("json", [ticket]))[0]["fields"], "id": ticket.id}
+            for ticket in ticket_data
+        ]
 
         return JsonResponse({"tickets": ticket_objects}, status=200, safe=True)
 
     except Exception as e:
-        print(e)
-        return JsonResponse({"Error": f"Erro ao montar os chamados {e}"}, status=332)
+        logger.error(f"Erro ao obter ou montar os chamados: {e}")
+        return JsonResponse({"Error": f"Erro ao obter os chamados {e}"}, status=332)
 
 
 @login_required(login_url="/login")

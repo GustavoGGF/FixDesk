@@ -89,19 +89,6 @@ export const DropContent2 = styled.div`
   background-color: rgb(249, 249, 249);
 `;
 
-export const DivModify = styled.div`
-  height: 70%;
-  width: 70%;
-  z-index: 10 !important;
-  background: #f9f9f9;
-  border-radius: 20px;
-  border: 4px solid #ef3c3c;
-`;
-
-export const InputTicket = styled.input`
-  width: 100%;
-`;
-
 export const ZIndex = styled.div`
   z-index: 100000 !important;
 `;

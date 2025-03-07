@@ -35,7 +35,7 @@ import "react-day-picker/dist/style.css";
  * - DashboardBar: componente de barra do painel de instrumentos.
  * - Mail, XLS, ZIP, TXT, WORD, PDF, Download, Exclude, DownTick, Seeting, Send: importações de imagens de componentes.
  */
-import { ButtonDet, Div, DivChatDetails, DivDetaisl, DivFilter, DivModify, DropBTN, DropContent2, IMGConfig, ImgSend, InputTicket, TextObersavation, ZIndex, BtnClose } from "../styles/dashboardTI.js";
+import { ButtonDet, Div, DivChatDetails, DivDetaisl, DivFilter, DropBTN, DropContent2, IMGConfig, ImgSend, TextObersavation, ZIndex } from "../styles/dashboardTI.js";
 import DashBoardPie from "../components/dashboardPie";
 import Loading from "../components/loading";
 import Navbar from "../components/navbar";
@@ -108,7 +108,6 @@ import TXT from "../images/components/arquivo-txt.png";
 import WORD from "../images/components/palavra.png";
 import XLS from "../images/components/xlsx.png";
 import ZIP from "../images/components/zip.jpg";
-import TicketsOptions from "../components/ticketsOptions";
 import { TickerContext } from "../services/TickerContext.js";
 import LoadingChat from "../components/loadingChat.jsx";
 /**
@@ -171,7 +170,6 @@ export default function DashboardTI() {
    */
   const [btnmore, setBtnMore] = useState(true);
   const [chat, setChat] = useState(false);
-  const [dataModify, setDataModify] = useState(true);
   const [fakeSelect, setFakeSelect] = useState(true);
   const [fetchChat, setFetchChat] = useState(false);
   const [imageopen, setImageOpen] = useState(false);
@@ -183,7 +181,6 @@ export default function DashboardTI() {
   const [loadingDash, setLoadingDash] = useState(true);
   const [message, setMessage] = useState(false);
   const [messageChat, setMessageChat] = useState(false);
-  const [modifyTicket, setModifyTicket] = useState(false);
   const [navbar, setNavbar] = useState(false);
   const [newFiles, setNewFiles] = useState(false);
   const [problemInfra, setProblemInfra] = useState(false);
@@ -270,9 +267,6 @@ export default function DashboardTI() {
   const divRefs = useRef({});
 
   // Declarando variaveis de Contexto
-  const { sector } = useContext(TickerContext);
-  const { occurrence } = useContext(TickerContext);
-  const { problemn } = useContext(TickerContext);
   const { setCreate_user_acess } = useContext(TickerContext);
   const { setAlocate_Machine_Acess } = useContext(TickerContext);
 
@@ -402,8 +396,19 @@ export default function DashboardTI() {
   useEffect(() => {
     if (userData && Object.keys(userData).length > 0) {
       // Verifica se os dados do usuário estão disponíveis e não vazios.
+      var quantity = localStorage.getItem("quantity");
+      if (quantity === null) {
+        localStorage.setItem("quantity", "10");
+        quantity = 10;
+      }
+
+      var status = localStorage.getItem("status");
+      if (status === null) {
+        localStorage.setItem("status", "open");
+        status = "open";
+      }
       setNavbar(true); // Define a flag de exibição da barra de navegação como verdadeira.
-      fetch("get_ticket_TI", {
+      fetch("get_ticket_TI/" + quantity + "/" + status, {
         // Faz uma solicitação ao backend para obter os chamados de TI.
         method: "GET",
         headers: { Accept: "application/json" },
@@ -412,11 +417,42 @@ export default function DashboardTI() {
           return response.json(); // Converte a resposta para JSON.
         })
         .then((data) => {
-          setCountTicket(10); // Define a contagem inicial de chamados como 10.
+          setCountTicket(quantity); // Define a contagem inicial de chamados como 10.
           setOrderBy("-id"); // Define a ordenação inicial dos chamados.
-          if (thenView.current) {
-            thenView.current.style.backgroundColor = "#00B4D8"; // Define o estilo de visualização atual.
+
+          // Mapeia valores de quantity para os refs correspondentes
+          const refMapQuantity = {
+            5: fiveView,
+            10: thenView,
+            50: fiftyView,
+            100000: allView, // Supondo que "all" seja um valor possível
+          };
+
+          // Obtém o ref correspondente ao valor de quantity
+          const selectedRefQuantity = refMapQuantity[quantity];
+
+          // Aplica o estilo apenas se o ref existir
+          if (selectedRefQuantity?.current) {
+            selectedRefQuantity.current.style.backgroundColor = "#00B4D8";
           }
+
+          switch (status) {
+            default:
+              break;
+            case "open":
+              btnOpen.current.classList.add("btn-open"); // Marca o botão "Open" como ativo
+              break;
+            case "stop":
+              btnStop.current.classList.add("btn-light"); // Remove o estilo de luz do botão "Stop"
+              break;
+            case "close":
+              btnClose.current.classList.add("btn-success"); // Remove o estilo de sucesso do botão "Close"
+              break;
+            case "all":
+              btnAll.current.classList.add("btn-all"); // Remove o estilo do botão "All"
+              break;
+          }
+
           setTickets(data.tickets); // Define os chamados no estado correspondente.
         })
         .catch((err) => {
@@ -679,7 +715,7 @@ export default function DashboardTI() {
     fetch("/helpdesk/ticket/" + id, {
       method: "GET",
       headers: {
-        "X-CSRF-Token": token,
+        "X-CSRFToken": token,
         pid: userData.pid,
         "Cache-Control": "no-cache", // Adiciona o cabeçalho para evitar cache
       },
@@ -690,14 +726,17 @@ export default function DashboardTI() {
       .then((dataBack) => {
         setClassBlur("addBlur");
         sectionTicket.current.style.filter = "blur(3px)";
-        const data = dataBack.data[0];
+        const data = dataBack.data;
         // Chama a função de forma assíncrona sem bloquear o restante do código
-        const callAsyncFunction = async () => {
-          await changeLastVW({ id: id, tech: data.responsible_technician });
-        };
+        if (data.responsible_technician !== null) {
+          const callAsyncFunction = async () => {
+            await changeLastVW({ id: id, tech: data.responsible_technician });
+          };
 
-        // Chama a função, mas o código segue sem esperar a execução terminar
-        callAsyncFunction();
+          // Chama a função, mas o código segue sem esperar a execução terminar
+          callAsyncFunction();
+        }
+
         setSelectedTech("");
         setMessageChat(false);
         setMountChat([]);
@@ -720,7 +759,10 @@ export default function DashboardTI() {
         if (data.problemn === "Alocação de Máquina") {
           setEquipament(data.equipament);
           setShowEquipament(true);
+        } else {
+          setShowEquipament(false);
         }
+
         textareaRef.current.value = "Observação: " + data.observation;
         setLifetime(lifetime);
         setTicketResponsible_Technician(data.responsible_technician);
@@ -1046,6 +1088,7 @@ export default function DashboardTI() {
 
         // Verifica se o nome que consta no técnico é o mesmo que está logado.
         var nameVer = name_verify.split(" ");
+
         if (data.responsible_technician !== null) {
           var techVer = data.responsible_technician.split(" ");
 
@@ -1064,7 +1107,6 @@ export default function DashboardTI() {
           setChat(false);
         } else {
           setChat(false);
-          setDataModify(false);
         }
 
         setTicketWindow(true);
@@ -1149,7 +1191,6 @@ export default function DashboardTI() {
   // Função que fecha o chamado e suas dependências quando ele está aberto.
   function Close_ticket() {
     setClassBlur(""); // Remove a classe de desfoque.
-    setModifyTicket(false); // Define o estado de modificação do chamado como falso.
     sectionTicket.current.style.filter = "blur(0)"; // Remove o efeito de desfoque do chamado.
     setTicketWindow(false); // Fecha a janela do chamado.
     setFetchChat(false); // Define o estado de busca do chat como falso.
@@ -1166,7 +1207,6 @@ export default function DashboardTI() {
 
   // Função que fecha a mensagem.
   function closeMessage() {
-    setModifyTicket(false); // Define o estado de modificação do chamado como falso.
     setMessageChat(false); // Define o estado de mensagem do chat como falso.
   }
 
@@ -1198,7 +1238,7 @@ export default function DashboardTI() {
           responsible_technician: selectedTech,
           technician: userData.name,
           date: dataFormatada,
-          hour: horaFormatada,
+          hours: horaFormatada,
           mail: ticketMAIL,
           techMail: userData.mail,
         }),
@@ -1218,11 +1258,6 @@ export default function DashboardTI() {
             setTicketResponsible_Technician(data.technician);
             reloadChat({ data: data });
             const divToChange = divRefs.current[`tck${data.id}`];
-            console.log(divRefs);
-
-            if (divToChange) {
-              console.log(divToChange);
-            }
             divToChange.classList.remove("ticketStop");
             divToChange.classList.remove("ticektOpenInView");
             divToChange.classList.remove("ticketUrgent");
@@ -1641,14 +1676,13 @@ export default function DashboardTI() {
     setLoadingDash(true);
 
     // Realiza uma requisição GET para o endpoint "getTicketFilter/"
-    fetch("getTicketFilter/", {
+    fetch("get-ticket-filter/" + sector, {
       method: "GET", // Define o método HTTP como GET para a requisição
       headers: {
         Accept: "application/json", // Define que a resposta esperada é no formato JSON
         "Quantity-tickets": countTicket, // Envia o número de tickets desejado no cabeçalho da requisição
         "Order-by": orderby, // Envia o critério de ordenação para a busca
         "Problemn-Ticket": problemTicket, // Envia o problema específico do ticket que deve ser filtrado
-        "Sector-Ticket": sector, // Envia o setor selecionado para filtrar os tickets
         "Status-Ticket": status, // Envia o status do ticket para a filtragem
         "Cache-Control": "no-cache", // Define que a requisição não deve utilizar o cache, garantindo dados atualizados
       },
@@ -1771,6 +1805,7 @@ export default function DashboardTI() {
           setLoadingDash(false); // Desativa o estado de carregamento
           setStatus("open"); // Define o status atual como "open"
           setTickets(data.tickets); // Atualiza o estado dos tickets com os dados recebidos
+          localStorage.setItem("status", "open");
         }
       })
       .catch((err) => {
@@ -1829,6 +1864,7 @@ export default function DashboardTI() {
           setLoadingDash(false); // Desativa o estado de carregamento
           setStatus("close"); // Define o status atual como "close"
           setTickets(data.tickets); // Atualiza o estado dos tickets com os dados recebidos
+          localStorage.setItem("status", "close");
         }
       })
       .catch((err) => {
@@ -1887,6 +1923,7 @@ export default function DashboardTI() {
           setLoadingDash(false); // Desativa o estado de carregamento
           setStatus("close"); // Define o status atual como "close" (deve ser alterado para "stop" conforme explicado abaixo)
           setTickets(data.tickets); // Atualiza o estado dos tickets com os dados recebidos
+          localStorage.setItem("status", "stop");
         }
       })
       .catch((err) => {
@@ -1944,6 +1981,7 @@ export default function DashboardTI() {
           setLoadingDash(false); // Desativa o estado de carregamento
           setStatus("all"); // Define o status atual como "all"
           setTickets(data.tickets); // Atualiza o estado dos tickets com os dados recebidos
+          localStorage.setItem("status", "all");
         }
       })
       .catch((err) => {
@@ -2048,7 +2086,7 @@ export default function DashboardTI() {
     setLoadingDash(true);
 
     // Faz uma requisição GET para obter os tickets filtrados pelo problema especificado
-    fetch("getTicketFilter/", {
+    fetch("get-ticket-filter/", {
       method: "GET",
       headers: {
         Accept: "application/json",
@@ -2201,6 +2239,7 @@ export default function DashboardTI() {
     })
       .then((response) => response.json()) // Converte a resposta para JSON
       .then((data) => {
+        localStorage.setItem("quantity", quantity);
         setLoadingDash(false); // Desativa o estado de carregamento
         setTickets(data.tickets); // Atualiza a lista de chamados com os dados recebidos
       })
@@ -2226,13 +2265,9 @@ export default function DashboardTI() {
    */
   function moreTickets() {
     // Faz uma requisição GET para buscar mais tickets
-    fetch("/helpdesk/moreTicket/", {
+    fetch("/helpdesk/moreTicket/" + countTicket + "/" + orderby + "/NoN/TI", {
       method: "GET",
       headers: {
-        Accept: "application/json",
-        "Ticket-Current": countTicket, // Quantidade atual de tickets, pode ser usada para paginação
-        "ORDER-BY": orderby, // Critério de ordenação dos tickets
-        "Tech-Dash": "TI", // Filtro por técnico, se aplicável
         "Cache-Control": "no-cache", // Evita cache da requisição para obter dados atualizados
       },
     })
@@ -3078,127 +3113,6 @@ export default function DashboardTI() {
       });
   }
 
-  /**
-   * Realiza a modificação de um chamado com base nas informações fornecidas pelo usuário.
-   *
-   * Esta função é acionada quando o usuário deseja modificar um chamado existente. Ela verifica se todos os dados necessários
-   * foram fornecidos, formata a data e a hora atuais, e envia uma solicitação para atualizar o chamado. Dependendo da resposta,
-   * a função exibe mensagens de erro ou atualiza a página.
-   *
-   * Dependendo das condições e respostas da solicitação, a função realiza as seguintes ações:
-   *
-   * - **Validação de Dados**: Verifica se todos os campos obrigatórios (`sector`, `occurrence` e `problemn`) estão preenchidos.
-   *   - Se algum dos campos obrigatórios estiver vazio, define uma mensagem de erro indicando a falta de dados e retorna sem enviar a solicitação.
-   *
-   * - **Formatação de Data e Hora**: Obtém a data e hora atuais, e formata para o formato `dd/mm/yyyy` e `hh:mm`.
-   *
-   * - **Solicitação de Atualização**: Envia uma solicitação `POST` para o servidor com os dados do chamado, incluindo informações antigas e novas.
-   *   - Adiciona um cabeçalho personalizado `Modify-Ticket` com valor `"modify"`.
-   *
-   * - **Tratamento da Resposta**: Dependendo do status da resposta:
-   *   - **304 (Não Modificado)**: Exibe uma mensagem de erro indicando que o chamado não pertence ao usuário.
-   *   - **402 (Erro de Dados)**: Exibe uma mensagem de erro indicando que a modificação é idêntica à atual e foi cancelada.
-   *   - **200 (Sucesso)**: Atualiza a página para refletir as mudanças.
-   *
-   * - **Tratamento de Erros**: Se ocorrer um erro durante a solicitação, exibe uma mensagem de erro fatal e imprime o erro no console.
-   *
-   * @param {string} sector - O setor responsável pelo chamado.
-   * @param {string} occurrence - Descrição da ocorrência.
-   * @param {string} problemn - Descrição do problema.
-   * @param {string} ticketID - ID do chamado a ser modificado.
-   * @param {string} token - Token CSRF para autenticação.
-   * @param {Object} userData - Dados do usuário que está fazendo a modificação.
-   * @param {string} ticketSECTOR - Setor antigo do chamado.
-   * @param {string} ticketOCCURRENCE - Ocorrência antiga do chamado.
-   * @param {string} ticketPROBLEMN - Problema antigo do chamado.
-   */
-  function uploadModify() {
-    // Obtém a data e hora atuais
-    var date = new Date();
-
-    // Função para adicionar zero à esquerda de números menores que 10
-    function adicionaZero(numero) {
-      if (numero < 10) {
-        return "0" + numero;
-      }
-      return numero;
-    }
-
-    // Formata a data e hora
-    var day = date.getDate();
-    var month = date.getMonth() + 1;
-    var year = date.getFullYear();
-    var dataFormatada = adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
-    var horaFormatada = adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
-
-    // Valida os dados fornecidos
-    if (sector.length < 1) {
-      setMessage(true);
-      setTypeError("Dados Insuficientes");
-      setMessageError("Obrigatório Informar o Setor Responsavel");
-      return;
-    } else if (occurrence.length < 1) {
-      setMessage(true);
-      setTypeError("Dados Insuficientes");
-      setMessageError("Obrigatório Informar a Ocorrência");
-      return;
-    } else if (problemn.length < 1) {
-      setMessage(true);
-      setTypeError("Dados Insuficientes");
-      setMessageError("Obrigatório Informar o Problema");
-      return;
-    }
-
-    // Envia a solicitação para modificar o chamado
-    fetch("/helpdesk/ticket/" + ticketID, {
-      method: "POST",
-      headers: {
-        "X-CSRFToken": token,
-        "Modify-Ticket": "modify",
-      },
-      body: JSON.stringify({
-        sector: sector,
-        tech: userData.name,
-        OldSector: ticketSECTOR,
-        occurrence: occurrence,
-        OldOccurrence: ticketOCCURRENCE,
-        OldProblemn: ticketPROBLEMN,
-        problemn: problemn,
-        hours: horaFormatada,
-        date: dataFormatada,
-      }),
-    })
-      .then((response) => {
-        response.json();
-
-        // Verifica o status da resposta
-        if (response.status === 304) {
-          setMessage(true);
-          setTypeError("Operação Inválida");
-          setMessageError("Chamado não pertence a você");
-          return;
-        } else if (response.status === 402) {
-          setMessage(true);
-          setTypeError("Erro de Dados");
-          setMessageError("Modificação Identica ao chamado atual Cancelada");
-          return;
-        } else if (response.status === 200) {
-          // Atualiza a página se a modificação for bem-sucedida
-          return window.location.reload();
-        }
-      })
-      .catch((err) => {
-        setMessageError(err);
-        setTypeError("FATAL ERROR");
-        setMessage(true);
-        return console.log(err);
-      });
-  }
-
-  function closeModify() {
-    setModifyTicket(false);
-  }
-
   function closeDetails() {
     setTechDetails(false);
   }
@@ -3390,7 +3304,7 @@ export default function DashboardTI() {
         <DivSelectView>
           <PSelectView className="position-absolute top-0 start-0 translate-middle">Status</PSelectView>
           <Button1
-            className="btn btn-open"
+            className="btn"
             ref={btnOpen}
             onClick={() => {
               ticketOpenStatus();
@@ -3494,7 +3408,6 @@ export default function DashboardTI() {
                     onClick={() => {
                       setCreate_user_acess(false);
                       setAlocate_Machine_Acess(false);
-                      setModifyTicket(true);
                     }}
                   >
                     Modificar
@@ -3609,44 +3522,6 @@ export default function DashboardTI() {
           </div>
           <ImageOpen src={imageurl} alt="" />
         </DivImageOpen>
-      )}
-      {modifyTicket && (
-        <DivModify className="position-fixed top-50 start-50 translate-middle">
-          {messageChat && (
-            <div className="w-100 h-100 d-flex justify-content-center align-items-center">
-              <Message TypeError={typeError} MessageError={messageError} CloseMessage={closeMessage} />
-            </div>
-          )}
-          {dataModify && (
-            <>
-              <div className="w-100 d-flex mt-3 mb-4">
-                <div className="w-100 d-flex justify-content-center">
-                  <h5>Modificação do Chamado {ticketID}</h5>
-                </div>
-                <div className="d-flex justify-content-center">
-                  <BtnClose onClick={closeModify}>
-                    <Close src={CloseIMG} alt="" />
-                  </BtnClose>
-                </div>
-              </div>
-              <div className="d-flex justify-content-around">
-                <div className="d-flex flex-column">
-                  <InputTicket type="text" value={`Setor: ${ticketSECTOR}`} disabled />
-                  <InputTicket type="text" value={`Ocorrência: ${ticketOCCURRENCE}`} disabled />
-                  <InputTicket type="text" value={`Problema: ${ticketPROBLEMN}`} disabled />
-                </div>
-                <div>
-                  <TicketsOptions />
-                </div>
-              </div>
-              <div className="d-flex justify-content-center">
-                <button className="btn btn-warning mt-5" onClick={uploadModify}>
-                  Confirmar
-                </button>
-              </div>
-            </>
-          )}
-        </DivModify>
       )}
       {techDetails && (
         <DivDetaisl className="position-fixed top-50 start-50 translate-middle">

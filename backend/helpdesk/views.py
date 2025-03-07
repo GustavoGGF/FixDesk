@@ -1,10 +1,9 @@
 # Importando os módulos necessários para o funcionamento do código.
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-import smtplib
-from threading import Thread
-import threading
-from django.shortcuts import render, redirect
+from smtplib import SMTP
+from threading import Thread, Timer
+from django.shortcuts import get_object_or_404, render, redirect
 from django.views.decorators.csrf import csrf_exempt, requires_csrf_token
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
@@ -28,94 +27,108 @@ from django.db.models import Q
 import mimetypes
 from django.core.files.base import ContentFile
 from fpdf import FPDF
-import re
-import logging
+from re import findall, search
+from logging import basicConfig, getLogger, WARNING
 from django.db import transaction
 from django.views.decorators.cache import never_cache
 from contextlib import contextmanager
-import mysql.connector
+from mysql import connector
 from decouple import config
 from django.views.decorators.http import require_POST, require_GET
 from django.utils.timezone import make_aware
-import time
+from time import time
 from threading import Lock
+from dotenv import load_dotenv
+from django.core.handlers.wsgi import WSGIRequest
+from django.core.files.uploadedfile import InMemoryUploadedFile
 
 # Configuração básica de logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+basicConfig(level=WARNING)
+logger = getLogger(__name__)
+
+load_dotenv()
+smtp_host = getenv("SERVER_SMTP")
+smtp_port = getenv("SMPT_PORT")
+mail_address = getenv("MAIL_FIXDESK")
+Back_User = getenv("DJANGO_GROUP_USER")
+Back_Tech = getenv("DJANGO_GROUP_TECH")
+Back_Leader = getenv("DJANGO_GROUP_LEADER")
+types_str = getenv("VALID_TYPES")
+
+status_mapping = {"open": True, "close": False, "stop": None, "all": "All"}
 
 
-def sendMail(mail, msgm1, msgm2):
-    smtp_host = None
-    smtp_port = None
-    mail_address = None
-    msg = None
-    server_smtp = None
-    text_mail = None
+def sendMail(mail: str, msgm1: str, msgm2: str):
+    """
+    Envia um e-mail para o destinatário especificado.
+
+    :param mail: Endereço de e-mail do destinatário.
+    :param msgm1: Corpo da mensagem do e-mail.
+    :param msgm2: Assunto do e-mail.
+    """
     try:
         # Configurações do servidor de e-mail SMTP
-        smtp_host = getenv("SERVER_SMTP")
-        smtp_port = getenv("SMPT_PORT")
-        mail_address = getenv("MAIL_FIXDESK")
 
         # Criar objeto de mensagem
         msg = MIMEMultipart()
-        msg["From"] = mail_address
-        msg["To"] = mail
-        msg["Subject"] = msgm2
+        msg["From"] = mail_address  # Remetente do e-mail
+        msg["To"] = mail  # Destinatário do e-mail
+        msg["Subject"] = msgm2  # Assunto do e-mail
 
         # Corpo da mensagem
         msg.attach(MIMEText(msgm1, "plain"))
 
         # Iniciar conexão SMTP
-        server_smtp = smtplib.SMTP(smtp_host, smtp_port)
-        server_smtp.starttls()
+        server_smtp = SMTP(smtp_host, smtp_port)
+        server_smtp.starttls()  # Ativar criptografia TLS
 
         # Enviar e-mail
         text_mail = msg.as_string()
         server_smtp.sendmail(mail_address, mail, text_mail)
 
-        # Fechar conexão
+    except Exception as e:
+        logger.error(e)  # Registrar erro no log
+    finally:
+        # Fechar conexão SMTP
         server_smtp.quit()
 
-    except Exception as e:
-        print(e)
-        return JsonResponse({"Erro": f"Erro ao enviar email {e}"}, status=123)
 
-
-# Create your views here.
 @csrf_exempt
 @never_cache
-def firstView(request):
+def firstView(request: WSGIRequest):
     if request.method == "POST":
-        csrf = None
         equipament_list = []
         try:
             csrf = get_token(request)
 
-            if Equipaments.objects.count() > 0:
-                equipaments = Equipaments.objects.all()
+            if Equipaments.objects.exists():
+                equipaments = Equipaments.objects.all().only(
+                    "equipament", "model", "company", "id"
+                )
 
                 for equipament in equipaments:
-                    image = equipament.equipament
+                    try:
+                        with equipament.equipament.open() as img:
+                            pil_image = Image.open(img)
 
-                    with image.open() as img:
-                        pil_image = Image.open(img)
+                            img_bytes = BytesIO()
+                            pil_image.save(img_bytes, format="PNG")
 
-                        img_bytes = BytesIO()
+                            image_data = b64encode(img_bytes.getvalue()).decode("utf-8")
 
-                        pil_image.save(img_bytes, format="PNG")
-
-                        image_data = b64encode(img_bytes.getvalue()).decode("utf-8")
-
-                    equipaments = {
-                        "image": image_data,
-                        "model": equipament.model,
-                        "company": equipament.company,
-                        "id": equipament.id,
-                    }
-
-                    equipament_list.append(equipaments)
+                            equipament_list.append(
+                                {
+                                    "image": image_data,
+                                    "model": equipament.model,
+                                    "company": equipament.company,
+                                    "id": equipament.id,
+                                }
+                            )
+                    except Exception as img_error:
+                        logger.error(
+                            f"Erro ao processar imagem do equipamento {equipament.id}: {img_error}"
+                        )
+                        continue  # Se falhar ao processar a imagem, ignora esse item e continua
 
             return JsonResponse(
                 {"token": csrf, "equipaments": equipament_list},
@@ -123,472 +136,305 @@ def firstView(request):
                 safe=True,
             )
         except Exception as e:
-            print(e)
+            logger.error(e)
             return JsonResponse({"status": str(e)}, status=300, safe=True)
 
     if request.method == "GET":
         if request.user.is_authenticated:
-            Back_User = None
-            Back_Tech = None
-            Back_Leader = None
-            User = None
             try:
-                Back_User = getenv("DJANGO_GROUP_USER")
-                Back_Tech = getenv("DJANGO_GROUP_TECH")
-                Back_Leader = getenv("DJANGO_GROUP_LEADER")
-                User = request.user
-                if (
-                    User.groups.filter(name=Back_User)
-                    or User.groups.filter(name=Back_Tech)
-                    or User.groups.filter(name=Back_Leader)
-                ):
+                user = request.user
+                if user.groups.filter(
+                    name__in=[Back_User, Back_Tech, Back_Leader]
+                ).exists():
                     return render(request, "index.html", {})
                 else:
                     return redirect("/login")
             except Exception as e:
                 json_error = str(e)
-                logger.e(e)
+                logger.error(e)
                 return JsonResponse({"status": json_error}, status=300, safe=True)
         else:
             return redirect("/login")
 
 
-# Decorator que exige um token CSRF para a proteção contra ataques CSRF
-# Decorator que exige que o usuário esteja autenticado para acessar a função
-# Se o usuário não estiver autenticado, será redirecionado para a página de login
 @requires_csrf_token
 @login_required(login_url="/login")
 @require_POST
 @transaction.atomic
-# Função que trata o envio de chamados (tickets) para o banco de dados
 def submitTicket(request):
+    """
+    Cria um novo chamado de suporte conforme os dados enviados pelo frontend.
+
+    A função processa as informações do formulário, verifica se há imagens ou equipamentos
+    associados ao chamado, e armazena os dados no banco de dados. Se uma imagem ou equipamento
+    for enviado, o processamento correspondente é realizado antes da criação do chamado.
+
+    :param request: Objeto HttpRequest contendo os dados do formulário.
+    :return: JsonResponse com o ID do chamado criado ou mensagem de erro.
+    """
+
     # Inicializando as variáveis com valor None
-    # Estas variáveis serão utilizadas para armazenar os dados do chamado (ticket)
-    company = None  # Empresa relacionada ao chamado
-    department = None  # Departamento responsável pelo chamado
-    mail = None  # E-mail do solicitante
-    observation = None  # Observações adicionais sobre o chamado
-    occurrence = None  # Ocorrência do problema
-    pid = None  # Identificador do Usuario (ID)
-    problemn = None  # Descrição do problema
-    respective_area = None  # Área respectiva ao problema relatado
-    sector = None  # Setor da empresa relacionado ao chamado
-    start_date = None  # Data de início convertida para o formato de data
-    start_date_str = None  # Data de início como string
-    ticketRequester = None  # Solicitante do chamado
-    naive_datetime = None
-    error = None
     try:
-        company = request.POST.get("company")
-        department = request.POST.get("department")
-        mail = request.POST.get("mail")
-        observation = request.POST.get("observation")
-        occurrence = request.POST.get("occurrence")
-        pid = request.POST.get("PID")
-        problemn = request.POST.get("problemn")
-        respective_area = request.POST.get("respective_area")
-        sector = request.POST.get("sector")
-        start_date_str = request.POST.get("start_date")
-        if start_date_str == None:
-            new_date = datetime.now()
-            start_date = new_date.strftime("%Y-%m-%d %H:%M")
+        form_data = {
+            "company": request.POST.get(
+                "company"
+            ),  # Obtém o nome da empresa do formulário
+            "department": request.POST.get(
+                "department"
+            ),  # Obtém o departamento associado
+            "mail": request.POST.get("mail"),  # Obtém o e-mail do solicitante
+            "observation": request.POST.get(
+                "observation"
+            ),  # Obtém observações adicionais
+            "occurrence": request.POST.get("occurrence"),  # Obtém o tipo de ocorrência
+            "pid": request.POST.get("PID"),  # Obtém o identificador único do chamado
+            "problemn": request.POST.get("problemn"),  # Obtém a descrição do problema
+            "respective_area": request.POST.get(
+                "respective_area"
+            ),  # Obtém a área responsável
+            "sector": request.POST.get(
+                "sector"
+            ),  # Obtém o setor relacionado ao chamado
+            "start_date": request.POST.get(
+                "start_date"
+            ),  # Obtém a data de início do chamado
+            "ticket_requester": request.POST.get(
+                "ticketRequester"
+            ),  # Obtém o solicitante do chamado
+        }
+
+        # Validar se o PID foi fornecido, pois é um campo obrigatório
+        if not form_data["pid"]:
+            return JsonResponse({"error": "PID is required"}, status=403)
+
+        # Processar e validar a data de início
+        if not form_data["start_date"]:
+            form_data["start_date"] = datetime.now().strftime(
+                "%Y-%m-%d %H:%M"
+            )  # Define data atual caso não fornecida
         else:
-            naive_datetime = datetime.strptime(start_date_str, "%Y-%m-%d %H:%M")
-            start_date = make_aware(naive_datetime)
-        ticketRequester = request.POST.get("ticketRequester")
-        if pid:
-            pass
-        else:
-            return JsonResponse({"error": "error"}, status=403, safe=True)
+            form_data["start_date"] = make_aware(
+                datetime.strptime(
+                    form_data["start_date"], "%Y-%m-%d %H:%M"
+                )  # Converte string para objeto datetime
+            )
 
     except Exception as e:
-        print(e)
+        logger.error(
+            "Erro na função submitTicket:", e
+        )  # Loga erro na obtenção dos dados
         return JsonResponse(
-            {"error": f" Erro na Obtenção dos dados: {error}"}, status=300, safe=True
+            {"error": f" Erro na Obtenção dos dados: {e}"},
+            status=300,
+            safe=True,  # Retorna erro em formato JSON
         )
 
-    # Inicializando variáveis adicionais com valor None
-    # Estas variáveis serão utilizadas para armazenar dados adicionais do chamado e informações sobre arquivos de imagem
+    valid = False  # Flag para verificar se houve processamento válido
+    id = None  # Inicializa a variável de ID do chamado
 
-    Ticket = None  # Objeto que representa o chamado (ticket)
-    file_type = None  # Tipo de arquivo da imagem
-    image_bytes = None  # Bytes da imagem anexada ao chamado
-    image_str = None  # Imagem em formato string codificada (base64, por exemplo)
-    mime = None  # Tipo MIME da imagem
-    other_image = None  # Outra imagem associada ao chamado
-    ticket_file = None  # Arquivo relacionado ao chamado
-    types = None  # Lista de tipos de arquivos permitidos
-    types_str = None  # Tipos de arquivos permitidos como string
-    valid = None  # Indicador de validade da imagem (True ou False)
-
+    # Verifica se há imagens anexadas no formulário
     if "image" in request.FILES:
-        Ticket = SupportTicket(
-            ticketRequester=ticketRequester,
-            department=department,
-            mail=mail,
-            company=company,
-            sector=sector,
-            respective_area=respective_area,
-            occurrence=occurrence,
-            problemn=problemn,
-            observation=observation,
-            start_date=start_date,
-            PID=pid,
-            open=True,
+        id, status = process_files(request, form_data)  # Processa imagens enviadas
+        if status == 300:
+            return JsonResponse(
+                {"error": f"Erro no processamento da imagem: {id}"},
+                status=300,
+                safe=True,
+            )
+        valid = True  # Marca que houve um processamento válido
+
+    # Caso não haja imagem nem equipamento, cria um chamado de suporte normal
+    if not valid:
+        ticket = SupportTicket(
+            ticketRequester=form_data[
+                "ticket_requester"
+            ],  # Define o solicitante do chamado
+            department=form_data["department"],  # Define o departamento associado
+            mail=form_data["mail"],  # Define o e-mail do solicitante
+            company=form_data["company"],  # Define a empresa do chamado
+            sector=form_data["sector"],  # Define o setor envolvido
+            respective_area=form_data["respective_area"],  # Define a área responsável
+            occurrence=form_data["occurrence"],  # Define o tipo de ocorrência
+            problemn=form_data["problemn"],  # Define a descrição do problema
+            observation=form_data["observation"],  # Define observações adicionais
+            start_date=form_data["start_date"],  # Define a data de início do chamado
+            PID=form_data["pid"],  # Define o identificador único do chamado
+            equipament=request.POST.get(
+                "id_equipament"
+            ),  # Associa equipamento, se houver
+            date_alocate=request.POST.get(
+                "days_alocated"
+            ),  # Define período de alocação do equipamento
+            open=True,  # Define o chamado como aberto
         )
 
-        images = request.FILES.getlist("image")
+        ticket.save()  # Salva o chamado no banco de dados
+
+        id = ticket.id  # Obtém o ID do chamado salvo
+
+    return JsonResponse(
+        {"id": id}, status=200, safe=True
+    )  # Retorna o ID do chamado criado com sucesso
+
+
+def process_files(request: WSGIRequest, form_data: dict):
+    """
+    Processa e armazena arquivos enviados no chamado de suporte.
+
+    A função recebe arquivos de imagem enviados no formulário, verifica sua validade
+    e os associa a um chamado de suporte. Caso algum arquivo não seja válido,
+    a função retorna um erro.
+
+    :param request: Objeto WSGIRequest contendo os arquivos enviados.
+    :param form_data: Dicionário com os dados do chamado.
+    :return: ID do chamado e status HTTP (200 para sucesso, 400 para erro de arquivo, 300 para erro interno).
+    """
+
+    try:
+        # Cria um novo chamado de suporte com os dados fornecidos
+        ticket = SupportTicket(
+            ticketRequester=form_data[
+                "ticket_requester"
+            ],  # Define o solicitante do chamado
+            department=form_data["department"],  # Define o departamento associado
+            mail=form_data["mail"],  # Define o e-mail do solicitante
+            company=form_data["company"],  # Define a empresa do chamado
+            sector=form_data["sector"],  # Define o setor envolvido
+            respective_area=form_data["respective_area"],  # Define a área responsável
+            occurrence=form_data["occurrence"],  # Define o tipo de ocorrência
+            problemn=form_data["problemn"],  # Define a descrição do problema
+            observation=form_data["observation"],  # Define observações adicionais
+            start_date=form_data["start_date"],  # Define a data de início do chamado
+            PID=form_data["pid"],  # Define o identificador único do chamado
+            open=True,  # Define o chamado como aberto
+        )
+
+        images = request.FILES.getlist("image")  # Obtém a lista de arquivos enviados
+        mime = Magic()  # Inicializa a biblioteca para detecção de tipo MIME
 
         for file in images:
-            try:
-                image_bytes = file.read()
+            image_bytes = file.read()  # Lê os bytes do arquivo
+            file_type = mime.from_buffer(image_bytes)  # Determina o tipo de arquivo
 
-                mime = Magic()
+            # Verifica se o arquivo enviado é válido
+            if not is_valid_file(file, file_type):
+                return (
+                    "Invalid image type",
+                    400,
+                )  # Retorna erro se o arquivo for inválido
 
-                file_type = mime.from_buffer(image_bytes)
+            ticket.save()  # Salva o chamado no banco de dados
 
-                types_str = getenv("VALID_TYPES")
+            ticket_file = TicketFile(
+                ticket=ticket
+            )  # Cria uma instância de arquivo associado ao chamado
+            ticket_file.file.save(
+                str(file), ContentFile(image_bytes)
+            )  # Salva o arquivo no banco de dados
 
-                types_str = types_str.strip("[]")
+            id = ticket.id  # Obtém o ID do chamado salvo
 
-                if types_str != None:
-                    types = [type.strip() for type in types_str.split(",")]
+        return id, 200  # Retorna o ID do chamado e status de sucesso
 
-                valid = False
+    except Exception as e:
+        logger.error(f"Erro no processamento de imagem: {e}")  # Registra erro no log
+        return e, 300  # Retorna erro interno no processamento
 
-                for typeUn in types:
-                    if typeUn.replace('"', "").lower() in file_type.lower():
-                        valid = True
-                        break
 
-                if not valid:
-                    image_str = str(file)
+def is_valid_file(file: InMemoryUploadedFile, file_type: str):
+    # Comparar com a biblioteca `Magic`
+    if any(ext in file_type.lower() for ext in types_str):
+        return True
 
-                    other_image = mimetypes.guess_type(image_str)
-
-                    for typeUn in types:
-                        if (
-                            typeUn.replace('"', "").lower()
-                            in other_image[0].replace('"', "").lower()
-                        ):
-                            valid = True
-                            break
-
-                if valid:
-                    Ticket.save()
-
-                    ticket_file = TicketFile(ticket=Ticket)
-                    ticket_file.file.save(str(file), ContentFile(image_bytes))
-
-                    new_id = None
-
-                else:
-                    return JsonResponse({"error": "Invalid"}, status=300, safe=True)
-
-                new_id = Ticket.id
-
-            except Exception as e:
-                print(e)
-                return JsonResponse(
-                    {"error": f"erro no processamento de imagem {e}"},
-                    status=300,
-                    safe=True,
-                )
-
-        return JsonResponse({"id": new_id}, status=200, safe=True)
-
-    elif "id_equipament" in request.POST:
-        equipament_id = None
-        try:
-            equipament_id = request.POST.get("id_equipament")
-
-            days = request.POST.get("days_alocated")
-
-            Ticket = SupportTicket(
-                ticketRequester=ticketRequester,
-                department=department,
-                mail=mail,
-                company=company,
-                sector=sector,
-                respective_area=respective_area,
-                occurrence=occurrence,
-                problemn=problemn,
-                observation=observation,
-                start_date=start_date,
-                PID=pid,
-                equipament=equipament_id,
-                date_alocate=days,
-                open=True,
-            )
-
-            Ticket.save()
-
-            new_id = Ticket.id
-
-            # * Monta o ticket e salva no banco
-
-            return JsonResponse({"id": new_id}, status=200, safe=True)
-        except Exception as e:
-            print(e)
-            return JsonResponse(
-                {"error": f"erro no processamento de equipamento {e}"},
-                status=300,
-                safe=True,
-            )
-
-    elif "company_new_user" in request.POST:
-        name_new_user = None
-        sector_new_user = None
-        where_from = None
-        company_new_user = None
-        machine_new_user = None
-        software_new_user = None
-        cost_center = None
-        job_title_new_user = None
-        start_work_new_user = None
-        copy_profile_new_user = None
-        try:
-            name_new_user = request.POST.get("new_user")
-            sector_new_user = request.POST.get("sector_new_user")
-            where_from = request.POST.get("where_from")
-            machine_new_user = request.POST.get("machine_new_user")
-            company_new_user = request.POST.get("company_new_user")
-            software_new_user = request.POST.get("software_new_user")
-            cost_center = request.POST.get("cost_center")
-            job_title_new_user = request.POST.get("job_title_new_user")
-            start_work_new_user = request.POST.get("start_work_new_user")
-            copy_profile_new_user = request.POST.get("copy_profile_new_user")
-
-            if machine_new_user == "false":
-                machine_new_user = False
-
-            elif machine_new_user == "true":
-                machine_new_user = True
-
-            Ticket = SupportTicket(
-                ticketRequester=ticketRequester,
-                department=department,
-                mail=mail,
-                company=company,
-                sector=sector,
-                respective_area=respective_area,
-                occurrence=occurrence,
-                problemn=problemn,
-                observation=observation,
-                start_date=start_date,
-                PID=pid,
-                name_new_user=name_new_user,
-                sector_new_user=sector_new_user,
-                where_from=where_from,
-                machine_new_user=machine_new_user,
-                company_new_user=company_new_user,
-                software_new_user=software_new_user,
-                cost_center=cost_center,
-                job_title_new_user=job_title_new_user,
-                start_work_new_user=start_work_new_user,
-                copy_profile_new_user=copy_profile_new_user,
-                open=True,
-            )
-
-            Ticket.save()
-            # * Monta o ticket e salva no banco
-
-            new_id = Ticket.id
-
-            return JsonResponse({"id": new_id}, status=200, safe=True)
-        except Exception as e:
-            print(e)
-            return JsonResponse(
-                {"error": f"erro no processamento de novo usuario {e}"},
-                status=300,
-                safe=True,
-            )
-
-    elif "mail_tranfer" in request.POST:
-        name_new_user = None
-        mail_tranfer = None
-        old_files = None
-        start_work_new_user = None
-        try:
-            name_new_user = request.POST.get("new_user")
-            mail_tranfer = request.POST.get("mail_tranfer")
-            old_files = request.POST.get("old_files")
-            start_work_new_user = request.POST.get("start_work_new_user")
-
-            Ticket = SupportTicket(
-                ticketRequester=ticketRequester,
-                department=department,
-                mail=mail,
-                company=company,
-                sector=sector,
-                respective_area=respective_area,
-                occurrence=occurrence,
-                problemn=problemn,
-                observation=observation,
-                start_date=start_date,
-                PID=pid,
-                name_new_user=name_new_user,
-                mail_tranfer=mail_tranfer,
-                old_files=old_files,
-                start_work_new_user=start_work_new_user,
-                open=True,
-            )
-
-            Ticket.save()
-            # * Monta o ticket e salva no banco
-
-            new_id = Ticket.id
-
-            return JsonResponse({"id": new_id}, status=200, safe=True)
-        except Exception as e:
-            print(e)
-            return JsonResponse(
-                {"error": f"erro no processamento de transferencia de email {e}"},
-                status=300,
-                safe=True,
-            )
-
-    else:
-        try:
-            Ticket = SupportTicket(
-                ticketRequester=ticketRequester,
-                department=department,
-                mail=mail,
-                company=company,
-                sector=sector,
-                respective_area=respective_area,
-                occurrence=occurrence,
-                problemn=problemn,
-                observation=observation,
-                start_date=start_date,
-                PID=pid,
-                open=True,
-            )
-
-            Ticket.save()
-            # * Monta o ticket e salva no banco
-            new_id = Ticket.id
-
-            return JsonResponse({"id": new_id}, status=200, safe=True)
-        except Exception as e:
-            print(e)
-            return JsonResponse(
-                {"error": f"erro ao salvar o ticket {e}"}, status=300, safe=True
-            )
+    # Comparar pelo mimetypes padrão do Python
+    guessed_type = mimetypes.guess_type(str(file))[0]
+    return guessed_type in types_str if guessed_type else False
 
 
 @csrf_exempt
 @login_required(login_url="/login")
 @never_cache
-def history(request):
-    if request.method == "POST":
-        csrf = None
-        Back_User = None
-        Back_Tech = None
-        Back_Leader = None
-        User = None
-        try:
-            csrf = get_token(request)
+@require_GET
+def history(request: WSGIRequest):
+    """
+    Processa e retorna o histórico de chamados do usuário.
 
-            Back_User = getenv("DJANGO_GROUP_USER")
-            Back_Tech = getenv("DJANGO_GROUP_TECH")
-            Back_Leader = getenv("DJANGO_GROUP_LEADER")
-            User = request.user
-            if User.groups.filter(name=Back_User):
-                pass
-            elif User.groups.filter(name=Back_Tech):
-                pass
-            elif User.groups.filter(name=Back_Leader):
-                pass
+    :param request: Objeto WSGIRequest contendo os dados da requisição.
+    """
+    user = request.user  # Obtém o usuário autenticado
+    valid_groups = [
+        Back_User,
+        Back_Tech,
+        Back_Leader,
+    ]  # Define os grupos autorizados
 
-        except Exception as e:
-            print(e)
+    # Verifica se o usuário pertence a um dos grupos autorizados
+    if not user.groups.filter(name__in=valid_groups).exists():
+        return redirect("/login")
+    return render(request, "index.html", {})  # Renderiza a página de histórico
+
+
+@login_required(login_url="/login")
+@never_cache
+@csrf_exempt
+@require_GET
+def history_get_ticket(request, quantity: int, usr: str, status: str, order: str):
+    try:
+        status_opng = status_mapping.get(status, None)
+        csrf = get_token(request)  # Obtém o token CSRF
+        user = request.user  # Obtém o usuário autenticado
+        valid_groups = [
+            Back_User,
+            Back_Tech,
+            Back_Leader,
+        ]  # Define os grupos autorizados
+
+        # Verifica se o usuário pertence a um dos grupos autorizados
+        if not user.groups.filter(name__in=valid_groups).exists():
             return JsonResponse(
                 {"status": "Invalid Credentials"}, status=402, safe=True
             )
 
-        ticket_list = []
-        ticket_data = None
-        ticket_json = None
-        UserTicket = None
+        filters = {"ticketRequester": usr}
 
-        try:
-            UserTicket = request.POST.get("name")
-            ticket_data = SupportTicket.objects.filter(
-                ticketRequester=UserTicket, open=True
-            ).order_by("-id")[:10]
+        if status_opng not in {"All", "null", "all"}:
+            filters["open"] = status_opng
 
-            for ticket in ticket_data:
-                ticket_json = serialize("json", [ticket])
-                ticket_list.append(ticket_json)
+        if order == "-id":
+            tickets = SupportTicket.objects.filter(**filters).order_by("-id")[:quantity]
+        else:
+            tickets = SupportTicket.objects.filter(**filters)[:quantity]
 
-        except Exception as e:
-            print(e)
-            return JsonResponse({"Error": f"Erro inesperado {e}"}, status=301)
+        ticket_objects = [
+            {**loads(serialize("json", [ticket]))[0]["fields"], "id": ticket.id}
+            for ticket in tickets
+        ]
 
-        ticket_objects = []
-        try:
-            for ticket in ticket_list:
-                ticket_data = loads(ticket)[0]["fields"]
-                ticket_data["id"] = loads(ticket)[0]["pk"]
-                ticket_objects.append(ticket_data)
-
-            return JsonResponse(
-                {"token": csrf, "tickets": ticket_objects},
-                status=200,
-                safe=True,
-            )
-
-        except Exception as e:
-            print(e)
-            return JsonResponse({"Error": f"Erro inesperado {e}"}, status=301)
-
-    if request.method == "GET":
-        return render(request, "index.html", {})
-
-
-@login_required(login_url="/login")
-@requires_csrf_token
-@require_GET
-@never_cache
-def toDashboard(request):
-    UserFront = None
-    user = None
-    groups = None
-    group1 = None
-    group2 = None
-    try:
-        UserFront = request.user
-        group1 = getenv("DJANGO_GROUP_USER")
-        group2 = getenv("DJANGO_GROUP_TECH")
-
-        user = User.objects.get(username=UserFront)
-
-        groups = user.groups.all()
-
-        for group in groups:
-            if group.name == group1:
-                return JsonResponse(
-                    {"status": "Credentials Invalid"}, status=403, safe=True
-                )
-            elif group.name == group2:
-                return JsonResponse(
-                    {"status": "Credentials Invalid"}, status=203, safe=True
-                )
+        return JsonResponse(
+            {"tickets": ticket_objects, "token": csrf}, status=200, safe=True
+        )
     except Exception as e:
-        print(e)
-        return JsonResponse({"Error": f"Erro inesperado {e}"}, status=302)
+        print(e)  # Exibe o erro no console (melhor utilizar logger)
+        return JsonResponse({"status": "Invalid Credentials"}, status=402, safe=True)
 
 
 @csrf_exempt
 @never_cache
 @require_GET
-def exit(request):
+def exit(request: WSGIRequest):
+    """
+    Realiza o logout do usuário e redireciona para a página inicial.
+
+    :param request: Objeto WSGIRequest contendo os dados da requisição.
+    :return: Redirecionamento para a página inicial ou resposta de erro em caso de falha.
+    """
     try:
         logout(request)
         return redirect("/")
     except Exception as e:
-        print(e)
+        logger.exception(
+            "Erro inesperado ao fazer logout"
+        )  # `logger.exception` já inclui traceback
         return JsonResponse({"Error": f"Erro inesperado {e}"}, status=303)
 
 
@@ -599,1612 +445,934 @@ def exit(request):
 @never_cache
 @transaction.atomic
 def ticket(
-    request, id
+    request: WSGIRequest, id: int
 ):  # Função para obter ou enviar dados para os chamados, recebendo a requisição e o ID do ticket.
     if request.method == "POST":
-        body = None
-        technician = None
-        ticket = None
-        current_responsible_technician = None
-        responsible_technician = None
-        status = None
-        date = None
-        hours = None
-        mail = None
         try:
-            body = loads(request.body)
-
+            body = loads(request.body.decode("utf-8"))
+            responsible_technician = body.get("responsible_technician")
+            technician = body.get(
+                "technician"
+            )  # Técnico atual que está transferindo o chamado
+            date = body.get("date")  # Data da alteração do responsável
+            hours = body.get("hours")  # Horário da alteração do responsável
+            techMail = body.get("techMail")  # E-mail do novo técnico responsável
+            mail = body.get("mail")  # E-mail do usuário associado ao chamado
+            chat = body.get("chat")  # Chat com menssagem
+            user = body.get("User")  # usuario
             if "responsible_technician" in body:
-                try:
-                    responsible_technician = body["responsible_technician"]
-                    technician = body["technician"]
-                    date = body["date"]
-                    hours = body["hour"]
-                    techMail = body["techMail"]
+                # Esta condição verifica se a requisição contém a chave 'responsible_technician'.
+                # Se existir, significa que há uma tentativa de mudança de técnico responsável pelo ticket.
+                # A função `change_responsible_technician` é chamada para processar a mudança.
+                # Caso o status retornado seja 400, um erro é enviado na resposta.
+                # Se for bem-sucedido, a resposta retorna o chat atualizado, o novo técnico responsável e o ID do ticket.
+                status, chat, technician = change_responsible_technician(
+                    id,
+                    responsible_technician,
+                    technician,
+                    date,
+                    hours,
+                    techMail,
+                    mail,
+                )
 
-                    ticket = SupportTicket.objects.get(id=id)
+                if status == 400:
+                    return JsonResponse({"error": f"{chat}"}, status=400, safe=True)
 
-                    current_responsible_technician = ticket.responsible_technician
+                return JsonResponse(
+                    {
+                        "chat": chat,
+                        "technician": technician,
+                        "id": id,
+                    },
+                    status=200,
+                    safe=True,
+                )
 
-                    if current_responsible_technician == responsible_technician:
-                        return JsonResponse(
-                            {"status": "invalid modify"}, status=304, safe=True
-                        )
+            # Verifica se a solicitação contém um cabeçalho específico indicando a presença de detalhes técnicos
+            if "HTTP_TECH_DETAILS" in request.META:
+                """
+                Processa os detalhes técnicos e atualiza o histórico de chat com essas informações.
 
-                    if ticket.chat == None:
-                        ticket.chat = f"[[Date:{date}],[System:{responsible_technician} atendeu ao Chamado],[Hours:{hours}]]"
+                :param request: A requisição que contém os dados necessários para a atualização.
+                :param chat: O histórico de chat atual a ser atualizado com os detalhes técnicos.
+                :param id: O ID do chamado.
+                :param date: A data associada à atualização.
+                :param hours: As horas associadas à atualização.
 
-                        mail = body["mail"]
-                        msg = f"{technician} atendeu ao Chamado"
-                        msg2 = f"Atendimento do Chamado {ticket.id}"
+                :return: Retorna um JsonResponse com erro ou os detalhes atualizados do chat.
+                """
 
-                        task = Thread(
-                            target=sendMail,
-                            args=(mail, msg, msg2),
-                        )
+                # Atualiza os detalhes técnicos e o histórico de chat
+                status, details = update_tech_details(chat, id, date, hours, request)
 
-                        task.start()
+                # Se a atualização falhar (status 300), retorna um erro
+                if status == 300:
+                    return JsonResponse({"Error": f"{details}"}, status=300, safe=True)
 
-                    else:
-                        ticket.chat += f",[[Date:{date}], [System:{technician} Transfereu o Chamado para {technician}], [Hours:{hours}]]"
+                # Caso contrário, retorna os detalhes atualizados do chat
+                return JsonResponse({"chat": details}, status=200, safe=True)
 
-                    ticket.responsible_technician = responsible_technician
-                    ticket.technician_mail = techMail
-
-                    ticket.save()
-
-                    return JsonResponse(
-                        {
-                            "chat": ticket.chat,
-                            "technician": ticket.responsible_technician,
-                            "id": id,
-                        },
-                        status=200,
-                        safe=True,
-                    )
-
-                except Exception as e:
-                    print(e)
-                    str_err = str(e)
-                    return JsonResponse({"error": str_err}, status=410, safe=True)
-            # Verifica se o corpo da requisição contém um campo 'chat'
-            # Verifica se o corpo da requisição contém um campo 'chat'
             if "chat" in body:
-                # Verifica se o corpo da requisição contém o campo 'technician', indicando que a mensagem é do técnico
-                if "technician" in body:
-                    try:
-                        # Extrai os dados do corpo da requisição
-                        chat = body["chat"]  # Mensagem do chat
-                        date = body["date"]  # Data da mensagem
-                        hours = body["hours"]  # Hora da mensagem
-                        technician = body["technician"]  # Técnico que enviou a mensagem
-                        ticket = SupportTicket.objects.get(
-                            id=id
-                        )  # Obtém o ticket com o id especificado
+                # Verifica se a requisição contém a chave 'chat'.
+                # Se existir, significa que há uma mensagem sendo enviada no chamado.
+                # A função `updating_chat_change_sender` é chamada para atualizar o chat
+                # e possivelmente mudar o remetente da última mensagem.
+                # Se o status retornado for 400, um erro é enviado na resposta.
+                # Caso contrário, a resposta retorna o chat atualizado.
+                status, chat = updating_chat_change_sender(
+                    body, id, chat, date, hours, technician, user
+                )
 
-                        # Adiciona a nova entrada de chat ao histórico do ticket
-                        ticket.chat += (
-                            f",[[Date:{date}],[Technician: {chat}],[Hours:{hours}]]"
-                        )
+                if status == 400:
+                    return JsonResponse({"error": chat}, status=400, safe=True)
 
-                        # Armazena o remetente anterior da mensagem
-                        old_last_sender = ticket.last_sender
+                return JsonResponse({"chat": chat}, status=200, safe=True)
 
-                        if old_last_sender != None:
-                            # Separa os valores da última mensagem pelo separador vírgula
-                            _, old_date_str = old_last_sender.split(", ")
-
-                            # Converte a string da data da última mensagem para objeto datetime
-                            old_date = datetime.strptime(old_date_str, "%d/%m/%Y %H:%M")
-
-                            # Converte a nova data e hora para o formato datetime
-                            new_date = datetime.strptime(
-                                f"{date} {hours}", "%d/%m/%Y %H:%M"
-                            )
-
-                            # Compara as datas para verificar se a nova data é mais recente que a anterior
-                            if old_date > new_date:
-                                pass  # Se a data anterior for mais recente, não faz alterações
-                            else:
-                                # Caso contrário, atualiza o remetente da última mensagem
-                                ticket.last_sender = f"{technician} , {date} {hours}"
-                        else:
-                            ticket.last_sender = f"{technician} , {date} {hours}"
-
-                        # Salva as mudanças feitas no ticket
-                        ticket.save()
-
-                        threading.Thread(
-                            target=verifyNotificationCall,
-                            args=(id,),
-                        ).start()
-                        # Retorna a resposta com o chat atualizado
-                        return JsonResponse(
-                            {"chat": ticket.chat}, status=200, safe=True
-                        )
-                    except Exception as e:
-                        # Caso ocorra algum erro, captura a exceção e retorna um erro
-                        print(e)
-                        return JsonResponse(
-                            {"Error": f"Erro inesperado {e}"}, status=304
-                        )
-
-                # Verifica se o corpo da requisição contém o campo 'User', indicando que a mensagem é do usuário
-                if "User" in body:
-                    # Extrai os dados do corpo da requisição
-                    chat = body["chat"]  # Mensagem do chat
-                    date = body["date"]  # Data da mensagem
-                    hours = body["hours"]  # Hora da mensagem
-                    ticket = SupportTicket.objects.get(
-                        id=id
-                    )  # Obtém o ticket com o id especificado
-                    user = body["User"]  # Nome do usuário que enviou a mensagem
-
-                    # Adiciona a nova entrada de chat ao histórico do ticket
-                    ticket.chat += f",[[Date:{date}],[User: {chat}],[Hours:{hours}]]"
-
-                    # Armazena o remetente anterior da mensagem
-                    old_last_sender = ticket.last_sender
-
-                    if old_last_sender != None:
-                        # Separa os valores da última mensagem pelo separador vírgula
-                        _, old_date_str = old_last_sender.split(", ")
-
-                    # Converte a string da data da última mensagem para objeto datetime
-                    old_date = datetime.strptime(old_date_str, "%d/%m/%Y %H:%M")
-
-                    # Converte a nova data e hora para o formato datetime
-                    new_date = datetime.strptime(f"{date} {hours}", "%d/%m/%Y %H:%M")
-
-                    # Compara as datas para verificar se a nova data é mais recente que a anterior
-                    if old_date > new_date:
-                        pass  # Se a data anterior for mais recente, não faz alterações
-                    else:
-                        # Caso contrário, atualiza o remetente da última mensagem
-                        ticket.last_sender = f"{user} , {date} {hours}"
-
-                    # Salva as mudanças feitas no ticket
-                    ticket.save()
-
-                    threading.Thread(
-                        target=verifyNotificationCall,
-                        args=(id,),
-                    ).start()
-
-                    # Retorna a resposta com o chat atualizado
-                    return JsonResponse({"chat": ticket.chat}, status=200, safe=True)
-
+            # Verifica se o status foi enviado no corpo da requisição
             if "status" in body:
-                status = body["status"]
-                technician = body["technician"]
-                date = body["date"]
-                hours = body["hours"]
-                ticket = SupportTicket.objects.get(id=id)
-                current_responsible_technician = ticket.responsible_technician
-                techMail = body["mail"]
-                msg = ""
+                status = body.get("status")
 
+                # Caso o status seja 'close', fecha o ticket
                 if status == "close":
-                    if current_responsible_technician == None:
-                        return JsonResponse({}, safe=True, status=304)
+                    status_def, msg = ticket_close(id, technician, date, hours, mail)
 
-                    partes_nome_pesquisa = current_responsible_technician.split()
-                    presente = all(
-                        parte in technician for parte in partes_nome_pesquisa
-                    )
+                    # Se o fechamento do ticket falhar (status 304), retorna erro
+                    if status_def == 304:
+                        return JsonResponse({"Error": f"{msg}"}, status=304, safe=True)
 
-                    if presente:
-                        ticket.open = False
-                        ticket.chat += f",[[Date:{date}],[System: {technician} Finalizou o Chamado],[Hours:{hours}]]"
-                        ticket.technician_mail = None
-
-                        ticket.save()
-
-                        mail = body["mail"]
-                        msg = f"{technician} Finalizou o Chamado"
-                        msg2 = f"Chamado {ticket.id} finalizado com sucesso!!"
-
-                        task = Thread(
-                            target=sendMail,
-                            args=(mail, msg, msg2),
-                        )
-
-                        task.start()
-
-                    else:
-                        return JsonResponse({}, status=304, safe=True)
-
+                # Caso o status seja 'open', abre o ticket
                 elif status == "open":
+                    ticket_open(id, date, technician, hours, techMail, mail)
 
-                    ticket.open = True
-                    ticket.chat += f",[[Date:{date}],[System: {technician} Reabriu e atendeu o Chamado],[Hours:{hours}]]"
-                    ticket.technician_mail = techMail
-
-                    ticket.save()
-
-                    mail = body["mail"]
-                    msg = f"{technician} Reabriu o Chamado"
-                    msg2 = f"Reabertura do chamado {ticket.id}"
-
-                    task = Thread(
-                        target=sendMail,
-                        args=(mail, msg, msg2),
-                    )
-
-                    task.start()
-
+                # Caso o status seja 'stop', interrompe o ticket
                 elif status == "stop":
-                    if current_responsible_technician == None:
-                        return JsonResponse({}, safe=True, status=304)
-                    partes_nome_pesquisa = current_responsible_technician.split()
-                    presente = all(
-                        parte in technician for parte in partes_nome_pesquisa
-                    )
+                    status_def, msg = ticket_stop(id, technician, date, hours, mail)
 
-                    if presente:
-                        ticket.open = None
-                        ticket.chat += f",[[Date:{date}],[System: {technician} Deixou esse chamado em aguardo],[Hours:{hours}]]"
-
-                        ticket.save()
-
-                        mail = body["mail"]
-                        msg = f"{technician} Deixou esse chamado em aguardo"
-                        msg2 = f"Chamado {ticket.id} em aguardo"
-
-                        task = Thread(
-                            target=sendMail,
-                            args=(mail, msg, msg2),
-                        )
-
-                        task.start()
-
-                    else:
+                    # Se o ticket não estiver atribuído a um técnico (status 304), retorna erro
+                    if status_def == 304:
                         return JsonResponse(
-                            {"status": "invalid modify"}, status=303, safe=True
+                            {"Error": "Chamado Não está atrelado a nenhum tecnico."},
+                            status=304,
+                            safe=True,
                         )
 
+                    # Se o status for 303, retorna a mensagem de erro associada
+                    elif status_def == 303:
+                        return JsonResponse({"Error": f"{msg}"}, status=303, safe=True)
+
+                # Retorna uma resposta de sucesso (status 200) caso o status tenha sido atualizado corretamente
                 return JsonResponse({"status": "ok"}, status=200, safe=True)
 
-            # Verifica se a chave 'HTTP_DOWNLOAD_TICKET' está presente nos metadados da requisição.
+            # Verifica se a opção de download do ticket foi solicitada
             if "HTTP_DOWNLOAD_TICKET" in request.META:
-                # Inicializa as variáveis para o ticket, o PDF, o objeto de dados, o formato de dados, o diretório e a empresa como nulos.
-                # Declaração das variáveis a serem utilizadas no código.
-                ticket = None  # Variável para armazenar informações do ticket.
-                pdf = None  # Variável para armazenar o documento PDF.
-                data_object = None  # Variável para armazenar um objeto de dados.
-                data_format = None  # Variável para armazenar o formato dos dados.
-                directory = None  # Variável para armazenar o diretório.
-                company = None  # Variável para armazenar informações da empresa.
-                pdf_base64 = None  # Variável para armazenar o PDF codificado em base64.
+                # Cria o PDF do ticket, retornando o status e o conteúdo base64 do PDF
+                status, pdf_base64 = create_pdf(id)
 
-                try:
-                    ticket = SupportTicket.objects.get(
-                        id=id
-                    )  # Recuperando informações do ticket com base no ID fornecido.
-                    pdf = FPDF()  # Inicializando o objeto PDF.
-                    pdf.add_page()  # Adicionando uma nova página ao PDF.
-                    directory = getcwd()  # Obtendo o diretório atual.
-                    pdf.add_font(
-                        "Arial", "", f"{directory}/arial.ttf"
-                    )  # Adicionando a fonte Arial ao PDF.
-                    pdf.set_font(
-                        "Arial", size=12
-                    )  # Definindo a fonte e o tamanho do texto.
-                    pdf.cell(
-                        180, 5, txt=f"CHAMADO {ticket.id}", ln=False, align="C"
-                    )  # Adicionando título ao PDF.
-                    x_position = pdf.get_x()  # Obtendo a posição atual no eixo x.
-                    y_position = pdf.get_y()  # Obtendo a posição atual no eixo y.
-                    pdf.set_xy(x_position, y_position)  # Definindo a posição atual.
-
-                    data_object = ticket.start_date.date()
-                    data_format = data_object.strftime("%d/%m/%Y")
-                    pdf.cell(
-                        20,
-                        5,
-                        txt=f"Data de Abertura: {data_format}",
-                        ln=False,
-                        align="R",
-                    )
-                    pdf.cell(
-                        200,
-                        10,
-                        txt=f"Usuário {ticket.ticketRequester}",
-                        ln=True,
-                        align="L",
-                    )
-                    pdf.cell(
-                        200,
-                        10,
-                        txt=f"Departamento: {ticket.department}",
-                        ln=True,
-                        align="L",
-                    )
-                    pdf.cell(
-                        200, 10, txt=f"Unidade: {ticket.company}", ln=True, align="L"
-                    )
-                    pdf.cell(200, 10, txt=f"Setor: {ticket.sector}", ln=True, align="L")
-                    pdf.cell(
-                        200,
-                        10,
-                        txt=f"Ocorrência: {ticket.occurrence}",
-                        ln=True,
-                        align="L",
-                    )
-                    pdf.cell(
-                        200, 10, txt=f"Problema: {ticket.problemn}", ln=True, align="L"
-                    )
-                    pdf.cell(
-                        200,
-                        10,
-                        txt=f"Setor Responsável pelo Chamado: {ticket.respective_area}",
-                        ln=True,
-                        align="L",
-                    )
-                    if ticket.responsible_technician != None:
-                        pdf.cell(
-                            200,
-                            10,
-                            txt=f"Tecnico Resposável pelo Chamado: {ticket.responsible_technician}",
-                            ln=True,
-                            align="L",
-                        )
-                    else:
-                        pdf.cell(
-                            200,
-                            10,
-                            txt="Tecnico Resposável pelo Chamado: Tecnico não Atribuido",
-                            ln=True,
-                            align="L",
-                        )
-                    if ticket.observation != "":
-                        pdf.multi_cell(
-                            200,
-                            10,
-                            txt=f"Observação: {ticket.observation}",
-                            ln=True,
-                            align="L",
-                        )
-                    else:
-                        pdf.cell(
-                            200,
-                            10,
-                            txt="Observação: Informação não fornecida",
-                            ln=True,
-                            align="L",
-                        )
-                    if ticket.open == True:
-                        pdf.cell(
-                            200,
-                            10,
-                            txt="Status: Em Aberto",
-                            ln=True,
-                            align="L",
-                        )
-                    else:
-                        pdf.cell(
-                            200,
-                            10,
-                            txt="Status: Finalizado",
-                            ln=True,
-                            align="L",
-                        )
-                    if ticket.problemn == "Alocação de Máquina":
-                        pdf.cell(200, 10, txt="Maquina Alocada:", ln=True, align="L")
-                        pdf.image(
-                            f"{ticket.equipament.equipament}", w=100, h=100, x=10, y=120
-                        )
-                        pdf.set_xy(10, 220)
-                        pdf.cell(
-                            200,
-                            10,
-                            txt=f"Modelo: {ticket.equipament.model}",
-                            ln=True,
-                            align="L",
-                        )
-                        pdf.cell(
-                            200,
-                            10,
-                            txt=f"Unidade da Maquina: {ticket.equipament.company}",
-                            ln=True,
-                            align="L",
-                        )
-                        pdf.cell(
-                            200,
-                            10,
-                            txt=f"Data de alocação: {ticket.date_alocate}",
-                            ln=True,
-                            align="L",
-                        )
-                    if ticket.problemn == "Criacao de usuario de rede":
-                        pdf.cell(
-                            200,
-                            10,
-                            txt=f"Nome do Novo(a) Colaborador(a): {ticket.name_new_user}",
-                            ln=True,
-                            align="L",
-                        )
-                        pdf.cell(
-                            200,
-                            10,
-                            txt=f"Setor do Novo(a) Colaborador(a): {ticket.sector_new_user}",
-                            ln=True,
-                            align="L",
-                        )
-                        if ticket.where_from == "new":
-                            pdf.cell(
-                                200,
-                                10,
-                                txt="Tipo de Remanejamento: Nova Contratação",
-                                ln=True,
-                                align="L",
-                            )
-                        if ticket.machine_new_user == True:
-                            pdf.cell(
-                                200,
-                                10,
-                                txt="Necessidade de nova máquina: Sim",
-                                ln=True,
-                                align="L",
-                            )
-                        else:
-                            pdf.cell(
-                                200,
-                                10,
-                                txt="Necessidade de nova máquina: Não",
-                                ln=True,
-                                align="L",
-                            )
-                        company = ticket.company_new_user.replace("-", "\u2013")
-                        pdf.cell(
-                            200,
-                            10,
-                            txt=f"Unidade: {company}",
-                            ln=True,
-                            align="L",
-                        )
-                        if len(ticket.software_new_user) > 1:
-                            pdf.cell(
-                                200,
-                                10,
-                                txt=f"Softwares Necessários: {ticket.software_new_user}",
-                                ln=True,
-                                align="L",
-                            )
-                        pdf.cell(
-                            200,
-                            10,
-                            txt=f"Centro de Custo: {ticket.cost_center}",
-                            ln=True,
-                            align="L",
-                        )
-                        pdf.cell(
-                            200,
-                            10,
-                            txt=f"Cargo: {ticket.job_title_new_user}",
-                            ln=True,
-                            align="L",
-                        )
-
-                        mounths = []
-                        date = None
-                        number_into_mouth = None
-                        result = None
-                        year = None
-                        new_date = None
-
-                        try:
-                            mounths = [
-                                "Jan",
-                                "Feb",
-                                "Mar",
-                                "Apr",
-                                "May",
-                                "Jun",
-                                "Jul",
-                                "Aug",
-                                "Sep",
-                                "Oct",
-                                "Nov",
-                                "Dec",
-                            ]
-
-                            date = ticket.start_work_new_user
-
-                            number_into_mouth = None
-
-                            for i, sig in enumerate(mounths, start=1):
-                                if sig in date:
-                                    number_into_mouth = i
-                                    recort = date.find(sig)
-
-                                    result = date[
-                                        recort : recort + date[recort:].find(":") + 3
-                                    ]
-
-                                    result = result[:-6]
-
-                                    date = result[4:6]
-
-                                    year = result[-4:]
-
-                                    new_date = f"{date}/{number_into_mouth}/{year}"
-
-                        except Exception as e:
-                            print(e)
-                            return JsonResponse(
-                                {"Error": f"Erro inesperado {e}"}, status=304
-                            )
-
-                        pdf.cell(
-                            200,
-                            10,
-                            txt=f"Data de Início das Atividade: {new_date}",
-                            ln=True,
-                            align="L",
-                        )
-
-                        if len(ticket.copy_profile_new_user) > 1:
-                            pdf.cell(
-                                200,
-                                10,
-                                txt=f"Copiar perfil de: {ticket.copy_profile_new_user}",
-                                ln=True,
-                                align="L",
-                            )
-
-                    if ticket.problemn == "Exclusao de usuario de rede":
-                        if len(ticket.mail_tranfer) > 1:
-                            pdf.cell(
-                                200,
-                                10,
-                                txt=f"Redirecionar e-mails para: {ticket.mail_tranfer}",
-                                ln=True,
-                                align="L",
-                            )
-                        if len(ticket.old_files) > 1:
-                            pdf.cell(
-                                200,
-                                10,
-                                txt=f"Enviar arquivos para: {ticket.old_files}",
-                                ln=True,
-                                align="L",
-                            )
-
-                        mounths = []
-                        date = None
-                        number_into_mouth = None
-                        result = None
-                        year = None
-                        new_date = None
-
-                        try:
-                            mounths = [
-                                "Jan",
-                                "Feb",
-                                "Mar",
-                                "Apr",
-                                "May",
-                                "Jun",
-                                "Jul",
-                                "Aug",
-                                "Sep",
-                                "Oct",
-                                "Nov",
-                                "Dec",
-                            ]
-
-                            date = ticket.start_work_new_user
-
-                            number_into_mouth = None
-
-                            for i, sig in enumerate(mounths, start=1):
-                                if sig in date:
-                                    number_into_mouth = i
-                                    recort = date.find(sig)
-
-                                    result = date[
-                                        recort : recort + date[recort:].find(":") + 3
-                                    ]
-
-                                    result = result[:-6]
-
-                                    date = result[4:6]
-
-                                    year = result[-4:]
-
-                                    new_date = f"{date}/{number_into_mouth}/{year}"
-
-                        except Exception as e:
-                            print(e)
-                            return JsonResponse(
-                                {"Error": f"Erro inesperado {e}"}, status=304
-                            )
-
-                        pdf.cell(
-                            200,
-                            10,
-                            txt=f"Data de Início das Atividade: {new_date}",
-                            ln=True,
-                            align="L",
-                        )
-
-                    chat = None
-                    current_date = None
-                    chat_dicts = None
-                    if ticket.chat != None:
-                        try:
-                            chat = ticket.chat
-
-                            chat_dicts = convert_to_dict(chat)
-
-                            pdf.add_page()
-
-                            pdf.cell(
-                                200,
-                                10,
-                                txt=f"CHAT",
-                                ln=True,
-                                align="C",
-                            )
-
-                            for i in range(0, len(chat_dicts), 3):
-                                group = chat_dicts[i : i + 3]
-                                try:
-                                    entry_date = None
-                                    system_msg = ""
-                                    technician_msg = ""
-                                    user_msg = ""
-                                    entry_hour = ""
-                                    for entry in group:
-                                        if "Date" in entry:
-                                            entry_date = entry["Date"]
-                                        if "System" in entry:
-                                            system_msg = entry["System"]
-                                        if "Technician" in entry:
-                                            technician_msg = entry["Technician"]
-                                        if "User" in entry:
-                                            user_msg = entry["User"]
-                                        if "Hours" in entry:
-                                            entry_hour = entry["Hours"]
-
-                                        # Verifica se a data é diferente da atual
-                                    if entry_date != current_date:
-                                        current_date = entry_date
-                                        # Adiciona a data como uma célula centralizada
-                                        pdf.cell(
-                                            200,
-                                            10,
-                                            txt=current_date,
-                                            ln=True,
-                                            align="C",
-                                        )
-
-                                        # Adiciona os registros de sistema, técnico e usuário com seus respectivos horários
-                                    if system_msg:
-                                        pdf.cell(
-                                            200,
-                                            10,
-                                            txt=f"{system_msg} - {entry_hour}",
-                                            ln=True,
-                                            align="C",
-                                        )
-                                    if technician_msg:
-                                        pdf.cell(
-                                            200,
-                                            10,
-                                            txt=f"{technician_msg} - {entry_hour}",
-                                            ln=True,
-                                            align="L",
-                                        )
-                                    if user_msg:
-                                        pdf.cell(
-                                            200,
-                                            10,
-                                            txt=f"{user_msg} - {entry_hour}",
-                                            ln=True,
-                                            align="R",
-                                        )
-
-                                except Exception as e:
-                                    print(e)
-                                    return JsonResponse(
-                                        {"Error": f"Erro inesperado {e}"}, status=304
-                                    )
-
-                        except Exception as e:
-                            print(e)
-                            return JsonResponse(
-                                {"Error": f"Erro inesperado {e}"}, status=304
-                            )
-
-                    pdf_output = pdf.output(dest="S")
-                    pdf_base64 = b64encode(pdf_output).decode("utf-8")
+                # Se ocorrer um erro ao criar o PDF (status 300), retorna o erro como resposta
+                if status == 300:
                     return JsonResponse(
-                        {"status": "ok", "pdf": pdf_base64}, status=200, safe=True
+                        {"Error": f"{pdf_base64}"}, status=300, safe=True
                     )
-                except Exception as e:
-                    print(e)
-                    return JsonResponse({"Error": f"Erro inesperado {e}"}, status=304)
 
-            if "HTTP_MODIFY_TICKET" in request.META:
-                tech = None
-                newSector = None
-                oldSector = None
-                newOccurrence = None
-                oldOccurrence = None
-                newProblemn = None
-                oldProblemn = None
-                try:
-                    tech = body["tech"]
-                    newSector = body["sector"]
-                    oldSector = body["OldSector"]
-                    date = body["date"]
-                    hours = body["hours"]
-                    ticket = SupportTicket.objects.get(id=id)
-
-                    if newSector == oldSector:
-                        pass
-                    if ticket.chat == None:
-                        return JsonResponse({}, status=304, safe=True)
-                    else:
-                        ticket.chat += f",[[Date:{date}],[System: {tech} Mudou o Setor responsavel para {newSector}],[Hours:{hours}]]"
-                        ticket.sector = newSector
-
-                    newOccurrence = body["occurrence"]
-                    oldOccurrence = body["OldOccurrence"]
-
-                    if newOccurrence == oldOccurrence:
-                        pass
-                    else:
-                        ticket.chat += f",[[Date:{date}],[System: {tech} Mudou a Ocorrência para {newOccurrence}],[Hours:{hours}]]"
-                        ticket.occurrence = newOccurrence
-
-                    newProblemn = body["problemn"]
-                    oldProblemn = body["OldProblemn"]
-
-                    if newProblemn == oldProblemn:
-                        return JsonResponse(
-                            {"status": "invalid modify"}, status=402, safe=True
-                        )
-                    else:
-                        ticket.chat += f",[[Date:{date}],[System: {tech} Mudou o Problema para {newProblemn}],[Hours:{hours}]]"
-                        ticket.problemn = newProblemn
-
-                        ticket.save()
-
-                    return JsonResponse({"status": "ok"}, status=200, safe=True)
-                except Exception as e:
-                    print(e)
-                    return JsonResponse({"Error": f"Erro inesperado {e}"}, status=304)
-
-            if "HTTP_TECH_DETAILS" in request.META:
-                detailsChat = None
-                ticket = None
-                chat = None
-                date = None
-                hours = None
-                try:
-                    detailsChat = body["chat"]
-                    ticket = SupportTicket.objects.get(id=id)
-                    date = body["date"]
-                    hours = body["hours"]
-
-                    if ticket.details == None:
-                        ticket.details = f",[[Date:{date}],[{request.user.first_name} {request.user.last_name}: {detailsChat}],[Hours:{hours}]]"
-                    else:
-                        ticket.details += f",[[Date:{date}],[{request.user.first_name} {request.user.last_name}: {detailsChat}],[Hours:{hours}]]"
-
-                    ticket.save()
-
-                    chat = ticket.details
-
-                    return JsonResponse({"chat": chat}, status=200, safe=True)
-                except Exception as e:
-                    print(e)
-                    return JsonResponse({"Error": f"Erro inesperado {e}"}, status=304)
+                # Caso o PDF seja gerado com sucesso, retorna o conteúdo do PDF em base64
+                return JsonResponse({"pdf": pdf_base64}, status=200, safe=True)
 
         except Exception as e:
-            print(e)
+            logger.error(e)
             return JsonResponse({"Error": f"Erro inesperado {e}"}, status=304)
 
     if request.method == "GET":
-        ticket = None
-        pid = None
-        validation = None
-        try:
-            ticket = SupportTicket.objects.filter(id=id)
+        """
+        Verifica se a requisição é do tipo GET, processa os dados do ticket e retorna as informações em formato JSON.
 
-            for t in ticket:
-                pid = t.PID
+        Se o ticket não for encontrado ou se o usuário não tiver permissão para visualizar o ticket, será redirecionado para a página /helpdesk.
+
+        :return: Retorna um JSON com os dados do ticket, incluindo informações como o responsável, setor, equipamento, arquivos relacionados, e status.
+        """
+        try:
+            # Recupera o ticket correspondente ao ID fornecido ou retorna erro 404
+            ticket = get_object_or_404(SupportTicket, id=id)
+
+            pid = ticket.PID
+            # Verifica se o PID do ticket está presente
+            if not pid:
+                return redirect("/helpdesk")
+
+            user = request.user
+            # Verifica se o usuário pertence ao grupo "Back_User"
+            if user.groups.filter(name="Back_User").exists():
+                pid_viewer = request.META.get("HTTP_PID")
+                # Verifica se o PID fornecido no cabeçalho corresponde ao PID do ticket
+                if not pid_viewer or int(pid_viewer) != pid:
+                    return redirect("/helpdesk")
+
+            # Processamento de arquivos do ticket (imagens ou outros arquivos)
+            image_data, content_file, name_file = process_ticket_files(id)
+
+            # Serializa as informações do ticket
+            serialized_ticket = {
+                "ticketRequester": ticket.ticketRequester,
+                "department": ticket.department,
+                "mail": ticket.mail,
+                "company": ticket.company,
+                "sector": ticket.sector,
+                "occurrence": ticket.occurrence,
+                "problemn": ticket.problemn,
+                "observation": ticket.observation,
+                "start_date": ticket.start_date,
+                "PID": pid,
+                "responsible_technician": ticket.responsible_technician,
+                "id": ticket.id,
+                "chat": ticket.chat,
+                "file": image_data,
+                "open": ticket.open,
+                "name_file": name_file,
+                "content_file": content_file,
+                "equipament": ticket.equipament,
+            }
+
+            # Retorna os dados do ticket como resposta JSON com código de status 200
+            return JsonResponse({"data": serialized_ticket}, status=200)
 
         except Exception as e:
-            print(e)
+            # Registra erro e retorna uma resposta de erro com status 304
+            logger.error(e)
             return JsonResponse({"Error": f"Erro inesperado {e}"}, status=304)
 
-        try:
-            validation = str(pid)
-            if len(validation) < 1:
-                redirect("/login")
 
-        except Exception as e:
-            print(e)
-            return JsonResponse({"Error": f"Erro inesperado {e}"}, status=304)
+def update_tech_details(
+    chat: str, id: int, date: str, hours: str, request: WSGIRequest
+):
+    """
+    Atualiza os detalhes técnicos do ticket com as informações fornecidas.
 
-        UserFront = None
-        group1 = None
-        user = None
-        groups = None
-        pidViwer = None
-        try:
-            UserFront = request.user
+    :param chat: O histórico de chat que será adicionado aos detalhes técnicos.
+    :param id: O ID do ticket que será atualizado.
+    :param date: A data associada à atualização.
+    :param hours: As horas associadas à atualização.
+    :param request: A requisição que contém informações do usuário (nome) que está fazendo a atualização.
 
-            group1 = getenv("DJANGO_GROUP_USER")
+    :return: Retorna um código de status (200) e os detalhes atualizados ou um código de erro (300) em caso de falha.
+    """
+    try:
+        # Recupera o ticket correspondente ao ID fornecido
+        ticket = SupportTicket.objects.get(id=id)
 
-            user = User.objects.get(username=UserFront)
+        # Verifica se o ticket já possui detalhes técnicos
+        if ticket.details == None:
+            # Se não houver detalhes, cria os detalhes com a nova entrada
+            ticket.details = f",[[Date:{date}],[{request.user.first_name} {request.user.last_name}: {chat}],[Hours:{hours}]]"
+        else:
+            # Caso contrário, adiciona os novos detalhes ao histórico existente
+            ticket.details += f",[[Date:{date}],[{request.user.first_name} {request.user.last_name}: {chat}],[Hours:{hours}]]"
 
-            groups = user.groups.all()
+        # Salva as alterações no ticket
+        ticket.save()
 
-            for group in groups:
-                if group.name == group1:
-                    try:
-                        pidViwer = int(request.META.get("HTTP_PID"))
+        return 200, ticket.details
+    except Exception as e:
+        # Registra o erro e retorna um código de erro com a mensagem
+        logger.error(e)
+        return 300, e
 
-                    except TypeError as e:
-                        if "NoneType" in str(e):
-                            return redirect("/helpdesk")
 
-                        if pid == pidViwer:
-                            pass
-                        else:
-                            return redirect("/helpdesk")
+def create_pdf(id: int):
+    """
+    Gera um PDF com informações detalhadas sobre o chamado, incluindo dados gerais, informações sobre a máquina,
+    e o histórico de chat do ticket.
 
-                    except Exception as e:
-                        print(e)
-                        return JsonResponse(
-                            {"Error": f"Erro inesperado {e}"}, status=304
-                        )
-        except Exception as e:
-            print(e)
-            return JsonResponse({"Error": f"Erro inesperado {e}"}, status=304)
+    :param id: Identificador único do ticket de suporte.
+    :return: Código de status HTTP e o PDF gerado em base64, ou código de erro e a mensagem de exceção.
+    """
 
-        serialized_ticket = []
-        image = ""
-        pil_image = None
-        img_bytes = None
-        image_data = []
-        act_dir = None
-        name_file = []
-        file_type = None
-        content_file = []
-        nw_id = None
-        try:
-            act_dir = getcwd()
+    try:
+        getLogger("fontTools.subset").setLevel(WARNING)
+        # Obtém o ticket de suporte com base no ID fornecido
+        ticket = SupportTicket.objects.get(id=id)
 
-            act_dir += f"/uploads/{id}"
+        # Cria uma nova instância do FPDF para gerar o PDF
+        pdf = FPDF()
+        pdf.add_page()
 
-            if exists(act_dir) and isdir(act_dir):
-                ticket = SupportTicket.objects.filter(id=id)
-                for t in ticket:
-                    nw_id = t.id
-                image = TicketFile.objects.filter(ticket_id=nw_id)
+        # Obtém o diretório de trabalho atual e define a fonte Arial para o PDF
+        directory = getcwd()
+        pdf.add_font("Arial", "", f"{directory}/arial.ttf")
+        pdf.set_font("Arial", size=12)
 
-                for file in image:
-                    try:
-                        with file.file.open() as img:
-                            pil_image = Image.open(img)
+        # Adiciona o título do chamado ao PDF
+        pdf.cell(180, 5, txt=f"CHAMADO {ticket.id}", ln=False, align="C")
 
-                            img_bytes = BytesIO()
-                            pil_image.save(img_bytes, format="PNG")
+        # Adiciona informações do ticket ao PDF
+        add_ticket_info_to_pdf(ticket, pdf)
 
-                            image_data.append(
-                                {
-                                    "image": b64encode(img_bytes.getvalue()).decode(
-                                        "utf-8"
-                                    )
-                                }
-                            )
-                            content_file.append("img")
-                            name_file.append("/".join(str(file.file).split("/")[2:]))
-                        file.file.close()
+        # Se o problema for "Alocação de Máquina", adiciona informações sobre a máquina ao PDF
+        if ticket.problemn == "Alocação de Máquina":
+            add_machine_info_to_pdf(ticket, pdf)
 
-                    except UnidentifiedImageError:
-                        try:
-                            file.file.open()
-                            image_bytes = file.file.read()
+        # Se o ticket tiver chat, adiciona o histórico do chat ao PDF
+        if ticket.chat:
+            add_chat_to_pdf(ticket.chat, pdf)
 
-                            mime = Magic()
+        # Converte o conteúdo do PDF para base64
+        pdf_base64 = b64encode(pdf.output(dest="S")).decode("utf-8")
 
-                            file_type = mime.from_buffer(image_bytes)
+        # Retorna o PDF gerado em base64 com status de sucesso
+        return 200, pdf_base64
 
-                            if "mail" in file_type.lower():
-                                image_data.append("mail")
-                                with open(str(file.file), "rb") as eml_file:
-                                    content_file.append(
-                                        b64encode(eml_file.read()).decode("utf-8")
-                                    )
-                                    name_file.append(
-                                        "/".join(str(file.file).split("/")[2:])
-                                    )
-                                file.file.close()
+    # Captura e loga exceções caso ocorram durante o processo de geração do PDF
+    except Exception as e:
+        logger.error(e)
+        return 300, e
 
-                            elif "excel" in file_type.lower():
-                                image_data.append("excel")
-                                with open(str(file.file), "rb") as exc_file:
-                                    content_file.append(
-                                        b64encode(exc_file.read()).decode("utf-8")
-                                    )
-                                    name_file.append(
-                                        "/".join(str(file.file).split("/")[2:])
-                                    )
-                                file.file.close()
 
-                            elif "zip" in file_type.lower():
-                                image_data.append("zip")
-                                with open(str(file.file), "rb") as zip_file:
-                                    content_file.append(
-                                        b64encode(zip_file.read()).decode("utf-8")
-                                    )
-                                    name_file.append(
-                                        "/".join(str(file.file).split("/")[2:])
-                                    )
-                                file.file.close()
+def add_ticket_info_to_pdf(ticket: SupportTicket, pdf: FPDF):
+    """
+    Adiciona informações detalhadas do ticket de suporte ao PDF, incluindo dados como data de abertura,
+    usuário, departamento, unidade, setor, ocorrência, problema, setor responsável, técnico responsável,
+    observações e status do ticket.
 
-                            elif (
-                                "utf-8" in file_type.lower()
-                                and "text" in file_type.lower()
-                                or "ascii" in file_type.lower()
-                                and "text" in file_type.lower()
-                            ):
-                                image_data.append("txt")
-                                with open(str(file.file), "rb") as txt_file:
-                                    content_file.append(
-                                        b64encode(txt_file.read()).decode("utf-8")
-                                    )
-                                    name_file.append(
-                                        "/".join(str(file.file).split("/")[2:])
-                                    )
-                                file.file.close()
+    :param ticket: O ticket de suporte cujas informações serão adicionadas ao PDF.
+    :param pdf: A instância do FPDF onde as informações do ticket serão adicionadas.
+    """
 
-                            elif (
-                                "microsoft" in file_type.lower()
-                                and "word" in file_type.lower()
-                            ):
-                                image_data.append("word")
-                                with open(str(file.file), "rb") as word_file:
-                                    content_file.append(
-                                        b64encode(word_file.read()).decode("utf-8")
-                                    )
-                                    name_file.append(
-                                        "/".join(str(file.file).split("/")[2:])
-                                    )
-                                file.file.close()
+    # Adiciona a data de abertura do ticket ao PDF, formatada como dd/mm/yyyy
+    pdf.cell(
+        200,
+        10,
+        txt=f"Data de Abertura: {ticket.start_date.strftime('%d/%m/%Y')}",
+        ln=True,
+        align="R",
+    )
 
-                            elif (
-                                "pdf" in file_type.lower()
-                                and "document" in file_type.lower()
-                            ):
-                                image_data.append("pdf")
-                                with open(str(file.file), "rb") as pdf_file:
-                                    content_file.append(
-                                        b64encode(pdf_file.read()).decode("utf-8")
-                                    )
-                                    name_file.append(
-                                        "/".join(str(file.file).split("/")[2:])
-                                    )
-                                file.file.close()
+    # Adiciona o nome do usuário que solicitou o ticket
+    pdf.cell(200, 10, txt=f"Usuário: {ticket.ticketRequester}", ln=True, align="L")
 
-                        except Exception as e:
-                            print(e)
-                            return JsonResponse(
-                                {"Error": f"Erro inesperado {e}"}, status=304
-                            )
+    # Adiciona o departamento relacionado ao ticket
+    pdf.cell(200, 10, txt=f"Departamento: {ticket.department}", ln=True, align="L")
 
-                    except Exception as e:
-                        print(e)
-                        return JsonResponse(
-                            {"Error": f"Erro inesperado {e}"}, status=304
-                        )
+    # Adiciona a unidade onde o ticket foi gerado
+    pdf.cell(200, 10, txt=f"Unidade: {ticket.company}", ln=True, align="L")
 
-            serialized_ticket.append(
-                {
-                    "ticketRequester": t.ticketRequester,
-                    "department": t.department,
-                    "mail": t.mail,
-                    "company": t.company,
-                    "sector": t.sector,
-                    "occurrence": t.occurrence,
-                    "problemn": t.problemn,
-                    "observation": t.observation,
-                    "start_date": t.start_date,
-                    "PID": pid,
-                    "responsible_technician": t.responsible_technician,
-                    "id": t.id,
-                    "chat": t.chat,
-                    "file": image_data,
-                    "open": t.open,
-                    "name_file": name_file,
-                    "content_file": content_file,
-                    "equipament": t.equipament,
-                }
+    # Adiciona o setor relacionado ao ticket
+    pdf.cell(200, 10, txt=f"Setor: {ticket.sector}", ln=True, align="L")
+
+    # Adiciona a ocorrência registrada no ticket
+    pdf.cell(200, 10, txt=f"Ocorrência: {ticket.occurrence}", ln=True, align="L")
+
+    # Adiciona o problema descrito no ticket
+    pdf.cell(200, 10, txt=f"Problema: {ticket.problemn}", ln=True, align="L")
+
+    # Adiciona o setor responsável pelo ticket
+    pdf.cell(
+        200, 10, txt=f"Setor Responsável: {ticket.respective_area}", ln=True, align="L"
+    )
+
+    # Adiciona o nome do técnico responsável, ou 'Técnico não Atribuído' se não houver técnico
+    pdf.cell(
+        200,
+        10,
+        txt=f"Técnico Responsável: {ticket.responsible_technician or 'Técnico não Atribuído'}",
+        ln=True,
+        align="L",
+    )
+
+    # Adiciona a observação relacionada ao ticket, ou 'Informação não fornecida' caso não haja
+    pdf.multi_cell(
+        200,
+        10,
+        txt=f"Observação: {ticket.observation or 'Informação não fornecida'}",
+        ln=True,
+        align="L",
+    )
+
+    # Adiciona o status do ticket (Em Aberto ou Finalizado)
+    pdf.cell(
+        200,
+        10,
+        txt=f"Status: {'Em Aberto' if ticket.open else 'Finalizado'}",
+        ln=True,
+        align="L",
+    )
+
+
+def add_machine_info_to_pdf(ticket: SupportTicket, pdf: FPDF):
+    """
+    Adiciona informações sobre a máquina alocada no ticket de suporte ao PDF, incluindo o nome da máquina
+    e a data de alocação.
+
+    :param ticket: O ticket de suporte que contém informações sobre a máquina alocada.
+    :param pdf: A instância do FPDF onde as informações sobre a máquina serão adicionadas.
+    """
+
+    # Adiciona o nome da máquina alocada ao PDF
+    pdf.cell(200, 10, txt=f"Máquina Alocada: {ticket.equipament}", ln=True, align="L")
+
+    # Adiciona a data de alocação da máquina ao PDF
+    pdf.cell(
+        200, 10, txt=f"Data de alocação: {ticket.date_alocate}", ln=True, align="L"
+    )
+
+
+def add_chat_to_pdf(chat: str, pdf: FPDF):
+    """
+    Adiciona o histórico de chat ao PDF, incluindo as mensagens do sistema, técnico e usuário,
+    agrupadas por data e hora.
+
+    :param chat: O histórico de chat, geralmente em formato de string a ser convertido para um dicionário.
+    :param pdf: A instância do FPDF onde o histórico de chat será adicionado.
+    """
+
+    # Converte o histórico de chat em uma lista de dicionários
+    chat_dicts = convert_to_dict(chat)
+
+    # Adiciona uma nova página no PDF para o chat
+    pdf.add_page()
+
+    # Adiciona um título "CHAT" centralizado
+    pdf.cell(200, 10, txt="CHAT", ln=True, align="C")
+
+    current_date = None
+
+    # Itera sobre cada entrada no histórico de chat
+    for entry in chat_dicts:
+        # Extrai as informações de data, sistema, técnico, usuário e hora da entrada
+        entry_date = entry.get("Date")
+        system_msg = entry.get("System")
+        technician_msg = entry.get("Technician")
+        user_msg = entry.get("User")
+        entry_hour = entry.get("Hours")
+
+        # Verifica se a data da entrada é diferente da data atual
+        if entry_date != current_date:
+            current_date = entry_date
+            # Adiciona a data ao PDF, centralizada
+            pdf.cell(200, 10, txt=current_date, ln=True, align="C")
+
+        # Adiciona mensagens do sistema ao PDF, centralizadas
+        if system_msg:
+            pdf.cell(200, 10, txt=f"{system_msg} - {entry_hour}", ln=True, align="C")
+
+        # Adiciona mensagens do técnico ao PDF, alinhadas à esquerda
+        if technician_msg:
+            pdf.cell(
+                200, 10, txt=f"{technician_msg} - {entry_hour}", ln=True, align="L"
             )
 
-            return JsonResponse({"data": serialized_ticket}, status=200, safe=True)
+        # Adiciona mensagens do usuário ao PDF, alinhadas à esquerda
+        if user_msg:
+            pdf.cell(200, 10, txt=f"{user_msg} - {entry_hour}", ln=True, align="L")
 
-        except Exception as e:
-            print(e)
-            return JsonResponse({"Error": f"Erro inesperado {e}"}, status=304)
+
+def ticket_stop(id: int, technician: str, date: str, hours: str, mail: str):
+    """
+    Altera o status do ticket para 'em aguardo', registrando a ação do técnico e enviando uma notificação.
+
+    :param id: Identificador único do ticket de suporte.
+    :param technician: Nome do técnico que está colocando o ticket em aguardo.
+    :param date: Data em que o ticket foi colocado em aguardo.
+    :param hours: Hora em que o ticket foi colocado em aguardo.
+    :param mail: Endereço de e-mail para onde será enviado a notificação.
+    :return: Código de status HTTP e a mensagem de status do ticket.
+    """
+
+    try:
+        # Obtém o ticket de suporte pelo ID fornecido, retornando 404 caso não exista
+        ticket = get_object_or_404(SupportTicket, id=id)
+
+        # Verifica se há um técnico responsável pelo ticket
+        current_responsible_technician = ticket.responsible_technician
+        if current_responsible_technician == None:
+            return 304, "error"
+
+        # Divide o nome do técnico responsável para realizar a verificação
+        partes_nome_pesquisa = current_responsible_technician.split()
+        presente = all(parte in technician for parte in partes_nome_pesquisa)
+
+        # Se o técnico informado for o responsável pelo chamado, coloca o ticket em aguardo
+        if presente:
+            # Atualiza o status do ticket para 'em aguardo' e adiciona a mensagem ao chat
+            ticket.open = None
+            ticket.chat += f",[[Date:{date}],[System: {technician} Deixou esse chamado em aguardo],[Hours:{hours}]]"
+
+            # Salva as alterações no ticket
+            ticket.save()
+
+            # Mensagem a ser enviada na notificação
+            msg = f"{technician} Deixou esse chamado em aguardo"
+            msg2 = f"Chamado {ticket.id} em aguardo"
+
+            # Inicia uma thread para enviar o e-mail de notificação
+            task = Thread(
+                target=sendMail,
+                args=(mail, msg, msg2),
+            )
+
+            task.start()
+
+            # Retorna código de sucesso e mensagem
+            return 200, "success"
+        else:
+            # Retorna erro caso o técnico não seja o responsável
+            return 303, "invalid modify"
+
+    # Captura e loga exceções, retornando erro genérico
+    except Exception as e:
+        logger.error(e)
+
+
+def ticket_close(id: int, technician: str, date: str, hours: str, mail: str):
+    """
+    Altera o status do chamado para finalizado e envia uma notificação por e-mail.
+
+    :param id: Identificador único do ticket de suporte.
+    :param technician: Nome do técnico responsável pela finalização do chamado.
+    :param date: Data em que o chamado foi finalizado.
+    :param hours: Hora em que o chamado foi finalizado.
+    :param mail: Endereço de e-mail para o envio da notificação.
+    :return: Código de status e mensagem de sucesso ou erro.
+    """
+
+    # Obtém o ticket de suporte com base no ID fornecido
+    ticket = get_object_or_404(SupportTicket, id=id)
+
+    # Obtém o técnico responsável pelo ticket
+    current_responsible_technician = ticket.responsible_technician
+
+    # Verifica se um técnico responsável está definido
+    if current_responsible_technician == None:
+        return 304, "Tecnico não Definido"
+
+    # Divide o nome do técnico responsável para realizar a verificação
+    partes_nome_pesquisa = current_responsible_technician.split()
+    presente = all(parte in technician for parte in partes_nome_pesquisa)
+
+    # Se o técnico que está tentando finalizar o chamado é o técnico responsável
+    if presente:
+        # Marca o ticket como fechado
+        ticket.open = False
+        # Adiciona a mensagem de finalização no histórico do chat
+        ticket.chat += f",[[Date:{date}],[System: {technician} Finalizou o Chamado],[Hours:{hours}]]"
+        # Limpa o e-mail do técnico
+        ticket.technician_mail = None
+
+        # Salva as alterações no ticket
+        ticket.save()
+
+        # Mensagem a ser enviada por e-mail
+        msg = f"{technician} Finalizou o Chamado"
+        msg2 = f"Chamado {ticket.id} finalizado com sucesso!!"
+
+        # Inicia uma thread para enviar o e-mail de notificação
+        task = Thread(
+            target=sendMail,
+            args=(mail, msg, msg2),
+        )
+        task.start()
+
+        return 200, "success"
+
+    # Retorna erro caso o técnico não seja o responsável pelo ticket
+    else:
+        return 304, "Identificado que o Tecnico não é o atribuido ao Chamado"
+
+
+def ticket_open(
+    id: int, date: str, technician: str, hours: str, techMail: str, mail: str
+):
+    """
+    Altera o status do ticket para 'aberto', registrando a ação do técnico e enviando uma notificação.
+
+    :param id: Identificador único do ticket de suporte.
+    :param date: Data em que o chamado foi reaberto.
+    :param technician: Nome do técnico que reabriu o ticket.
+    :param hours: Hora em que o chamado foi reaberto.
+    :param techMail: E-mail do técnico responsável pela reabertura do ticket.
+    :param mail: E-mail para onde será enviado a notificação sobre a reabertura.
+    :return: Nenhum valor de retorno, mas o ticket é atualizado e uma notificação é enviada.
+    """
+
+    # Obtém o ticket de suporte com base no ID fornecido
+    ticket = get_object_or_404(SupportTicket, id=id)
+
+    try:
+        # Altera o status do ticket para 'aberto'
+        ticket.open = True
+
+        # Adiciona uma mensagem ao histórico do chat informando que o técnico reabriu o ticket
+        ticket.chat += f",[[Date:{date}],[System: {technician} Reabriu e atendeu o Chamado],[Hours:{hours}]]"
+
+        # Atualiza o e-mail do técnico responsável
+        ticket.technician_mail = techMail
+
+        # Salva as alterações no ticket
+        ticket.save()
+
+        # Mensagem de notificação a ser enviada
+        msg = f"{technician} Reabriu o Chamado"
+        msg2 = f"Reabertura do chamado {ticket.id}"
+
+        # Inicia uma thread para enviar o e-mail de notificação
+        task = Thread(
+            target=sendMail,
+            args=(mail, msg, msg2),
+        )
+
+        task.start()
+
+    # Captura e loga exceções caso ocorram durante o processo
+    except Exception as e:
+        logger.error(e)
+
+
+def change_responsible_technician(
+    id: int,
+    responsible_technician: str,
+    technician: str,
+    date: str,
+    hours: str,
+    techMail: str,
+    mail: str,
+):
+    """
+    Atualiza o técnico responsável por um chamado de suporte e registra a mudança no chat do chamado.
+
+    :param body: Dicionário contendo os dados da requisição, incluindo o novo técnico responsável, o técnico atual,
+                 a data da mudança, o horário e os e-mails envolvidos.
+    :param id: Identificador único do chamado de suporte a ser atualizado.
+    :return: Uma tupla contendo o código de status HTTP, a mensagem do chat atualizada e o novo técnico responsável.
+    """
+    # Verifica se todos os campos obrigatórios estão preenchidos
+    if not all([responsible_technician, technician, date, hours, techMail, mail]):
+        return 400, "Campos obrigatórios ausentes", ""
+    try:
+        # Busca o chamado de suporte pelo ID fornecido
+        ticket = SupportTicket.objects.get(id=id)
+        # Verifica se o chat do chamado já possui mensagens registradas
+        if not ticket.chat:
+            # Caso não haja mensagens no chat, cria o primeiro registro de atendimento
+            ticket.chat = f"[[Date:{date}],[System: {responsible_technician} atendeu ao Chamado],[Hours:{hours}]]"
+
+            # Se um e-mail de usuário estiver disponível, envia uma notificação por e-mail
+            if mail:
+                msg = f"{technician} atendeu ao Chamado"  # Mensagem do e-mail
+                msg2 = f"Atendimento do Chamado {ticket.id}"  # Assunto do e-mail
+
+                # Envia o e-mail em uma thread separada para evitar bloqueio da execução
+                Thread(target=sendMail, args=(mail, msg, msg2)).start()
+        else:
+            # Se já houver mensagens no chat, adiciona um registro informando a transferência do chamado
+            ticket.chat += f"[[Date:{date}],[System: {technician} transferiu o Chamado para {responsible_technician}],[Hours:{hours}]],"
+
+        # Atualiza o técnico responsável e o e-mail associado ao chamado
+        ticket.responsible_technician = responsible_technician
+        ticket.technician_mail = techMail
+        ticket.save()  # Salva as alterações no banco de dados
+
+        # Retorna sucesso com o chat atualizado e o novo responsável pelo chamado
+        return 200, ticket.chat, ticket.responsible_technician
+    except Exception as e:
+        # Em caso de erro, registra a exceção nos logs
+        logger.error(e)
+
+
+def updating_chat_change_sender(
+    body: dict, id: int, chat: str, date: str, hours: str, technician: str, user: str
+):
+    """
+    Atualiza o histórico do chat e modifica o remetente da última mensagem.
+
+    :param body: Dicionário contendo as informações da requisição.
+    :param id: Identificador único do ticket de suporte.
+    :param chat: Mensagem do chat enviada.
+    :param date: Data em que a mensagem foi enviada.
+    :param hours: Hora em que a mensagem foi enviada.
+    :param technician: Nome do técnico envolvido na conversa.
+    :param user: Nome do usuário envolvido na conversa.
+    :return: Código de status HTTP e o histórico atualizado do chat.
+    """
+
+    # Obtém o ticket de suporte pelo ID fornecido
+    ticket = SupportTicket.objects.get(id=id)
+
+    # Verifica se a mensagem foi enviada pelo técnico e formata a entrada do chat
+    if "technician" in body:
+        chat_message = f",[[Date:{date}],[Technician: {chat}],[Hours:{hours}]]"
+        update_last_sender(ticket, technician, date, hours)
+
+    # Verifica se a mensagem foi enviada pelo usuário e formata a entrada do chat
+    elif "User" in body:
+        chat_message = f",[[Date:{date}],[User: {chat}],[Hours:{hours}]]"
+        update_last_sender(ticket, user, date, hours)
+
+    # Retorna erro caso nem "technician" nem "User" estejam no corpo da requisição
+    else:
+        return 400, "Nem 'technician' nem 'User' foram informados"
+
+    # Atualiza o histórico do chat do ticket
+    ticket.chat += chat_message
+
+    # Salva as alterações no banco de dados
+    ticket.save()
+
+    # Inicia uma nova thread para verificar notificações de chamada
+    Thread(target=verifyNotificationCall, args=(id,)).start()
+
+    return 200, ticket.chat
+
+
+def update_last_sender(ticket: SupportTicket, user: str, date: str, hours: str):
+    """
+    Atualiza o remetente da última mensagem do ticket se a nova data e hora forem posteriores à anterior.
+
+    :param ticket: O objeto ticket de suporte a ser atualizado.
+    :param user: Nome do usuário ou técnico que enviou a última mensagem.
+    :param date: Data da última mensagem.
+    :param hours: Hora da última mensagem.
+    """
+
+    # Verifica se o ticket já possui um 'last_sender' registrado
+    if ticket.last_sender:
+        try:
+            # Extrai a data e hora do 'last_sender' e converte para o formato datetime
+            _, old_date_str = ticket.last_sender.split(", ")
+            old_date = datetime.strptime(old_date_str, "%d/%m/%Y %H:%M")
+            new_date = datetime.strptime(f"{date} {hours}", "%d/%m/%Y %H:%M")
+
+            # Se a nova data e hora forem posteriores à anterior, atualiza 'last_sender'
+            if new_date > old_date:
+                ticket.last_sender = f"{user}, {date} {hours}"
+        except ValueError:
+            # Exibe erro caso a conversão da data falhe, mantendo 'last_sender' inalterado
+            print("Erro ao converter a data, mantendo last_sender inalterado.")
+    else:
+        # Se 'last_sender' não estiver definido, atribui o valor inicial
+        ticket.last_sender = f"{user}, {date} {hours}"
+
+
+def process_ticket_files(ticket_id):
+    """Processa arquivos anexados ao chamado e retorna listas organizadas"""
+    image_data = []
+    content_file = []
+    name_file = []
+
+    act_dir = f"{getcwd()}/uploads/{ticket_id}"
+    if not (exists(act_dir) and isdir(act_dir)):
+        return image_data, content_file, name_file
+
+    ticket_files = TicketFile.objects.filter(ticket_id=ticket_id)
+    mime = Magic()
+
+    for file in ticket_files:
+        file_path = str(file.file)
+        file_name = "/".join(file_path.split("/")[2:])
+
+        try:
+            with file.file.open() as img:
+                pil_image = Image.open(img)
+                img_bytes = BytesIO()
+                pil_image.save(img_bytes, format="PNG")
+                image_data.append(
+                    {"image": b64encode(img_bytes.getvalue()).decode("utf-8")}
+                )
+                content_file.append("img")
+                name_file.append(file_name)
+
+        except UnidentifiedImageError:
+            with file.file.open("rb") as f:
+                file_content = f.read()
+                file_type = mime.from_buffer(file_content).lower()
+
+                type_mapping = {
+                    "mail": "mail",
+                    "excel": "excel",
+                    "zip": "zip",
+                    "utf-8 text": "txt",
+                    "ascii text": "txt",
+                    "microsoft word": "word",
+                    "pdf document": "pdf",
+                }
+
+                for key, value in type_mapping.items():
+                    if key in file_type:
+                        image_data.append(value)
+                        content_file.append(b64encode(file_content).decode("utf-8"))
+                        name_file.append(file_name)
+                        break
+
+    return image_data, content_file, name_file
 
 
 @never_cache
 @require_GET
 @login_required(login_url="/login")
 def update_chat(request, id):
-    ticket = None
-    chat = None
+    """
+    Atualiza e retorna o chat de um ticket específico.
+
+    A função tenta buscar o ticket pelo ID fornecido e retorna o histórico do chat em formato JSON.
+    Se ocorrer algum erro durante a recuperação do ticket, a função retorna uma mensagem de erro.
+
+    Requer que o usuário esteja autenticado (login obrigatório).
+
+    :param request: Objeto da requisição, contendo o ID do ticket e outras informações da requisição.
+    :param id: ID do ticket cujo chat será recuperado.
+
+    :return: Retorna um JSON com o histórico de chat do ticket ou um erro caso haja uma falha.
+    """
     try:
+        # Recupera o ticket correspondente ao ID fornecido
         ticket = SupportTicket.objects.get(id=id)
 
+        # Recupera o chat do ticket
         chat = ticket.chat
 
+        # Retorna o chat do ticket em formato JSON com código de status 200
         return JsonResponse({"chat": chat}, status=200, safe=True)
     except Exception as e:
-        print(e)
+        # Registra erro e retorna uma resposta de erro com status 305
+        logger.error(e)
         return JsonResponse({"Error": f"Erro inesperado {e}"}, status=305)
 
 
 @require_GET
 @login_required(login_url="/login")
 @never_cache
-def moreTicket(request):
-    username = None
-    newCount = None
-    count = 10
-    ticket_list = []
-    ticket_data = None
-    ticket_json = None
+def moreTicket(request, quantity, order, usr, sector):
+    """
+    Gera mais chamados de acordo com os filtros fornecidos (quantidade, ordem, usuário e setor).
+
+    A função retorna uma lista de tickets filtrados e ordenados com base nos parâmetros fornecidos,
+    como quantidade de tickets, setor e ordem de exibição.
+
+    :param request: Objeto da requisição.
+    :param quantity: Quantidade de tickets a serem retornados.
+    :param order: Ordem de exibição dos tickets (ex: "-id" ou outro critério).
+    :param usr: Usuário responsável pelos tickets.
+    :param sector: Setor de onde os tickets serão filtrados.
+
+    :return: Retorna um JSON com os tickets filtrados e ordenados ou um erro caso ocorra uma falha.
+    """
+    count = quantity + 10  # Ajusta a quantidade de tickets a serem retornados
     try:
-        newCount = int(request.META.get("HTTP_TICKET_CURRENT"))
-        count = count + newCount
-
-        if "HTTP_ORDER_BY" in request.META:
-            order = request.META.get("HTTP_ORDER_BY")
-            if "HTTP_TECH_DASH" in request.META:
-                if order == "-id":
-                    ticket_data = SupportTicket.objects.order_by("-id")[:count]
-
-                else:
-                    ticket_data = SupportTicket.objects[:count]
-            else:
-                username = request.META.get("HTTP_USER_DATA")
-                if order == "-id":
-                    ticket_data = SupportTicket.objects.filter(
-                        ticketRequester=username
-                    ).order_by("-id")[:count]
-
-                else:
-                    ticket_data = SupportTicket.objects.filter(
-                        ticketRequester=username
-                    )[:count]
-
+        # Se o setor for "TI", aplica a lógica de ordenação de acordo com o parâmetro "order"
+        if sector == "TI":
+            tickets = (
+                SupportTicket.objects.order_by("-id")[:count]
+                if order == "-id"
+                else SupportTicket.objects.all()[:count]
+            )
         else:
-            ticket_data = SupportTicket.objects.filter(ticketRequester=username)[:count]
+            # Se o setor não for "TI", filtra pelos tickets do usuário fornecido e aplica a ordenação
+            tickets = (
+                SupportTicket.objects.filter(ticketRequester=usr).order_by("-id")[
+                    :count
+                ]
+                if order == "-id"
+                else SupportTicket.objects.filter(ticketRequester=usr)[:count]
+            )
 
-        for ticket in ticket_data:
-            ticket_json = serialize("json", [ticket])
-            ticket_list.append(ticket_json)
+        # Serializa os tickets para retornar os campos desejados
+        ticket_objects = [
+            {**loads(serialize("json", [ticket]))[0]["fields"], "id": ticket.id}
+            for ticket in tickets
+        ]
 
-    except Exception as e:
-        print(e)
-        return JsonResponse({"Error": f"Erro inesperado {e}"}, status=306)
-
-    ticket_objects = []
-    try:
-        for ticket in ticket_list:
-            ticket_data = loads(ticket)[0]["fields"]
-            ticket_data["id"] = loads(ticket)[0]["pk"]
-            ticket_objects.append(ticket_data)
-
+        # Retorna os tickets com o status 200
         return JsonResponse(
             {"tickets": ticket_objects, "count": count}, status=200, safe=True
         )
 
     except Exception as e:
-        print(e)
+        # Registra o erro e retorna uma resposta com erro 306
+        logger.error(e)
         return JsonResponse({"Error": f"Erro inesperado {e}"}, status=306)
 
 
 @require_GET
 @login_required(login_url="/login")
 @never_cache
-def getTicketFilter(request):
-    username = None
-    Quantity_tickets = None
-    ticket_data = None
-    ticket_list = []
-    ticket_json = None
-    order = None
-    problemnFront = None
-    sectorFront = None
-    status = ""
+def get_ticket_filter(
+    request,
+    sector: str,
+    occurrence: str,
+    order: str,
+    user: str,
+    quantity: int,
+    status: str,
+    search_query: str = "",
+):
     try:
-        username = request.META.get("HTTP_DATA_USER")
-        Quantity_tickets = int(request.META.get("HTTP_QUANTITY_TICKETS"))
-        order = request.META.get("HTTP_ORDER_BY")
-        sectorFront = request.META.get("HTTP_SECTOR_TICKET")
-        problemnFront = request.META.get("HTTP_PROBLEMN_TICKET")
-        status = request.META.get("HTTP_STATUS_TICKET")
+        # Mapeia o status recebido para o formato esperado no banco de dados
+        status_opng = status_mapping.get(status, None)
 
-        if status == "open":
-            status = True
-        elif status == "close":
-            status = False
-        elif status == "all":
-            status = ""
+        if search_query in {"null", "None"}:
+            search_query = ""
 
-        if (
-            "HTTP_ORDER_BY" in request.META
-            and sectorFront == "null"
-            and problemnFront == "null"
-        ):
-            order = request.META.get("HTTP_ORDER_BY")
-            if order == "-id":
-                if status != "":
-                    ticket_data = SupportTicket.objects.filter(
-                        ticketRequester=username, open=status
-                    ).order_by("-id")[:Quantity_tickets]
-                else:
-                    ticket_data = SupportTicket.objects.filter(
-                        ticketRequester=username
-                    ).order_by("-id")[:Quantity_tickets]
+        filters = Q(ticketRequester=user)
 
-            else:
-                ticket_data = SupportTicket.objects.filter(
-                    ticketRequester=username, open=status
-                )[:Quantity_tickets]
-
-        elif "HTTP_SECTOR_TICKET" in request.META and sectorFront == "all":
-            if order == "-id":
-                if status != "":
-                    ticket_data = SupportTicket.objects.filter(
-                        ticketRequester=username, open=status
-                    ).order_by("-id")[:Quantity_tickets]
-                else:
-                    ticket_data = SupportTicket.objects.filter(
-                        ticketRequester=username
-                    ).order_by("-id")[:Quantity_tickets]
-
-            else:
-                if status != "":
-                    ticket_data = SupportTicket.objects.filter(
-                        ticketRequester=username, open=status
-                    )[:Quantity_tickets]
-                else:
-                    ticket_data = SupportTicket.objects.filter(
-                        ticketRequester=username
-                    )[:Quantity_tickets]
-
-        elif (
-            "HTTP_SECTOR_TICKET" in request.META
-            and sectorFront != "null"
-            and problemnFront == "all"
-        ):
-            if order == "-id":
-                if status != "":
-                    ticket_data = SupportTicket.objects.filter(
-                        ticketRequester=username, sector=sectorFront, open=status
-                    ).order_by("-id")[:Quantity_tickets]
-                else:
-                    ticket_data = SupportTicket.objects.filter(
-                        ticketRequester=username, sector=sectorFront
-                    ).order_by("-id")[:Quantity_tickets]
-
-            else:
-                if status != "":
-                    ticket_data = SupportTicket.objects.filter(
-                        ticketRequester=username, sector=sectorFront, open=status
-                    )[:Quantity_tickets]
-                else:
-                    ticket_data = SupportTicket.objects.filter(
-                        ticketRequester=username, sector=sectorFront
-                    )[:Quantity_tickets]
-
-        elif (
-            "HTTP_SECTOR_TICKET" in request.META
-            and sectorFront != "null"
-            and problemnFront == "null"
-        ):
-            order = request.META.get("HTTP_ORDER_BY")
-
-            if order == "-id":
-                if status != "":
-                    ticket_data = SupportTicket.objects.filter(
-                        ticketRequester=username, sector=sectorFront, open=status
-                    ).order_by("-id")[:Quantity_tickets]
-                else:
-                    ticket_data = SupportTicket.objects.filter(
-                        ticketRequester=username, sector=sectorFront
-                    ).order_by("-id")[:Quantity_tickets]
-
-            else:
-                if status != "":
-                    ticket_data = SupportTicket.objects.filter(
-                        ticketRequester=username, sector=sectorFront, open=status
-                    )[:Quantity_tickets]
-                else:
-                    ticket_data = SupportTicket.objects.filter(
-                        ticketRequester=username, sector=sectorFront
-                    )[:Quantity_tickets]
-
-        elif (
-            "HTTP_SECTOR_TICKET" in request.META
-            and sectorFront != "null"
-            and problemnFront != "null"
-        ):
-            if order == "-id":
-                if status != "":
-                    ticket_data = SupportTicket.objects.filter(
-                        ticketRequester=username,
-                        sector=sectorFront,
-                        occurrence=problemnFront,
-                        open=status,
-                    ).order_by("-id")[:Quantity_tickets]
-                else:
-                    ticket_data = SupportTicket.objects.filter(
-                        ticketRequester=username,
-                        sector=sectorFront,
-                        occurrence=problemnFront,
-                    ).order_by("-id")[:Quantity_tickets]
-
-            else:
-                if status != "":
-                    ticket_data = SupportTicket.objects.filter(
-                        ticketRequester=username,
-                        sector=sectorFront,
-                        occurrence=problemnFront,
-                        open=status,
-                    )[:Quantity_tickets]
-                else:
-                    ticket_data = SupportTicket.objects.filter(
-                        ticketRequester=username,
-                        sector=sectorFront,
-                        occurrence=problemnFront,
-                    )[:Quantity_tickets]
-
-        for ticket in ticket_data:
-            ticket_json = serialize("json", [ticket])
-            ticket_list.append(ticket_json)
-
-    except Exception as e:
-        print(e)
-        return JsonResponse({"Error": f"Erro inesperado {e}"}, status=308)
-
-    ticket_objects = []
-    try:
-        for ticket in ticket_list:
-            ticket_data = loads(ticket)[0]["fields"]
-            ticket_data["id"] = loads(ticket)[0]["pk"]
-            ticket_objects.append(ticket_data)
-
-        return JsonResponse({"tickets": ticket_objects}, status=200, safe=True)
-
-    except Exception as e:
-        print(e)
-        return JsonResponse({"Error": f"Erro inesperado {e}"}, status=308)
-
-
-@login_required(login_url="/login")
-@require_GET
-@never_cache
-def getTicketFilterWords(request):
-    username = None
-    magic_word = None
-    ticket_data = None
-    ticket_list = []
-    ticket_json = None
-    magic_word_int = None
-    order = None
-    Quantity_tickets = None
-    try:
-        magic_word = request.META.get("HTTP_WORD_FILTER")
-        order = request.META.get("HTTP_ORDER_BY")
-        Quantity_tickets = int(request.META.get("HTTP_QUANTITY_TICKETS"))
-        username = request.META.get("HTTP_DATA_USER")
-        magic_word_int = int(magic_word)
-        sector_ticket = request.META.get("HTTP_SECTOR_FILTER")
-        occurrence_ticket = request.META.get("HTTP_PROBLEM_FILTER")
-        if sector_ticket != None:
-            if occurrence_ticket != None:
-                try:
-                    magic_word_int = int(magic_word)
-                    if order == "-id":
-                        ticket_data = SupportTicket.objects.filter(
-                            respective_area="TI",
-                            id=magic_word_int,
-                            sector=sector_ticket,
-                            occurrence=occurrence_ticket,
-                            ticketRequester=username,
-                        ).order_by("-id")[:Quantity_tickets]
-
-                    else:
-                        ticket_data = SupportTicket.objects.filter(
-                            respective_area="TI",
-                            id=magic_word_int,
-                            sector=sector_ticket,
-                            occurrence=occurrence_ticket,
-                            ticketRequester=username,
-                        )[:Quantity_tickets]
-
-                    for ticket in ticket_data:
-                        ticket_json = serialize("json", [ticket])
-                        ticket_list.append(ticket_json)
-
-                    for ticket in ticket_list:
-                        ticket_data = loads(ticket)[0]["fields"]
-                        ticket_data["id"] = loads(ticket)[0]["pk"]
-                        ticket_objects.append(ticket_data)
-
-                    return JsonResponse(
-                        {"tickets": ticket_objects}, status=200, safe=True
-                    )
-                except ValueError:
-                    if order == "-id":
-                        ticket_data = SupportTicket.objects.filter(
-                            Q(ticketRequester__icontains=username)
-                            | Q(occurrence__icontains=occurrence_ticket)
-                            | Q(ticketRequester=magic_word)
-                            | Q(problemn__icontains=magic_word)
-                            | Q(observation__icontains=magic_word)
-                            | Q(respective_area__icontains=magic_word)
-                            | Q(responsible_technician__icontains=magic_word),
-                        ).order_by("-id")[:Quantity_tickets]
-
-                    else:
-                        ticket_data = SupportTicket.objects.filter(
-                            Q(ticketRequester__icontains=username)
-                            | Q(ticketRequester=magic_word)
-                            | Q(problemn__icontains=magic_word)
-                            | Q(observation__icontains=magic_word)
-                            | Q(respective_area__icontains=magic_word)
-                            | Q(responsible_technician__icontains=magic_word),
-                        )[:Quantity_tickets]
-
-                    for ticket in ticket_data:
-                        ticket_json = serialize("json", [ticket])
-                        ticket_list.append(ticket_json)
-
-                    ticket_objects = []
-
-                    for ticket in ticket_list:
-                        ticket_data = loads(ticket)[0]["fields"]
-                        ticket_data["id"] = loads(ticket)[0]["pk"]
-                        ticket_objects.append(ticket_data)
-
-                    return JsonResponse(
-                        {"tickets": ticket_objects}, status=200, safe=True
-                    )
-
-                except Exception as e:
-                    print(e)
-                    return JsonResponse(
-                        {"tickets": ticket_objects}, status=200, safe=True
-                    )
-            else:
-                try:
-                    magic_word_int = int(magic_word)
-                    if order == "-id":
-                        ticket_data = SupportTicket.objects.filter(
-                            respective_area="TI",
-                            id=magic_word_int,
-                            sector=sector_ticket,
-                            ticketRequester=username,
-                        ).order_by("-id")[:Quantity_tickets]
-
-                    else:
-                        ticket_data = SupportTicket.objects.filter(
-                            respective_area="TI",
-                            id=magic_word_int,
-                            sector=sector_ticket,
-                            ticketRequester=username,
-                        )[:Quantity_tickets]
-
-                    for ticket in ticket_data:
-                        ticket_json = serialize("json", [ticket])
-                        ticket_list.append(ticket_json)
-
-                    for ticket in ticket_list:
-                        ticket_data = loads(ticket)[0]["fields"]
-                        ticket_data["id"] = loads(ticket)[0]["pk"]
-                        ticket_objects.append(ticket_data)
-
-                    return JsonResponse(
-                        {"tickets": ticket_objects}, status=200, safe=True
-                    )
-                except ValueError:
-                    if order == "-id":
-                        ticket_data = SupportTicket.objects.filter(
-                            Q(ticketRequester__icontains=username)
-                            | Q(occurrence__icontains=magic_word)
-                            | Q(ticketRequester=magic_word)
-                            | Q(problemn__icontains=magic_word)
-                            | Q(observation__icontains=magic_word)
-                            | Q(respective_area__icontains=magic_word)
-                            | Q(responsible_technician__icontains=magic_word),
-                        ).order_by("-id")[:Quantity_tickets]
-
-                    else:
-                        ticket_data = SupportTicket.objects.filter(
-                            Q(ticketRequester__icontains=username)
-                            | Q(ticketRequester=magic_word)
-                            | Q(problemn__icontains=magic_word)
-                            | Q(observation__icontains=magic_word)
-                            | Q(respective_area__icontains=magic_word)
-                            | Q(responsible_technician__icontains=magic_word),
-                        )[:Quantity_tickets]
-
-                    for ticket in ticket_data:
-                        ticket_json = serialize("json", [ticket])
-                        ticket_list.append(ticket_json)
-
-                    ticket_objects = []
-
-                    for ticket in ticket_list:
-                        ticket_data = loads(ticket)[0]["fields"]
-                        ticket_data["id"] = loads(ticket)[0]["pk"]
-                        ticket_objects.append(ticket_data)
-
-                    return JsonResponse(
-                        {"tickets": ticket_objects}, status=200, safe=True
-                    )
-
-                except Exception as e:
-                    print(e)
-                    return JsonResponse(
-                        {"tickets": ticket_objects}, status=200, safe=True
-                    )
+        # Se o setor não for "all" ou "null", adiciona ao filtro
+        if sector.lower() not in {"all", "null"}:
+            filters &= Q(sector=sector)
+            filter_sector = True
         else:
-            try:
-                magic_word_int = int(magic_word)
-                if order == "-id":
-                    ticket_data = SupportTicket.objects.filter(
-                        respective_area="TI",
-                        id=magic_word_int,
-                        sector=sector_ticket,
-                        ticketRequester=username,
-                    ).order_by("-id")[:Quantity_tickets]
+            filter_sector = False
 
-                else:
-                    ticket_data = SupportTicket.objects.filter(
-                        respective_area="TI",
-                        id=magic_word_int,
-                        sector=sector_ticket,
-                        ticketRequester=username,
-                    )[:Quantity_tickets]
+        # Se o status não for "All" ou "null", adiciona ao filtro
+        if status_opng not in {"All", "null"}:
+            filters &= Q(open=status_opng)
 
-                    for ticket in ticket_data:
-                        ticket_json = serialize("json", [ticket])
-                        ticket_list.append(ticket_json)
-
-                    for ticket in ticket_list:
-                        ticket_data = loads(ticket)[0]["fields"]
-                        ticket_data["id"] = loads(ticket)[0]["pk"]
-                        ticket_objects.append(ticket_data)
-
-                    return JsonResponse(
-                        {"tickets": ticket_objects}, status=200, safe=True
-                    )
-            except ValueError:
-                if order == "-id":
-                    ticket_data = SupportTicket.objects.filter(
-                        Q(ticketRequester__icontains=username)
-                        | Q(occurrence__icontains=magic_word)
-                        | Q(ticketRequester=magic_word)
-                        | Q(problemn__icontains=magic_word)
-                        | Q(observation__icontains=magic_word)
-                        | Q(respective_area__icontains=magic_word)
-                        | Q(responsible_technician__icontains=magic_word),
-                    ).order_by("-id")[:Quantity_tickets]
-
-                else:
-                    ticket_data = SupportTicket.objects.filter(
-                        Q(ticketRequester__icontains=username)
-                        | Q(ticketRequester=magic_word)
-                        | Q(problemn__icontains=magic_word)
-                        | Q(observation__icontains=magic_word)
-                        | Q(respective_area__icontains=magic_word)
-                        | Q(responsible_technician__icontains=magic_word),
-                    )[:Quantity_tickets]
-
-                for ticket in ticket_data:
-                    ticket_json = serialize("json", [ticket])
-                    ticket_list.append(ticket_json)
-
-                ticket_objects = []
-
-                for ticket in ticket_list:
-                    ticket_data = loads(ticket)[0]["fields"]
-                    ticket_data["id"] = loads(ticket)[0]["pk"]
-                    ticket_objects.append(ticket_data)
-
-                return JsonResponse({"tickets": ticket_objects}, status=200, safe=True)
-
-    except Exception as e:
-        print(e)
-        return JsonResponse({"tickets": ticket_objects}, status=200, safe=True)
-
-
-@login_required(login_url="/login")
-@require_GET
-@never_cache
-def getTicketFilterStatus(request):
-    username = None
-    order = None
-    Quantity_tickets = None
-    Status = None
-    ticket_data = None
-    try:
-        username = request.META.get("HTTP_DATA_USER")
-        order = request.META.get("HTTP_ORDER_BY")
-        Quantity_tickets = int(request.META.get("HTTP_QUANTITY_TICKETS"))
-        Status = request.META.get("HTTP_STATUS_REQUEST")
-
-        if order == "-id":
-            if Status == "open":
-                ticket_data = SupportTicket.objects.filter(
-                    ticketRequester=username, open=True
-                ).order_by("-id")[:Quantity_tickets]
-            elif Status == "close":
-                ticket_data = SupportTicket.objects.filter(
-                    ticketRequester=username, open=None
-                ).order_by("-id")[:Quantity_tickets]
-            elif Status == "stop":
-                ticket_data = SupportTicket.objects.filter(
-                    ticketRequester=username, open=False
-                ).order_by("-id")[:Quantity_tickets]
-            elif Status == "all":
-                ticket_data = SupportTicket.objects.filter(
-                    ticketRequester=username
-                ).order_by("-id")[:Quantity_tickets]
+        # Se a ocorrência não for "all" ou "null", adiciona ao filtro
+        if occurrence.lower() not in {"all", "null"}:
+            filters &= Q(occurrence=occurrence)
+            filter_occurrence = True
         else:
-            if Status == "open":
-                ticket_data = SupportTicket.objects.filter(
-                    ticketRequester=username, open=True
-                )[:Quantity_tickets]
-            elif Status == "stop":
-                ticket_data = SupportTicket.objects.filter(
-                    ticketRequester=username, open=None
-                )[:Quantity_tickets]
-            elif Status == "close":
-                ticket_data = SupportTicket.objects.filter(
-                    ticketRequester=username, open=False
-                )[:Quantity_tickets]
-            elif Status == "all":
-                ticket_data = SupportTicket.objects.filter(ticketRequester=username)[
-                    :Quantity_tickets
-                ]
+            filter_occurrence = False
 
-    except Exception as e:
-        print(e)
-        return JsonResponse({"Error": f"Erro inesperado {e}"}, status=309)
+        search_filters = Q()
 
-    ticket_list = []
-    ticket_json = None
-    try:
-        for ticket in ticket_data:
-            ticket_json = serialize("json", [ticket])
-            ticket_list.append(ticket_json)
+        # Verifica se o search_query contém apenas números
+        if search_query.isdigit():
+            # Caso contenha apenas números, busca por ID
+            search_filters |= Q(id__icontains=search_query)
 
-        ticket_objects = []
-        for ticket in ticket_list:
-            ticket_data = loads(ticket)[0]["fields"]
-            ticket_data["id"] = loads(ticket)[0]["pk"]
-            ticket_objects.append(ticket_data)
+            # Busca por datas que contenham o número (ano, mês, dia, hora, etc.)
+            search_filters |= Q(start_date__icontains=search_query)
+        else:
+            # Caso contrário, realiza busca pelos outros campos
+            if not filter_sector:
+                search_filters |= Q(sector__icontains=search_query)
+                search_filters |= Q(occurrence__icontains=search_query)
+                search_filters |= Q(problemn__icontains=search_query)
 
+            if not filter_occurrence:
+                search_filters |= Q(occurrence__icontains=search_query)
+                search_filters |= Q(problemn__icontains=search_query)
+
+            if filter_sector and filter_occurrence:
+                search_filters |= Q(problemn__icontains=search_query)
+
+        # Aplica o filtro de pesquisa
+        if search_query:
+            filters &= search_filters
+        # Filtra os chamados com base nos critérios e aplica a ordenação, caso fornecida
+        tickets = SupportTicket.objects.filter(filters).order_by(order or "-id")[
+            :quantity
+        ]
+
+        # Serializa os objetos para JSON, incluindo o ID do chamado
+        ticket_objects = [
+            {**loads(serialize("json", [ticket]))[0]["fields"], "id": ticket.id}
+            for ticket in tickets
+        ]
+
+        # Retorna a lista de chamados em formato JSON
         return JsonResponse({"tickets": ticket_objects}, status=200, safe=True)
 
     except Exception as e:
-        print(e)
-        return JsonResponse({"Error": f"Erro inesperado {e}"}, status=309)
+        # Registra o erro no log e retorna uma resposta de erro
+        logger.error(f"Erro ao buscar chamados: {e}")
+        return JsonResponse({"Error": f"Erro inesperado {e}"}, status=308)
 
 
 @contextmanager
@@ -2212,14 +1380,14 @@ def get_database_connection():
     """Context manager for managing database connections."""
     connection = None
     try:
-        connection = mysql.connector.connect(
+        connection = connector.connect(
             host=config("DB_HOST"),
             database=config("DB_NAME"),
             user=config("DB_USER"),
             password=config("DB_PASSWORD"),
         )
         yield connection
-    except mysql.connector.Error as err:
+    except connector.Error as err:
         logger.error(f"Database connection error: {err}")
         raise
     finally:
@@ -2273,7 +1441,7 @@ def convert_to_dict(chat_data):
         pattern = r"\[([^:\[\]]+):([^,\]]+)"
 
         # Encontrar todas as correspondências na string
-        matches = re.findall(pattern, chat_data)
+        matches = findall(pattern, chat_data)
 
         # Inicializar o dicionário
         dictionary = {}
@@ -2394,7 +1562,7 @@ def changeLastViewer(request, id):
         ticket_data.last_viewer = last_vw
         ticket_data.save()
 
-        threading.Thread(
+        Thread(
             target=verifyNotificationCall,
             args=(id,),
         ).start()
@@ -2446,8 +1614,8 @@ class CountdownTimer:
 
     def start(self):
         """Inicia o contador."""
-        self.start_time = time.time()
-        self.timer = threading.Timer(self.duration, self.callback)
+        self.start_time = time()
+        self.timer = Timer(self.duration, self.callback)
         self.timer.start()
 
     def stop(self):
@@ -2578,7 +1746,8 @@ def verifyNotificationCall(
 ):
     try:
         ticket = SupportTicket.objects.filter(id=id)
-
+        last_sender_adjust_string = None
+        last_viewer_adjust_string = None
         for field in ticket:
             # Separa os valores da última mensagem pelo separador vírgula
             if field.last_sender:

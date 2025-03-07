@@ -10,6 +10,7 @@ from django.views.decorators.http import require_POST
 from django.views.decorators.cache import never_cache
 from django.db import transaction
 from logging import basicConfig, INFO, getLogger
+from django.core.handlers.wsgi import WSGIRequest
 
 load_dotenv()
 dominio = getenv("DOMAIN_NAME_HELPDESK")
@@ -23,7 +24,9 @@ logger = getLogger(__name__)
 
 
 @transaction.atomic  # Garante que todas as operações no banco de dados sejam atômicas
-def CreateOrVerifyUser(user, password, request, helpdesk, name_create_user):
+def CreateOrVerifyUser(
+    user: str, password: str, request: WSGIRequest, helpdesk: str, name_create_user: str
+):
     """
     Cria um usuário Django caso não exista ou verifica sua existência, ajustando seus grupos conforme necessário.
 
@@ -43,6 +46,7 @@ def CreateOrVerifyUser(user, password, request, helpdesk, name_create_user):
     :return: Tupla (bool, str|Exception), onde o booleano indica sucesso e o segundo valor contém erro ou mensagem vazia.
     """
     try:
+        print("type(request): ", type(request))
         # Verifica se o usuário já existe no banco de dados
         user_auth = User.objects.get(username=user)
     except User.DoesNotExist:
@@ -165,7 +169,7 @@ def validation(request):
     return JsonResponse({"data": client_data}, status=200, safe=True)
 
 
-def connect_ldap(user, password):
+def connect_ldap(user: str, password: str):
     """
     Estabelece uma conexão segura com um servidor LDAP e retorna os dados do usuário.
 
@@ -221,7 +225,7 @@ def connect_ldap(user, password):
             conn.unbind()
 
 
-def create_class_user(extractor):
+def create_class_user(extractor: dict):
     """
     Cria uma instância de usuário a partir dos dados extraídos do LDAP.
 
