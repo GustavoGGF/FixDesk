@@ -1306,9 +1306,11 @@ def get_ticket_filter(
         # Mapeia o status recebido para o formato esperado no banco de dados
         status_opng = status_mapping.get(status, None)
 
+        # Se o search_query for "null" ou "None", redefine o valor para uma string vazia
         if search_query in {"null", "None"}:
             search_query = ""
 
+        # Inicializa o filtro principal obrigando a busca pelo "ticketRequester"
         filters = Q(ticketRequester=user)
 
         # Se o setor não for "all" ou "null", adiciona ao filtro
@@ -1329,55 +1331,65 @@ def get_ticket_filter(
         else:
             filter_occurrence = False
 
+        # Inicializa os filtros para busca de texto
         search_filters = Q()
 
         # Verifica se o search_query contém apenas números
         if search_query.isdigit():
-            # Caso contenha apenas números, busca por ID
+            # Se contiver apenas números, realiza busca por ID ou data
             search_filters |= Q(id__icontains=search_query)
-
-            # Busca por datas que contenham o número (ano, mês, dia, hora, etc.)
             search_filters |= Q(start_date__icontains=search_query)
         else:
-            # Caso contrário, realiza busca pelos outros campos
+            # Se for texto, realiza busca por setor, ocorrência ou problema
             if not filter_sector:
                 search_filters |= Q(sector__icontains=search_query)
                 search_filters |= Q(occurrence__icontains=search_query)
                 search_filters |= Q(problemn__icontains=search_query)
 
+            # Se a ocorrência não for filtrada, adiciona também a busca por ocorrência ou problema
             if not filter_occurrence:
                 search_filters |= Q(occurrence__icontains=search_query)
                 search_filters |= Q(problemn__icontains=search_query)
 
+            # Se ambos setor e ocorrência forem filtrados, busca apenas pelo problema
             if filter_sector and filter_occurrence:
                 search_filters |= Q(problemn__icontains=search_query)
 
-        # Aplica o filtro de pesquisa
+        # Aplica o filtro de pesquisa caso haja search_query
         if search_query:
             filters &= search_filters
-        # Filtra os chamados com base nos critérios e aplica a ordenação, caso fornecida
+
+        # Filtra os chamados com base nos critérios definidos e aplica a ordenação
         tickets = SupportTicket.objects.filter(filters).order_by(order or "-id")[
             :quantity
         ]
 
-        # Serializa os objetos para JSON, incluindo o ID do chamado
+        # Serializa os objetos para JSON e inclui o ID do chamado
         ticket_objects = [
             {**loads(serialize("json", [ticket]))[0]["fields"], "id": ticket.id}
             for ticket in tickets
         ]
 
-        # Retorna a lista de chamados em formato JSON
+        # Retorna os chamados em formato JSON
         return JsonResponse({"tickets": ticket_objects}, status=200, safe=True)
 
     except Exception as e:
-        # Registra o erro no log e retorna uma resposta de erro
+        # Registra qualquer erro e retorna uma resposta com o erro
         logger.error(f"Erro ao buscar chamados: {e}")
         return JsonResponse({"Error": f"Erro inesperado {e}"}, status=308)
 
 
 @contextmanager
 def get_database_connection():
-    """Context manager for managing database connections."""
+    """
+    Context manager for gerenciar conexões com o banco de dados MySQL.
+
+    Este contexto gerencia a criação, uso e fechamento da conexão com o banco de dados,
+    garantindo que a conexão seja encerrada corretamente mesmo em caso de erro.
+
+    :yield: Conexão ativa com o banco de dados.
+    :raises connector.Error: Levanta um erro se a conexão com o banco de dados falhar.
+    """
     connection = None
     try:
         connection = connector.connect(
@@ -1388,7 +1400,7 @@ def get_database_connection():
         )
         yield connection
     except connector.Error as err:
-        logger.error(f"Database connection error: {err}")
+        logger.error(f"Erro na conexão com o banco de dados: {err}")
         raise
     finally:
         if connection and connection.is_connected():
@@ -1399,30 +1411,37 @@ def get_database_connection():
 @require_GET
 @never_cache
 def equipamentsForAlocate(request):
-    connection = None
-    cursor = None
-    query = None
-    result = None
-    results_list = None
+    """
+    Conecta-se ao banco de dados MySQL e busca uma lista de computadores disponíveis
+    para alocação (com o campo 'alocate' igual a 0).
+
+    Esta função realiza uma consulta ao banco de dados, recupera os registros de computadores
+    que ainda não foram alocados e os retorna em formato JSON.
+
+    :param request: Objeto de requisição HTTP.
+    :return: JSON contendo uma lista de máquinas com os detalhes de mac_address, distribuição,
+             fabricante e modelo.
+    :raises Exception: Levanta erro se ocorrer uma falha inesperada durante a execução.
+    """
+    results_list = []
     try:
         with get_database_connection() as connection:
-            cursor = connection.cursor()
-            query = "SELECT * from machines WHERE alocate = 0"
-            cursor.execute(query)
-            result = cursor.fetchall()
+            with connection.cursor() as cursor:
+                query = "SELECT * from machines WHERE alocate = 0"
+                cursor.execute(query)
+                result = cursor.fetchall()
 
-            # Converta os resultados para uma lista de dicionários
-            results_list = [
-                {
-                    "mac_address": row[0],
-                    "distribution": row[3],
-                    "manufacturer": row[9],
-                    "model": row[10],
-                }
-                for row in result
-            ]
+                results_list = [
+                    {
+                        "mac_address": row[0],
+                        "distribution": row[3],
+                        "manufacturer": row[9],
+                        "model": row[10],
+                    }
+                    for row in result
+                ]
     except Exception as e:
-        print(e)
+        logger.error(e)
         return JsonResponse({"Error": f"Erro inesperado {e}"}, status=310)
     finally:
         if connection.is_connected():
@@ -1432,167 +1451,184 @@ def equipamentsForAlocate(request):
     return JsonResponse({"machines": results_list}, status=200, safe=True)
 
 
-# Função para converter a lista de strings em uma lista de dicionários
 def convert_to_dict(chat_data):
+    """
+    Converte os dados do chat em um dicionário a partir de uma string formatada.
+
+    A função utiliza uma expressão regular para extrair pares de chave-valor da string `chat_data`
+    e os retorna como uma lista de dicionários.
+
+    :param chat_data: Dados do chat em formato de string.
+    :return: Lista de dicionários contendo os pares chave-valor extraídos da string.
+    :raises Exception: Levanta erro se ocorrer uma falha inesperada durante a execução.
+    """
+    # Verifica se chat_data está vazio, se estiver, retorna uma lista vazia
     if not chat_data:
         return []
 
     try:
+        # Define o padrão (regex) para capturar chave-valor no formato [chave:valor]
         pattern = r"\[([^:\[\]]+):([^,\]]+)"
 
-        # Encontrar todas as correspondências na string
+        # Usa o findall para encontrar todas as ocorrências do padrão na string chat_data
         matches = findall(pattern, chat_data)
 
-        # Inicializar o dicionário
-        dictionary = {}
-        dictionaries = []
-
-        # Adicionar as correspondências ao dicionário
-        for match in matches:
-            key = match[0]
-            value = match[1]
-            dictionary = {key: value}
-            dictionaries.append(dictionary)
+        # Para cada ocorrência encontrada, cria um dicionário com chave e valor extraídos
+        return [{match[0]: match[1]} for match in matches]
 
     except Exception as e:
+        # Em caso de erro, imprime o erro e retorna um JsonResponse com status de erro
         print(e)
         return JsonResponse({"Error": f"Erro inesperado {e}"}, status=311)
 
-    return dictionaries
 
+def dateEquipamentsAlocate(request, mac: str):
+    """
+    Verifica as datas disponíveis para locação de um equipamento com base no seu MAC address.
 
-def dateEquipamentsAlocate(request, mac):
+    A função consulta os tickets de suporte para um equipamento específico (identificado pelo
+    MAC address) e retorna as datas de alocação associadas ao equipamento.
+
+    :param request: Objeto de requisição HTTP.
+    :param mac: Endereço MAC do equipamento a ser verificado.
+    :return: JSON contendo uma lista de datas de alocação para o equipamento.
+    :raises Exception: Levanta erro se ocorrer uma falha inesperada durante a execução.
+    """
     tickets = None
     alocate_dates = None
     try:
+        # Filtra os tickets de suporte para o equipamento específico (baseado no MAC address)
         tickets = SupportTicket.objects.filter(equipament=mac)
 
-        # Em seguida, extraia os valores do campo 'alocate_date' em um array
+        # Extrai a lista de datas de alocação dos tickets encontrados
         alocate_dates = tickets.values_list("date_alocate", flat=True)
 
-        # O resultado será um queryset contendo apenas os valores de 'alocate_date'
-        # Você pode converter para uma lista, se necessário
+        # Converte o queryset para uma lista simples
         alocate_dates_list = list(alocate_dates)
 
+        # Retorna as datas de alocação em formato JSON
         return JsonResponse({"dates": alocate_dates_list}, status=200, safe=True)
     except Exception as e:
-        print(e)
+        # Em caso de erro, registra o erro no log e retorna uma resposta JSON com status de erro
+        logger.error(e)
         return JsonResponse({"Error": f"Erro inesperado {e}"}, status=312)
 
 
-@require_POST  # Garante que a função só será chamada com um POST
-@login_required(
-    login_url="/login"
-)  # Garante que o usuário está autenticado, redirecionando para login se necessário
-@requires_csrf_token  # Exige um token CSRF para proteger contra ataques CSRF
+@require_POST
+@login_required(login_url="/login")
+@requires_csrf_token
 @transaction.atomic
-def changeLastViewer(request, id):
-    # Inicializa variáveis para armazenar dados do chamado, chat, seções, e resultados de verificações
-    ticket_data = None
-    chat = None
-    sections = None
-    result = None
-    last_vw = None
-    body = None
-    grouped = None
-    try:
-        # Obtém os dados do chamado, filtrando pela área TI e pelo id fornecido
-        ticket_data = SupportTicket.objects.get(respective_area="TI", id=id)
+def change_last_viewer(request: WSGIRequest, id: int):
+    """
+    Altera o último visualizador de um chamado e aciona uma função para verificar a situação do chamado.
 
-        # Verifica se o chamado tem chat associado
+    A função atualiza o campo `last_viewer` do chamado no banco de dados e verifica se a alteração
+    é válida com base no tipo de usuário (técnico ou solicitante). Após a alteração, uma função
+    de verificação de notificação é acionada em uma thread separada.
+
+    :param request: Objeto de requisição HTTP contendo dados para atualização.
+    :param id: ID do chamado a ser alterado.
+    :return: JSON indicando o status da alteração ou erro.
+    :raises Exception: Levanta erro se ocorrer uma falha inesperada durante a execução.
+    """
+    try:
+        # Obtém o ticket de suporte com base no ID e área respectiva
+        ticket_data = SupportTicket.objects.get(respective_area="TI", id=id)
         chat = ticket_data.chat
-        if chat == None or len(chat) <= 0:
-            # Se não houver chat, retorna um status indicando que o chamado não foi atendido
+
+        # Verifica se o chat existe para o ticket
+        if not chat:
             return JsonResponse(
                 {"status": "Chamado ainda não foi atendido"}, safe=True, status=201
             )
 
-        # Divide o chat em seções, separando os dados entre as entradas com base nas vírgulas externas aos colchetes
+        # Divide o chat em seções para processamento posterior
         sections = chat.split("],[")
 
-        # Adiciona os colchetes de volta para corrigir o primeiro e último item da lista
+        # Ajusta o primeiro e último item para garantir a formatação correta
         sections[0] = "[" + sections[0]
         sections[-1] = sections[-1] + "]"
 
-        # Transforma as seções em arrays, separando os valores por vírgula
+        # Agrupa as seções em listas de 3 elementos
         grouped = [section.split(",") for section in sections]
-
-        # Agrupa as seções em blocos de 3 elementos
         result = [grouped[i : i + 3] for i in range(0, len(grouped), 3)]
 
+        # Verifica se houve mensagens além do sistema, se não, retorna uma mensagem de erro
         if len(result) == 1:
-            # Se a lista de mensagens for composta por apenas uma entrada (do sistema), retorna que nenhuma mensagem foi enviada
             return JsonResponse(
                 {"status": "Não houve mensagem enviada além do sistema"},
                 safe=True,
                 status=201,
             )
 
-        # Carrega o corpo da requisição para obter dados adicionais
+        # Obtém os dados enviados no corpo da requisição
         body = loads(request.body)
-        last_vw = body.get("viewer")  # Último visualizador
-        tech = body.get("technician")  # Nome do técnico
-        requester = body.get(
-            "requester"
-        )  # Quem está fazendo a requisição (técnico ou usuário)
+        last_vw = body.get("viewer")
+        tech = body.get("technician")
+        requester = body.get("requester")
 
-        # Verifica se o solicitante é o técnico
+        # Verifica se o técnico correto está visualizando o chamado
         if requester == "tech":
-            # Chama a função de verificação de nomes para garantir que o chamado está sendo visualizado pelo técnico correto
             verify = verify_names(last_vw, tech)
             if not verify:
-                # Se o técnico não for o correto, retorna uma mensagem de erro
                 return JsonResponse(
                     {"status": "O Chamado é de outro Técnico"},
                     safe=True,
                     status=201,
                 )
 
-        # Verifica se o solicitante é o usuário
-        elif requester == "user":
-            # Se o solicitante for o usuário, garante que o último visualizador seja o mesmo que o solicitante do chamado
-            if last_vw != ticket_data.ticketRequester:
-                return JsonResponse(
-                    {"status": "O Chamado não é desse usuário"},
-                    safe=True,
-                    status=201,
-                )
+        # Verifica se o usuário correto está visualizando o chamado
+        elif requester == "user" and last_vw != ticket_data.ticketRequester:
+            return JsonResponse(
+                {"status": "O Chamado não é desse usuário"},
+                safe=True,
+                status=201,
+            )
 
-        # Se todas as verificações passarem, atualiza o último visualizador do chamado
+        # Atualiza o último visualizador e salva o ticket
         ticket_data.last_viewer = last_vw
         ticket_data.save()
 
+        # Inicia uma thread para verificar a notificação do chamado
         Thread(
             target=verifyNotificationCall,
             args=(id,),
         ).start()
-        # Retorna sucesso
+
+        # Retorna um status indicando que o último visualizador foi alterado com sucesso
         return JsonResponse({"status": "Last Viewer Alterado"}, safe=True, status=200)
 
     except Exception as e:
-        # Em caso de erro, imprime a exceção e retorna um status de falha
-        print(e)
+        # Registra o erro no log e retorna um erro genérico
+        logger.error(e)
         return JsonResponse({"status": "fail"}, safe=True, status=311)
 
 
 def verify_names(name_verify, responsible_technician):
+    """
+    Verifica se dois nomes são da mesma pessoa, considerando possíveis variações de sobrenome (como 'da', 'de').
+
+    A função compara duas strings de nomes, verificando se todos os componentes do nome do técnico (responsible_technician)
+    estão presentes no nome a ser verificado (name_verify). Isso permite que nomes com sobrenomes faltando (como "da" ou "de")
+    sejam considerados iguais.
+
+    :param name_verify: Nome a ser verificado.
+    :param responsible_technician: Nome do técnico responsável.
+    :return: Retorna True se os nomes corresponderem, considerando as variações, ou False caso contrário.
+    """
     if name_verify:
-        # Divide o nome completo que será verificado em uma lista de palavras (nome e sobrenome)
+        # Se name_verify não for vazio, divide o nome em palavras
         name_ver = name_verify.split(" ")
 
-    # Verifica se existe um responsável técnico fornecido
     if responsible_technician:
-        # Divide o nome completo do responsável técnico em uma lista de palavras (nome e sobrenome)
+        # Se responsible_technician não for vazio, divide o nome do técnico em palavras
         tech_ver = responsible_technician.split(" ")
 
-        # Verifica se todas as palavras do nome do responsável técnico estão presentes no nome a ser verificado
-        # 'all' retorna True se todos os elementos da expressão forem True
+        # Verifica se todas as palavras do nome do técnico estão presentes no nome a ser verificado
         all_find = all(word in name_ver for word in tech_ver)
-
-        # Retorna True se todas as palavras do nome do responsável técnico estiverem no nome a ser verificado
         return all_find
 
-    # Se não houver responsável técnico, retorna False indicando que a verificação falhou
+    # Retorna False caso não haja nome a ser verificado ou nome do técnico responsável
     return False
 
 
@@ -1601,166 +1637,240 @@ timers_lock = Lock()
 
 
 class CountdownTimer:
+    """
+    Classe que representa um temporizador regressivo associado a um ID e uma função de callback.
+
+    Essa classe permite iniciar e parar um temporizador que executará a função de callback após um período determinado.
+
+    :param duration: Duração do temporizador em segundos.
+    :param callback: Função a ser chamada ao término do temporizador.
+    :param id: Identificador único para o temporizador.
+    """
+
     def __init__(self, duration, callback, id):
-        """
-        duration: tempo em segundos (ex: 5 minutos = 300 segundos)
-        callback: função que será chamada quando o tempo terminar
-        """
-        self.duration = duration
-        self.callback = callback
-        self.id = id
-        self.timer = None
-        self.start_time = None  # Armazena o tempo de início
+        self.duration = duration  # Define a duração do temporizador em segundos
+        self.callback = (
+            callback  # Define a função de callback a ser executada ao final do tempo
+        )
+        self.id = id  # Atribui um identificador único ao temporizador
+        self.timer = None  # Inicializa o temporizador como None
+        self.start_time = (
+            None  # Inicializa a variável que armazenará o momento de início
+        )
 
     def start(self):
-        """Inicia o contador."""
-        self.start_time = time()
-        self.timer = Timer(self.duration, self.callback)
-        self.timer.start()
+        """
+        Inicia o temporizador, registrando o momento de início e agendando a execução da callback.
+        """
+        self.start_time = (
+            time()
+        )  # Registra o momento em que o temporizador foi iniciado
+        self.timer = Timer(
+            self.duration, self.callback
+        )  # Cria um temporizador com a duração especificada
+        self.timer.start()  # Inicia o temporizador
 
     def stop(self):
-        """Para o contador antes de completar."""
-        if self.timer:
-            self.timer.cancel()
+        """
+        Cancela o temporizador caso ele esteja em execução.
+        """
+        if self.timer:  # Verifica se há um temporizador ativo
+            self.timer.cancel()  # Cancela a execução do temporizador
 
 
-# Função que será chamada após 5 minutos
 def notify(id):
+    """
+    Envia uma notificação por e-mail quando uma mensagem em um chamado não é visualizada.
+
+    A função realiza uma série de verificações, como:
+    - Se o técnico possui um e-mail registrado.
+    - Se o chamado está aberto.
+    - Identifica o último remetente da mensagem.
+    - Envia um e-mail para o destinatário adequado (técnico ou usuário) com as últimas mensagens não visualizadas.
+
+    :param id: ID do chamado no sistema.
+    """
     mail_tech = None
     try:
-        ticket = SupportTicket.objects.filter(id=id)
+        # Obtém o ticket correspondente ao ID fornecido.
+        ticket = SupportTicket.objects.get(id=id)
 
+        # Mensagem que será enviada informando que a mensagem não foi visualizada.
         msg2 = f"Chamado {id}: Menssagem não Visualizada!"
 
-        for field in ticket:
-            last_sender, _ = field.last_sender.split(", ")
-            chat = field.chat
-            status = field.open
-            mail_tech = field.technician_mail
-            mail_user = field.mail
+        # Extrai o último remetente e as informações do chat.
+        last_sender, _ = ticket.last_sender.split(", ")
+        chat = ticket.chat
+        status = ticket.open
+        mail_tech = ticket.technician_mail
+        mail_user = ticket.mail
 
+        # Verifica se o e-mail do técnico está presente.
         if not mail_tech or mail_tech == None:
-            print("email do tecnico não existe")
-            active_timers[id].stop()
-            del active_timers[id]
-            return
+            logger.error("email do tecnico não existe")
+            return stop_timer(id)
 
+        # Verifica se o e-mail do técnico está presente.
+        if not mail_user or mail_user == None:
+            logger.error("email do tecnico não existe")
+            return stop_timer(id)
+
+        # Verifica se o status do chamado está aberto.
         if not status or status == None:
-            print("Chamado não esta aberto")
-            active_timers[id].stop()
-            del active_timers[id]
-            return
+            return stop_timer(id)
 
-        # Divide o chat em seções, separando os dados entre as entradas com base nas vírgulas externas aos colchetes
+        # Divide o chat em seções para processar as mensagens.
         sections = chat.split("],[")
 
-        # Adiciona os colchetes de volta para corrigir o primeiro e último item da lista
+        # Ajusta a formatação da primeira e última seção do chat.
         sections[0] = "[" + sections[0]
         sections[-1] = sections[-1] + "]"
 
-        # # Transforma as seções em arrays, separando os valores por vírgula
-        # grouped = [section.split(",") for section in sections]
-
-        # Agrupa as seções em blocos de 3 elementos
+        # Agrupa as seções em pacotes de três elementos.
         result = [sections[i : i + 3] for i in range(0, len(sections), 3)]
-        message_ux = result[-1][1]
+        message_ux = result[-1][1]  # Pega a última mensagem.
 
-        split_item = message_ux.split(":")  # Fazendo o split da string
+        # Separa a mensagem para identificar quem foi o remetente.
+        split_item = message_ux.split(":")
 
+        # Define o destinatário com base no remetente da mensagem.
         if split_item[0] == "Technician":
             primary = "Technician"
-            mailTo = mail_user
+            mailTo = mail_user  # Envia para o usuário.
         elif split_item[0] == "User":
             primary = "User"
-            mailTo = mail_tech
+            mailTo = mail_tech  # Envia para o técnico.
         else:
             print("Erro ao detectar quem enviou a menssagem")
+            # Para o temporizador ativo e remove da lista de timers.
             active_timers[id].stop()
             del active_timers[id]
             return
 
-        # Acessando os últimos 3 arrays de result
+        # Pega as últimas cinco mensagens do chat.
         last_three = result[-5:]
 
-        messages = []  # Cria uma lista para armazenar as mensagens
-        # Iterando sobre os últimos 3 arrays
+        # Armazena as mensagens a serem enviadas no e-mail.
+        messages = []
         for item in last_three:
-            # Acessando o segundo valor do array interno (índice 1)
-            second_value = item[
-                1
-            ]  # item[0][1] porque cada item é uma lista de 3 sub-arrays
-
-            # Fazendo o split para separar a chave do valor
+            second_value = item[1]
             split_value = second_value.split(":")
 
+            # Verifica se a mensagem pertence ao remetente identificado (técnico ou usuário).
             if split_value[0].strip() == primary:
                 messages.append(split_value[1].strip())
 
-        # Criando a string msg2 com as mensagens separadas por novas linhas
+        # Formata o corpo do e-mail com as mensagens.
         msg = f"{last_sender} enviou uma mensagem.\n{chr(10).join(messages)}"
 
-        if id in active_timers:
-            pass
-        else:
+        # Verifica se o temporizador ainda está ativo.
+        if id not in active_timers:
             return
 
-        task = Thread(
+        # Inicia a thread para enviar o e-mail.
+        Thread(
             target=sendMail,
             args=(mailTo, msg, msg2),
         )
 
-        task.start()
-
-        active_timers[id].stop()
-        del active_timers[id]
-        return
+        # Retorna finalizando o time do ID especificado
+        return stop_timer(id)
     except Exception as e:
-        print(e)
-
+        logger.error(e)
+        # Retorna finalizando o time do ID especificado
+        return stop_timer(id)
     finally:
-        if id in active_timers:
-            active_timers[id].stop()
-            del active_timers[id]
+        # Retorna finalizando o time do ID especificado
+        return stop_timer(id)
+
+
+def stop_timer(id):
+    """
+    Remove o temporizador associado a um ID do dicionário `active_timers`.
+
+    A função verifica se o ID está presente no dicionário `active_timers`,
+    para então parar o temporizador e removê-lo da lista.
+
+    :param id: ID do temporizador a ser removido.
+    """
+    # Verifica se o ID existe no dicionário de temporizadores ativos.
+    if id in active_timers:
+        # Para o temporizador associado ao ID.
+        active_timers[id].stop()
+        # Remove o temporizador do dicionário.
+        del active_timers[id]
 
 
 def callTimer(id, status):
-    global active_timers, timers_lock
-    with timers_lock:  # Bloqueia o acesso a active_timers
-        if status == "start":
-            if id in active_timers:
-                return
-            else:
-                timer = CountdownTimer(10800, lambda: notify(id), id)
-                timer.start()
-                active_timers[id] = timer
-                return
-        elif status == "stop":
-            if id in active_timers:
-                active_timers[id].stop()
-                del active_timers[id]
-                return
+    """
+    Inicia ou para a chamada de e-mail de um chamado específico baseado no status fornecido.
+
+    A função verifica o status ("start" ou "stop") e realiza a ação apropriada para iniciar
+    ou parar o temporizador associado ao chamado identificado pelo ID.
+
+    :param id: ID do chamado para o qual o temporizador será iniciado ou parado.
+    :param status: O status que determina se o temporizador deve ser iniciado ("start") ou parado ("stop").
+    """
+    global active_timers  # Define que a variável global active_timers será usada.
+
+    with (
+        timers_lock
+    ):  # Utiliza um lock para garantir que o código seja executado de maneira thread-safe.
+        try:
+            if status == "start":  # Se o status for "start", iniciar o temporizador.
+                if (
+                    id not in active_timers
+                ):  # Verifica se já existe um temporizador para o ID.
+                    # Cria um novo temporizador com 10800 segundos (3 horas) e uma callback para a função 'notify'.
+                    timer = CountdownTimer(10800, lambda: notify(id), id)
+                    timer.start()  # Inicia o temporizador.
+                    active_timers[id] = (
+                        timer  # Armazena o temporizador no dicionário `active_timers`.
+                    )
+                    return
+            elif status == "stop":  # Se o status for "stop", parar o temporizador.
+                if id in active_timers:  # Verifica se o ID tem um temporizador ativo.
+                    # Chama a função `stop_timer` para interromper o temporizador.
+                    return stop_timer(id)
+        except Exception as e:
+            # Caso ocorra algum erro, registra o erro no log.
+            logger.error(f"Erro ao tentar {status} o timer para o chamado {id}: {e}")
 
 
-def verifyNotificationCall(
-    id,
-):
+def verifyNotificationCall(id):
+    """
+    Verifica se é válido iniciar o temporizador para enviar a notificação por e-mail, com base
+    nos dados do chamado. A função compara os campos 'last_sender' e 'last_viewer' e decide
+    se o temporizador deve ser iniciado ou parado.
+
+    :param id: ID do chamado que será verificado.
+    """
     try:
-        ticket = SupportTicket.objects.filter(id=id)
-        last_sender_adjust_string = None
-        last_viewer_adjust_string = None
-        for field in ticket:
-            # Separa os valores da última mensagem pelo separador vírgula
-            if field.last_sender:
-                last_sender, _ = field.last_sender.split(", ")
-                last_sender_adjust_string = last_sender.replace(" ", "")
-            if field.last_viewer:
-                last_viewer = field.last_viewer
-                last_viewer_adjust_string = last_viewer.replace(" ", "")
+        # Obtém o ticket do banco de dados utilizando o ID fornecido.
+        ticket = SupportTicket.objects.get(id=id)
 
-        if last_sender_adjust_string == last_viewer_adjust_string:
+        # Recupera os valores de 'last_sender' e 'last_viewer' do ticket.
+        last_sender = ticket.last_sender
+        last_viewer = ticket.last_viewer
+
+        # Verifica se ambos os campos possuem valores válidos.
+        if not last_sender or not last_viewer:
+            logger.error(
+                f"Faltando dados para o chamado {id}. 'last_sender' ou 'last_viewer' estão ausentes."
+            )
+            return  # Se faltar dados, a função retorna sem fazer mais verificações.
+
+        # Ajusta o formato do nome do último remetente e do último visualizador para comparações.
+        last_sender_adjusted = last_sender.split(", ")[0].replace(" ", "")
+        last_viewer_adjusted = last_viewer.replace(" ", "")
+
+        # Se o último remetente e o último visualizador forem iguais, inicia o temporizador.
+        if last_sender_adjusted == last_viewer_adjusted:
             return callTimer(id, "start")
         else:
+            # Caso contrário, para o temporizador.
             return callTimer(id, "stop")
 
     except Exception as e:
-        return print(e)
+        # Caso ocorra algum erro, loga a exceção.
+        return logger.error(f"Erro ao verificar o chamado {id}: {e}")

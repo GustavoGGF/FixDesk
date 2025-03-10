@@ -40,7 +40,7 @@ urlpatterns = [
     ),
     path(
         "change-last-viewer/<int:id>",
-        views.changeLastViewer,
+        views.change_last_viewer,
         name="central-change-last-viewer",
     ),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
