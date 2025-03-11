@@ -35,7 +35,7 @@ import "react-day-picker/dist/style.css";
  * - DashboardBar: componente de barra do painel de instrumentos.
  * - Mail, XLS, ZIP, TXT, WORD, PDF, Download, Exclude, DownTick, Seeting, Send: importações de imagens de componentes.
  */
-import { ButtonDet, Div, DivChatDetails, DivDetaisl, DivFilter, DropBTN, DropContent2, IMGConfig, ImgSend, TextObersavation, ZIndex } from "../styles/dashboardTI.js";
+import { ButtonDet, Div, DivChatDetails, DivDetaisl, DropBTN, DropContent2, IMGConfig, ImgSend, TextObersavation, ZIndex } from "../styles/dashboardTI.js";
 import DashBoardPie from "../components/dashboardPie";
 import Loading from "../components/loading";
 import Navbar from "../components/navbar";
@@ -44,38 +44,27 @@ import {
   BtnChat,
   BtnChat2,
   BtnNF,
-  Button1,
-  Button2,
   Close,
   CloseBTN,
   DivCard,
   DivChat,
-  DivContainerImages,
   DivFile,
   DivFlex1,
   DivFlex2,
   DivHR,
   DivImageOpen,
-  DivImages,
   DivNewFiles,
   DivOnBoardFile,
-  DivSelectView,
   H5Card,
   IMGFiles,
-  IMGS1,
   ImageFile,
   ImageOpen,
   ImgBTNCls,
-  ImgSelectView,
-  Input1,
   InputFile,
   PChatHourL,
   PChatHourR,
   PNWFile,
-  PQuantity,
-  PSelectView,
   SpanCard,
-  Select1,
   TD,
   TH,
   TR,
@@ -90,16 +79,10 @@ import CloseIMG from "../images/components/close.png";
 import Message from "../components/message";
 import "../styles/bootstrap/css/bootstrap.css";
 import "../styles/bootstrap/js/bootstrap";
-import Card from "../images/components/identificacao.png";
 import DashboardBar from "../components/dashboardBar.jsx";
 import Download from "../images/components/download.png";
 import DownTick from "../images/components/attachment.png";
 import Exclude from "../images/components/close.png";
-import IMG1 from "../images/dashboard_TI/quantity_1.png";
-import IMG2 from "../images/dashboard_TI/quantity_2.png";
-import IMG3 from "../images/dashboard_TI/quantity_3.png";
-import IMG4 from "../images/dashboard_TI/quantity_4.png";
-import List from "../images/components/lista-de-itens.png";
 import Mail from "../images/components/mail.png";
 import PDF from "../images/components/pdf.png";
 import Seeting from "../images/components/definicoes.png";
@@ -108,8 +91,9 @@ import TXT from "../images/components/arquivo-txt.png";
 import WORD from "../images/components/palavra.png";
 import XLS from "../images/components/xlsx.png";
 import ZIP from "../images/components/zip.jpg";
-import { TickerContext } from "../services/TickerContext.js";
 import LoadingChat from "../components/loadingChat.jsx";
+import FilterTickets from "../components/search-tickets/filter.jsx";
+import { TicketContext } from "../services/TicketContext.js";
 /**
  * Função para ajustar o tema com base na configuração de tema armazenada.
  * - Utiliza o hook useEffect para executar a lógica uma vez após a renderização inicial.
@@ -168,9 +152,7 @@ export default function DashboardTI() {
   /**
    * Variáveis de estado Boolean
    */
-  const [btnmore, setBtnMore] = useState(true);
   const [chat, setChat] = useState(false);
-  const [fakeSelect, setFakeSelect] = useState(true);
   const [fetchChat, setFetchChat] = useState(false);
   const [imageopen, setImageOpen] = useState(false);
   const [inCard, setInCard] = useState(false);
@@ -178,13 +160,9 @@ export default function DashboardTI() {
   const [inList, setInList] = useState(false);
   const [loading, setLoading] = useState(true);
   const [loadingChat, setLoadingChat] = useState(false);
-  const [loadingDash, setLoadingDash] = useState(true);
-  const [message, setMessage] = useState(false);
   const [messageChat, setMessageChat] = useState(false);
   const [navbar, setNavbar] = useState(false);
   const [newFiles, setNewFiles] = useState(false);
-  const [problemInfra, setProblemInfra] = useState(false);
-  const [problemSyst, setProblemSyst] = useState(false);
   const [techDetails, setTechDetails] = useState(false);
   const [ticketWindow, setTicketWindow] = useState(false);
   const [showEquipament, setShowEquipament] = useState(false);
@@ -195,10 +173,8 @@ export default function DashboardTI() {
   const [colorTheme, setColorTheme] = useState("");
   const [detailsChat, setDetailsChat] = useState("");
   const [lifeTime, setLifetime] = useState("");
-  const [messageError, setMessageError] = useState("");
   const [mountDetails, setMountDetails] = useState("");
   const [selectedTech, setSelectedTech] = useState("");
-  const [status, setStatus] = useState("open");
   const [textChat, setTextChat] = useState("");
   const [theme, setTheme] = useState("");
   const [themeCard, setThemeCard] = useState("");
@@ -213,8 +189,9 @@ export default function DashboardTI() {
   const [ticketResponsible_Technician, setTicketResponsible_Technician] = useState("");
   const [ticketSECTOR, setTicketSECTOR] = useState("");
   const [token, setToken] = useState("");
-  const [typeError, setTypeError] = useState("");
   const [equipament, setEquipament] = useState("");
+  const [dateValue, setDateValue] = useState("");
+  const [statusFIlter, setStatusFIlter] = useState("");
   /**
    * Variáveis de estado Void.
    */
@@ -226,7 +203,7 @@ export default function DashboardTI() {
   /**
    * Variáveis de estado Int.
    */
-  const [countTicket, setCountTicket] = useState(0);
+  const [quantityMap, setQuantityMap] = useState(0);
   /**
    * Variáveis de estado Array.
    */
@@ -234,42 +211,53 @@ export default function DashboardTI() {
   const [mountChat, setMountChat] = useState([]);
   const [ticketsDash, setTicketsDash] = useState([]);
   const [techs, setTechs] = useState([]);
-  const [tickets, setTickets] = useState([]);
   const [uploadNewFiles, setUploadNewFiles] = useState([]);
   const [userData, setUserData] = useState([]);
   /**
-   * Variáveis de estado Null.
-   */
-  const [orderby, setOrderBy] = useState(null);
-  const [problemTicket, setProblemTicket] = useState(null);
-  const [sectorTicket, setSectorTicket] = useState(null);
-  /**
    * Variáveis de referência para o componente DashboardTI.
    */
-  const allView = useRef(null);
-  const btnAll = useRef(null);
-  const btnClose = useRef(null);
-  const btnOpen = useRef(null);
-  const btnStop = useRef(null);
   const dropCont = useRef(null);
   const inputChat = useRef(null);
   const inputRef = useRef(null);
-  const fiftyView = useRef(null);
-  const fiveView = useRef(null);
-  const selectBo = useRef(null);
-  const selectOcorrence = useRef(null);
-  const selectOrderO = useRef(null);
   const sectionTicket = useRef(null);
-  const selectViewCard = useRef(null);
-  const selectViewList = useRef(null);
   const textareaRef = useRef(null);
-  const thenView = useRef(null);
   const divRefs = useRef({});
 
-  // Declarando variaveis de Contexto
-  const { setCreate_user_acess } = useContext(TickerContext);
-  const { setAlocate_Machine_Acess } = useContext(TickerContext);
+  const {
+    ticketData,
+    setTicketData,
+    countTicket,
+    setCountTicket,
+    loadingDash,
+    setLoadingDash,
+    message,
+    setMessage,
+    typeError,
+    setTypeError,
+    btnMore,
+    setBtnMore,
+    messageError,
+    setMessageError,
+    cardOrlist,
+  } = useContext(TicketContext);
 
+  useEffect(() => {
+    if (cardOrlist !== "") {
+      if (cardOrlist === "Card") {
+        viewCard();
+      } else if (cardOrlist === "List") {
+        listCard();
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cardOrlist]);
+
+  useEffect(() => {
+    if (countTicket >= 5) {
+      setBtnMore(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [countTicket]);
   /**
    * Função ativada quando a tela de ticket for ativada.
    * Se o textarea tiver conteúdo, a função para ajustar o tamanho do textarea é ativada.
@@ -363,8 +351,8 @@ export default function DashboardTI() {
   useEffect(() => {
     const dataInfo = JSON.parse(localStorage.getItem("dataInfo"));
     setUserData(dataInfo.data);
-    fetch("", {
-      method: "POST",
+    fetch("get-info/", {
+      method: "GET",
       headers: { Accept: "application/json", "Cache-Control": "no-cache" },
     })
       .then((response) => {
@@ -401,14 +389,23 @@ export default function DashboardTI() {
         localStorage.setItem("quantity", "10");
         quantity = 10;
       }
+      setQuantityMap(quantity);
 
       var status = localStorage.getItem("status");
       if (status === null) {
         localStorage.setItem("status", "open");
         status = "open";
       }
+      setStatusFIlter(status);
+
+      var order = localStorage.getItem("order");
+      if (order === null) {
+        order = "-id";
+      }
+      setDateValue(order);
+
       setNavbar(true); // Define a flag de exibição da barra de navegação como verdadeira.
-      fetch("get_ticket_TI/" + quantity + "/" + status, {
+      fetch("get-ticket-TI/" + quantity + "/" + status + "/" + order, {
         // Faz uma solicitação ao backend para obter os chamados de TI.
         method: "GET",
         headers: { Accept: "application/json" },
@@ -418,42 +415,7 @@ export default function DashboardTI() {
         })
         .then((data) => {
           setCountTicket(quantity); // Define a contagem inicial de chamados como 10.
-          setOrderBy("-id"); // Define a ordenação inicial dos chamados.
-
-          // Mapeia valores de quantity para os refs correspondentes
-          const refMapQuantity = {
-            5: fiveView,
-            10: thenView,
-            50: fiftyView,
-            100000: allView, // Supondo que "all" seja um valor possível
-          };
-
-          // Obtém o ref correspondente ao valor de quantity
-          const selectedRefQuantity = refMapQuantity[quantity];
-
-          // Aplica o estilo apenas se o ref existir
-          if (selectedRefQuantity?.current) {
-            selectedRefQuantity.current.style.backgroundColor = "#00B4D8";
-          }
-
-          switch (status) {
-            default:
-              break;
-            case "open":
-              btnOpen.current.classList.add("btn-open"); // Marca o botão "Open" como ativo
-              break;
-            case "stop":
-              btnStop.current.classList.add("btn-light"); // Remove o estilo de luz do botão "Stop"
-              break;
-            case "close":
-              btnClose.current.classList.add("btn-success"); // Remove o estilo de sucesso do botão "Close"
-              break;
-            case "all":
-              btnAll.current.classList.add("btn-all"); // Remove o estilo do botão "All"
-              break;
-          }
-
-          setTickets(data.tickets); // Define os chamados no estado correspondente.
+          setTicketData(data.tickets); // Define os chamados no estado correspondente.
         })
         .catch((err) => {
           // Trata erros.
@@ -465,11 +427,12 @@ export default function DashboardTI() {
     } else {
       return;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userData]);
 
   useEffect(() => {
     // Verificar se existem tickets e se o local storage foi inicializado
-    if (tickets && Object.keys(tickets).length > 0) {
+    if (ticketData && Object.keys(ticketData).length > 0) {
       // Obter o valor do local storage
       const selectView = localStorage.getItem("selectView");
 
@@ -483,7 +446,7 @@ export default function DashboardTI() {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tickets]);
+  }, [ticketData]);
 
   /**
    * Função para montar os chamados em forma de card.
@@ -499,14 +462,14 @@ export default function DashboardTI() {
     // Definir o tipo de visualização como "card" no local storage
     localStorage.setItem("selectView", "card");
 
-    // Estilizar os botões de seleção de visualização
-    selectViewCard.current.style.backgroundColor = "#00B4D8";
-    selectViewList.current.style.backgroundColor = "transparent";
-    sectionTicket.current.style.display = "flex";
-    sectionTicket.current.style.justifyContent = "center";
+    const btn = document.getElementById("selectView-List");
+    btn.style.backgroundColor = "transparent";
+
+    const btn2 = document.getElementById("selectView-Card");
+    btn2.style.backgroundColor = "#00B4D8";
 
     // Mapear os tickets para elementos de cartão
-    tickets.forEach((ticket) => {
+    ticketData.forEach((ticket) => {
       // Variáveis para montar a data dos chamados.
       var date = new Date(ticket["start_date"]); // Obtém a data de início do chamado.
       var day = date.getDate(); // Obtém o dia do mês.
@@ -593,14 +556,14 @@ export default function DashboardTI() {
     // Definir o tipo de visualização como "list" no local storage
     localStorage.setItem("selectView", "list");
 
-    // Estilizar os botões de seleção de visualização
-    selectViewList.current.style.backgroundColor = "#00B4D8";
-    selectViewCard.current.style.backgroundColor = "transparent";
-    sectionTicket.current.style.display = "block";
-    sectionTicket.current.style.justifyContent = "center";
+    const btn = document.getElementById("selectView-List");
+    btn.style.backgroundColor = "#00B4D8";
+
+    const btn2 = document.getElementById("selectView-Card");
+    btn2.style.backgroundColor = "transparent";
 
     // Mapear os tickets para elementos de lista
-    tickets.forEach((ticket) => {
+    ticketData.forEach((ticket) => {
       // Variáveis para montar a data dos chamados.
       var date = new Date(ticket["start_date"]); // Obtém a data de início do chamado.
       var day = date.getDate(); // Obtém o dia do mês.
@@ -1591,700 +1554,6 @@ export default function DashboardTI() {
     return;
   };
 
-  // Essa função irá exibir problemas refentes a area especifica que o usuario escolher, como infra e sistema
-  function enableProblem() {
-    // Obtém o valor da opção selecionada no elemento select
-    const option = selectOcorrence.current.options[selectOcorrence.current.selectedIndex].value;
-
-    // Estrutura switch para lidar com diferentes opções de seleção
-    switch (option) {
-      default:
-        // Caso padrão: não faz nada, apenas quebra o switch
-        break;
-
-      case "null":
-        // Quando a opção selecionada é "null"
-        // Exibe a seleção falsa (provavelmente um placeholder ou instrução)
-        setFakeSelect(true);
-        // Esconde as seções de problemas de Infra e Sistema
-        setProblemInfra(false);
-        setProblemSyst(false);
-        // Limpa o problema do ticket atual
-        setProblemTicket(null);
-        break;
-
-      case "infra":
-        // Quando a opção selecionada é "infra"
-        // Esconde a seleção falsa
-        setFakeSelect(false);
-        // Exibe problemas relacionados à Infraestrutura
-        setProblemInfra(true);
-        // Esconde problemas relacionados ao Sistema
-        setProblemSyst(false);
-        // Limpa o problema do ticket atual
-        setProblemTicket(null);
-        // Define o setor do ticket como "Infraestrutura"
-        setSectorTicket("Infraestrutura");
-        // Filtra tickets pelo setor "Infraestrutura"
-        getTicketFilterSector({ sector: "Infraestrutura" });
-        break;
-
-      case "system":
-        // Quando a opção selecionada é "system"
-        // Esconde a seleção falsa
-        setFakeSelect(false);
-        // Esconde problemas relacionados à Infraestrutura
-        setProblemInfra(false);
-        // Exibe problemas relacionados ao Sistema
-        setProblemSyst(true);
-        // Limpa o problema do ticket atual
-        setProblemTicket(null);
-        // Define o setor do ticket como "Sistema"
-        setSectorTicket("Sistema");
-        // Filtra tickets pelo setor "Sistema"
-        getTicketFilterSector({ sector: "Sistema" });
-        break;
-
-      case "all":
-        // Quando a opção selecionada é "all"
-        // Exibe a seleção falsa
-        setFakeSelect(true);
-        // Esconde problemas relacionados à Infraestrutura e Sistema
-        setProblemInfra(false);
-        setProblemSyst(false);
-        // Define o setor do ticket como "all", que provavelmente significa todos os setores
-        setSectorTicket("all");
-        // Limpa o problema do ticket atual
-        setProblemTicket(null);
-        // Filtra tickets por todos os setores
-        getTicketFilterSector({ sector: "all" });
-        break;
-    }
-  }
-
-  /**
-   * Função responsável por buscar tickets filtrados com base no setor selecionado.
-   * @param {Object} param - Objeto que contém os parâmetros da função.
-   * @param {string} param.sector - O setor pelo qual os tickets serão filtrados.
-   */
-  function getTicketFilterSector({ sector }) {
-    // Inicializa o estado dos tickets e da dashboard como arrays vazios para limpar os dados anteriores
-    setTickets([]);
-    setTicketsDash([]);
-
-    // Define o estado de carregamento da dashboard como verdadeiro, indicando que a busca de dados está em andamento
-    setLoadingDash(true);
-
-    // Realiza uma requisição GET para o endpoint "getTicketFilter/"
-    fetch("get-ticket-filter/" + sector, {
-      method: "GET", // Define o método HTTP como GET para a requisição
-      headers: {
-        Accept: "application/json", // Define que a resposta esperada é no formato JSON
-        "Quantity-tickets": countTicket, // Envia o número de tickets desejado no cabeçalho da requisição
-        "Order-by": orderby, // Envia o critério de ordenação para a busca
-        "Problemn-Ticket": problemTicket, // Envia o problema específico do ticket que deve ser filtrado
-        "Status-Ticket": status, // Envia o status do ticket para a filtragem
-        "Cache-Control": "no-cache", // Define que a requisição não deve utilizar o cache, garantindo dados atualizados
-      },
-    })
-      .then((response) => {
-        // Converte a resposta da requisição para JSON
-        return response.json();
-      })
-      .then((data) => {
-        // Desativa o estado de carregamento, pois os dados já foram recebidos
-        setLoadingDash(false);
-        // Atualiza o estado dos tickets com os dados recebidos da API
-        setTickets(data.tickets);
-      })
-      .catch((err) => {
-        // Caso ocorra um erro durante a requisição, define a mensagem de erro e seu tipo
-        setMessageError(err);
-        setTypeError("FATAL ERROR");
-        // Exibe a mensagem de erro na interface
-        setMessage(true);
-        // Loga o erro no console para fins de debug
-        return console.log(err);
-      });
-  }
-
-  /**
-   * Função responsável por buscar tickets com base em caracteres digitados pelo usuário.
-   * Essa função é ativada pelo evento `keyDown`, capturando os caracteres conforme são digitados
-   * e realizando uma busca por tickets relacionados a esses caracteres.
-   * @param {Object} event - O evento de teclado que dispara a função.
-   */
-  function getTicketKey(event) {
-    // Remove classes de estilo de botões específicos para redefinir seu estado visual
-    btnOpen.current.classList.remove("btn-open");
-    btnClose.current.classList.remove("btn-success");
-    btnStop.current.classList.remove("btn-light");
-    btnAll.current.classList.remove("btn-all");
-
-    // Captura o valor do campo de entrada (input) onde o usuário está digitando
-    const newText = event.target.value;
-
-    // Realiza uma requisição GET para buscar tickets que correspondam ao texto digitado
-    fetch("getTicketFilterWords/", {
-      method: "GET", // Define o método HTTP como GET para a requisição
-      headers: {
-        Accept: "application/json", // Define que a resposta esperada é no formato JSON
-        "Word-Filter": newText, // Envia o texto digitado pelo usuário como filtro de palavras
-        "Order-By": orderby, // Envia o critério de ordenação para a busca
-        "Quantity-tickets": countTicket, // Envia a quantidade de tickets desejada no cabeçalho da requisição
-        "Sector-Filter": sectorTicket, // Envia o setor filtrado dos tickets
-        "Problem-Filter": problemTicket, // Envia o filtro de problemas dos tickets
-        "Cache-Control": "no-cache", // Define que a requisição não deve utilizar o cache, garantindo dados atualizados
-      },
-    })
-      .then((response) => {
-        // Converte a resposta da requisição para JSON
-        return response.json();
-      })
-      .then((data) => {
-        // Desativa o estado de carregamento, pois os dados já foram recebidos
-        setLoadingDash(false);
-        // Atualiza o estado dos tickets com os dados recebidos da API
-        setTickets(data.tickets);
-      })
-      .catch((err) => {
-        // Caso ocorra um erro durante a requisição, define a mensagem de erro e seu tipo
-        setMessageError(err);
-        setTypeError("FATAL ERROR");
-        // Exibe a mensagem de erro na interface
-        setMessage(true);
-        // Loga o erro no console para fins de debug
-        return console.log(err);
-      });
-  }
-
-  /**
-   * Função responsável por obter tickets com o status "open" (aberto).
-   * Esta função realiza uma requisição para filtrar e buscar tickets que estão abertos,
-   * atualizando o estado dos tickets na interface e gerenciando os botões de filtragem.
-   */
-  function ticketOpenStatus() {
-    // Limpa os estados dos tickets e do dashboard antes de realizar a nova busca
-    setTickets([]);
-    setTicketsDash([]);
-
-    // Atualiza as classes dos botões para refletir o estado de filtragem
-    btnOpen.current.classList.add("btn-open"); // Marca o botão "Open" como ativo
-    btnClose.current.classList.remove("btn-success"); // Remove o estilo de sucesso do botão "Close"
-    btnStop.current.classList.remove("btn-light"); // Remove o estilo de luz do botão "Stop"
-    btnAll.current.classList.remove("btn-all"); // Remove o estilo do botão "All"
-
-    // Realiza uma requisição GET para buscar tickets com o status "open"
-    fetch("getTicketFilterStatus/", {
-      method: "GET", // Define o método HTTP como GET para a requisição
-      headers: {
-        Accept: "application/json", // Define que a resposta esperada é no formato JSON
-        "Order-By": orderby, // Envia o critério de ordenação para a busca
-        "Quantity-tickets": countTicket, // Envia a quantidade de tickets desejada no cabeçalho da requisição
-        "Problemn-Ticket": problemTicket, // Envia o filtro de problemas dos tickets
-        "Sector-Ticket": sectorTicket, // Envia o setor filtrado dos tickets
-        "Status-Request": "open", // Filtra os tickets com status "open" (aberto)
-        "Cache-Control": "no-cache", // Define que a requisição não deve utilizar o cache, garantindo dados atualizados
-      },
-    })
-      .then((response) => {
-        // Converte a resposta da requisição para JSON
-        return response.json();
-      })
-      .then((data) => {
-        // Verifica se não há tickets retornados com os filtros aplicados
-        if (data.tickets.length === 0) {
-          // Se não houver tickets, exibe uma mensagem informativa
-          setMessage(true);
-          setTypeError("Falta de dados");
-          setMessageError("Nenhum ticket com esses Filtros");
-          setBtnMore(false); // Desativa o botão de "carregar mais"
-        } else {
-          // Se houver tickets, atualiza o estado da aplicação com os novos dados
-          setBtnMore(true); // Ativa o botão de "carregar mais"
-          setLoadingDash(false); // Desativa o estado de carregamento
-          setStatus("open"); // Define o status atual como "open"
-          setTickets(data.tickets); // Atualiza o estado dos tickets com os dados recebidos
-          localStorage.setItem("status", "open");
-        }
-      })
-      .catch((err) => {
-        // Em caso de erro, exibe uma mensagem de erro na interface e loga o erro no console
-        setMessageError(err);
-        setTypeError("FATAL ERROR");
-        setMessage(true);
-        return console.log(err);
-      });
-  }
-
-  /**
-   * Função responsável por buscar e exibir tickets com o status "close" (fechado).
-   * Esta função faz uma requisição para filtrar e recuperar tickets fechados,
-   * atualizando a interface com os resultados e gerenciando os botões de filtragem.
-   */
-  function ticketClose() {
-    // Limpa os estados dos tickets e do dashboard antes de realizar a nova busca
-    setTickets([]);
-    setTicketsDash([]);
-
-    // Atualiza as classes dos botões para refletir o estado de filtragem
-    btnOpen.current.classList.remove("btn-open"); // Remove o estilo do botão "Open"
-    btnClose.current.classList.add("btn-success"); // Marca o botão "Close" como ativo com estilo de sucesso
-    btnStop.current.classList.remove("btn-light"); // Remove o estilo de luz do botão "Stop"
-    btnAll.current.classList.remove("btn-all"); // Remove o estilo do botão "All"
-
-    // Realiza uma requisição GET para buscar tickets com o status "close"
-    fetch("getTicketFilterStatus/", {
-      method: "GET", // Define o método HTTP como GET para a requisição
-      headers: {
-        Accept: "application/json", // Define que a resposta esperada é no formato JSON
-        "Order-By": orderby, // Envia o critério de ordenação para a busca
-        "Quantity-tickets": countTicket, // Envia a quantidade de tickets desejada no cabeçalho da requisição
-        "Problemn-Ticket": problemTicket, // Envia o filtro de problemas dos tickets
-        "Sector-Ticket": sectorTicket, // Envia o setor filtrado dos tickets
-        "Status-Request": "close", // Filtra os tickets com status "close" (fechado)
-        "Cache-Control": "no-cache", // Define que a requisição não deve utilizar o cache, garantindo dados atualizados
-      },
-    })
-      .then((response) => {
-        // Converte a resposta da requisição para JSON
-        return response.json();
-      })
-      .then((data) => {
-        // Verifica se não há tickets retornados com os filtros aplicados
-        if (data.tickets.length === 0) {
-          // Se não houver tickets, exibe uma mensagem informativa
-          setMessage(true);
-          setTypeError("Falta de dados");
-          setMessageError("Nenhum ticket com esses Filtros");
-          setBtnMore(false); // Desativa o botão de "carregar mais"
-        } else {
-          // Se houver tickets, atualiza o estado da aplicação com os novos dados
-          setBtnMore(true); // Ativa o botão de "carregar mais"
-          setLoadingDash(false); // Desativa o estado de carregamento
-          setStatus("close"); // Define o status atual como "close"
-          setTickets(data.tickets); // Atualiza o estado dos tickets com os dados recebidos
-          localStorage.setItem("status", "close");
-        }
-      })
-      .catch((err) => {
-        // Em caso de erro, exibe uma mensagem de erro na interface e loga o erro no console
-        setMessageError(err);
-        setTypeError("FATAL ERROR");
-        setMessage(true);
-        return console.log(err);
-      });
-  }
-
-  /**
-   * Função responsável por buscar e exibir tickets com o status "stop" (em aguardo).
-   * Esta função faz uma requisição para filtrar e recuperar tickets que estão em aguardo,
-   * atualizando a interface com os resultados e gerenciando os botões de filtragem.
-   */
-  function ticketStop() {
-    // Limpa os estados dos tickets e do dashboard antes de realizar a nova busca
-    setTickets([]);
-    setTicketsDash([]);
-
-    // Atualiza as classes dos botões para refletir o estado de filtragem
-    btnOpen.current.classList.remove("btn-open"); // Remove o estilo do botão "Open"
-    btnClose.current.classList.remove("btn-success"); // Remove o estilo de sucesso do botão "Close"
-    btnStop.current.classList.add("btn-light"); // Marca o botão "Stop" como ativo com estilo de luz
-    btnAll.current.classList.remove("btn-all"); // Remove o estilo do botão "All"
-
-    // Realiza uma requisição GET para buscar tickets com o status "stop" (em aguardo)
-    fetch("getTicketFilterStatus/", {
-      method: "GET", // Define o método HTTP como GET para a requisição
-      headers: {
-        Accept: "application/json", // Define que a resposta esperada é no formato JSON
-        "Order-By": orderby, // Envia o critério de ordenação para a busca
-        "Quantity-tickets": countTicket, // Envia a quantidade de tickets desejada no cabeçalho da requisição
-        "Problemn-Ticket": problemTicket, // Envia o filtro de problemas dos tickets
-        "Sector-Ticket": sectorTicket, // Envia o setor filtrado dos tickets
-        "Status-Request": "stop", // Filtra os tickets com status "stop" (em aguardo)
-        "Cache-Control": "no-cache", // Define que a requisição não deve utilizar o cache, garantindo dados atualizados
-      },
-    })
-      .then((response) => {
-        // Converte a resposta da requisição para JSON
-        return response.json();
-      })
-      .then((data) => {
-        // Verifica se não há tickets retornados com os filtros aplicados
-        if (data.tickets.length === 0) {
-          // Se não houver tickets, exibe uma mensagem informativa
-          setMessage(true);
-          setTypeError("Falta de dados");
-          setMessageError("Nenhum ticket com esses Filtros");
-          setBtnMore(false); // Desativa o botão de "carregar mais"
-        } else {
-          // Se houver tickets, atualiza o estado da aplicação com os novos dados
-          setBtnMore(true); // Ativa o botão de "carregar mais"
-          setLoadingDash(false); // Desativa o estado de carregamento
-          setStatus("close"); // Define o status atual como "close" (deve ser alterado para "stop" conforme explicado abaixo)
-          setTickets(data.tickets); // Atualiza o estado dos tickets com os dados recebidos
-          localStorage.setItem("status", "stop");
-        }
-      })
-      .catch((err) => {
-        // Em caso de erro, exibe uma mensagem de erro na interface e loga o erro no console
-        setMessageError(err);
-        setTypeError("FATAL ERROR");
-        setMessage(true);
-        return console.log(err);
-      });
-  }
-
-  /**
-   * Função responsável por buscar e exibir todos os tickets, independentemente do status.
-   * Esta função faz uma requisição para filtrar e recuperar todos os tickets,
-   * atualizando a interface com os resultados e gerenciando os botões de filtragem.
-   */
-  function statusTicketAll() {
-    // Limpa os estados dos tickets e do dashboard antes de realizar a nova busca
-    setTickets([]);
-    setTicketsDash([]);
-
-    // Atualiza as classes dos botões para refletir o estado de filtragem
-    btnOpen.current.classList.remove("btn-open"); // Remove o estilo do botão "Open"
-    btnClose.current.classList.remove("btn-success"); // Remove o estilo de sucesso do botão "Close"
-    btnStop.current.classList.remove("btn-light"); // Remove o estilo de luz do botão "Stop"
-    btnAll.current.classList.add("btn-all"); // Marca o botão "All" como ativo com estilo apropriado
-
-    // Realiza uma requisição GET para buscar todos os tickets
-    fetch("getTicketFilterStatus/", {
-      method: "GET", // Define o método HTTP como GET para a requisição
-      headers: {
-        Accept: "application/json", // Define que a resposta esperada é no formato JSON
-        "Order-By": orderby, // Envia o critério de ordenação para a busca
-        "Quantity-tickets": countTicket, // Envia a quantidade de tickets desejada no cabeçalho da requisição
-        "Problemn-Ticket": problemTicket, // Envia o filtro de problemas dos tickets
-        "Sector-Ticket": sectorTicket, // Envia o setor filtrado dos tickets
-        "Status-Request": "all", // Filtra todos os tickets, independente do status
-      },
-    })
-      .then((response) => {
-        // Converte a resposta da requisição para JSON
-        return response.json();
-      })
-      .then((data) => {
-        // Verifica se não há tickets retornados com os filtros aplicados
-        if (data.tickets.length === 0) {
-          // Se não houver tickets, exibe uma mensagem informativa
-          setMessage(true);
-          setTypeError("Falta de dados");
-          setMessageError("Nenhum ticket com esses Filtros");
-          setBtnMore(false); // Desativa o botão de "carregar mais"
-        } else {
-          // Se houver tickets, atualiza o estado da aplicação com os novos dados
-          setBtnMore(true); // Ativa o botão de "carregar mais"
-          setLoadingDash(false); // Desativa o estado de carregamento
-          setStatus("all"); // Define o status atual como "all"
-          setTickets(data.tickets); // Atualiza o estado dos tickets com os dados recebidos
-          localStorage.setItem("status", "all");
-        }
-      })
-      .catch((err) => {
-        // Em caso de erro, exibe uma mensagem de erro na interface e loga o erro no console
-        setMessageError(err);
-        setTypeError("FATAL ERROR");
-        setMessage(true);
-        return console.log(err);
-      });
-  }
-
-  /**
-   * Função responsável por alterar o filtro de problemas baseado na opção selecionada no componente select.
-   * Atualiza o estado do problema e chama a função para filtrar os chamados conforme a opção selecionada.
-   */
-  function changeProblemn() {
-    // Mapeia os valores das opções do select para descrições de problemas
-    const problemMapping = {
-      backup: "Backup",
-      mail: "E-mail",
-      equipamento: "Equipamento",
-      user: "Gerenciamento de Usuario",
-      internet: "Internet",
-      permissao: "Permissão",
-      all: "all",
-      sap: "SAP",
-      mbi: "MBI",
-      synchro: "Synchro",
-      office: "Office",
-      eng: "Softwares de Eng",
-      soft: "Novo SoftWare",
-      dados: "Integridade de Dados",
-    };
-
-    // Obtém o valor da opção selecionada no select
-    const option = selectBo.current.options[selectBo.current.selectedIndex].value;
-
-    // Mapeia o valor da opção para o problema correspondente ou define "all" como padrão
-    const problem = problemMapping[option] || "all";
-
-    // Atualiza o estado com o problema selecionado
-    setProblemTicket(problem);
-
-    // Chama a função para filtrar os chamados com base no problema selecionado
-    getTicketFilterProblemn({ problemn: problem });
-  }
-
-  /**
-   * Filtra os chamados com base no técnico selecionado no componente select.
-   * Faz uma requisição para obter os chamados atribuídos ao técnico e atualiza o estado da aplicação.
-   *
-   * @param {Event} event - Evento de mudança do select que contém o valor do técnico selecionado.
-   */
-  function filterTechnician(event) {
-    // Limpa os dados de tickets e a visualização do dashboard
-    setTickets([]);
-    setTicketsDash([]);
-    setLoadingDash(true);
-
-    // Faz uma requisição GET para obter os tickets filtrados pelo técnico selecionado
-    fetch("get-ticket-filter-tech/", {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Tech-Select": event.target.value, // Valor do técnico selecionado
-        "Cache-Control": "no-cache",
-      },
-    })
-      .then((response) => {
-        return response.json(); // Converte a resposta em JSON
-      })
-      .then((data) => {
-        // Atualiza o estado com os tickets recebidos e finaliza o carregamento
-        setLoadingDash(false);
-        setTickets(data.tickets);
-
-        // Verifica se não há tickets para o técnico selecionado e exibe uma mensagem de erro
-        if (data.tickets.length < 1 || data.tickets == null) {
-          setMessageError("Esse Técnico não possui Chamados");
-          setTypeError("Falta de Dados");
-          setMessage(true);
-        }
-      })
-      .catch((err) => {
-        // Loga o erro no console, não atualiza a mensagem de erro
-        console.log(err);
-      });
-  }
-
-  /**
-   * Obtém e filtra os chamados com base no problema especificado.
-   * Essa função é chamada quando um problema é selecionado em um componente select,
-   * e atualiza a lista de tickets exibida de acordo com o problema selecionado.
-   *
-   * @param {Object} params - Parâmetros para filtrar os tickets.
-   * @param {string} params.problemn - O problema específico usado para filtrar os tickets.
-   */
-  function getTicketFilterProblemn({ problemn }) {
-    // Limpa os dados de tickets e a visualização do dashboard antes de carregar novos dados
-    setTickets([]);
-    setTicketsDash([]);
-    setLoadingDash(true);
-
-    // Faz uma requisição GET para obter os tickets filtrados pelo problema especificado
-    fetch("get-ticket-filter/", {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Quantity-tickets": countTicket, // Número de tickets a ser retornado
-        "Order-by": orderby, // Ordem de classificação dos tickets
-        "Problemn-Ticket": problemn, // Problema específico para o filtro
-        "Sector-Ticket": sectorTicket, // Setor para o filtro
-        "Status-Ticket": status, // Status dos tickets para o filtro
-        "Cache-Control": "no-cache", // Garante que a resposta não seja cacheada
-      },
-    })
-      .then((response) => {
-        return response.json(); // Converte a resposta em JSON
-      })
-      .then((data) => {
-        // Atualiza o estado com os tickets recebidos e finaliza o carregamento
-        setLoadingDash(false);
-        setTickets(data.tickets);
-      })
-      .catch((err) => {
-        // Atualiza o estado para exibir uma mensagem de erro em caso de falha
-        setMessageError(err);
-        setTypeError("FATAL ERROR");
-        setMessage(true);
-        console.log(err); // Loga o erro no console para depuração
-      });
-  }
-
-  /**
-   * Reordena a lista de tickets com base na opção selecionada para exibir os tickets mais recentes ou mais antigos.
-   * Esta função é acionada quando o usuário seleciona uma opção de ordenação em um componente select.
-   *
-   * @description
-   * A função limpa os tickets e o dashboard exibido antes de aplicar a nova ordenação.
-   * Dependendo da opção selecionada, a função chama `getTicketFilterOrderTime` para obter os tickets na ordem desejada.
-   *
-   * @param {Event} event - O evento de alteração do select, que contém a opção selecionada pelo usuário.
-   */
-  function selectOrder() {
-    // Limpa os dados de tickets e a visualização do dashboard antes de aplicar a nova ordenação
-    setTickets([]);
-    setTicketsDash([]);
-
-    // Obtém a opção selecionada do componente select
-    const option = selectOrderO.current.options[selectOrderO.current.selectedIndex].value;
-
-    // Aplica a ordenação com base na opção selecionada
-    switch (option) {
-      default:
-        break;
-      case "recent":
-        // Ordena os tickets por ID de forma decrescente (mais recente primeiro)
-        getTicketFilterOrderTime({ order: "-id" });
-        setOrderBy("-id");
-        break;
-      case "ancient":
-        // Ordena os tickets por ID de forma crescente (mais antigo primeiro)
-        getTicketFilterOrderTime({ order: "id" });
-        setOrderBy("id");
-        break;
-    }
-  }
-
-  /**
-   * Busca e organiza os tickets com base nos filtros aplicados e na ordem especificada.
-   * Esta função faz uma requisição à API para obter tickets filtrados e ordenados conforme os parâmetros fornecidos.
-   *
-   * @param {Object} params - Parâmetros para a requisição.
-   * @param {string} params.order - O critério de ordenação dos tickets, pode ser "id" para mais antigo ou "-id" para mais recente.
-   *
-   * @description
-   * A função faz uma requisição GET para o endpoint `getTicketFilter/` com os filtros e critérios de ordenação fornecidos.
-   * Após obter os dados, a função atualiza o estado dos tickets e o estado de carregamento.
-   *
-   * A função realiza as seguintes operações:
-   * 1. Limpa os dados de tickets e o dashboard.
-   * 2. Faz uma requisição à API com os parâmetros de filtro e ordenação.
-   * 3. Atualiza o estado dos tickets com os dados recebidos da API.
-   * 4. Trata erros de requisição e exibe mensagens de erro apropriadas.
-   *
-   * @returns {void}
-   */
-  function getTicketFilterOrderTime({ order }) {
-    // Limpa os dados de tickets e o dashboard antes de aplicar a nova ordenação
-    setTickets([]);
-    setTicketsDash([]);
-
-    // Faz uma requisição GET para buscar os tickets filtrados e ordenados
-    fetch("getTicketFilter/", {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Quantity-tickets": countTicket, // Número de tickets a ser retornado
-        "Order-By": order, // Critério de ordenação
-        "Problemn-Ticket": problemTicket, // Filtro por problema do ticket
-        "Sector-Ticket": sectorTicket, // Filtro por setor do ticket
-        "Status-Ticket": status, // Filtro por status do ticket
-        "Cache-Control": "no-cache", // Evita cache da requisição
-      },
-    })
-      .then((response) => response.json()) // Converte a resposta em JSON
-      .then((data) => {
-        setLoadingDash(false); // Desativa o carregamento do dashboard
-        setTickets(data.tickets); // Atualiza a lista de tickets com os dados recebidos
-      })
-      .catch((err) => {
-        // Trata erros de requisição e exibe uma mensagem de erro
-        setMessageError(err);
-        setTypeError("FATAL ERROR");
-        setMessage(true);
-        console.log(err);
-      });
-  }
-
-  /**
-   * Atualiza a visualização dos chamados de acordo com a quantidade especificada pelo usuário.
-   *
-   * Esta função é responsável por:
-   * 1. Limpar a lista de chamados e a visualização do painel de chamados.
-   * 2. Atualizar a cor de fundo dos filtros de visualização para indicar que não estão selecionados.
-   * 3. Realizar uma requisição para o servidor para obter os chamados filtrados de acordo com a quantidade e outros parâmetros especificados.
-   * 4. Atualizar o estado com os novos dados recebidos e gerenciar possíveis erros durante a requisição.
-   *
-   * @param {Object} params - Objeto contendo os parâmetros necessários para a requisição.
-   * @param {number} params.quantity - Quantidade de chamados a ser visualizada.
-   */
-  function getTicketFilter({ quantity }) {
-    // Limpa a lista de chamados e o painel de chamados, e indica que a visualização está carregando
-    setTickets([]);
-    setTicketsDash([]);
-    setLoadingDash(true);
-
-    // Define a cor de fundo dos filtros de visualização para transparente, indicando que não estão selecionados
-    fiveView.current.style.backgroundColor = "transparent";
-    thenView.current.style.backgroundColor = "transparent";
-    fiftyView.current.style.backgroundColor = "transparent";
-    allView.current.style.backgroundColor = "transparent";
-
-    // Faz uma requisição GET para o endpoint de filtragem de chamados
-    fetch("getTicketFilter/", {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Quantity-tickets": quantity, // Define a quantidade de chamados a ser filtrada
-        "Order-by": orderby, // Ordem de exibição dos chamados
-        "Problemn-Ticket": problemTicket, // Filtro por problema do chamado
-        "Sector-Ticket": sectorTicket, // Filtro por setor do chamado
-        "Status-Ticket": status, // Filtro por status do chamado
-      },
-    })
-      .then((response) => response.json()) // Converte a resposta para JSON
-      .then((data) => {
-        localStorage.setItem("quantity", quantity);
-        setLoadingDash(false); // Desativa o estado de carregamento
-        setTickets(data.tickets); // Atualiza a lista de chamados com os dados recebidos
-      })
-      .catch((err) => {
-        setMessageError(err); // Define a mensagem de erro
-        setTypeError("FATAL ERROR"); // Define o tipo de erro como fatal
-        setMessage(true); // Exibe a mensagem de erro
-        console.log(err); // Loga o erro no console para depuração
-      });
-  }
-
-  /**
-   * Busca mais tickets a partir do servidor e atualiza a lista de tickets exibida.
-   *
-   * Esta função faz uma requisição para o endpoint `/helpdesk/moreTicket/` para obter mais tickets com base na quantidade atual e outros parâmetros.
-   * Após obter os dados, a função atualiza o estado dos tickets e o contador de tickets.
-   *
-   * @description
-   * A função realiza uma requisição GET para buscar mais tickets. Após receber os dados, ela atualiza o estado dos tickets e o contador de tickets.
-   * Se ocorrer um erro durante a requisição, uma mensagem de erro é exibida ao usuário.
-   *
-   * @returns {void}
-   */
-  function moreTickets() {
-    // Faz uma requisição GET para buscar mais tickets
-    fetch("/helpdesk/moreTicket/" + countTicket + "/" + orderby + "/NoN/TI", {
-      method: "GET",
-      headers: {
-        "Cache-Control": "no-cache", // Evita cache da requisição para obter dados atualizados
-      },
-    })
-      .then((response) => response.json()) // Converte a resposta em JSON
-      .then((data) => {
-        setCountTicket(data.count); // Atualiza o contador de tickets com o novo valor
-        setTickets(data.tickets); // Atualiza a lista de tickets com os novos dados
-      })
-      .catch((err) => {
-        // Trata erros de requisição e exibe uma mensagem de erro
-        setMessageError(err);
-        setTypeError("FATAL ERROR");
-        setMessage(true);
-        console.log(err); // Exibe o erro no console para depuração
-      });
-  }
-
   /**
    * Finaliza um chamado, atualizando seu status para "close" e registrando a data e hora de conclusão.
    *
@@ -3153,7 +2422,7 @@ export default function DashboardTI() {
         </ZIndex>
       )}
       <TitlePage className="text-center text-light mt-3">Central de Gerenciamento de Chamados TI</TitlePage>
-      <div className={`d-flex flex-column justify-content-center w-100 ${classBlur}`}>
+      <div className={`d-flex flex-column justify-content-center w-100 ${classBlur} mb-5`}>
         <div className="d-flex justify-content-center w-100">
           <DashBoardPie sector={"TI"} clss={colorTheme} />
         </div>
@@ -3161,189 +2430,9 @@ export default function DashboardTI() {
           <DashboardBar />
         </div>
       </div>
-      <DivFilter className={`${classBlur} ${themeFilter}`}>
-        <div className="form-floating">
-          <Input1 type="text" className="form-control" id="floatingInput" onKeyUp={getTicketKey} />
-          <label htmlFor="floatingInput">Ocorrência | Problema | Data...</label>
-        </div>
-        <Select1 ref={selectOcorrence} className="form-select" onChange={enableProblem}>
-          <option value="null" selected disabled>
-            Tipo de Ocorrência
-          </option>
-          <option value="infra">Infra</option>
-          <option value="system">Sistema</option>
-          <option value="all">Todos</option>
-        </Select1>
-        {fakeSelect && (
-          <Select1 className="form-select" disabled>
-            <option selected>Problema</option>
-          </Select1>
-        )}
-        {problemInfra && (
-          <Select1
-            ref={selectBo}
-            className="form-select"
-            onChange={() => {
-              changeProblemn();
-            }}
-          >
-            <option value="" selected disabled>
-              Problema
-            </option>
-            <option value="backup">Backup/Restore</option>
-            <option value="mail">E-mail</option>
-            <option value="equipamento">Equipamento</option>
-            <option value="user">Gerenciamento de Usuario</option>
-            <option value="internet">Internet</option>
-            <option value="permissao">Pasta</option>
-            <option value="soft">Software e Aplicativos</option>
-            <option value="dados">Integridade de Dados</option>
-            <option value="all">Todos</option>
-          </Select1>
-        )}
-        {problemSyst && (
-          <Select1
-            ref={selectBo}
-            className="form-select"
-            onChange={() => {
-              changeProblemn();
-            }}
-          >
-            <option value="" selected disabled>
-              Problema
-            </option>
-            <option value="sap">SAP</option>
-            <option value="mbi">MBI</option>
-            <option value="synchro">Synchro</option>
-            <option value="office">Office</option>
-            <option value="eng">Softwares de Eng</option>
-            <option value="all">Todos</option>
-          </Select1>
-        )}
-        <Select1 name="" ref={selectOrderO} className="form-select" onChange={selectOrder}>
-          <option value="none" disabled>
-            Ordernar
-          </option>
-          <option selected value="recent">
-            Data Recente
-          </option>
-          <option value="ancient">Data Antiga</option>
-        </Select1>
-        <DivContainerImages className="d-flex">
-          <PSelectView className="position-absolute top-0 start-0 translate-middle">Quantidade</PSelectView>
-          <DivImages
-            className="btn"
-            ref={fiveView}
-            onClick={async () => {
-              setCountTicket(5);
-              await getTicketFilter({ quantity: 5 });
-              fiveView.current.style.backgroundColor = "#00B4D8";
-            }}
-          >
-            <IMGS1 src={IMG1} alt="" />
-            <PQuantity>5</PQuantity>
-          </DivImages>
-          <DivImages
-            className="btn"
-            ref={thenView}
-            onClick={async () => {
-              setCountTicket(10);
-              await getTicketFilter({ quantity: 10 });
-              thenView.current.style.backgroundColor = "#00B4D8";
-            }}
-          >
-            <IMGS1 src={IMG2} alt="" />
-            <PQuantity>10</PQuantity>
-          </DivImages>
-          <DivImages
-            className="btn"
-            ref={fiftyView}
-            onClick={async () => {
-              setCountTicket(50);
-              await getTicketFilter({ quantity: 50 });
-              fiftyView.current.style.backgroundColor = "#00B4D8";
-            }}
-          >
-            <IMGS1 src={IMG3} alt="" />
-            <PQuantity>50</PQuantity>
-          </DivImages>
-          <DivImages
-            className="btn"
-            ref={allView}
-            onClick={async () => {
-              setCountTicket(100000);
-              await getTicketFilter({ quantity: 100000 });
-              allView.current.style.backgroundColor = "#00B4D8";
-            }}
-          >
-            <IMGS1 src={IMG4} alt="" />
-            <PQuantity>todos</PQuantity>
-          </DivImages>
-        </DivContainerImages>
-        <DivSelectView>
-          <PSelectView className="position-absolute top-0 start-0 translate-middle">Modo de Visualização</PSelectView>
-          <button className="btn" ref={selectViewList} onClick={listCard}>
-            <ImgSelectView src={List} className="img-fluid" alt="" />
-          </button>
-          <button className="btn" ref={selectViewCard} onClick={viewCard}>
-            <ImgSelectView src={Card} clasName="img-fluid" alt="" />
-          </button>
-        </DivSelectView>
-        <DivSelectView>
-          <select className="form-select" onChange={filterTechnician}>
-            <option key={0} value="" selected disabled>
-              Tecnico Responsavel
-            </option>
-            {techs.map((tech, index) => (
-              <option key={index + 1} value={tech}>
-                {tech}
-              </option>
-            ))}
-          </select>
-        </DivSelectView>
-        <DivSelectView>
-          <PSelectView className="position-absolute top-0 start-0 translate-middle">Status</PSelectView>
-          <Button1
-            className="btn"
-            ref={btnOpen}
-            onClick={() => {
-              ticketOpenStatus();
-            }}
-          >
-            Aberto
-          </Button1>
-          <button
-            className="btn"
-            value="close"
-            ref={btnClose}
-            onClick={() => {
-              ticketClose();
-            }}
-          >
-            Fechado
-          </button>
-          <button
-            className="btn"
-            value="close"
-            ref={btnStop}
-            onClick={() => {
-              ticketStop();
-            }}
-          >
-            Aguardo
-          </button>
-          <Button2
-            className="btn"
-            value="all"
-            ref={btnAll}
-            onClick={() => {
-              statusTicketAll();
-            }}
-          >
-            Todos
-          </Button2>
-        </DivSelectView>
-      </DivFilter>
+      <div className="mt6 position-relative">
+        <FilterTickets blurNav={""} themeFilter={themeFilter} dateValue={dateValue} quantityMap={quantityMap} statusFilter={statusFIlter} userName={userData.name} />
+      </div>
       <section ref={sectionTicket} className="mt-3 position-relative">
         {loadingDash && (
           <div className="position-absolute top-50 start-50 translate-middle">
@@ -3403,13 +2492,7 @@ export default function DashboardTI() {
                   >
                     Aguardar
                   </DropBTN>
-                  <DropBTN
-                    className="btn btn-danger w-100"
-                    onClick={() => {
-                      setCreate_user_acess(false);
-                      setAlocate_Machine_Acess(false);
-                    }}
-                  >
+                  <DropBTN className="btn btn-danger w-100" onClick={() => {}}>
                     Modificar
                   </DropBTN>
                   <DropBTN className="btn btn-danger w-100" onClick={TechDetails}>
@@ -3506,9 +2589,17 @@ export default function DashboardTI() {
           )}
         </TicketOpen>
       )}
-      {btnmore && (
+      {btnMore && (
         <div className={`w-100 text-center ${classBlur}`}>
-          <button className="btn btn-info mb-5" onClick={moreTickets}>
+          <button
+            className="btn btn-info mb-5"
+            onClick={() => {
+              var quantity = localStorage.getItem("quantity");
+              quantity = Number(quantity);
+              quantity += 10;
+              return setCountTicket(quantity);
+            }}
+          >
             Carregar Mais
           </button>
         </div>

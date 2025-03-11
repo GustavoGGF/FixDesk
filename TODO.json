@@ -25,7 +25,8 @@
       "OCSCLS 2": "Apos ficar logado por um tempo da um erro te dereciona pra uma tela (quando expira o token)",
       "ATMC": "Verificar todos os codigos que lidam com o banco de dados e por @transaction.atomic",
       "ADRX 8": "Adicionar a telca esc para fechar algumas telas",
-      "ADHTML 39": "Mudar nomes de funções e variaveis para boas praticas"
+      "ADHTML 39": "Mudar nomes de funções e variaveis para boas praticas",
+      "RMVPD 40": "Remover o uso do PID"
     },
     "Study Possibility": {}
   },
@@ -38,7 +39,7 @@
   },
   "History": {
     "Upgrade": {},
-    "HotFix": { "QNTCK 31": "Quantidade de ticketes que vem ao entrar na page" }
+    "HotFix": { "QNTCK 31": "Quantidade de ticketes que vem ao entrar na page", "ESC 41": "ativar o Esc pra fechar o chamado" }
   },
   "Dashboard": {
     "Upgrade": {},

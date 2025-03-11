@@ -17,11 +17,6 @@ urlpatterns = [
     path("ticket/<int:id>", views.ticket, name="central-ticket"),
     path("update_chat/<int:id>", views.update_chat, name="central-update-chat"),
     path(
-        "moreTicket/<int:quantity>/<str:order>/<str:usr>/<str:sector>",
-        views.moreTicket,
-        name="central-more-ticket",
-    ),
-    path(
         "get-ticket-filter/<str:sector>/<str:occurrence>/<str:order>/<str:user>/<int:quantity>/<str:status>/<str:search_query>",
         views.get_ticket_filter,
         name="central-get-ticket-filter",

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import Navbar from "../components/navbar";
 import Loading from "../components/loading";
 import {
@@ -7,39 +7,27 @@ import {
   BtnChat2,
   BtnNF,
   BtnOpen,
-  Button1,
-  Button2,
   Close,
   CloseBTN,
   Div,
   DivCard,
   DivChat,
-  DivContainerImages,
   DivFile,
-  DivFilter,
   DivFlex1,
   DivFlex2,
   DivHR,
   DivImageOpen,
-  DivImages,
   DivNewFiles,
   DivOnBoardFile,
-  DivSelectView,
   H5Card,
-  IMGS1,
   IMGFiles,
   ImageFile,
   ImageOpen,
   ImgBTNCls,
-  ImgSelectView,
-  Input1,
   InputFile,
   PChatHourL,
   PChatHourR,
   PNWFile,
-  PQuantity,
-  PSelectView,
-  Select1,
   SpanCard,
   Table,
   TicketOpen,
@@ -50,15 +38,9 @@ import {
 } from "../styles/historyStyle";
 import { BtnFile, DivNameFile, ImgFile, TitlePage } from "../styles/helpdeskStyle";
 import "react-day-picker/dist/style.css";
-import Card from "../images/components/identificacao.png";
 import CloseIMG from "../images/components/close.png";
 import Download from "../images/components/download.png";
 import DownTick from "../images/components/attachment.png";
-import IMG1 from "../images/dashboard_TI/quantity_1.png";
-import IMG2 from "../images/dashboard_TI/quantity_2.png";
-import IMG3 from "../images/dashboard_TI/quantity_3.png";
-import IMG4 from "../images/dashboard_TI/quantity_4.png";
-import List from "../images/components/lista-de-itens.png";
 import Mail from "../images/components/mail.png";
 import Message from "../components/message";
 import PDF from "../images/components/pdf.png";
@@ -68,6 +50,8 @@ import XLS from "../images/components/xlsx.png";
 import ZIP from "../images/components/zip.jpg";
 import { TextObersavation } from "../styles/dashboardTI";
 import Exclude from "../images/components/close.png";
+import FilterTickets from "../components/search-tickets/filter";
+import { TicketContext } from "../services/TicketContext";
 
 export default function History() {
   useEffect(() => {
@@ -120,7 +104,6 @@ export default function History() {
   const [blurNav, setBlurNav] = useState("");
   const [colorTheme, setColorTheme] = useState("");
   const [lifeTime, setLifetime] = useState("");
-  const [status, setStatus] = useState("null");
   const [textChat, setTextChat] = useState("");
   const [theme, setTheme] = useState("");
   const [themeCard, setThemeCard] = useState("");
@@ -135,28 +118,20 @@ export default function History() {
   const [ticketSECTOR, setTicketSECTOR] = useState("");
   const [ticketResponsible_Technician, setTicketResponsible_Technician] = useState("");
   const [token, setToken] = useState("");
-  const [typeError, setTypeError] = useState("");
-  const [messageError, setMessageError] = useState("");
   const [equipament, setEquipament] = useState("");
-  const [orderby, setOrderBy] = useState("");
-
+  const [dateValue, setDateValue] = useState("");
+  const [statusFIlter, setStatusFIlter] = useState("");
   // Declarando variaveis de estado Boolean
-  const [btnmore, setBtnMore] = useState(false);
   const [chat, setChat] = useState(true);
-  const [fakeSelect, setFakeSelect] = useState(true);
   const [fetchchat, setFetchChat] = useState(false);
   const [imageopen, setImageOpen] = useState(false);
   const [inCard, setInCard] = useState(false);
   const [isAtButton, setIsAtButton] = useState(false);
   const [inList, setInList] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [loadingDash, setLoadingDash] = useState(true);
-  const [message, setMessage] = useState(false);
   const [messageChat, setMessageChat] = useState(false);
   const [newFiles, setNewFiles] = useState(false);
   const [navbar, setNavbar] = useState(false);
-  const [problemInfra, setProblemInfra] = useState(false);
-  const [problemSyst, setProblemSyst] = useState(false);
   const [ticketWindow, setTicketWindow] = useState(false);
   const [showEquipament, setShowEquipament] = useState(false);
 
@@ -165,7 +140,6 @@ export default function History() {
   const [fileticket, setFileTicket] = useState([]);
   const [mountChat, setMountChat] = useState([]);
   const [tickets, setTickets] = useState([]);
-  const [ticketsDash, setTicketsDash] = useState([]);
   const [uploadNewFiles, setUploadNewFiles] = useState([]);
 
   // Varaiveis de estado Vazias
@@ -175,8 +149,7 @@ export default function History() {
   const [initUpdateChat, setInitUpdateChat] = useState();
 
   // Variaveis de estado Number
-  const [countTicket, setCountTicket] = useState(0);
-  const [quantityTickets, setQuantityTickets] = useState(0);
+  const [quantityMap, setQuantityMap] = useState(0);
 
   const UpNwfile = [];
 
@@ -186,17 +159,9 @@ export default function History() {
 
   const dashBoard = useRef(null);
   const textareaRef = useRef(null);
-  const fiveView = useRef(null);
-  const thenView = useRef(null);
-  const fiftyView = useRef(null);
-  const allView = useRef(null);
-  const btnOpen = useRef(null);
-  const btnClose = useRef(null);
-  const btnStop = useRef(null);
-  const btnAll = useRef(null);
-  const dateSelect = useRef(null);
-  const selectOccurrence = useRef(null);
-  const selectProblem = useRef(null);
+
+  const { ticketData, setTicketData, setCountTicket, loadingDash, setLoadingDash, message, setMessage, typeError, setTypeError, btnMore, setBtnMore, messageError, setMessageError, cardOrlist } =
+    useContext(TicketContext);
 
   useEffect(() => {
     // Verifica se a referência do textarea está definida e se o valor não está vazio
@@ -215,6 +180,17 @@ export default function History() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mountChat]);
+
+  useEffect(() => {
+    if (cardOrlist !== "") {
+      if (cardOrlist === "Card") {
+        viewCard();
+      } else if (cardOrlist === "List") {
+        listCard();
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cardOrlist]);
 
   function resizeTextarea(textarea) {
     // Obtém o estilo de altura da linha do textarea, assumindo que esteja definido em pixels
@@ -352,26 +328,23 @@ export default function History() {
         if (quantity === null || quantity === "null") {
           localStorage.setItem("quantity", 10);
           quantity = 10;
-          setQuantityTickets(quantity);
         }
 
         var status_current = localStorage.getItem("status");
         if (status_current === null || status_current === "null") {
           localStorage.setItem("status", "open");
           status_current = "open";
-          setStatus(status_current);
         }
 
         var order_current = localStorage.getItem("order");
         if (order_current == null || order_current === "null") {
           localStorage.setItem("order", "-id");
           order_current = "-id";
-          setOrderBy("-id");
         } else {
           if (order_current === "id") {
-            dateSelect.current.value = "id";
+            setDateValue("id");
           } else {
-            dateSelect.current.value = "-id";
+            setDateValue("-id");
           }
         }
 
@@ -402,44 +375,10 @@ export default function History() {
         }
         // Atualiza os estados com os dados recebidos da API
         setToken(data.token);
-        setTickets(data.tickets);
+        setTicketData(data.tickets);
         setCountTicket(10); // Define um valor padrão para contagem de tickets
-
-        // Mapeia valores de quantity para os refs correspondentes
-        const refMapQuantity = {
-          5: fiveView,
-          10: thenView,
-          50: fiftyView,
-          100000: allView, // Supondo que "all" seja um valor possível
-        };
-
-        // Obtém o ref correspondente ao valor de quantity
-        const selectedRefQuantity = refMapQuantity[quantity];
-
-        // Aplica o estilo apenas se o ref existir
-        if (selectedRefQuantity?.current) {
-          selectedRefQuantity.current.style.backgroundColor = "#00B4D8";
-        }
-
-        switch (status_current) {
-          default:
-            break;
-          case "open":
-            btnOpen.current.classList.add("btn-open"); // Marca o botão "Open" como ativo
-            break;
-          case "stop":
-            btnStop.current.classList.add("btn-light"); // Remove o estilo de luz do botão "Stop"
-            break;
-          case "close":
-            btnClose.current.classList.add("btn-success"); // Remove o estilo de sucesso do botão "Close"
-            break;
-          case "all":
-            btnAll.current.classList.add("btn-all"); // Remove o estilo do botão "All"
-            break;
-        }
-
-        setQuantityTickets(quantity);
-        return status;
+        setQuantityMap(quantity);
+        setStatusFIlter(status_current);
       } catch (error) {
         // Em caso de erro, define mensagens de erro e exibe no console para depuração
         setTypeError("Erro Fatal");
@@ -957,7 +896,7 @@ export default function History() {
   }
 
   useEffect(() => {
-    if (tickets && Object.keys(tickets).length > 0) {
+    if (ticketData && Object.keys(ticketData).length > 0) {
       const selectView = localStorage.getItem("selectView");
       if (selectView === null || selectView === "card") {
         return viewCard();
@@ -966,10 +905,10 @@ export default function History() {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tickets]);
+  }, [ticketData]);
 
   function viewCard() {
-    setTicketsDash([]);
+    setTickets([]);
     setLoading(false);
     setNavbar(true);
     setInCard(true);
@@ -985,7 +924,7 @@ export default function History() {
 
     var countTicket = 0;
 
-    tickets.forEach((ticket) => {
+    ticketData.forEach((ticket) => {
       countTicket += 1;
       var date = new Date(ticket["start_date"]);
 
@@ -1040,7 +979,7 @@ export default function History() {
         </DivCard>
       );
 
-      setTicketsDash((ticketsDash) => [...ticketsDash, Div]);
+      setTickets((ticketsDash) => [...ticketsDash, Div]);
       const dash = document.getElementById("dashboard");
       dash.classList.add("dashCard");
 
@@ -1049,12 +988,12 @@ export default function History() {
       }
 
       setLoadingDash(false);
-      return ticketsDash;
+      return ticketData;
     });
   }
 
   function listCard() {
-    setTicketsDash([]);
+    setTickets([]);
     setNavbar(true);
     setLoading(false);
     setInList(true);
@@ -1070,7 +1009,7 @@ export default function History() {
 
     var countTicket = 0;
 
-    tickets.forEach((ticket) => {
+    ticketData.forEach((ticket) => {
       countTicket += 1;
       var date = new Date(ticket["start_date"]);
 
@@ -1127,8 +1066,8 @@ export default function History() {
 
       const Space = <TRSPACE></TRSPACE>;
 
-      setTicketsDash((ticketsDash) => [...ticketsDash, Div]); // Adiciona o cartão ao array de chamados.
-      setTicketsDash((ticketsDash) => [...ticketsDash, Space]);
+      setTickets((ticketsDash) => [...ticketsDash, Div]); // Adiciona o cartão ao array de chamados.
+      setTickets((ticketsDash) => [...ticketsDash, Space]);
       const dash = document.getElementById("dashboard");
       dash.classList.add("dashCard");
 
@@ -1137,7 +1076,7 @@ export default function History() {
       }
 
       setLoadingDash(false);
-      return ticketsDash;
+      return ticketData;
     });
   }
 
@@ -1337,159 +1276,6 @@ export default function History() {
 
   function imageclose() {
     setImageOpen(false);
-  }
-
-  function moreTickets() {
-    var order = "";
-    if (orderby === "") {
-      order = localStorage.getItem("order");
-    } else {
-      order = orderby;
-    }
-    fetch("/helpdesk/moreTicket/" + countTicket + "/" + order + "/" + Data.name + "/" + null, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-      },
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        setCountTicket(data.count);
-        setTickets(data.tickets);
-        return countTicket;
-      })
-      .catch((err) => {
-        setMessageError(err);
-        setTypeError("Fatal ERROR");
-        setMessage(true);
-        return console.log(err);
-      });
-  }
-
-  function getTicketFilter({ id, quantity, statusTicket, search_query }) {
-    console.log(search_query);
-
-    setTickets([]);
-    setTicketsDash([]);
-    setLoadingDash(true);
-
-    if (id !== "null") {
-      switch (id) {
-        default:
-          break;
-        case "fiveView":
-          fiveView.current.style.backgroundColor = "#00B4D8";
-          thenView.current.style.backgroundColor = "transparent";
-          fiftyView.current.style.backgroundColor = "transparent";
-          allView.current.style.backgroundColor = "transparent";
-          break;
-        case "thenView":
-          fiveView.current.style.backgroundColor = "transparent";
-          thenView.current.style.backgroundColor = "#00B4D8";
-          fiftyView.current.style.backgroundColor = "transparent";
-          allView.current.style.backgroundColor = "transparent";
-          break;
-        case "fiftyView":
-          fiveView.current.style.backgroundColor = "transparent";
-          thenView.current.style.backgroundColor = "transparent";
-          fiftyView.current.style.backgroundColor = "#00B4D8";
-          allView.current.style.backgroundColor = "transparent";
-          break;
-        case "allView":
-          fiveView.current.style.backgroundColor = "transparent";
-          thenView.current.style.backgroundColor = "transparent";
-          fiftyView.current.style.backgroundColor = "transparent";
-          allView.current.style.backgroundColor = "#00B4D8";
-          break;
-      }
-    }
-
-    switch (statusTicket) {
-      default:
-        break;
-      case "open":
-        btnOpen.current.classList.add("btn-open"); // Marca o botão "Open" como ativo
-        btnStop.current.classList.remove("btn-light");
-        btnClose.current.classList.remove("btn-success");
-        btnAll.current.classList.remove("btn-all");
-        break;
-      case "stop":
-        btnOpen.current.classList.remove("btn-open"); // Marca o botão "Open" como ativo
-        btnStop.current.classList.add("btn-light");
-        btnClose.current.classList.remove("btn-success");
-        btnAll.current.classList.remove("btn-all");
-        break;
-      case "close":
-        btnOpen.current.classList.remove("btn-open"); // Marca o botão "Open" como ativo
-        btnStop.current.classList.remove("btn-light");
-        btnClose.current.classList.add("btn-success");
-        btnAll.current.classList.remove("btn-all");
-        break;
-      case "all":
-        btnOpen.current.classList.remove("btn-open"); // Marca o botão "Open" como ativo
-        btnStop.current.classList.remove("btn-light");
-        btnClose.current.classList.remove("btn-success");
-        btnAll.current.classList.add("btn-all");
-        break;
-    }
-
-    var orderTicket = dateSelect.current.value;
-
-    if (statusTicket === "null") {
-      statusTicket = localStorage.getItem("status");
-    }
-
-    var sector = selectOccurrence.current.value;
-    var occurrence = "null";
-    console.log(sector);
-
-    if (selectProblem.current) {
-      occurrence = selectProblem.current.value;
-    }
-
-    if (occurrence === "") {
-      occurrence = "null";
-    }
-
-    if (search_query === "") {
-      search_query = "null";
-    }
-
-    fetch("/helpdesk/get-ticket-filter/" + sector + "/" + occurrence + "/" + orderTicket + "/" + Data.name + "/" + quantity + "/" + statusTicket + "/" + search_query, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-      },
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        if (data.tickets.length === 0) {
-          setMessage(true);
-          setTypeError("Falta de dados");
-          setMessageError("Nenhum ticket com esses Filtros");
-          setBtnMore(false);
-          return;
-        } else {
-          setLoadingDash(false);
-          localStorage.setItem("quantity", quantity);
-          localStorage.setItem("status", statusTicket);
-          localStorage.setItem("order", orderTicket);
-          setOrderBy(orderTicket);
-          setStatus(statusTicket);
-          setQuantityTickets(quantity);
-          return setTickets(data.tickets);
-        }
-      })
-      .catch((err) => {
-        setMessageError(err);
-        setTypeError("Fatal ERROR");
-        setMessage(true);
-        return console.log(err);
-      });
   }
 
   function UploadNewFiles(evt) {
@@ -1824,32 +1610,6 @@ export default function History() {
       });
   }
 
-  function validateSelectFilter() {
-    if (selectOccurrence.current) {
-      switch (selectOccurrence.current.value) {
-        default:
-          break;
-        case "Infraestrutura":
-          setFakeSelect(false);
-          setProblemInfra(true);
-          setProblemSyst(false);
-          break;
-        case "Sistema":
-          setFakeSelect(false);
-          setProblemInfra(false);
-          setProblemSyst(true);
-          break;
-        case "all":
-          setFakeSelect(true);
-          setProblemInfra(false);
-          setProblemSyst(false);
-      }
-    }
-    if (selectProblem.current) {
-      selectProblem.current.value = "";
-    }
-  }
-
   return (
     <Div className={theme}>
       {navbar && (
@@ -1863,206 +1623,7 @@ export default function History() {
         </div>
       )}
       <TitlePage className="text-center text-light mt-3">Histórico de Chamados</TitlePage>
-      <DivFilter className={`${blurNav} ${themeFilter}`}>
-        <div className="form-floating">
-          <Input1
-            type="text"
-            className="form-control"
-            id="floatingInput"
-            onKeyUp={(event) => {
-              getTicketFilter({ id: "null", quantity: quantityTickets, statusTicket: status, search_query: event.target.value });
-            }}
-          />
-          <label htmlFor="floatingInput">Ocorrência | Problema | Data...</label>
-        </div>
-        <Select1
-          id="selectOcorrence"
-          className="form-select"
-          ref={selectOccurrence}
-          onChange={() => {
-            validateSelectFilter();
-            getTicketFilter({ id: "null", quantity: quantityTickets, statusTicket: status, search_query: "null" });
-          }}
-        >
-          <option value="null" selected disabled>
-            Tipo de Ocorrência
-          </option>
-          <option value="Infraestrutura">Infra</option>
-          <option value="Sistema">Sistema</option>
-          <option value="all">Todos</option>
-        </Select1>
-        {fakeSelect && (
-          <Select1 className="form-select" disabled>
-            <option selected value="null">
-              Problema
-            </option>
-          </Select1>
-        )}
-        {problemInfra && (
-          <Select1
-            id="selectBo"
-            className="form-select"
-            ref={selectProblem}
-            onChange={() => {
-              getTicketFilter({ id: "null", quantity: quantityTickets, statusTicket: status, search_query: "null" });
-            }}
-          >
-            <option value="null" selected disabled>
-              Problema
-            </option>
-            <option value="Backup">Backup/Restore</option>
-            <option value="E-mail">E-mail</option>
-            <option value="Equipamento">Equipamento</option>
-            <option value="Gerenciamento de Usuario">Gerenciamento de Usuario</option>
-            <option value="Internet">Internet</option>
-            <option value="Permissão">Pasta</option>
-            <option value="Novo SoftWare">Software e Aplicativos</option>
-            <option value="Integridade de Dados">Integridade de Dados</option>
-            <option value="all">Todos</option>
-          </Select1>
-        )}
-        {problemSyst && (
-          <Select1
-            id="selectBo"
-            className="form-select"
-            ref={selectProblem}
-            onChange={() => {
-              getTicketFilter({ id: "null", quantity: quantityTickets, statusTicket: status, search_query: "null" });
-            }}
-          >
-            <option value="" selected disabled>
-              Problema
-            </option>
-            <option value="SAP">SAP</option>
-            <option value="MBI">MBI</option>
-            <option value="Synchro">Synchro</option>
-            <option value="Office">Office</option>
-            <option value="Softwares de Eng">Softwares de Eng</option>
-            <option value="all">Todos</option>
-          </Select1>
-        )}
-        <Select1
-          ref={dateSelect}
-          name=""
-          id="select-order"
-          className="form-select"
-          onChange={() => {
-            getTicketFilter({ id: "null", quantity: quantityTickets, statusTicket: status, search_query: "null" });
-          }}
-        >
-          <option value="none" disabled>
-            Ordernar
-          </option>
-          <option value="-id">Data Recente</option>
-          <option value="id">Data Antiga</option>
-        </Select1>
-        <DivContainerImages className="d-flex">
-          <PSelectView className="position-absolute top-0 start-0 translate-middle">Quantidade</PSelectView>
-          <DivImages
-            className="btn"
-            id="fiveView"
-            ref={fiveView}
-            onClick={() => {
-              setCountTicket(5);
-              getTicketFilter({ id: "fiveView", quantity: 5, statusTicket: status, search_query: "null" });
-            }}
-          >
-            <IMGS1 src={IMG1} alt="" />
-            <PQuantity>5</PQuantity>
-          </DivImages>
-          <DivImages
-            className="btn"
-            id="thenView"
-            ref={thenView}
-            onClick={() => {
-              setCountTicket(10);
-              getTicketFilter({ id: "thenView", quantity: 10, statusTicket: status, search_query: "null" });
-            }}
-          >
-            <IMGS1 src={IMG2} alt="" />
-            <PQuantity>10</PQuantity>
-          </DivImages>
-          <DivImages
-            className="btn"
-            id="fiftyView"
-            ref={fiftyView}
-            onClick={() => {
-              setCountTicket(50);
-              getTicketFilter({ id: "fiftyView", quantity: 50, statusTicket: status, search_query: "null" });
-            }}
-          >
-            <IMGS1 src={IMG3} alt="" />
-            <PQuantity>50</PQuantity>
-          </DivImages>
-          <DivImages
-            className="btn"
-            id="allView"
-            ref={allView}
-            onClick={() => {
-              setCountTicket(100000);
-              getTicketFilter({ id: "allView", quantity: 100000, statusTicket: status, search_query: "null" });
-            }}
-          >
-            <IMGS1 src={IMG4} alt="" />
-            <PQuantity>todos</PQuantity>
-          </DivImages>
-        </DivContainerImages>
-        <DivSelectView>
-          <PSelectView className="position-absolute top-0 start-0 translate-middle">Modo de Visualização</PSelectView>
-          <button className="btn" id="selectView-List" onClick={listCard}>
-            <ImgSelectView src={List} className="img-fluid" alt="" />
-          </button>
-          <button className="btn" id="selectView-Card" onClick={viewCard}>
-            <ImgSelectView src={Card} clasName="img-fluid" alt="" />
-          </button>
-        </DivSelectView>
-        <DivSelectView>
-          <PSelectView className="position-absolute top-0 start-0 translate-middle">Status</PSelectView>
-          <Button1
-            className="btn"
-            id="btnopen"
-            ref={btnOpen}
-            onClick={() => {
-              getTicketFilter({ id: "null", quantity: quantityTickets, statusTicket: "open", search_query: "null" });
-            }}
-          >
-            Aberto
-          </Button1>
-          <button
-            className="btn"
-            value="close"
-            id="btnclose"
-            ref={btnClose}
-            onClick={() => {
-              getTicketFilter({ id: "null", quantity: quantityTickets, statusTicket: "close", search_query: "null" });
-            }}
-          >
-            Fechado
-          </button>
-          <button
-            className="btn"
-            value="close"
-            id="btnstop"
-            ref={btnStop}
-            onClick={() => {
-              getTicketFilter({ id: "null", quantity: quantityTickets, statusTicket: "stop", search_query: "null" });
-            }}
-          >
-            Aguardo
-          </button>
-          <Button2
-            className="btn"
-            value="all"
-            id="btnall"
-            ref={btnAll}
-            onClick={() => {
-              getTicketFilter({ id: "null", quantity: quantityTickets, statusTicket: "all", search_query: "null" });
-            }}
-          >
-            Todos
-          </Button2>
-        </DivSelectView>
-      </DivFilter>
+      <FilterTickets blurNav={blurNav} themeFilter={themeFilter} dateValue={dateValue} quantityMap={quantityMap} statusFilter={statusFIlter} userName={Data.name} />
       <section ref={dashBoard} id="dashboard">
         {loadingDash && (
           <div className="position-absolute top-50 start-50 translate-middle">
@@ -2078,10 +1639,10 @@ export default function History() {
               <TH className={colorTheme}>Descrição</TH>
               <TH className={colorTheme}>Data Abertura</TH>
             </thead>
-            <tbody>{ticketsDash}</tbody>
+            <tbody>{tickets}</tbody>
           </Table>
         )}
-        {inCard && <>{ticketsDash}</>}
+        {inCard && <>{tickets}</>}
       </section>
       {ticketWindow && (
         <TicketOpen className="position-fixed top-50 start-50 translate-middle">
@@ -2168,9 +1729,17 @@ export default function History() {
           )}
         </TicketOpen>
       )}
-      {btnmore && (
+      {btnMore && (
         <div className={`w-100 text-center ${blurNav}`}>
-          <button className="btn btn-info mb-5" onClick={moreTickets}>
+          <button
+            className="btn btn-info mb-5"
+            onClick={() => {
+              var quantity = localStorage.getItem("quantity");
+              quantity = Number(quantity);
+              quantity += 10;
+              return setCountTicket(quantity);
+            }}
+          >
             Carregar Mais
           </button>
         </div>

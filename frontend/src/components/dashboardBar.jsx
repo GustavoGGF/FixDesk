@@ -60,7 +60,7 @@ export default function DashboardBar() {
    * A dependência vazia [] garante que o efeito será executado apenas uma vez após a montagem do componente.
    */
   useEffect(() => {
-    periodweek();
+    getDataBar({ range_days: "week" });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -72,10 +72,10 @@ export default function DashboardBar() {
    * - Se a requisição for bem-sucedida, atualiza o rótulo do dashboard, chama a função CallNewBar() para atualizar o gráfico e define os dados do histograma.
    * - Em caso de erro, exibe uma mensagem de erro.
    */
-  function periodweek() {
+  function getDataBar({ range_days }) {
     setLabelDash("");
     setHistogramData([]);
-    fetch("getDashBoardBar/week/", {
+    fetch("get-dash-board-bar/" + range_days, {
       method: "GET",
       headers: {
         Accept: "application/json",
@@ -83,23 +83,30 @@ export default function DashboardBar() {
       },
     })
       .then((response) => {
-        if (response.status === 210) {
-          try {
-            selectPeriod.current.value = "2";
-            setMessage(true);
-            setTypeError("Falta de Dados");
-            setMessageError("Buscando Chamados do Mês");
-            barChartData = "";
-            periodMonth();
-          } catch (err) {
-            console.log(err);
-          }
-        }
+        recallGetBarData({ range: range_days });
         return response.json();
       })
       .then((data) => {
-        barChartData = "week";
-        setLabelDash("Chamados da Semana");
+        switch (range_days) {
+          default:
+            break;
+          case "week":
+            barChartData = range_days;
+            setLabelDash("Chamados da Semana");
+            break;
+          case "month":
+            barChartData = range_days;
+            setLabelDash("Chamados do Mês");
+            break;
+          case "year":
+            barChartData = "year";
+            setLabelDash("Chamados deste Ano");
+            break;
+          case "all":
+            barChartData = "all";
+            setLabelDash("Todos os Chamados");
+            break;
+        }
         CallNewBar();
         setHistogramData(data);
       })
@@ -110,133 +117,28 @@ export default function DashboardBar() {
       });
   }
 
-  /**
-   * Função periodMonth() utilizada para buscar os dados mensais para o dashboard.
-   * - Reinicia o rótulo do dashboard e os dados do histograma.
-   * - Realiza uma requisição GET para obter os dados do mês.
-   * - Se o status da resposta for 210 (falta de dados), a função tenta buscar os dados anuais e exibe uma mensagem informativa.
-   * - Se a requisição for bem-sucedida, atualiza o rótulo do dashboard, define os dados do histograma e chama a função CallNewBar() para atualizar o gráfico.
-   * - Em caso de erro, exibe uma mensagem de erro.
-   */
-  function periodMonth() {
-    setLabelDash("");
-    setHistogramData([]);
-    fetch("getDashBoardBar/updateMonth/", {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Cache-Control": "no-cache",
-      },
-    })
-      .then((response) => {
-        if (response.status === 210) {
-          selectPeriod.current.value = "3";
-          setMessage(true);
-          setTypeError("Falta de Dados");
-          setMessageError("Buscando Chamados do Ano");
-          barChartData = "";
-          periodYear();
-        }
-        if (response.status === 302) {
-          return window.location.href("/login");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        barChartData = "month";
-        setLabelDash("Chamados do Mês");
-        setHistogramData(data);
-        CallNewBar();
-      })
-      .catch((err) => {
+  function recallGetBarData(range) {
+    switch (range) {
+      default:
+        break;
+      case "week":
+        selectPeriod.current.value = "2";
         setMessage(true);
-        setTypeError("Fatal Error");
-        setMessageError(err);
-      });
-  }
-
-  /**
-   * Função periodYear() utilizada para buscar os dados anuais para o dashboard.
-   * - Reinicia o rótulo do dashboard e os dados do histograma.
-   * - Realiza uma requisição GET para obter os dados do mês.
-   * - Se o status da resposta for 210 (falta de dados), a função tenta buscar os dados totais e exibe uma mensagem informativa.
-   * - Se a requisição for bem-sucedida, atualiza o rótulo do dashboard, define os dados do histograma e chama a função CallNewBar() para atualizar o gráfico.
-   * - Em caso de erro, exibe uma mensagem de erro.
-   */
-  function periodYear() {
-    setLabelDash("");
-    setHistogramData([]);
-    fetch("getDashBoardBar/updateYear/", {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Cache-Control": "no-cache",
-      },
-    })
-      .then((response) => {
-        if (response.status === 210) {
-          selectPeriod.current.value = "4";
-          setMessage(true);
-          setTypeError("Falta de Dados");
-          setMessageError("Buscando Todos os Chamados");
-          barChartData = "";
-          periodAll();
-        }
-        return response.json();
-      })
-      .then((data) => {
-        barChartData = "year";
-        setLabelDash("Chamados deste Ano");
-        setHistogramData(data);
-        CallNewBar();
-      })
-      .catch((err) => {
+        setTypeError("Falta de Dados");
+        setMessageError("Buscando Chamados do Mês");
+        barChartData = "";
+        getDataBar({ range_days: "month" });
+        break;
+      case "month":
+        selectPeriod.current.value = "3";
         setMessage(true);
-        setTypeError("Fatal Error");
-        setMessageError(err);
-      });
+        setTypeError("Falta de Dados");
+        setMessageError("Buscando Chamados do Ano");
+        barChartData = "";
+        getDataBar({ range_days: "year" });
+        break;
+    }
   }
-
-  /**
-   * Função periodYear() utilizada para buscar os dados totais para o dashboard.
-   * - Reinicia o rótulo do dashboard e os dados do histograma.
-   * - Realiza uma requisição GET para obter os dados do mês.
-   * - Se o status da resposta for 210 (falta de dados), exibe uma mensagem informativa.
-   * - Se a requisição for bem-sucedida, atualiza o rótulo do dashboard, define os dados do histograma e chama a função CallNewBar() para atualizar o gráfico.
-   * - Em caso de erro, exibe uma mensagem de erro.
-   */
-  function periodAll() {
-    fetch("getDashBoardBar/updateAll/", {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Cache-Control": "no-cache",
-      },
-    })
-      .then((response) => {
-        if (response.status === 210) {
-          selectPeriod.current.value = "4";
-          setMessage(true);
-          setTypeError("Falta de Dados");
-          setMessageError("Nenhum Chamado Foi Criado");
-          setLoadingHistogram(false);
-          barChartData = "";
-        }
-        return response.json();
-      })
-      .then((data) => {
-        barChartData = "all";
-        setLabelDash("Todos os Chamados");
-        setHistogramData(data);
-        CallNewBar();
-      })
-      .catch((err) => {
-        setMessage(true);
-        setTypeError("Fatal Error");
-        setMessageError(err);
-      });
-  }
-
   /**
    * Acionado sempre que os dados do dashboard (histogramData) são atualizados.
    * - A função initChart() é chamada para inicializar o gráfico com os novos dados.
@@ -313,16 +215,16 @@ export default function DashboardBar() {
 
     switch (currentBarChartData) {
       case "week":
-        updateFunction = periodweek;
+        updateFunction = () => getDataBar({ range_days: "week" });
         break;
       case "month":
-        updateFunction = periodMonth;
+        updateFunction = () => getDataBar({ range_days: "month" });
         break;
       case "year":
-        updateFunction = periodYear;
+        updateFunction = () => getDataBar({ range_days: "year" });
         break;
       case "all":
-        updateFunction = periodAll;
+        updateFunction = () => getDataBar({ range_days: "all" });
         break;
       default:
         return;
@@ -344,16 +246,16 @@ export default function DashboardBar() {
 
     switch (period) {
       case "1":
-        periodweek();
+        getDataBar({ range_days: "week" });
         break;
       case "2":
-        periodMonth();
+        getDataBar({ range_days: "month" });
         break;
       case "3":
-        periodYear();
+        getDataBar({ range_days: "year" });
         break;
       case "4":
-        periodAll();
+        getDataBar({ range_days: "all" });
         break;
       default:
         console.log("periodo inválido: ", period);

@@ -506,3 +506,7 @@
   border-bottom-left-radius: 0;
   min-width: 7%;
 }
+
+mt6 {
+  margin-top: 6em !important;
+}

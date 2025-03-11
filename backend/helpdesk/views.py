@@ -12,7 +12,6 @@ from json import loads
 from django.middleware.csrf import get_token
 from datetime import datetime
 from .models import SupportTicket, TicketFile
-from django.contrib.auth.models import User
 from .models import SupportTicket
 from django.core.serializers import serialize
 from django.contrib.auth import logout
@@ -27,7 +26,7 @@ from django.db.models import Q
 import mimetypes
 from django.core.files.base import ContentFile
 from fpdf import FPDF
-from re import findall, search
+from re import findall
 from logging import basicConfig, getLogger, WARNING
 from django.db import transaction
 from django.views.decorators.cache import never_cache
@@ -1238,62 +1237,8 @@ def update_chat(request, id):
 @require_GET
 @login_required(login_url="/login")
 @never_cache
-def moreTicket(request, quantity, order, usr, sector):
-    """
-    Gera mais chamados de acordo com os filtros fornecidos (quantidade, ordem, usuário e setor).
-
-    A função retorna uma lista de tickets filtrados e ordenados com base nos parâmetros fornecidos,
-    como quantidade de tickets, setor e ordem de exibição.
-
-    :param request: Objeto da requisição.
-    :param quantity: Quantidade de tickets a serem retornados.
-    :param order: Ordem de exibição dos tickets (ex: "-id" ou outro critério).
-    :param usr: Usuário responsável pelos tickets.
-    :param sector: Setor de onde os tickets serão filtrados.
-
-    :return: Retorna um JSON com os tickets filtrados e ordenados ou um erro caso ocorra uma falha.
-    """
-    count = quantity + 10  # Ajusta a quantidade de tickets a serem retornados
-    try:
-        # Se o setor for "TI", aplica a lógica de ordenação de acordo com o parâmetro "order"
-        if sector == "TI":
-            tickets = (
-                SupportTicket.objects.order_by("-id")[:count]
-                if order == "-id"
-                else SupportTicket.objects.all()[:count]
-            )
-        else:
-            # Se o setor não for "TI", filtra pelos tickets do usuário fornecido e aplica a ordenação
-            tickets = (
-                SupportTicket.objects.filter(ticketRequester=usr).order_by("-id")[
-                    :count
-                ]
-                if order == "-id"
-                else SupportTicket.objects.filter(ticketRequester=usr)[:count]
-            )
-
-        # Serializa os tickets para retornar os campos desejados
-        ticket_objects = [
-            {**loads(serialize("json", [ticket]))[0]["fields"], "id": ticket.id}
-            for ticket in tickets
-        ]
-
-        # Retorna os tickets com o status 200
-        return JsonResponse(
-            {"tickets": ticket_objects, "count": count}, status=200, safe=True
-        )
-
-    except Exception as e:
-        # Registra o erro e retorna uma resposta com erro 306
-        logger.error(e)
-        return JsonResponse({"Error": f"Erro inesperado {e}"}, status=306)
-
-
-@require_GET
-@login_required(login_url="/login")
-@never_cache
 def get_ticket_filter(
-    request,
+    request: WSGIRequest,
     sector: str,
     occurrence: str,
     order: str,
@@ -1310,8 +1255,12 @@ def get_ticket_filter(
         if search_query in {"null", "None"}:
             search_query = ""
 
-        # Inicializa o filtro principal obrigando a busca pelo "ticketRequester"
-        filters = Q(ticketRequester=user)
+        # Inicializa o filtro principal vazio caso seja algum tecnico
+        if request.user.groups.filter(name__in=[Back_Tech, Back_Leader]).exists():
+            filters = Q()
+        else:
+            # Inicializa o filtro principal obrigando a busca pelo "ticketRequester"
+            filters = Q(ticketRequester=user)
 
         # Se o setor não for "all" ou "null", adiciona ao filtro
         if sector.lower() not in {"all", "null"}:

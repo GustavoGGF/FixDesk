@@ -5,6 +5,13 @@ import Helpdesk from "./pages/helpdesk";
 import History from "./pages/history";
 import DashboardTI from "./dashboard/dashboardTI";
 import { TickerProvider } from "./services/TickerContext";
+import { TicketProvider } from "./services/TicketContext";
+
+// Layout para envolver Helpdesk com o TickerProvider
+const HelpdeskLayout = ({ children }) => <TickerProvider>{children}</TickerProvider>;
+
+// Layout para envolver History e Dashboard com o TicketProvider
+const TicketLayout = ({ children }) => <TicketProvider>{children}</TicketProvider>;
 
 export default function App() {
   const router = createBrowserRouter([
@@ -20,13 +27,30 @@ export default function App() {
       path: "/login",
       element: <Login />,
     },
-    { path: "/helpdesk", element: <Helpdesk /> },
-    { path: "/helpdesk/history", element: <History /> },
-    { path: "/dashboard_TI", element: <DashboardTI /> },
+    {
+      path: "/helpdesk",
+      element: (
+        <HelpdeskLayout>
+          <Helpdesk />
+        </HelpdeskLayout>
+      ),
+    },
+    {
+      path: "/helpdesk/history",
+      element: (
+        <TicketLayout>
+          <History />
+        </TicketLayout>
+      ),
+    },
+    {
+      path: "/dashboard_TI",
+      element: (
+        <TicketLayout>
+          <DashboardTI />
+        </TicketLayout>
+      ),
+    },
   ]);
-  return (
-    <TickerProvider>
-      <RouterProvider router={router} />
-    </TickerProvider>
-  );
+  return <RouterProvider router={router} />;
 }
