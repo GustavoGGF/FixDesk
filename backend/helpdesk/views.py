@@ -955,6 +955,14 @@ def ticket_close(id: int, technician: str, date: str, hours: str, mail: str):
         # Limpa o e-mail do técnico
         ticket.technician_mail = None
 
+        # Obtém a data e hora atual
+        current_date = datetime.now()
+
+        # Formata no estilo desejado
+        formated_date = current_date.strftime("%Y-%m-%d %H:%M:%S")
+
+        ticket.end_date = formated_date
+
         # Salva as alterações no ticket
         ticket.save()
 
