@@ -35,7 +35,7 @@ import {
   InputFiles,
 } from "../styles/helpdeskStyle";
 import TicketsOptions from "../components/ticket/ticketsOptions";
-import { TickerContext } from "../context/TickerContext";
+import { OptionsContext } from "../context/OptionsContext";
 import { MessageContext } from "../context/MessageContext";
 
 export default function Helpdesk() {
@@ -103,7 +103,7 @@ export default function Helpdesk() {
   const [themeTicket, setThemeTicket] = useState("");
 
   const { messagetitle, sector, setAlertVerify, alertverify, alert, setMessagetitle, selectedDay, messageinfo2, messageinfo1, machineAlocate, respectiveArea, problemn, occurrence } =
-    useContext(TickerContext);
+    useContext(OptionsContext);
 
   const { setTypeError, setMessageError, setMessage, message } = useContext(MessageContext);
   // Declarando variaveis de estado Boolean

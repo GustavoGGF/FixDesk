@@ -1,10 +1,10 @@
 import React, { createContext, useState } from "react";
 
 // Cria o contexto
-export const TickerContext = createContext();
+export const OptionsContext = createContext();
 
 // Cria o provedor de contexto
-export const TickerProvider = ({ children }) => {
+export const OptionsProvider = ({ children }) => {
   // Define variáveis de estado
   const [messagetitle, setMessagetitle] = useState("");
   const [sector, setSector] = useState("");
@@ -22,11 +22,8 @@ export const TickerProvider = ({ children }) => {
 
   const [selectedDay, setSelectedDay] = useState([]);
 
-  // Adicione mais estados conforme necessário
-  // const [outroEstado, setOutroEstado] = useState(valorInicial);
-
   return (
-    <TickerContext.Provider
+    <OptionsContext.Provider
       value={{
         messagetitle,
         setMessagetitle,
@@ -57,6 +54,6 @@ export const TickerProvider = ({ children }) => {
       }}
     >
       {children}
-    </TickerContext.Provider>
+    </OptionsContext.Provider>
   );
 };

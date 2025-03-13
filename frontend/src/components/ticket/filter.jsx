@@ -10,7 +10,7 @@ import { TicketContext } from "../../context/TicketContext";
 import { MessageContext } from "../../context/MessageContext";
 // import { FilterContext } from "../../context/FilterContext";
 
-export default function FilterTickets({ url, blurNav, themeFilter, dateValue, quantityMap, statusFilter, userName }) {
+export default function FilterTickets({ url, blurNav, themeFilter, dateValue, quantityMap, statusFilter, userName, moreTickets }) {
   const [fakeSelect, setFakeSelect] = useState(true);
   const [problemInfra, setProblemInfra] = useState(false);
   const [problemSyst, setProblemSyst] = useState(false);
@@ -29,6 +29,13 @@ export default function FilterTickets({ url, blurNav, themeFilter, dateValue, qu
 
   const { setLoadingDash, setBtnMore, setCardOrList, setTicketData } = useContext(TicketContext);
   const { setMessage, setMessageError, setTypeError } = useContext(MessageContext);
+  useEffect(() => {
+    if (moreTickets > 0) {
+      getTicketFilter({ id: "null", quantity: moreTickets, statusTicket: "null", search_query: "null" });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [moreTickets]);
+
   // const {} = useContext(FilterContext);
   useEffect(() => {
     dateSelect.current.value = dateValue;

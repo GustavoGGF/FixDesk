@@ -4,7 +4,7 @@ import Login from "./pages/login";
 import Helpdesk from "./pages/helpdesk";
 import History from "./pages/history";
 import DashboardTI from "./pages/dashboardTI";
-import { TickerProvider } from "./context/TickerContext";
+import { OptionsProvider } from "./context/OptionsContext";
 import { TicketProvider } from "./context/TicketContext";
 import { FilterProvider } from "./context/FilterContext";
 import { MessageProvider } from "./context/MessageContext";
@@ -12,9 +12,9 @@ import { MessageProvider } from "./context/MessageContext";
 
 // Layout para envolver Helpdesk com o TickerProvider
 const HelpdeskLayout = ({ children }) => (
-  <TickerProvider>
+  <OptionsProvider>
     <MessageProvider>{children}</MessageProvider>
-  </TickerProvider>
+  </OptionsProvider>
 );
 
 // Layout para envolver History e Dashboard com o TicketProvider

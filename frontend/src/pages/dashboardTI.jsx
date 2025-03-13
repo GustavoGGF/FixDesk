@@ -167,6 +167,7 @@ export default function DashboardTI() {
   const [techDetails, setTechDetails] = useState(false);
   const [ticketWindow, setTicketWindow] = useState(false);
   const [showEquipament, setShowEquipament] = useState(false);
+  const [btnMore, setBtnMore] = useState(false);
   /**
    * Variáveis de estado String
    */
@@ -205,6 +206,7 @@ export default function DashboardTI() {
    * Variáveis de estado Int.
    */
   const [quantityMap, setQuantityMap] = useState(0);
+  const [moreTickets, SetMoreTickets] = useState(0);
   /**
    * Variáveis de estado Array.
    */
@@ -224,7 +226,7 @@ export default function DashboardTI() {
   const textareaRef = useRef(null);
   const divRefs = useRef({});
 
-  const { ticketData, setTicketData, countTicket, setCountTicket, loadingDash, setLoadingDash, btnMore, setBtnMore, cardOrlist } = useContext(TicketContext);
+  const { ticketData, setTicketData, loadingDash, setLoadingDash, cardOrlist } = useContext(TicketContext);
   const { setTypeError, setMessageError, setMessage, message } = useContext(MessageContext);
 
   useEffect(() => {
@@ -239,11 +241,13 @@ export default function DashboardTI() {
   }, [cardOrlist]);
 
   useEffect(() => {
-    if (countTicket >= 5) {
-      setBtnMore(false);
+    if (quantityMap > 0) {
+      if (localStorage.getItem("quantity") < 5) {
+        setBtnMore(false);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [countTicket]);
+  }, [quantityMap]);
   /**
    * Função ativada quando a tela de ticket for ativada.
    * Se o textarea tiver conteúdo, a função para ajustar o tamanho do textarea é ativada.
@@ -400,7 +404,6 @@ export default function DashboardTI() {
           return response.json(); // Converte a resposta para JSON.
         })
         .then((data) => {
-          setCountTicket(quantity); // Define a contagem inicial de chamados como 10.
           setTicketData(data.tickets); // Define os chamados no estado correspondente.
         })
         .catch((err) => {
@@ -524,6 +527,9 @@ export default function DashboardTI() {
 
       setTicketsDash((ticketsDash) => [...ticketsDash, Div]); // Adiciona o cartão ao array de chamados.
       sectionTicket.current.classList.add("dashCard"); // Adiciona a classe "dashCard" ao elemento HTML.
+      if (localStorage.getItem("quantity") > 5) {
+        setBtnMore(true);
+      }
       setLoadingDash(false); // Define o estado de carregamento como falso.
     });
   }
@@ -620,6 +626,9 @@ export default function DashboardTI() {
       setTicketsDash((ticketsDash) => [...ticketsDash, Div]); // Adiciona o cartão ao array de chamados.
       setTicketsDash((ticketsDash) => [...ticketsDash, Space]);
       sectionTicket.current.classList.remove("dashCard"); // remove a classe "dashCard" ao elemento HTML.
+      if (localStorage.getItem("quantity") > 5) {
+        setBtnMore(true);
+      }
       setLoadingDash(false); // Define o estado de carregamento como falso.
     });
   }
@@ -2406,7 +2415,16 @@ export default function DashboardTI() {
         </div>
       </div>
       <div className="mt6 position-relative">
-        <FilterTickets url={"dashboards"} blurNav={""} themeFilter={themeFilter} dateValue={dateValue} quantityMap={quantityMap} statusFilter={statusFIlter} userName={userData.name} />
+        <FilterTickets
+          url={"dashboards"}
+          blurNav={""}
+          themeFilter={themeFilter}
+          dateValue={dateValue}
+          quantityMap={quantityMap}
+          statusFilter={statusFIlter}
+          userName={userData.name}
+          moreTickets={moreTickets}
+        />
       </div>
       <section ref={sectionTicket} className="mt-3 position-relative">
         {loadingDash && (
@@ -2567,7 +2585,7 @@ export default function DashboardTI() {
               var quantity = localStorage.getItem("quantity");
               quantity = Number(quantity);
               quantity += 10;
-              return setCountTicket(quantity);
+              return SetMoreTickets(quantity);
             }}
           >
             Carregar Mais

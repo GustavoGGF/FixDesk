@@ -135,6 +135,7 @@ export default function History() {
   const [navbar, setNavbar] = useState(false);
   const [ticketWindow, setTicketWindow] = useState(false);
   const [showEquipament, setShowEquipament] = useState(false);
+  const [btnMore, setBtnMore] = useState(false);
 
   // Varaiveis de estado Array
   const [Data, setData] = useState([]);
@@ -151,6 +152,7 @@ export default function History() {
 
   // Variaveis de estado Number
   const [quantityMap, setQuantityMap] = useState(0);
+  const [moreTickets, SetMoreTickets] = useState(0);
 
   const UpNwfile = [];
 
@@ -161,8 +163,29 @@ export default function History() {
   const dashBoard = useRef(null);
   const textareaRef = useRef(null);
 
-  const { ticketData, setTicketData, setCountTicket, loadingDash, setLoadingDash, btnMore, setBtnMore, cardOrlist } = useContext(TicketContext);
+  const { ticketData, setTicketData, loadingDash, setLoadingDash, cardOrlist } = useContext(TicketContext);
   const { setTypeError, setMessageError, setMessage, message } = useContext(MessageContext);
+
+  useEffect(() => {
+    function handleEscape(event) {
+      if (event.key === "Escape" || event.keyCode === 27) {
+        if (ticketWindow) {
+          Close_ticket(); // Fecha ticketWindow se techDetails não estiver aberto
+        }
+      }
+    }
+
+    // Adiciona o listener apenas se ticketWindow ou techDetails estiverem abertos
+    if (ticketWindow) {
+      document.addEventListener("keydown", handleEscape);
+    }
+
+    // Função de limpeza para remover o listener
+    return () => {
+      document.removeEventListener("keydown", handleEscape);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ticketWindow]); // Dependências ajustadas para ambos os estados
 
   useEffect(() => {
     // Verifica se a referência do textarea está definida e se o valor não está vazio
@@ -377,7 +400,6 @@ export default function History() {
         // Atualiza os estados com os dados recebidos da API
         setToken(data.token);
         setTicketData(data.tickets);
-        setCountTicket(10); // Define um valor padrão para contagem de tickets
         setQuantityMap(quantity);
         setStatusFIlter(status_current);
       } catch (error) {
@@ -923,10 +945,7 @@ export default function History() {
     const btn2 = document.getElementById("selectView-List");
     btn2.style.backgroundColor = "transparent";
 
-    var countTicket = 0;
-
     ticketData.forEach((ticket) => {
-      countTicket += 1;
       var date = new Date(ticket["start_date"]);
 
       var day = date.getDate();
@@ -984,7 +1003,7 @@ export default function History() {
       const dash = document.getElementById("dashboard");
       dash.classList.add("dashCard");
 
-      if (countTicket > 5) {
+      if (localStorage.getItem("quantity") > 5) {
         setBtnMore(true);
       }
 
@@ -1008,10 +1027,7 @@ export default function History() {
     const btn2 = document.getElementById("selectView-Card");
     btn2.style.backgroundColor = "transparent";
 
-    var countTicket = 0;
-
     ticketData.forEach((ticket) => {
-      countTicket += 1;
       var date = new Date(ticket["start_date"]);
 
       var day = date.getDate();
@@ -1072,7 +1088,7 @@ export default function History() {
       const dash = document.getElementById("dashboard");
       dash.classList.add("dashCard");
 
-      if (countTicket > 5) {
+      if (localStorage.getItem("quantity") > 5) {
         setBtnMore(true);
       }
 
@@ -1620,7 +1636,16 @@ export default function History() {
         </DivZ>
       )}
       <TitlePage className="text-center text-light mt-3">Histórico de Chamados</TitlePage>
-      <FilterTickets url={"history"} blurNav={blurNav} themeFilter={themeFilter} dateValue={dateValue} quantityMap={quantityMap} statusFilter={statusFIlter} userName={Data.name} />
+      <FilterTickets
+        url={"history"}
+        blurNav={blurNav}
+        themeFilter={themeFilter}
+        dateValue={dateValue}
+        quantityMap={quantityMap}
+        statusFilter={statusFIlter}
+        userName={Data.name}
+        moreTickets={moreTickets}
+      />
       <section ref={dashBoard} id="dashboard">
         {loadingDash && (
           <div className="position-absolute top-50 start-50 translate-middle">
@@ -1727,7 +1752,7 @@ export default function History() {
               var quantity = localStorage.getItem("quantity");
               quantity = Number(quantity);
               quantity += 10;
-              return setCountTicket(quantity);
+              return SetMoreTickets(quantity);
             }}
           >
             Carregar Mais

@@ -1,7 +1,7 @@
 import React, { useRef, useState, useContext, useEffect } from "react";
 import { Select, DivMachine, Contract } from "../../styles/ticketsOptionsStyle";
 import Close from "../../images/components/close.png";
-import { TickerContext } from "../../context/TickerContext";
+import { OptionsContext } from "../../context/OptionsContext";
 import RoboGlimpse from "../loading/robotGlimpse";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/src/style.css";
@@ -25,19 +25,21 @@ export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
   const [comodato, setComodato] = useState(false);
   const [loadingoFetchingEquipaments, setLoadingoFetchingEquipaments] = useState(true);
 
-  const { setMessagetitle } = useContext(TickerContext);
-  const { setRespectiveArea } = useContext(TickerContext);
-  const { setAlert } = useContext(TickerContext);
-  const { setMessageinfo1 } = useContext(TickerContext);
-  const { setMessageinfo2 } = useContext(TickerContext);
-  const { setSector } = useContext(TickerContext);
-  const { setOccurrence } = useContext(TickerContext);
-  const { setProblemn } = useContext(TickerContext);
-  const { setAlertVerify } = useContext(TickerContext);
-  const { setSelectedDay } = useContext(TickerContext);
-  const { setMachineAlocate } = useContext(TickerContext);
-  const { create_user_acess } = useContext(TickerContext);
-  const { alocate_machine_acess } = useContext(TickerContext);
+  const {
+    setMessagetitle,
+    setRespectiveArea,
+    setAlert,
+    setMessageinfo2,
+    setMachineAlocate,
+    create_user_acess,
+    alocate_machine_acess,
+    setMessageinfo1,
+    setSelectedDay,
+    setSector,
+    setOccurrence,
+    setProblemn,
+    setAlertVerify,
+  } = useContext(OptionsContext);
 
   const [selectedInternal, setSelectedInternal] = useState([]);
 
