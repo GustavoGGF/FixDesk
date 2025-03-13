@@ -1,6 +1,6 @@
 import React from "react";
-import { Div, Div2, Span, Button, IMG } from "../styles/info";
-import CloseBTN from "../images/components/close.png";
+import { Div, Div2, Span, Button, IMG } from "../../styles/info";
+import CloseBTN from "../../images/components/close.png";
 
 export default function Info({ id, cls, cls2, funct }) {
   return (

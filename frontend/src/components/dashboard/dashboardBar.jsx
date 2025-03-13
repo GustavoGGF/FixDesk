@@ -15,9 +15,10 @@ import { Chart } from "chart.js/auto";
  * - Message: componente utilizado para exibir mensagens ao usuário.
  * - Div1 e Div2: estilos importados do módulo "../styles/dashboardBar", utilizados para estilizar elementos do componente DashboardBar.
  */
-import Loading from "./loading";
-import Message from "./message";
-import { Div1, Div2 } from "../styles/dashboardBar";
+import Loading from "../loading/loading";
+import Message from "../utility/message";
+import { Div1, Div2 } from "../../styles/dashboardBar";
+import { MessageContext } from "../../context/MessageContext";
 
 export default function DashboardBar() {
   /**
@@ -34,9 +35,6 @@ export default function DashboardBar() {
   const [labeldash, setLabelDash] = useState("");
   const [loadingHistogram, setLoadingHistogram] = useState(true);
   const [myChart, setMyChart] = useState(null);
-  const [message, setMessage] = useState(false);
-  const [typeError, setTypeError] = useState("");
-  const [messageError, setMessageError] = useState("");
 
   /**
    * Constantes useRef utilizadas para referenciar elementos do DOM neste componente.
@@ -47,6 +45,8 @@ export default function DashboardBar() {
   const dashboardBar = useRef(null);
   const selectPeriod = useRef(null);
   const timeoutBarUpdateRef = useRef(null);
+
+  const { setTypeError, setMessageError, message, setMessage } = useState(MessageContext);
 
   /**
    * Variável timeoutBarUpdate utilizada para armazenar o identificador do timeout responsável pela atualização contínua do dashboard.
@@ -271,8 +271,6 @@ export default function DashboardBar() {
       {message && (
         <div className="position-absolute top-50 start-50 translate-middle z-1">
           <Message
-            TypeError={typeError}
-            MessageError={messageError}
             CloseMessage={() => {
               setTypeError("");
               setMessageError("");

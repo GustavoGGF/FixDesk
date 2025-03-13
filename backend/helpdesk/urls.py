@@ -6,7 +6,7 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path("", views.firstView, name="central-de-chamados"),
-    path("submitTicket/", views.submitTicket, name="central-tickets"),
+    path("submit-ticket/", views.submitTicket, name="central-tickets"),
     path("history/", views.history, name="central-history"),
     path(
         "get-ticket/<int:quantity>/<str:usr>/<str:status>/<str:order>",
@@ -17,7 +17,7 @@ urlpatterns = [
     path("ticket/<int:id>", views.ticket, name="central-ticket"),
     path("update_chat/<int:id>", views.update_chat, name="central-update-chat"),
     path(
-        "get-ticket-filter/<str:sector>/<str:occurrence>/<str:order>/<str:user>/<int:quantity>/<str:status>/<str:search_query>",
+        "get-ticket-filter/<str:url>/<str:sector>/<str:occurrence>/<str:order>/<str:user>/<int:quantity>/<str:status>/<str:search_query>",
         views.get_ticket_filter,
         name="central-get-ticket-filter",
     ),

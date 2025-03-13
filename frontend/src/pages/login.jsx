@@ -1,11 +1,12 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useContext } from "react";
 import "animate.css";
 
 import "../styles/bootstrap/css/bootstrap.css";
 import Logo from "../images/logos/lupalogo.png";
 import { Div, IMG, Span } from "../styles/loginStyle";
-import Message from "../components/message";
-import Loading from "../components/loading";
+import Message from "../components/utility/message";
+import Loading from "../components/loading/loading";
+import { MessageContext } from "../context/MessageContext";
 
 export default function Login() {
   useEffect(() => {
@@ -61,14 +62,13 @@ export default function Login() {
   // Constantes Boolean
   const [awaitValidation, setAwaitValidation] = useState(false);
   const [loginPage, setLoginPage] = useState(true);
-  const [message, setMessage] = useState(false);
   const [passlimit, setPassLimit] = useState(false);
   // Constantes String
   const [animation, setAnimation] = useState("");
   const [color, setColor] = useState("");
-  const [messageError, setMessageError] = useState("");
   const [theme, setTheme] = useState("");
-  const [typeMessage, setTypeMessage] = useState("");
+
+  const { setMessageError, setTypeError, setMessage, message } = useContext(MessageContext);
 
   // Esta função é responsável por alterar o tema do site para "black".
   function setThemeBlack() {
@@ -130,7 +130,7 @@ export default function Login() {
         console.error("Erro na validação do login:", err);
         setMessage(true);
         setMessageError("Erro ao verificar Login", err);
-        setTypeMessage("Fatal ERROR");
+        setTypeError("Fatal ERROR");
         return;
       });
   }
@@ -138,7 +138,7 @@ export default function Login() {
   // Funçaõ mostrada após erro de login por erro na credencial
   function handleInvalidCredentials() {
     setMessage(true);
-    setTypeMessage("Credencial Inválida");
+    setTypeError("Credencial Inválida");
     setMessageError("Usuário e/ou Senha Inválido(s)");
     setLoginPage(true);
     setPassLimit(false);
@@ -149,7 +149,7 @@ export default function Login() {
   // Função mostrada após erro de acesso indevido
   function handleAccessRestricted() {
     setMessage(true);
-    setTypeMessage("Acesso Restrito");
+    setTypeError("Acesso Restrito");
     setMessageError("Você não possui permissão para essa Ferramenta");
     setLoginPage(true);
     setPassLimit(true);
@@ -178,16 +178,12 @@ export default function Login() {
   return (
     <Div className={theme}>
       {message && (
-        <div className="mt-5 position-relative">
-          <Message
-            TypeError={typeMessage}
-            MessageError={messageError}
-            className="position-absolute top-0 start-50 translate-middle-x"
-            CloseMessage={() => {
-              return setMessage(false);
-            }}
-          />
-        </div>
+        <Message
+          className="position-absolute top-0 start-50 translate-middle-x mt-5"
+          CloseMessage={() => {
+            return setMessage(false);
+          }}
+        />
       )}
       <IMG src={Logo} alt="Logo da lupatech" className="position-absolute top-0 start-20 animate__animated animate__slideInDown" />
       {loginPage && (

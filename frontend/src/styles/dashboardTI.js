@@ -75,11 +75,10 @@ export const IMGConfig = styled.img`
 
 export const DropContent2 = styled.div`
   position: absolute;
-  min-width: 160px;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   z-index: 2;
   padding: 12px 16px;
-  width: 100%;
+  width: 13em;
   justify-content: center;
   display: flex;
   flex-direction: column;
@@ -87,10 +86,6 @@ export const DropContent2 = styled.div`
   border-radius: 10px;
   align-items: center;
   background-color: rgb(249, 249, 249);
-`;
-
-export const ZIndex = styled.div`
-  z-index: 100000 !important;
 `;
 
 export const DivDetaisl = styled.div`

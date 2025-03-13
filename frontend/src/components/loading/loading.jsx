@@ -9,8 +9,8 @@ import React from "react";
  * - Loader, Cube: importações de elementos DOM do módulo "../styles/loading/loadingStyle".
  * - loading.css: importação do arquivo de estilos "../styles/loading/loading.css".
  */
-import { Loader, Cube } from "../styles/loading/loadingStyle";
-import "../styles/loading/loading.css";
+import { Loader, Cube } from "../../styles/loading/loadingStyle";
+import "../../styles/loading/loading.css";
 
 /**
  * Componente responsável por exibir um indicador de carregamento.

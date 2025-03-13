@@ -1,8 +1,8 @@
 import React, { useRef, useState, useContext, useEffect } from "react";
-import { Select, DivMachine, Contract } from "../styles/ticketsOptionsStyle";
-import Close from "../images/components/close.png";
-import { TickerContext } from "../services/TickerContext";
-import RoboGlimpse from "./robotGlimpse";
+import { Select, DivMachine, Contract } from "../../styles/ticketsOptionsStyle";
+import Close from "../../images/components/close.png";
+import { TickerContext } from "../../context/TickerContext";
+import RoboGlimpse from "../loading/robotGlimpse";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/src/style.css";
 

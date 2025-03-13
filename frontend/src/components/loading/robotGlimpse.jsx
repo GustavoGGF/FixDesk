@@ -1,5 +1,5 @@
 import React from "react";
-import "../styles/robotGlimpse.css";
+import "../../styles/robotGlimpse.css";
 
 export default function RoboGlimpse() {
   return (

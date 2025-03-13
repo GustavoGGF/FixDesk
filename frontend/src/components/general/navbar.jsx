@@ -15,12 +15,12 @@ import React, { useRef } from "react";
  * - ImgClose: importação da imagem "close.png" localizada em "../images/components".
  * - ArrowDown: importação da imagem "caret-down-square.svg" localizada em "../images/components".
  */
-import { Div1, Logout, Img, ALink, SpanUser, CLose, BtnClose, H5, DropBTN, DropDown, DropContent, Arrow, DropContent2 } from "../styles/navbarStyle";
-import "../styles/bootstrap/css/bootstrap.css";
-import "../styles/bootstrap/js/bootstrap.js";
-import Logo from "../images/logos/fixdesk.png";
-import ImgClose from "../images/components/close.png";
-import ArrowDown from "../images/components/caret-down-square.svg";
+import { Div1, Logout, Img, ALink, SpanUser, CLose, BtnClose, H5, DropBTN, DropDown, DropContent, Arrow, DropContent2 } from "../../styles/navbarStyle";
+import "../../styles/bootstrap/css/bootstrap.css";
+import "../../styles/bootstrap/js/bootstrap.js";
+import Logo from "../../images/logos/fixdesk.png";
+import ImgClose from "../../images/components/close.png";
+import ArrowDown from "../../images/components/caret-down-square.svg";
 
 /**
  * Componente responsável por exibir a barra de navegação do site e informações do usuário.

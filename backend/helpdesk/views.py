@@ -53,6 +53,7 @@ Back_User = getenv("DJANGO_GROUP_USER")
 Back_Tech = getenv("DJANGO_GROUP_TECH")
 Back_Leader = getenv("DJANGO_GROUP_LEADER")
 types_str = getenv("VALID_TYPES")
+mail_password = getenv("MAIL_PWD")
 
 status_mapping = {"open": True, "close": False, "stop": None, "all": "All"}
 
@@ -1247,6 +1248,7 @@ def update_chat(request, id):
 @never_cache
 def get_ticket_filter(
     request: WSGIRequest,
+    url: str,
     sector: str,
     occurrence: str,
     order: str,
@@ -1263,12 +1265,17 @@ def get_ticket_filter(
         if search_query in {"null", "None"}:
             search_query = ""
 
-        # Inicializa o filtro principal vazio caso seja algum tecnico
-        if request.user.groups.filter(name__in=[Back_Tech, Back_Leader]).exists():
-            filters = Q()
-        else:
+        if url == "dashboards":
+            # Inicializa o filtro principal vazio caso seja algum tecnico
+            if request.user.groups.filter(name__in=[Back_Tech, Back_Leader]).exists():
+                filters = Q()
+        elif url == "history":
             # Inicializa o filtro principal obrigando a busca pelo "ticketRequester"
             filters = Q(ticketRequester=user)
+        else:
+            return JsonResponse(
+                {"Error": "Solciitação Invalida"}, safe=True, status=500
+            )
 
         # Se o setor não for "all" ou "null", adiciona ao filtro
         if sector.lower() not in {"all", "null"}:

@@ -1,9 +1,9 @@
 import Cloud from "../images/components/cloud-uploading.png";
 import Exclude from "../images/components/lixo.png";
-import Info from "../components/info";
-import Loading from "../components/loading";
-import Message from "../components/message";
-import NavBar from "../components/navbar";
+import Info from "../components/utility/info";
+import Loading from "../components/loading/loading";
+import Message from "../components/utility/message";
+import NavBar from "../components/general/navbar";
 import "react-day-picker/dist/style.css";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import "../styles/bootstrap/css/bootstrap.css";
@@ -34,8 +34,9 @@ import {
   Span3,
   InputFiles,
 } from "../styles/helpdeskStyle";
-import TicketsOptions from "../components/ticketsOptions";
-import { TickerContext } from "../services/TickerContext";
+import TicketsOptions from "../components/ticket/ticketsOptions";
+import { TickerContext } from "../context/TickerContext";
+import { MessageContext } from "../context/MessageContext";
 
 export default function Helpdesk() {
   useEffect(() => {
@@ -95,28 +96,16 @@ export default function Helpdesk() {
   const [infoClass, setInfoClass] = useState("");
   const [infoClass2, setInfoClass2] = useState("");
   const [infoID, setInfoID] = useState("");
-  const [messageError, setMessageError] = useState("");
   const [nameOnDropFiles, setNameOnDropFiles] = useState("");
   const [nameOnInutFiles, setNameOnInputFiles] = useState("");
   const [observation, setObservation] = useState("");
   const [theme, setTheme] = useState("");
   const [themeTicket, setThemeTicket] = useState("");
-  const [typeError, setTypeError] = useState("");
 
-  const { messagetitle } = useContext(TickerContext);
-  const { setMessagetitle } = useContext(TickerContext);
-  const { alert } = useContext(TickerContext);
-  const { alertverify } = useContext(TickerContext);
-  const { setAlertVerify } = useContext(TickerContext);
-  const { sector } = useContext(TickerContext);
-  const { occurrence } = useContext(TickerContext);
-  const { problemn } = useContext(TickerContext);
-  const { respectiveArea } = useContext(TickerContext);
-  const { machineAlocate } = useContext(TickerContext);
-  const { messageinfo1 } = useContext(TickerContext);
-  const { messageinfo2 } = useContext(TickerContext);
-  const { selectedDay } = useContext(TickerContext);
+  const { messagetitle, sector, setAlertVerify, alertverify, alert, setMessagetitle, selectedDay, messageinfo2, messageinfo1, machineAlocate, respectiveArea, problemn, occurrence } =
+    useContext(TickerContext);
 
+  const { setTypeError, setMessageError, setMessage, message } = useContext(MessageContext);
   // Declarando variaveis de estado Boolean
   const [dashboard, setDashboard] = useState(false);
   const [fileSizeNotify, setFileSizeNotify] = useState(false);
@@ -125,7 +114,6 @@ export default function Helpdesk() {
   const [inputManualControl, setInputManualControl] = useState(false);
   const [loading, setLoading] = useState(true);
   const [reset, setReset] = useState(false);
-  const [message, setMessage] = useState(false);
   const [navbar, setNavbar] = useState(false);
 
   // Declarando variaveis de estado Vazias
@@ -289,15 +277,6 @@ export default function Helpdesk() {
   }, [dashboard]);
 
   /**
-   * Atualiza o estado `observation` com o valor do input.
-   * @param {Event} event - O evento de mudança do input.
-   */
-  function getObservation(event) {
-    // Atualiza o estado com o valor do input
-    setObservation(event.target.value);
-  }
-
-  /**
    * Esta função é responsável por enviar um novo ticket de chamado.
    *
    * @param {Event} event - O evento associado ao envio do formulário ou à ação que aciona a função.
@@ -412,7 +391,7 @@ export default function Helpdesk() {
     formdataUser.append("start_date", dataUserFormatada);
     formdataUser.append("PID", dataUser.pid);
     formdataUser.append("respective_area", respectiveArea);
-    fetch("submitTicket/", {
+    fetch("submit-ticket/", {
       method: "POST",
       headers: {
         "X-CSRFToken": csrfToken,
@@ -434,6 +413,7 @@ export default function Helpdesk() {
             behavior: "smooth",
           });
         } else if (Status === 200) {
+          setObservation("");
           setInfoID(dataUser.id);
           setInfo(true);
           setInfoClass("animate__lightSpeedInRight");
@@ -456,11 +436,6 @@ export default function Helpdesk() {
       .catch((err) => {
         return console.log(err);
       });
-  }
-
-  // Fechar menssagem
-  function closeMessage() {
-    setMessage(false);
   }
 
   function inputDrop() {
@@ -621,7 +596,11 @@ export default function Helpdesk() {
       )}
       {message && (
         <div className="position-fixed top-50 start-50 translate-middle z-3">
-          <Message TypeError={typeError} MessageError={messageError} CloseMessage={closeMessage} />
+          <Message
+            CloseMessage={() => {
+              setMessage(false);
+            }}
+          />
         </div>
       )}
       {dashboard && (
@@ -668,7 +647,14 @@ export default function Helpdesk() {
           )}
           <div className="d-flex flex-column">
             <div className="form-floating mb-3 mx-auto">
-              <Textarea ref={observationRef} className="form-control" id="floatingTextarea2" onChange={getObservation}></Textarea>
+              <Textarea
+                ref={observationRef}
+                className="form-control"
+                id="floatingTextarea2"
+                onChange={(event) => {
+                  setObservation(event.target.value);
+                }}
+              ></Textarea>
               <label htmlFor="floatingTextarea2">Observação</label>
             </div>
             <h3 className="text-center mt-1">Upload de Arquivo</h3>

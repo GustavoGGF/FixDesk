@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
-import Navbar from "../components/navbar";
-import Loading from "../components/loading";
+import Navbar from "../components/general/navbar";
+import Loading from "../components/loading/loading";
 import {
   AdjustListFiles,
   BtnChat,
@@ -35,6 +35,7 @@ import {
   TH,
   TR,
   TRSPACE,
+  DivZ,
 } from "../styles/historyStyle";
 import { BtnFile, DivNameFile, ImgFile, TitlePage } from "../styles/helpdeskStyle";
 import "react-day-picker/dist/style.css";
@@ -42,7 +43,7 @@ import CloseIMG from "../images/components/close.png";
 import Download from "../images/components/download.png";
 import DownTick from "../images/components/attachment.png";
 import Mail from "../images/components/mail.png";
-import Message from "../components/message";
+import Message from "../components/utility/message";
 import PDF from "../images/components/pdf.png";
 import TXT from "../images/components/arquivo-txt.png";
 import WORD from "../images/components/palavra.png";
@@ -50,8 +51,9 @@ import XLS from "../images/components/xlsx.png";
 import ZIP from "../images/components/zip.jpg";
 import { TextObersavation } from "../styles/dashboardTI";
 import Exclude from "../images/components/close.png";
-import FilterTickets from "../components/search-tickets/filter";
-import { TicketContext } from "../services/TicketContext";
+import FilterTickets from "../components/ticket/filter";
+import { TicketContext } from "../context/TicketContext";
+import { MessageContext } from "../context/MessageContext";
 
 export default function History() {
   useEffect(() => {
@@ -129,7 +131,6 @@ export default function History() {
   const [isAtButton, setIsAtButton] = useState(false);
   const [inList, setInList] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [messageChat, setMessageChat] = useState(false);
   const [newFiles, setNewFiles] = useState(false);
   const [navbar, setNavbar] = useState(false);
   const [ticketWindow, setTicketWindow] = useState(false);
@@ -160,8 +161,8 @@ export default function History() {
   const dashBoard = useRef(null);
   const textareaRef = useRef(null);
 
-  const { ticketData, setTicketData, setCountTicket, loadingDash, setLoadingDash, message, setMessage, typeError, setTypeError, btnMore, setBtnMore, messageError, setMessageError, cardOrlist } =
-    useContext(TicketContext);
+  const { ticketData, setTicketData, setCountTicket, loadingDash, setLoadingDash, btnMore, setBtnMore, cardOrlist } = useContext(TicketContext);
+  const { setTypeError, setMessageError, setMessage, message } = useContext(MessageContext);
 
   useEffect(() => {
     // Verifica se a referência do textarea está definida e se o valor não está vazio
@@ -464,7 +465,7 @@ export default function History() {
         setBlurNav("addBlur");
         dashBoard.current.style.filter = "blur(3px)";
         // Oculta a mensagem do chat
-        setMessageChat(false);
+        setMessage(false);
         // Reseta o estado do chat
         setMountChat([]);
         setIsAtButton(false);
@@ -809,7 +810,7 @@ export default function History() {
           chatDiv.style.background = "#e9ecef";
           setMessageError("O CHAT ESTÁ INDIPONIVÉL ATÉ O TECNICO INICIAR UMA CONVERSA");
           setTypeError("PERMISSÃO NEGADA");
-          setMessageChat(true);
+          setMessage(true);
           setChat(false);
         }
       })
@@ -1080,14 +1081,6 @@ export default function History() {
     });
   }
 
-  function closeMessage() {
-    setMessage(false);
-  }
-
-  function closeMessage2() {
-    setMessageChat(false);
-  }
-
   function NewChat(event) {
     const newText = event.target.value;
     if (event.key === "Enter") {
@@ -1176,7 +1169,7 @@ export default function History() {
     if (data.chat !== null && data.chat !== undefined && data.chat !== "undefined") {
       setMessageError("");
       setTypeError("");
-      setMessageChat(false);
+      setMessage(false);
       setCountChat(data.chat.length);
       setFetchChat(true);
 
@@ -1618,12 +1611,16 @@ export default function History() {
         </div>
       )}
       {message && (
-        <div className="position-absolute top-0 start-50 translate-middle-x mt-5 z-3">
-          <Message TypeError={typeError} MessageError={messageError} CloseMessage={closeMessage} />
-        </div>
+        <DivZ className="position-fixed top-50 start-50 translate-middle z-3">
+          <Message
+            CloseMessage={() => {
+              setMessage(false);
+            }}
+          />
+        </DivZ>
       )}
       <TitlePage className="text-center text-light mt-3">Histórico de Chamados</TitlePage>
-      <FilterTickets blurNav={blurNav} themeFilter={themeFilter} dateValue={dateValue} quantityMap={quantityMap} statusFilter={statusFIlter} userName={Data.name} />
+      <FilterTickets url={"history"} blurNav={blurNav} themeFilter={themeFilter} dateValue={dateValue} quantityMap={quantityMap} statusFilter={statusFIlter} userName={Data.name} />
       <section ref={dashBoard} id="dashboard">
         {loadingDash && (
           <div className="position-absolute top-50 start-50 translate-middle">
@@ -1645,7 +1642,7 @@ export default function History() {
         {inCard && <>{tickets}</>}
       </section>
       {ticketWindow && (
-        <TicketOpen className="position-fixed top-50 start-50 translate-middle">
+        <TicketOpen className="position-fixed top-50 start-50 translate-middle z-2">
           {loading && <Loading />}
           <div>
             <div className="w-100 d-flex">
@@ -1684,14 +1681,7 @@ export default function History() {
               </DivFile>
               <input type="text" value={"Tecnico responsavel: " + (ticketResponsible_Technician ? ticketResponsible_Technician : "Nenhum técnico atribuído")} className="form-control" disabled />
             </div>
-            <DivChat id="chatDiv">
-              {mountChat}
-              {messageChat && (
-                <div className="w-100 h-100 d-flex justify-content-center align-items-center">
-                  <Message TypeError={typeError} MessageError={messageError} CloseMessage={closeMessage2} />
-                </div>
-              )}
-            </DivChat>
+            <DivChat id="chatDiv">{mountChat}</DivChat>
             {chat && (
               <div className="w-100 d-flex">
                 <div className="w-100">

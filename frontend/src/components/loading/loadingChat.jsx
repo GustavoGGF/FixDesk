@@ -1,5 +1,5 @@
 import React from "react";
-import "../styles/loadingChat.css";
+import "../../styles/loadingChat.css";
 
 export default function LoadingChat() {
   return (

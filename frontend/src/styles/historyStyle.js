@@ -389,3 +389,7 @@ export const TD = styled.td`
   text-align: center;
   padding: 10px; /* Ajuste conforme necessário */
 `;
+
+export const DivZ = styled.div`
+  z-index: 12 !important;
+`;

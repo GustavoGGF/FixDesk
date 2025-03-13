@@ -35,10 +35,10 @@ import "react-day-picker/dist/style.css";
  * - DashboardBar: componente de barra do painel de instrumentos.
  * - Mail, XLS, ZIP, TXT, WORD, PDF, Download, Exclude, DownTick, Seeting, Send: importações de imagens de componentes.
  */
-import { ButtonDet, Div, DivChatDetails, DivDetaisl, DropBTN, DropContent2, IMGConfig, ImgSend, TextObersavation, ZIndex } from "../styles/dashboardTI.js";
-import DashBoardPie from "../components/dashboardPie";
-import Loading from "../components/loading";
-import Navbar from "../components/navbar";
+import { ButtonDet, Div, DivChatDetails, DivDetaisl, DropBTN, DropContent2, IMGConfig, ImgSend, TextObersavation } from "../styles/dashboardTI.js";
+import DashBoardPie from "../components/dashboard/dashboardPie.jsx";
+import Loading from "../components/loading/loading.jsx";
+import Navbar from "../components/general/navbar.jsx";
 import {
   AdjustListFiles,
   BtnChat,
@@ -72,14 +72,15 @@ import {
   Table,
   TicketOpen,
   BtnOpen,
+  DivZ,
 } from "../styles/historyStyle.js";
 import { DropDown } from "../styles/navbarStyle.js";
 import { BtnFile, DivNameFile, ImgFile, TitlePage } from "../styles/helpdeskStyle.js";
 import CloseIMG from "../images/components/close.png";
-import Message from "../components/message";
+import Message from "../components/utility/message.jsx";
 import "../styles/bootstrap/css/bootstrap.css";
-import "../styles/bootstrap/js/bootstrap";
-import DashboardBar from "../components/dashboardBar.jsx";
+import "../styles/bootstrap/js/bootstrap.js";
+import DashboardBar from "../components/dashboard/dashboardBar.jsx";
 import Download from "../images/components/download.png";
 import DownTick from "../images/components/attachment.png";
 import Exclude from "../images/components/close.png";
@@ -91,9 +92,10 @@ import TXT from "../images/components/arquivo-txt.png";
 import WORD from "../images/components/palavra.png";
 import XLS from "../images/components/xlsx.png";
 import ZIP from "../images/components/zip.jpg";
-import LoadingChat from "../components/loadingChat.jsx";
-import FilterTickets from "../components/search-tickets/filter.jsx";
-import { TicketContext } from "../services/TicketContext.js";
+import LoadingChat from "../components/loading/loadingChat.jsx";
+import FilterTickets from "../components/ticket/filter.jsx";
+import { TicketContext } from "../context/TicketContext.js";
+import { MessageContext } from "../context/MessageContext.js";
 /**
  * Função para ajustar o tema com base na configuração de tema armazenada.
  * - Utiliza o hook useEffect para executar a lógica uma vez após a renderização inicial.
@@ -160,7 +162,6 @@ export default function DashboardTI() {
   const [inList, setInList] = useState(false);
   const [loading, setLoading] = useState(true);
   const [loadingChat, setLoadingChat] = useState(false);
-  const [messageChat, setMessageChat] = useState(false);
   const [navbar, setNavbar] = useState(false);
   const [newFiles, setNewFiles] = useState(false);
   const [techDetails, setTechDetails] = useState(false);
@@ -223,23 +224,8 @@ export default function DashboardTI() {
   const textareaRef = useRef(null);
   const divRefs = useRef({});
 
-  const {
-    ticketData,
-    setTicketData,
-    countTicket,
-    setCountTicket,
-    loadingDash,
-    setLoadingDash,
-    message,
-    setMessage,
-    typeError,
-    setTypeError,
-    btnMore,
-    setBtnMore,
-    messageError,
-    setMessageError,
-    cardOrlist,
-  } = useContext(TicketContext);
+  const { ticketData, setTicketData, countTicket, setCountTicket, loadingDash, setLoadingDash, btnMore, setBtnMore, cardOrlist } = useContext(TicketContext);
+  const { setTypeError, setMessageError, setMessage, message } = useContext(MessageContext);
 
   useEffect(() => {
     if (cardOrlist !== "") {
@@ -701,7 +687,7 @@ export default function DashboardTI() {
         }
 
         setSelectedTech("");
-        setMessageChat(false);
+        setMessage(false);
         setMountChat([]);
         setIsAtButton(false);
         setFileTicket([]);
@@ -1168,11 +1154,6 @@ export default function DashboardTI() {
     setSelectedTech(event.target.value); // Atualiza o estado do técnico selecionado.
   }
 
-  // Função que fecha a mensagem.
-  function closeMessage() {
-    setMessageChat(false); // Define o estado de mensagem do chat como falso.
-  }
-
   // useEffect acionado quando o técnico é mudado.
   useEffect(() => {
     if (selectedTech.length > 1) {
@@ -1209,11 +1190,6 @@ export default function DashboardTI() {
         .then((response) => {
           if (response.status === 200) {
             return response.json();
-          }
-          if (response.status === 304) {
-            setTypeError("Operação Inválida");
-            setMessageError("O Chamado Já está com você");
-            return setMessage(true);
           }
         })
         .then((data) => {
@@ -1532,11 +1508,6 @@ export default function DashboardTI() {
       // Chama a função, mas o código segue sem esperar a execução terminar
       callAsyncFunction();
     }
-  }
-
-  // Função para fechar uma mensagem.
-  function closeMessage2() {
-    return setMessage(false);
   }
 
   // Evento para fechar dropdowns quando o usuário clica fora deles.
@@ -2417,21 +2388,25 @@ export default function DashboardTI() {
         </div>
       )}
       {message && (
-        <ZIndex className="position-fixed top-0 start-50 translate-middle-x mt-5">
-          <Message TypeError={typeError} MessageError={messageError} CloseMessage={closeMessage2} />
-        </ZIndex>
+        <DivZ className="position-fixed top-50 start-50 translate-middle z-3">
+          <Message
+            CloseMessage={() => {
+              setMessage(false);
+            }}
+          />
+        </DivZ>
       )}
       <TitlePage className="text-center text-light mt-3">Central de Gerenciamento de Chamados TI</TitlePage>
       <div className={`d-flex flex-column justify-content-center w-100 ${classBlur} mb-5`}>
         <div className="d-flex justify-content-center w-100">
           <DashBoardPie sector={"TI"} clss={colorTheme} />
         </div>
-        <div className="d-flex justify-content-center">
+        <div className="d-flex justify-content-center mb-5">
           <DashboardBar />
         </div>
       </div>
       <div className="mt6 position-relative">
-        <FilterTickets blurNav={""} themeFilter={themeFilter} dateValue={dateValue} quantityMap={quantityMap} statusFilter={statusFIlter} userName={userData.name} />
+        <FilterTickets url={"dashboards"} blurNav={""} themeFilter={themeFilter} dateValue={dateValue} quantityMap={quantityMap} statusFilter={statusFIlter} userName={userData.name} />
       </div>
       <section ref={sectionTicket} className="mt-3 position-relative">
         {loadingDash && (
@@ -2546,11 +2521,6 @@ export default function DashboardTI() {
             <DivChat id="chatDiv">
               {loadingChat && <LoadingChat />}
               {mountChat}
-              {messageChat && (
-                <div className="w-100 h-100 d-flex justify-content-center align-items-center">
-                  <Message TypeError={typeError} MessageError={messageError} CloseMessage={closeMessage} />
-                </div>
-              )}
             </DivChat>
             {chat && (
               <div className="w-100 d-flex">

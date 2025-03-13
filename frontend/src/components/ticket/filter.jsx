@@ -6,9 +6,11 @@ import IMG3 from "../../images/dashboard_TI/quantity_3.png";
 import IMG4 from "../../images/dashboard_TI/quantity_4.png";
 import List from "../../images/components/lista-de-itens.png";
 import Card from "../../images/components/identificacao.png";
-import { TicketContext } from "../../services/TicketContext";
+import { TicketContext } from "../../context/TicketContext";
+import { MessageContext } from "../../context/MessageContext";
+// import { FilterContext } from "../../context/FilterContext";
 
-export default function FilterTickets({ blurNav, themeFilter, dateValue, quantityMap, statusFilter, userName }) {
+export default function FilterTickets({ url, blurNav, themeFilter, dateValue, quantityMap, statusFilter, userName }) {
   const [fakeSelect, setFakeSelect] = useState(true);
   const [problemInfra, setProblemInfra] = useState(false);
   const [problemSyst, setProblemSyst] = useState(false);
@@ -25,15 +27,9 @@ export default function FilterTickets({ blurNav, themeFilter, dateValue, quantit
   const btnStop = useRef(null);
   const btnAll = useRef(null);
 
-  const { setTicketData, setCountTicket, setLoadingDash, setMessage, setTypeError, setBtnMore, setMessageError, setCardOrList, countTicket } = useContext(TicketContext);
-
-  useEffect(() => {
-    if (countTicket !== 0) {
-      getTicketFilter({ id: "null", quantity: countTicket, statusTicket: "null", search_query: "null" });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [countTicket]);
-
+  const { setLoadingDash, setBtnMore, setCardOrList, setTicketData } = useContext(TicketContext);
+  const { setMessage, setMessageError, setTypeError } = useContext(MessageContext);
+  // const {} = useContext(FilterContext);
   useEffect(() => {
     dateSelect.current.value = dateValue;
   }, [dateValue]);
@@ -193,7 +189,7 @@ export default function FilterTickets({ blurNav, themeFilter, dateValue, quantit
       quantity = localStorage.getItem("quantity");
     }
 
-    fetch("/helpdesk/get-ticket-filter/" + sector + "/" + occurrence + "/" + orderTicket + "/" + userName + "/" + quantity + "/" + statusTicket + "/" + search_query, {
+    fetch("/helpdesk/get-ticket-filter/" + url + "/" + sector + "/" + occurrence + "/" + orderTicket + "/" + userName + "/" + quantity + "/" + statusTicket + "/" + search_query, {
       method: "GET",
       headers: {
         Accept: "application/json",
@@ -326,7 +322,6 @@ export default function FilterTickets({ blurNav, themeFilter, dateValue, quantit
           id="fiveView"
           ref={fiveView}
           onClick={() => {
-            setCountTicket(5);
             getTicketFilter({ id: "fiveView", quantity: 5, statusTicket: "null", search_query: "null" });
           }}
         >
@@ -338,7 +333,6 @@ export default function FilterTickets({ blurNav, themeFilter, dateValue, quantit
           id="thenView"
           ref={thenView}
           onClick={() => {
-            setCountTicket(10);
             getTicketFilter({ id: "thenView", quantity: 10, statusTicket: "null", search_query: "null" });
           }}
         >
@@ -350,7 +344,6 @@ export default function FilterTickets({ blurNav, themeFilter, dateValue, quantit
           id="fiftyView"
           ref={fiftyView}
           onClick={() => {
-            setCountTicket(50);
             getTicketFilter({ id: "fiftyView", quantity: 50, statusTicket: "null", search_query: "null" });
           }}
         >
@@ -362,7 +355,6 @@ export default function FilterTickets({ blurNav, themeFilter, dateValue, quantit
           id="allView"
           ref={allView}
           onClick={() => {
-            setCountTicket(100000);
             getTicketFilter({ id: "allView", quantity: 100000, statusTicket: "null", search_query: "null" });
           }}
         >
