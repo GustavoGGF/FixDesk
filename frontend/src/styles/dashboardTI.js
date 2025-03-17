@@ -88,28 +88,6 @@ export const DropContent2 = styled.div`
   background-color: rgb(249, 249, 249);
 `;
 
-export const DivDetaisl = styled.div`
-  z-index: 1000 !important;
-  width: 30%;
-  height: 70%;
-  background-color: var(--white);
-  border-radius: 3%;
-  padding: 0.3em;
-  display: flex;
-  flex-direction: column;
-`;
-
-export const DivChatDetails = styled.div`
-  display: flex;
-  width: 100%;
-  padding: 0.3em;
-`;
-
-export const ImgSend = styled.img`
-  width: 2em;
-  cursor: pointer;
-`;
-
 export const TextObersavation = styled.textarea`
   overflow-y: auto;
   resize: none;
@@ -117,11 +95,6 @@ export const TextObersavation = styled.textarea`
   color: #212529;
   padding: 0.375rem 0.75rem;
   height: 7em !important;
-`;
-
-export const ButtonDet = styled.button`
-  border: none;
-  background-color: transparent;
 `;
 
 export const BtnClose = styled.button`

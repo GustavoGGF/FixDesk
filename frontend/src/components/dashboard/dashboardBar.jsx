@@ -6,7 +6,7 @@
  * - useRef: hook que fornece uma maneira de armazenar referências a elementos DOM ou valores mutáveis que persistem entre as renderizações.
  * Importação da classe Chart do módulo "chart.js/auto" para a renderização de gráficos.
  */
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { Chart } from "chart.js/auto";
 
 /**
@@ -32,8 +32,12 @@ export default function DashboardBar() {
    * - messageError: estado que armazena a mensagem de erro a ser exibida.
    */
   const [histogramData, setHistogramData] = useState([]);
+
   const [labeldash, setLabelDash] = useState("");
+
   const [loadingHistogram, setLoadingHistogram] = useState(true);
+  const [messageBar, setMessageBar] = useState(false);
+
   const [myChart, setMyChart] = useState(null);
 
   /**
@@ -46,7 +50,7 @@ export default function DashboardBar() {
   const selectPeriod = useRef(null);
   const timeoutBarUpdateRef = useRef(null);
 
-  const { setTypeError, setMessageError, message, setMessage } = useState(MessageContext);
+  const { setTypeError, setMessageError } = useContext(MessageContext);
 
   /**
    * Variável timeoutBarUpdate utilizada para armazenar o identificador do timeout responsável pela atualização contínua do dashboard.
@@ -83,7 +87,9 @@ export default function DashboardBar() {
       },
     })
       .then((response) => {
-        recallGetBarData({ range: range_days });
+        if (response.status === 204) {
+          return recallGetBarData({ range: range_days });
+        }
         return response.json();
       })
       .then((data) => {
@@ -111,19 +117,19 @@ export default function DashboardBar() {
         setHistogramData(data);
       })
       .catch((err) => {
-        setMessage(true);
+        setMessageBar(true);
         setTypeError("Fatal Error");
         setMessageError(err);
       });
   }
 
-  function recallGetBarData(range) {
+  function recallGetBarData({ range }) {
     switch (range) {
       default:
         break;
       case "week":
         selectPeriod.current.value = "2";
-        setMessage(true);
+        setMessageBar(true);
         setTypeError("Falta de Dados");
         setMessageError("Buscando Chamados do Mês");
         barChartData = "";
@@ -131,7 +137,7 @@ export default function DashboardBar() {
         break;
       case "month":
         selectPeriod.current.value = "3";
-        setMessage(true);
+        setMessageBar(true);
         setTypeError("Falta de Dados");
         setMessageError("Buscando Chamados do Ano");
         barChartData = "";
@@ -181,7 +187,7 @@ export default function DashboardBar() {
           setLoadingHistogram(false);
         }
       } catch (err) {
-        setMessage(true);
+        setMessageBar(true);
         setTypeError("Fatal Error");
         setMessageError(err);
         console.log(err);
@@ -259,7 +265,7 @@ export default function DashboardBar() {
         break;
       default:
         console.log("periodo inválido: ", period);
-        setMessage(true);
+        setMessageBar(true);
         setTypeError("Fatal Error");
         setMessageError("Periodo inválido:", period);
         break;
@@ -268,14 +274,11 @@ export default function DashboardBar() {
 
   return (
     <Div1 className="mt-5 mb-5 position-relative">
-      {message && (
+      {messageBar && (
         <div className="position-absolute top-50 start-50 translate-middle z-1">
           <Message
             CloseMessage={() => {
-              setTypeError("");
-              setMessageError("");
-              setMessage(false);
-              return;
+              setMessageBar(false);
             }}
           />
         </div>

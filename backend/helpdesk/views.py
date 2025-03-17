@@ -1,4 +1,5 @@
 # Importando os módulos necessários para o funcionamento do código.
+from cmath import log
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from smtplib import SMTP
@@ -26,7 +27,7 @@ from django.db.models import Q
 import mimetypes
 from django.core.files.base import ContentFile
 from fpdf import FPDF
-from re import findall
+from re import findall, split as plt
 from logging import basicConfig, getLogger, WARNING
 from django.db import transaction
 from django.views.decorators.cache import never_cache
@@ -341,14 +342,29 @@ def process_files(request: WSGIRequest, form_data: dict):
         return e, 300  # Retorna erro interno no processamento
 
 
-def is_valid_file(file: InMemoryUploadedFile, file_type: str):
-    # Comparar com a biblioteca `Magic`
-    if any(ext in file_type.lower() for ext in types_str):
+def is_valid_file(file: InMemoryUploadedFile, file_type: str) -> bool:
+    """Valida se um arquivo enviado pertence a uma lista de tipos aceitos."""
+
+    # Extrai apenas a parte relevante do tipo do arquivo
+    file_type_clean = plt(r",|\(", file_type)[0].strip().lower()
+
+    # Print para debug
+    print("Arquivo identificado como:", file_type_clean)
+    print("Tipos permitidos:", types_str)
+
+    # Verifica se algum dos tipos permitidos está no tipo detectado
+    if any(ext.lower() in file_type_clean for ext in types_str):
         return True
 
     # Comparar pelo mimetypes padrão do Python
     guessed_type = mimetypes.guess_type(str(file))[0]
-    return guessed_type in types_str if guessed_type else False
+
+    # Verifica se o tipo detectado pelo mimetypes está na lista de tipos permitidos
+    return (
+        guessed_type.lower() in (ext.lower() for ext in types_str)
+        if guessed_type
+        else False
+    )
 
 
 @csrf_exempt
@@ -460,6 +476,7 @@ def ticket(
             mail = body.get("mail")  # E-mail do usuário associado ao chamado
             chat = body.get("chat")  # Chat com menssagem
             user = body.get("User")  # usuario
+            helpdesk = body.get("helpdesk")
             if "responsible_technician" in body:
                 # Esta condição verifica se a requisição contém a chave 'responsible_technician'.
                 # Se existir, significa que há uma tentativa de mudança de técnico responsável pelo ticket.
@@ -521,7 +538,7 @@ def ticket(
                 # Se o status retornado for 400, um erro é enviado na resposta.
                 # Caso contrário, a resposta retorna o chat atualizado.
                 status, chat = updating_chat_change_sender(
-                    body, id, chat, date, hours, technician, user
+                    body, id, chat, date, hours, technician, user, helpdesk
                 )
 
                 if status == 400:
@@ -1085,7 +1102,14 @@ def change_responsible_technician(
 
 
 def updating_chat_change_sender(
-    body: dict, id: int, chat: str, date: str, hours: str, technician: str, user: str
+    body: dict,
+    id: int,
+    chat: str,
+    date: str,
+    hours: str,
+    technician: str,
+    user: str,
+    helpdesk: str,
 ):
     """
     Atualiza o histórico do chat e modifica o remetente da última mensagem.
@@ -1103,15 +1127,13 @@ def updating_chat_change_sender(
     # Obtém o ticket de suporte pelo ID fornecido
     ticket = SupportTicket.objects.get(id=id)
 
-    # Verifica se a mensagem foi enviada pelo técnico e formata a entrada do chat
-    if "technician" in body:
-        chat_message = f",[[Date:{date}],[Technician: {chat}],[Hours:{hours}]]"
-        update_last_sender(ticket, technician, date, hours)
-
-    # Verifica se a mensagem foi enviada pelo usuário e formata a entrada do chat
-    elif "User" in body:
+    if helpdesk == "helpdesk":
         chat_message = f",[[Date:{date}],[User: {chat}],[Hours:{hours}]]"
         update_last_sender(ticket, user, date, hours)
+
+    elif helpdesk == "dashboard":
+        chat_message = f",[[Date:{date}],[Technician: {chat}],[Hours:{hours}]]"
+        update_last_sender(ticket, technician, date, hours)
 
     # Retorna erro caso nem "technician" nem "User" estejam no corpo da requisição
     else:
@@ -1191,9 +1213,13 @@ def process_ticket_files(ticket_id):
                 file_content = f.read()
                 file_type = mime.from_buffer(file_content).lower()
 
+                file_type_clean = plt(r",|\(", file_type)[0].strip()
+
                 type_mapping = {
                     "mail": "mail",
+                    "rfc 822 mail": "mail",
                     "excel": "excel",
+                    "composite document file v2 document": "excel",
                     "zip": "zip",
                     "utf-8 text": "txt",
                     "ascii text": "txt",
@@ -1202,7 +1228,7 @@ def process_ticket_files(ticket_id):
                 }
 
                 for key, value in type_mapping.items():
-                    if key in file_type:
+                    if file_type_clean.startswith(key):
                         image_data.append(value)
                         content_file.append(b64encode(file_content).decode("utf-8"))
                         name_file.append(file_name)
@@ -1819,9 +1845,6 @@ def verifyNotificationCall(id):
 
         # Verifica se ambos os campos possuem valores válidos.
         if not last_sender or not last_viewer:
-            logger.error(
-                f"Faltando dados para o chamado {id}. 'last_sender' ou 'last_viewer' estão ausentes."
-            )
             return  # Se faltar dados, a função retorna sem fazer mais verificações.
 
         # Ajusta o formato do nome do último remetente e do último visualizador para comparações.

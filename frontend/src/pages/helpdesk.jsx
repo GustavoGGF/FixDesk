@@ -420,6 +420,9 @@ export default function Helpdesk() {
           setReset(true);
           observationRef.current.value = "";
           setInfoClass2("closeInfo");
+          setNameOnInputFiles("");
+          setNameOnDropFiles("");
+          setFileSizeNotify(false);
           setTimeout(() => {
             setInfo(false);
           }, 6000);
@@ -439,13 +442,6 @@ export default function Helpdesk() {
   }
 
   function inputDrop() {
-    const isFirefox = navigator.userAgent.toLowerCase().includes("firefox");
-
-    if (isFirefox) {
-      setMessagetitle("Ação Indisponível");
-      setMessageError("O FireFox Bloqueia esse tipo de Ação!!");
-      setMessage(true);
-    }
     setInputDropControl(true);
     setInputManualControl(false);
     file_name = fileimg.map((fileItem) => fileItem.name);

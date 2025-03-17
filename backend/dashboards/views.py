@@ -265,6 +265,9 @@ def getDashBoardBar(request: WSGIRequest, range_days: str):
                     # Incrementa o contador para o dia da semana correspondente
                     values[ticket_day.weekday()] += 1
 
+            if all(num == 0 for num in values):
+                return JsonResponse({"Error": "Falta de dados"}, status=204, safe=True)
+
             # Monta os dados para o gráfico
             histogram_data = {"days": weekdays, "values": values}
 
@@ -278,6 +281,7 @@ def getDashBoardBar(request: WSGIRequest, range_days: str):
             return JsonResponse(
                 {"Error": f"Erro inesperado DashBoardBar {e}"}, status=210
             )
+
     elif range_days == "month":
         try:
             # Obtém a data e hora atuais

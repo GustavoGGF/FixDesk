@@ -57,6 +57,7 @@ export const DropDown = styled.div`
   position: relative;
   display: inline-block;
   text-align: center;
+  margin-left: 3em;
   -webkit-position: relative; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   -webkit-display: inline-block; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   -webkit-text-align: center; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
@@ -112,13 +113,13 @@ export const DropContent2 = styled.div`
   justify-content: center;
   display: flex;
   flex-direction: column;
-  background: transparent;
+  background: white;
   border-radius: 10px;
   align-items: center;
   -webkit-min-width: 160px; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   -webkit-box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2); /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   -webkit-padding: 12px 16px; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
-  -webkit-background: transparent; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
+  -webkit-background: white; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   -webkit-border-radius: 10px; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   -webkit-align-items: center; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   -webkit-z-index: 2; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
