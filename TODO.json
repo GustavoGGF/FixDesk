@@ -50,7 +50,6 @@
   },
   "Chat": {},
   "Tickets": {
-    "ROT 7": "Validar erros ao abrir chamados com usuario patolino",
     "NTOPT 10": "Quando esta com um ticket aberto não pode abrir outro (clicando por fora do chamado)",
     "IMGTCK 11": "Imagem enviado no chamado esta zoado, ajustar para todos os tipos de arquivos permitidos e arrumar a borda que aparece na tela",
     "CNMWL 21": "Cancelar envio de email se fechar chamado",

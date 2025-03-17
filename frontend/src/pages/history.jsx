@@ -112,7 +112,7 @@ export default function History() {
     function handleEscape(event) {
       if (event.key === "Escape" || event.keyCode === 27) {
         if (ticketWindow) {
-          Close_ticket(); // Fecha ticketWindow se techDetails não estiver aberto
+          CloseTicket(); // Fecha ticketWindow se techDetails não estiver aberto
         }
       }
     }
@@ -352,8 +352,6 @@ export default function History() {
           setMountDataChat(true);
           setMountInitialChat(data.chat);
         }
-        const currentTime = new Date().toISOString();
-        console.log(currentTime);
         setTicketWindow(true);
       })
       .catch((err) => {
@@ -362,13 +360,6 @@ export default function History() {
         setMessage(true);
         return console.log(err);
       });
-  }
-
-  async function Close_ticket() {
-    dashBoard.current.style.filter = "blur(0)";
-    setBlurNav("");
-    setTicketWindow(false);
-    return;
   }
 
   useEffect(() => {

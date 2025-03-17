@@ -96,8 +96,6 @@ export default function OpenTicketWindow({
 
   const techs = techsNames;
 
-  console.log(observation);
-
   const textareaRef = useRef(null);
   const chatDiv = useRef(null);
   const inputChat = useRef(null);
@@ -113,9 +111,23 @@ export default function OpenTicketWindow({
   const UpNwfile = [];
 
   useEffect(() => {
+    function handleEscape(event) {
+      if (event.key === "Escape" || event.keyCode === 27) {
+        if (techDetails) {
+          return setTechDetails(false); // Fecha ticketWindow se techDetails não estiver aberto
+        }
+      }
+    }
+
+    // Adiciona o listener apenas se ticketWindow ou techDetails estiverem abertos
+    if (techDetails) {
+      document.addEventListener("keydown", handleEscape);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [techDetails]);
+
+  useEffect(() => {
     if (mountDataChat) {
-      const currentTime = new Date().toISOString();
-      console.log(currentTime);
       ReloadChat({ data: mountInitialChat });
     } else {
       chatDiv.current.style.background = "#e9ecef";
@@ -146,13 +158,16 @@ export default function OpenTicketWindow({
         })
         .then((data) => {
           if (data !== null || data !== undefined || data !== "undefined") {
-            var newChat = parseInt(data.chat.length);
-            if (newChat > countchat) {
-              setCountChat(newChat);
-              ReloadChat({ data: data });
-            } else {
-              return;
+            if (data.chat !== null) {
+              var newChat = parseInt(data.chat.length);
+              if (newChat > countchat) {
+                setCountChat(newChat);
+                ReloadChat({ data: data });
+              } else {
+                return;
+              }
             }
+            return;
           }
         })
         .catch((err) => {
@@ -479,7 +494,7 @@ export default function OpenTicketWindow({
         setMessageError(err);
         setTypeError("Fatal ERROR");
         setMessage(true);
-        console.log(err); // Exibe o erro no console para depuração
+        return console.log(err); // Exibe o erro no console para depuração
       });
   }
 
@@ -546,7 +561,7 @@ export default function OpenTicketWindow({
         setMessageError(err);
         setTypeError("FATAL ERROR");
         setMessage(true);
-        console.log(err);
+        return console.log(err);
       });
   }
 
@@ -877,8 +892,6 @@ export default function OpenTicketWindow({
   }
 
   function ChangeStatusTicket({ status }) {
-    console.log(status);
-
     var date = new Date();
 
     // Adiciona um zero à frente de números menores que 10 para formatar corretamente a data e hora
@@ -914,8 +927,6 @@ export default function OpenTicketWindow({
       }),
     })
       .then((response) => {
-        console.log(response.status); // Exibe o status da resposta para depuração
-
         if (response.status === 304) {
           // Se o status for 304, o chamado não pertence ao usuário
           setMessageError("Ticket não pertence a você");
@@ -937,7 +948,7 @@ export default function OpenTicketWindow({
         setMessageError("Erro ao finalizar o Ticket");
         setTypeError("FATAL ERROR");
         setMessage(true);
-        console.log(err); // Exibe o erro no console para depuração
+        return console.log(err); // Exibe o erro no console para depuração
       });
   }
 
@@ -1115,8 +1126,6 @@ export default function OpenTicketWindow({
           if (data) {
             setResponsibleTechnician(data.technician);
             ReloadChat({ data: data });
-            console.log(chat);
-            console.log(chat.current);
 
             if (!chat.current) {
               chat.current = true;
@@ -1146,7 +1155,7 @@ export default function OpenTicketWindow({
               <DropBTN id="drp" onClick={OpenConfig}>
                 <IMGConfig id="imd" src={setingIMG} alt="Configuração" />
               </DropBTN>
-              <DropContent2 ref={dropCont} className="visually-hidden position-absolute top-100 start-50 translate-middle-x">
+              <DropContent2 ref={dropCont} id="dropContTicketWd" className="visually-hidden position-absolute top-100 start-50 translate-middle-x">
                 <DropBTN
                   className="btn btn-success w-100"
                   onClick={() => {

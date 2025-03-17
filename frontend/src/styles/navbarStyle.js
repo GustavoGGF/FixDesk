@@ -54,10 +54,10 @@ export const H5 = styled.h5`
 `;
 
 export const DropDown = styled.div`
+  width: 100%;
   position: relative;
   display: inline-block;
   text-align: center;
-  margin-left: 3em;
   -webkit-position: relative; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   -webkit-display: inline-block; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   -webkit-text-align: center; /* Adicionado para compatibilidade com navegadores baseados em WebKit */

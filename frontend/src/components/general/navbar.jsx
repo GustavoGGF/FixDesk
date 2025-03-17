@@ -51,6 +51,7 @@ export default function NavBar({ Name, JobTitle }) {
       event.target.id !== "btn3" &&
       event.target.id !== "btn2" &&
       event.target.id !== "btn1" &&
+      event.target.id !== "btn1Image" &&
       event.target.id !== "dropdwn2"
     ) {
       if (!dropContent.current.classList.contains("visually-hidden")) {
@@ -92,6 +93,8 @@ export default function NavBar({ Name, JobTitle }) {
    * @param {Object} event - Evento de clique.
    */
   function DropD(event) {
+    console.log(event.target.id);
+
     if ((event.target.id === "btndrop" && dropContent.current.classList.contains("visually-hidden")) || (event.target.id === "imgdrop" && dropContent.current.classList.contains("visually-hidden"))) {
       dropContent.current.classList.remove("visually-hidden");
       return;
@@ -106,10 +109,16 @@ export default function NavBar({ Name, JobTitle }) {
         themeOption.current.classList.add("visually-hidden");
       }
       return;
-    } else if (event.target.id === "btn1" && themeOption.current.classList.contains("visually-hidden")) {
+    } else if (
+      (event.target.id === "btn1" && themeOption.current.classList.contains("visually-hidden")) ||
+      (event.target.id === "btn1Image" && themeOption.current.classList.contains("visually-hidden"))
+    ) {
       themeOption.current.classList.remove("visually-hidden");
       return;
-    } else if (event.target.id === "btn1" && !themeOption.current.classList.contains("visually-hidden")) {
+    } else if (
+      (event.target.id === "btn1" && !themeOption.current.classList.contains("visually-hidden")) ||
+      (event.target.id === "btn1Image" && !themeOption.current.classList.contains("visually-hidden"))
+    ) {
       themeOption.current.classList.add("visually-hidden");
       return;
     }
@@ -202,11 +211,6 @@ export default function NavBar({ Name, JobTitle }) {
                     Dashboard
                   </a>
                 </li>
-                {/* <li className="nav-item">
-                  <a className="nav-link btn btn-light pointer" aria-current="page" href="">
-                    FAQ
-                  </a>
-                </li> */}
                 <li className="nav-item">
                   <DropDown>
                     <DropBTN className="btn btn-light" onClick={DropD} id="btndrop">
@@ -217,7 +221,7 @@ export default function NavBar({ Name, JobTitle }) {
                       <DropDown id="dropdwn2">
                         <DropBTN className="btn btn-light" id="btn1" onClick={DropD}>
                           Tema
-                          <Arrow src={ArrowDown} alt="seta para abrir temas" />
+                          <Arrow src={ArrowDown} alt="seta para abrir temas" id="btn1Image" />
                         </DropBTN>
                         <DropContent2 className="visually-hidden" ref={themeOption}>
                           <DropBTN className="btn btn-light" id="btn2" onClick={ThemeLight}>
