@@ -24,7 +24,6 @@
     "HotFix's": {
       "OCSCLS 2": "Apos ficar logado por um tempo da um erro te dereciona pra uma tela (quando expira o token)",
       "ATMC": "Verificar todos os codigos que lidam com o banco de dados e por @transaction.atomic",
-      "ADRX 8": "Adicionar a telca esc para fechar algumas telas",
       "ADHTML 39": "Mudar nomes de funções e variaveis para boas praticas",
       "RMVPD 40": "Remover o uso do PID"
     },
@@ -50,7 +49,6 @@
   },
   "Chat": {},
   "Tickets": {
-    "NTOPT 10": "Quando esta com um ticket aberto não pode abrir outro (clicando por fora do chamado)",
     "IMGTCK 11": "Imagem enviado no chamado esta zoado, ajustar para todos os tipos de arquivos permitidos e arrumar a borda que aparece na tela",
     "CNMWL 21": "Cancelar envio de email se fechar chamado",
     "PDFLD 32": "Ter teça de loading quando começar a baixar o chamado",

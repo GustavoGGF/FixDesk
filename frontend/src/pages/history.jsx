@@ -273,6 +273,7 @@ export default function History() {
    * solicitação de busca do ticket de chamado através da API do servidor.
    */
   function helpdeskPage({ id }) {
+    CloseTicket();
     fetch("/helpdesk/ticket/" + id, {
       method: "GET",
       headers: {

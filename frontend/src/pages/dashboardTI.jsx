@@ -117,6 +117,7 @@ export default function DashboardTI() {
     if (ticketWindow) {
       document.addEventListener("keydown", handleEscape);
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ticketWindow]);
 
@@ -486,6 +487,7 @@ export default function DashboardTI() {
    * @param {object} id - O ID do chamado a ser buscado.
    */
   async function helpdeskPage({ id }) {
+    CloseTicket();
     fetch("/helpdesk/ticket/" + id, {
       method: "GET",
       headers: {
