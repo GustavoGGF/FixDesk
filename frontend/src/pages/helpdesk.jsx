@@ -376,7 +376,25 @@ export default function Helpdesk() {
     }
     formdataUser.append("ticketRequester", dataUser.name);
     formdataUser.append("department", dataUser.departament);
+    if (dataUser.departament.length === 0) {
+      setMessageError("Informar TI para atualizar localidade {Departament}");
+      setTypeError("Falta de Dados");
+      setMessage(true);
+      return;
+    }
     formdataUser.append("mail", dataUser.mail);
+    if (dataUser.mail.length === 0) {
+      setMessageError("Informar TI para atualizar localidade {Mail}");
+      setTypeError("Falta de Dados");
+      setMessage(true);
+      return;
+    }
+    if (dataUser.company.length === 0) {
+      setMessageError("Informar TI para atualizar localidade {Company}");
+      setTypeError("Falta de Dados");
+      setMessage(true);
+      return;
+    }
     formdataUser.append("company", dataUser.company);
     formdataUser.append("sector", sector);
     formdataUser.append("occurrence", occurrence);
@@ -583,7 +601,7 @@ export default function Helpdesk() {
 
   return (
     <Div className={theme}>
-      {navbar && <NavBar Name={dataUser.name} JobTitle={dataUser.job_title} />}
+      {navbar && <NavBar Name={dataUser.name} JobTitle={dataUser.job_title.length > 0 ? dataUser.job_title : "Informar TI para Atualizar"} />}
       {info && <Info id={infoID} cls={infoClass} cls2={infoClass2} funct={closeInfo} />}
       {loading && (
         <div className="position-absolute top-50 start-50 translate-middle">
