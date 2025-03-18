@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef, useContext } from "react";
 import "react-day-picker/dist/style.css";
 import { Div } from "../styles/dashboardTI.js";
 import DashBoardPie from "../components/dashboard/dashboardPie.jsx";
-import Loading from "../components/loading/loading.jsx";
 import Navbar from "../components/general/navbar.jsx";
 import { DivCard, H5Card, SpanCard, TD, TH, TR, TRSPACE, Table, DivZ } from "../styles/historyStyle.js";
 import { TitlePage } from "../styles/helpdeskStyle.js";
@@ -97,29 +96,16 @@ export default function DashboardTI() {
   const sectionTicket = useRef(null);
   const divRefs = useRef({});
 
-  const { ticketData, setTicketData, loadingDash, setLoadingDash } = useContext(TicketContext);
+  const { ticketData, setTicketData, ticketWindowAtt, setTicketWindowAtt } = useContext(TicketContext);
   const { setTypeError, setMessageError, setMessage, message } = useContext(MessageContext);
 
   useEffect(() => {
-    function handleEscape(event) {
-      if (event.key === "Escape" || event.keyCode === 27) {
-        const dropContTicketWd = document.getElementById("dropContTicketWd");
-        if (!dropContTicketWd.classList.contains("visually-hidden")) {
-          return dropContTicketWd.classList.add("visually-hidden");
-        }
-        if (ticketWindow) {
-          return CloseTicket(); // Fecha ticketWindow se techDetails não estiver aberto
-        }
-      }
+    if (ticketWindowAtt) {
+      setTicketWindowAtt(false);
+      CloseTicket();
     }
-
-    // Adiciona o listener apenas se ticketWindow ou techDetails estiverem abertos
-    if (ticketWindow) {
-      document.addEventListener("keydown", handleEscape);
-    }
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ticketWindow]);
+  }, [ticketWindowAtt]); // Dependências ajustadas para ambos os estados
 
   useEffect(() => {
     if (quantityMap > 0) {
@@ -355,7 +341,6 @@ export default function DashboardTI() {
       if (localStorage.getItem("quantity") > 5) {
         setBtnMore(true);
       }
-      setLoadingDash(false); // Define o estado de carregamento como falso.
     });
   }
 
@@ -453,7 +438,6 @@ export default function DashboardTI() {
       if (localStorage.getItem("quantity") > 5) {
         setBtnMore(true);
       }
-      setLoadingDash(false); // Define o estado de carregamento como falso.
     });
   }
 
@@ -575,6 +559,7 @@ export default function DashboardTI() {
           setChat(true);
         }
         setTicketWindow(true);
+        setTicketWindowAtt(false);
       })
       .catch((err) => {
         setMessageError(err);
@@ -649,11 +634,6 @@ export default function DashboardTI() {
         />
       </div>
       <section ref={sectionTicket} className="mt-3 position-relative">
-        {loadingDash && (
-          <div className="position-absolute top-50 start-50 translate-middle">
-            <Loading />
-          </div>
-        )}
         {inList && (
           <Table>
             <thead>

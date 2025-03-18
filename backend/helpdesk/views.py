@@ -1130,14 +1130,9 @@ def updating_chat_change_sender(
     if helpdesk == "helpdesk":
         chat_message = f",[[Date:{date}],[User: {chat}],[Hours:{hours}]]"
         update_last_sender(ticket, user, date, hours)
-
-    elif helpdesk == "dashboard":
+    elif helpdesk == "dashboards":
         chat_message = f",[[Date:{date}],[Technician: {chat}],[Hours:{hours}]]"
         update_last_sender(ticket, technician, date, hours)
-
-    # Retorna erro caso nem "technician" nem "User" estejam no corpo da requisição
-    else:
-        return 400, "Nem 'technician' nem 'User' foram informados"
 
     # Atualiza o histórico do chat do ticket
     ticket.chat += chat_message

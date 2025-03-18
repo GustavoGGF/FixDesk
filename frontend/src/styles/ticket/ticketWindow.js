@@ -260,7 +260,7 @@ export const DivOnBoardFile = styled.div`
 export const IMGFiles = styled.img`
   width: 4em;
   height: 4em;
-  border: 5px solid; /* Adicionado o estilo de borda completo */
+  border-radius: 0.4em;
   transition: 0.7s;
   &:hover {
     transform: scale(1.2);
@@ -269,7 +269,7 @@ export const IMGFiles = styled.img`
   cursor: pointer !important;
   -webkit-width: 4em; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   -webkit-height: 4em; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
-  -webkit-border: 5px solid; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
+  -webkit-border-radius: 0.4em;
   -webkit-transition: 0.7s; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   -webkit-margin: 0 auto; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   -webkit-cursor: pointer !important; /* Adicionado para compatibilidade com navegadores baseados em WebKit */

@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import Navbar from "../components/general/navbar";
-import Loading from "../components/loading/loading";
 import { Div, DivCard, H5Card, SpanCard, Table, TD, TH, TR, TRSPACE, DivZ } from "../styles/historyStyle";
 import { TitlePage } from "../styles/helpdeskStyle";
 import "react-day-picker/dist/style.css";
@@ -39,7 +38,7 @@ export default function History() {
       // Remove o listener de atalhos de teclado para garantir que o comportamento padrão seja restaurado
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, []); // Dependências vazias garantem que este efeito será executado apenas uma vez no ciclo de vida do componente
+  }, []);
 
   useEffect(() => {
     // Define o título do documento
@@ -105,40 +104,16 @@ export default function History() {
 
   const dashBoard = useRef(null);
 
-  const { ticketData, setTicketData, loadingDash, setLoadingDash, cardOrlist } = useContext(TicketContext);
+  const { ticketData, setTicketData, ticketWindowAtt, setTicketWindowAtt } = useContext(TicketContext);
   const { setTypeError, setMessageError, setMessage, message } = useContext(MessageContext);
 
   useEffect(() => {
-    function handleEscape(event) {
-      if (event.key === "Escape" || event.keyCode === 27) {
-        if (ticketWindow) {
-          CloseTicket(); // Fecha ticketWindow se techDetails não estiver aberto
-        }
-      }
-    }
-
-    // Adiciona o listener apenas se ticketWindow ou techDetails estiverem abertos
-    if (ticketWindow) {
-      document.addEventListener("keydown", handleEscape);
-    }
-
-    // Função de limpeza para remover o listener
-    return () => {
-      document.removeEventListener("keydown", handleEscape);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ticketWindow]); // Dependências ajustadas para ambos os estados
-
-  useEffect(() => {
-    if (cardOrlist !== "") {
-      if (cardOrlist === "Card") {
-        viewCard();
-      } else if (cardOrlist === "List") {
-        listCard();
-      }
+    if (ticketWindowAtt) {
+      setTicketWindowAtt(false);
+      CloseTicket();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cardOrlist]);
+  }, [ticketWindowAtt]); // Dependências ajustadas para ambos os estados
 
   // Função de Tema escuro
   function ThemeBlack() {
@@ -213,7 +188,6 @@ export default function History() {
         if (data.tickets.length === 0) {
           setTypeError("Falta de Dados");
           setMessageError("Você Ainda não abriu nenhum chamado");
-          setLoadingDash(false);
           setMessage(true);
           setNavbar(true);
         }
@@ -228,9 +202,6 @@ export default function History() {
         setMessageError(error.message || "Erro desconhecido");
         setMessage(true);
         console.error("Erro na solicitação:", error);
-      } finally {
-        // Garante que os estados de carregamento sejam atualizados, independentemente do sucesso ou falha da requisição
-        setLoadingDash(false);
       }
     };
 
@@ -354,6 +325,7 @@ export default function History() {
           setMountInitialChat(data.chat);
         }
         setTicketWindow(true);
+        setTicketWindowAtt(false);
       })
       .catch((err) => {
         setMessageError(err);
@@ -451,7 +423,6 @@ export default function History() {
         setBtnMore(true);
       }
 
-      setLoadingDash(false);
       return ticketData;
     });
   }
@@ -535,7 +506,6 @@ export default function History() {
         setBtnMore(true);
       }
 
-      setLoadingDash(false);
       return ticketData;
     });
   }
@@ -581,11 +551,6 @@ export default function History() {
         moreTickets={moreTickets}
       />
       <section ref={dashBoard} id="dashboard">
-        {loadingDash && (
-          <div className="position-absolute top-50 start-50 translate-middle">
-            <Loading />
-          </div>
-        )}
         {inList && (
           <Table>
             <thead>

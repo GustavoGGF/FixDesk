@@ -7,6 +7,7 @@ export const TicketContext = createContext();
 export const TicketProvider = ({ children }) => {
   // Define variáveis de estado
   const [loadingDash, setLoadingDash] = useState(false);
+  const [ticketWindowAtt, setTicketWindowAtt] = useState(false);
 
   const [ticketData, setTicketData] = useState([]);
 
@@ -17,6 +18,8 @@ export const TicketProvider = ({ children }) => {
         setTicketData,
         loadingDash,
         setLoadingDash,
+        ticketWindowAtt,
+        setTicketWindowAtt,
       }}
     >
       {children}

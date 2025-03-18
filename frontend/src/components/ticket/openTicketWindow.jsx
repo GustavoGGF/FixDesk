@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useContext } from "react";
+import React, { useState, useEffect, useRef, useContext, useCallback } from "react";
 import {
   TicketOpen,
   BtnNF,
@@ -44,6 +44,7 @@ import PDFImage from "../../images/components/pdf.png";
 import excludeImage from "../../images/components/close.png";
 import setingIMG from "../../images/components/definicoes.png";
 import sendIMG from "../../images/components/enviar.png";
+import { TicketContext } from "../../context/TicketContext";
 
 export default function OpenTicketWindow({
   helpdesk,
@@ -104,27 +105,44 @@ export default function OpenTicketWindow({
   const dropCont = useRef(null);
   const inputRef = useRef(null);
 
+  const { setTicketWindowAtt } = useContext(TicketContext);
   const { setMessageError, setMessage, setTypeError } = useContext(MessageContext);
 
   let count = 0;
   let timeoutId;
   const UpNwfile = [];
 
-  useEffect(() => {
-    function handleEscape(event) {
+  const handleEscape = useCallback(
+    (event) => {
       if (event.key === "Escape" || event.keyCode === 27) {
-        if (techDetails) {
-          return setTechDetails(false); // Fecha ticketWindow se techDetails não estiver aberto
+        if (imageopen) {
+          ticketRef.current.style.filter = "blur(0)";
+          ticketRef.current.style.background = "var(--pure-white)";
+          ticketOpen.current.style.overflowY = "auto";
+          setImageOpen(false);
+          return;
         }
-      }
-    }
 
-    // Adiciona o listener apenas se ticketWindow ou techDetails estiverem abertos
-    if (techDetails) {
-      document.addEventListener("keydown", handleEscape);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [techDetails]);
+        if (techDetails) {
+          setTechDetails(false);
+          return;
+        }
+
+        if (dropCont.current && !dropCont.current.classList.contains("visually-hidden")) {
+          dropCont.current.classList.add("visually-hidden");
+          return;
+        }
+
+        setTicketWindowAtt(true);
+      }
+    },
+    [techDetails, imageopen, setTechDetails, setImageOpen, setTicketWindowAtt]
+  );
+
+  useEffect(() => {
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [handleEscape]);
 
   useEffect(() => {
     if (mountDataChat) {
@@ -572,31 +590,29 @@ export default function OpenTicketWindow({
         const contentFileMail = content_file[i];
         const nameFileMail = name_file[i];
         const Div = (
-          <div className="text-center">
-            <DivOnBoardFile className="position-relative">
-              <IMGFiles src={mailImage} alt="" />
-              <ImageFile
-                className="position-absolute bottom-0 start-50 translate-middle-x"
-                src={downloadImage}
-                alt="Baixar"
-                onClick={() => {
-                  const blob = DownloadFile({
-                    data: "message/rfc822",
-                    content: contentFileMail,
-                  });
+          <DivOnBoardFile className="position-relative">
+            <IMGFiles src={mailImage} alt="" />
+            <ImageFile
+              className="position-absolute bottom-0 start-50 translate-middle-x"
+              src={downloadImage}
+              alt="Baixar"
+              onClick={() => {
+                const blob = DownloadFile({
+                  data: "message/rfc822",
+                  content: contentFileMail,
+                });
 
-                  const url = window.URL.createObjectURL(blob);
-                  const a = document.createElement("a");
-                  a.href = url;
-                  a.download = nameFileMail;
-                  document.body.appendChild(a);
-                  a.click();
-                  document.body.removeChild(a);
-                }}
-              />
-            </DivOnBoardFile>{" "}
-            <div>{nameFileMail}</div>
-          </div>
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = nameFileMail;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+              }}
+            />
+            <p className="text-center text-break">{nameFileMail}</p>
+          </DivOnBoardFile>
         );
         setFileTicket((fileticket) => [...fileticket, Div]);
       } else if (file === "excel") {
@@ -710,7 +726,7 @@ export default function OpenTicketWindow({
                 a.click();
                 document.body.removeChild(a);
               }}
-            />{" "}
+            />
             <p className="text-center text-break">{NameFileWord}</p>
           </DivOnBoardFile>
         );
@@ -1126,10 +1142,6 @@ export default function OpenTicketWindow({
           if (data) {
             setResponsibleTechnician(data.technician);
             ReloadChat({ data: data });
-
-            if (!chat.current) {
-              chat.current = true;
-            }
             return;
           }
         })
