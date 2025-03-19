@@ -564,7 +564,6 @@ export default function OpenTicketWindow({
         setNameNWFiles();
         // Atualiza o estado para indicar que não há novos arquivos
         setNewFiles(false);
-
         // Recarrega a visualização dos arquivos e o chat com as novas informações
         ReloadFiles({
           files: data.files,
@@ -948,10 +947,23 @@ export default function OpenTicketWindow({
           setTypeError("Permissão Negada");
           setMessage(true);
           return;
-        }
-
-        if (response.status === 200) {
+        } else if (response.status === 200) {
           setChangeTech(ticketID);
+          return;
+        } else if (response.status === 204) {
+          setMessageError("Ticket Já está em aguardo");
+          setTypeError("Permissão Negada");
+          setMessage(true);
+          return;
+        } else if (response.status === 205) {
+          setMessageError("Ticket Já está Finalizado");
+          setTypeError("Permissão Negada");
+          setMessage(true);
+          return;
+        } else if (response.status === 206) {
+          setMessageError("Ticket Já está Aberto");
+          setTypeError("Permissão Negada");
+          setMessage(true);
           return;
         } else {
           // Para outros status, tenta converter a resposta em JSON e exibir uma mensagem de erro

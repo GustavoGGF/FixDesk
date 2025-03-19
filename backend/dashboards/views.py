@@ -78,7 +78,7 @@ def dashboard_TI(request: WSGIRequest):
 @csrf_exempt  # Permite que a view seja acessada sem a verificação de CSRF.
 @login_required(login_url="/login")  # Exige que o usuário esteja autenticado.
 @require_GET  # Especifica que apenas requisições GET são permitidas para essa view.
-@cache_page(60 * 5)
+@never_cache
 def get_info(request: WSGIRequest):
     try:
         csrf_token = get_token(request)  # Obtém o token CSRF.
@@ -514,14 +514,17 @@ def process_files(file: TicketFile):
             file_type = mime.from_buffer(image_bytes)
             file_path = str(file.file)
             file_name = "/".join(file_path.split("/")[2:])
-
             type_mapping = {
                 "mail": "mail",
+                "rfc 822 mail": "mail",
+                "cdfv2 microsoft outlook message": "mail",
                 "excel": "excel",
+                "composite document file v2 document": "excel",
                 "zip": "zip",
-                "text": "txt",
-                "word": "word",
-                "pdf": "pdf",
+                "utf-8 text": "txt",
+                "ascii text": "txt",
+                "microsoft word": "word",
+                "pdf document": "pdf",
             }
 
             type_detected = None
@@ -570,12 +573,11 @@ def upload_new_files(request, id):
 
         if other_files:
             for unit_file in other_files:
-                valid, image_bytes = verifyValidOrNot(unit_file, types)
+                valid, image_bytes = verifyValidOrNot(unit_file, types_str)
 
                 if not valid:
                     image_str = str(unit_file)
                     other_image = guess_type(image_str)
-
                     for typeUn in types:
                         if (
                             typeUn.replace('"', "").lower()
@@ -587,17 +589,15 @@ def upload_new_files(request, id):
                 if valid:
                     Ticket = SupportTicket.objects.get(id=id)
                     ticket_file = TicketFile(ticket=Ticket)
+                    ticket_file.save()
                     ticket.chat += f",[[Date:{date}],[System:{request.user.first_name} {request.user.last_name} Anexou o arquivo {unit_file}],[Hours:{hours}]]"
                     ticket_file.file.save(str(unit_file), ContentFile(image_bytes))
-
                     ticket.save()
                     ticket_file.save()
 
         image = TicketFile.objects.filter(ticket_id=id)
-
         for file in image:
             content_file, name_file, image_data = process_files(file)
-
         return JsonResponse(
             {
                 "chat": ticket.chat,

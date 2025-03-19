@@ -553,10 +553,25 @@ def ticket(
                     # Se o fechamento do ticket falhar (status 304), retorna erro
                     if status_def == 304:
                         return JsonResponse({"Error": f"{msg}"}, status=304, safe=True)
+                    elif status_def == 205:
+                        return JsonResponse(
+                            {"Error": "Chamado já esta finalizado"},
+                            status=205,
+                            safe=True,
+                        )
 
                 # Caso o status seja 'open', abre o ticket
                 elif status == "open":
-                    ticket_open(id, date, technician, hours, techMail, mail)
+                    status_def = ticket_open(
+                        id, date, technician, hours, techMail, mail
+                    )
+
+                    if status_def == 206:
+                        return JsonResponse(
+                            {"Error": "Chamado já está aberto."},
+                            status=206,
+                            safe=True,
+                        )
 
                 # Caso o status seja 'stop', interrompe o ticket
                 elif status == "stop":
@@ -567,6 +582,13 @@ def ticket(
                         return JsonResponse(
                             {"Error": "Chamado Não está atrelado a nenhum tecnico."},
                             status=304,
+                            safe=True,
+                        )
+
+                    elif status_def == 204:
+                        return JsonResponse(
+                            {"Error": "Chamado Já está em aguardo."},
+                            status=204,
                             safe=True,
                         )
 
@@ -896,6 +918,9 @@ def ticket_stop(id: int, technician: str, date: str, hours: str, mail: str):
         if current_responsible_technician == None:
             return 304, "error"
 
+        if ticket.open == None:
+            return 204, "error"
+
         # Divide o nome do técnico responsável para realizar a verificação
         partes_nome_pesquisa = current_responsible_technician.split()
         presente = all(parte in technician for parte in partes_nome_pesquisa)
@@ -953,6 +978,9 @@ def ticket_close(id: int, technician: str, date: str, hours: str, mail: str):
     # Verifica se um técnico responsável está definido
     if current_responsible_technician == None:
         return 304, "Tecnico não Definido"
+
+    if ticket.open == False:
+        return 205, ""
 
     # Divide o nome do técnico responsável para realizar a verificação
     partes_nome_pesquisa = current_responsible_technician.split()
@@ -1015,6 +1043,8 @@ def ticket_open(
     ticket = get_object_or_404(SupportTicket, id=id)
 
     try:
+        if ticket.open == True:
+            return 206
         # Altera o status do ticket para 'aberto'
         ticket.open = True
 
@@ -1038,6 +1068,8 @@ def ticket_open(
         )
 
         task.start()
+
+        return 200
 
     # Captura e loga exceções caso ocorram durante o processo
     except Exception as e:
@@ -1199,12 +1231,13 @@ def process_ticket_files(ticket_id):
             with file.file.open("rb") as f:
                 file_content = f.read()
                 file_type = mime.from_buffer(file_content).lower()
-
+                print(file_type)
                 file_type_clean = plt(r",|\(", file_type)[0].strip()
 
                 type_mapping = {
                     "mail": "mail",
                     "rfc 822 mail": "mail",
+                    "cdfv2 microsoft outlook message": "mail",
                     "excel": "excel",
                     "composite document file v2 document": "excel",
                     "zip": "zip",

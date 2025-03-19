@@ -533,7 +533,6 @@ export default function DashboardTI() {
         setTicketID(data.id);
 
         var name_verify = userData.name;
-
         // Verifica se o ticket contém arquivos do tipo e-mail e gera a visualização correspondente, se aplicável.
         if (data.file !== null && data.file.length >= 1) {
           setInitialFileData(data.file);
@@ -594,6 +593,10 @@ export default function DashboardTI() {
 
   async function CloseTicket() {
     sectionTicket.current.style.filter = "blur(0)";
+    setInitialFileData("");
+    setInitialFileName("");
+    setInitialContentFile("");
+    setInitialFileTicket(false);
     setBlurNav("");
     setTicketWindow(false);
     setEquipament("");
