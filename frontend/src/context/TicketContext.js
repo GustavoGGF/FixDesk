@@ -9,6 +9,8 @@ export const TicketProvider = ({ children }) => {
   const [loadingDash, setLoadingDash] = useState(false);
   const [ticketWindowAtt, setTicketWindowAtt] = useState(false);
 
+  const [changeTech, setChangeTech] = useState("");
+
   const [ticketData, setTicketData] = useState([]);
 
   return (
@@ -20,6 +22,8 @@ export const TicketProvider = ({ children }) => {
         setLoadingDash,
         ticketWindowAtt,
         setTicketWindowAtt,
+        changeTech,
+        setChangeTech,
       }}
     >
       {children}

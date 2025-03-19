@@ -1,6 +1,6 @@
 from cmath import log
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt, requires_csrf_token
 from os import getenv
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -189,7 +189,7 @@ def getDashBoardPie(request, sector: str):
 
 @login_required(login_url="/login")
 @require_GET
-@cache_page(60 * 1)
+@never_cache
 def get_ticket_TI(request, quantity: int, status: str, order: str):
     """
     Obtém os primeiros chamados de TI, com filtros de quantidade e status (aberto, fechado, etc.).
@@ -548,6 +548,7 @@ def process_files(file: TicketFile):
 
 @require_POST
 @transaction.atomic
+@requires_csrf_token
 def upload_new_files(request, id):
     """
     Realiza o upload de novos arquivos para um chamado de suporte.

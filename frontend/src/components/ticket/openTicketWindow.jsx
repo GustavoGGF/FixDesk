@@ -88,7 +88,6 @@ export default function OpenTicketWindow({
   const [selectedTech, setSelectedTech] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [detailsChat, setDetailsChat] = useState("");
-  const [responsibleTechnician, setResponsibleTechnician] = useState("");
 
   const [uploadNewFiles, setUploadNewFiles] = useState([]);
   const [fileticket, setFileTicket] = useState([]);
@@ -105,7 +104,7 @@ export default function OpenTicketWindow({
   const dropCont = useRef(null);
   const inputRef = useRef(null);
 
-  const { setTicketWindowAtt } = useContext(TicketContext);
+  const { setTicketWindowAtt, setChangeTech } = useContext(TicketContext);
   const { setMessageError, setMessage, setTypeError } = useContext(MessageContext);
 
   let count = 0;
@@ -952,8 +951,8 @@ export default function OpenTicketWindow({
         }
 
         if (response.status === 200) {
-          // Se a resposta for bem-sucedida, recarrega a página
-          return window.location.reload();
+          setChangeTech(ticketID);
+          return;
         } else {
           // Para outros status, tenta converter a resposta em JSON e exibir uma mensagem de erro
           return response.json();
@@ -1140,8 +1139,7 @@ export default function OpenTicketWindow({
         })
         .then((data) => {
           if (data) {
-            setResponsibleTechnician(data.technician);
-            ReloadChat({ data: data });
+            setChangeTech(ticketID);
             return;
           }
         })
@@ -1173,7 +1171,7 @@ export default function OpenTicketWindow({
                   onClick={() => {
                     ChangeStatusTicket({ status: "close" });
                   }}
-                  hidden={!(responsibleTechnician || ticketResponsible_Technician.length !== 0)}
+                  hidden={ticketResponsible_Technician.length === 0}
                 >
                   Finalizar
                 </DropBTN>
@@ -1182,7 +1180,7 @@ export default function OpenTicketWindow({
                   onClick={() => {
                     ChangeStatusTicket({ status: "open" });
                   }}
-                  hidden={!(responsibleTechnician || ticketResponsible_Technician.length !== 0)}
+                  hidden={ticketResponsible_Technician.length === 0}
                 >
                   Reabrir
                 </DropBTN>
@@ -1191,7 +1189,7 @@ export default function OpenTicketWindow({
                   onClick={() => {
                     ChangeStatusTicket({ status: "stop" });
                   }}
-                  hidden={!(responsibleTechnician || ticketResponsible_Technician.length !== 0)}
+                  hidden={ticketResponsible_Technician.length === 0}
                 >
                   Aguardar
                 </DropBTN>
@@ -1246,14 +1244,7 @@ export default function OpenTicketWindow({
           <DivFile hidden={fileticket.length >= 1 ? false : true} className="w-100">
             {fileticket}
           </DivFile>
-          <input
-            type="text"
-            hidden={responsibleTechnician.length !== 0 ? true : false}
-            value={"Tecnico responsavel: " + (ticketResponsible_Technician ? ticketResponsible_Technician : "Nenhum técnico atribuído")}
-            className="form-control"
-            disabled
-          />
-          <input type="text" hidden={responsibleTechnician.length !== 0 ? false : true} value={"Tecnico responsavel: " + responsibleTechnician} className="form-control" disabled />
+          <input type="text" value={"Tecnico responsavel: " + (ticketResponsible_Technician ? ticketResponsible_Technician : "Nenhum técnico atribuído")} className="form-control" disabled />
         </div>
         <DivChat ref={chatDiv}>{mountChat}</DivChat>
         {chat && (

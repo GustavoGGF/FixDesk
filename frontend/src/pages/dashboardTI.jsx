@@ -96,7 +96,7 @@ export default function DashboardTI() {
   const sectionTicket = useRef(null);
   const divRefs = useRef({});
 
-  const { ticketData, setTicketData, ticketWindowAtt, setTicketWindowAtt } = useContext(TicketContext);
+  const { ticketData, setTicketData, ticketWindowAtt, setTicketWindowAtt, changeTech, setChangeTech } = useContext(TicketContext);
   const { setTypeError, setMessageError, setMessage, message } = useContext(MessageContext);
 
   useEffect(() => {
@@ -106,6 +106,15 @@ export default function DashboardTI() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ticketWindowAtt]); // Dependências ajustadas para ambos os estados
+
+  useEffect(() => {
+    if (changeTech && changeTech.length !== 0) {
+      CloseTicket();
+      helpdeskPage({ id: changeTech });
+      setChangeTech("");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [changeTech]);
 
   useEffect(() => {
     if (quantityMap > 0) {
