@@ -249,7 +249,6 @@ export default function History() {
       method: "GET",
       headers: {
         "X-CSRF-Token": token,
-        pid: Data.pid,
         Accept: "application/json",
       },
     })

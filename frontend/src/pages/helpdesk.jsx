@@ -407,7 +407,6 @@ export default function Helpdesk() {
     }
     formdataUser.append("observation", observation);
     formdataUser.append("start_date", dataUserFormatada);
-    formdataUser.append("PID", dataUser.pid);
     formdataUser.append("respective_area", respectiveArea);
     fetch("submit-ticket/", {
       method: "POST",
@@ -422,15 +421,7 @@ export default function Helpdesk() {
         return response.json();
       })
       .then((dataUser) => {
-        if (Status === 403) {
-          setMessage(true);
-          setTypeError("Falta de dados");
-          setMessageError("PID Não cadastrado, favor contatar equipe de TI");
-          return window.scrollTo({
-            top: 0,
-            behavior: "smooth",
-          });
-        } else if (Status === 200) {
+        if (Status === 200) {
           setObservation("");
           setInfoID(dataUser.id);
           setInfo(true);

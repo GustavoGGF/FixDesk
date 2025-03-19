@@ -2,8 +2,6 @@
   "All Site": {
     "Upgrades": {
       "EML 4": "adicioanr o email do fixdesk como seguro",
-      "MYSQL 12": "mudar db.sqlite3 para mysql ou outro DB",
-      "ADDCJHG 12": "Implementar @cache_page nas def",
       "ADDSVPP 13": "Implementar @sensitive_variables e @sensitive_post_parameters em senhas",
       "ADDTHCLS 14": "Implementar @throttle_classes",
       "ADDAPVW 15": "Implementar @api_view",
@@ -58,6 +56,7 @@
     "CTRL 36": "Ajustar o salvamento dos filtros e quando atualizar a pagina fazer busca conforme os mesmos",
     "RVFLT 37": "Fazer uma puta revisão nesses filtros",
     "FTRLST 38": "Filtro de modo lista ta feio demais KKKKKk",
-    "ADJLFT 42": "Colocar as horasno lifetime para pessoas não ficarem confusas"
+    "ADJLFT 42": "Colocar as horasno lifetime para pessoas não ficarem confusas",
+    "ATTIKC 45": "Atualizar o ticket de tempos e tempos"
   }
 }

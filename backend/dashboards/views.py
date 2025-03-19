@@ -1,3 +1,4 @@
+from cmath import log
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from os import getenv
@@ -26,6 +27,8 @@ from django.core.handlers.wsgi import WSGIRequest
 from collections import defaultdict
 from django.db.models import Count
 from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.db.models import F, Func, IntegerField
+from django.views.decorators.cache import cache_page
 
 # Configuração básica de logging
 basicConfig(level=WARNING)
@@ -40,6 +43,7 @@ types_str = getenv("VALID_TYPES")
 @csrf_exempt  # Permite o acesso sem verificação de CSRF para essa view.
 @login_required(login_url="/login")  # Exige que o usuário esteja autenticado.
 @require_GET  # Exige que a requisição seja do tipo GET.
+@cache_page(60 * 5)
 def dashboard_TI(request: WSGIRequest):
     """
     Função que valida se o usuário possui permissão para acessar o dashboard da área de TI.
@@ -74,6 +78,7 @@ def dashboard_TI(request: WSGIRequest):
 @csrf_exempt  # Permite que a view seja acessada sem a verificação de CSRF.
 @login_required(login_url="/login")  # Exige que o usuário esteja autenticado.
 @require_GET  # Especifica que apenas requisições GET são permitidas para essa view.
+@cache_page(60 * 5)
 def get_info(request: WSGIRequest):
     try:
         csrf_token = get_token(request)  # Obtém o token CSRF.
@@ -120,6 +125,7 @@ def get_info(request: WSGIRequest):
 
 @login_required(login_url="/login")  # Exige que o usuário esteja autenticado.
 @require_GET  # Permite apenas requisições GET para essa view.
+@cache_page(60 * 5)
 def getDashBoardPie(request, sector: str):
     if sector == "TI":  # Verifica se o setor é "TI".
         try:
@@ -182,8 +188,8 @@ def getDashBoardPie(request, sector: str):
 
 
 @login_required(login_url="/login")
-@never_cache
 @require_GET
+@cache_page(60 * 1)
 def get_ticket_TI(request, quantity: int, status: str, order: str):
     """
     Obtém os primeiros chamados de TI, com filtros de quantidade e status (aberto, fechado, etc.).
@@ -220,8 +226,8 @@ def get_ticket_TI(request, quantity: int, status: str, order: str):
         return JsonResponse({"Error": f"Erro ao obter os chamados {e}"}, status=332)
 
 
-@never_cache
 @require_GET
+@cache_page(60 * 5)
 @login_required(login_url="/login")
 def getDashBoardBar(request: WSGIRequest, range_days: str):
     """
@@ -235,13 +241,25 @@ def getDashBoardBar(request: WSGIRequest, range_days: str):
         try:
             # Obtém a data atual
             today = date.today()
-            # Formata a semana atual no formato "semana+ano"
-            current_week = today.strftime("%U%Y")
 
-            # Filtra os tickets que estão na mesma semana da data atual
-            tickets_data = SupportTicket.objects.filter(
-                start_date__week=today.isocalendar()[1]
-            )
+            # Obtém a semana e o ano atuais corretamente
+            current_week, current_year = today.isocalendar()[1], today.isocalendar()[0]
+
+            # Filtra os tickets com base na data sem hora
+            tickets_data = SupportTicket.objects.annotate(
+                week_number=Func(
+                    F("start_date"),
+                    function="WEEK",
+                    template="WEEK(%(expressions)s, 1)",  # Similar ao MySQL WEEK com o parâmetro 1
+                    output_field=IntegerField(),  # Garantir que o retorno seja um inteiro
+                )
+            ).filter(week_number=current_week)
+
+            # Debug: Verifique o que está sendo retornado
+            if tickets_data.exists():
+                pass
+            else:
+                return JsonResponse({"Error": "Falta de dados"}, status=204, safe=True)
 
             # Lista dos dias da semana em português
             weekdays = [
@@ -257,14 +275,12 @@ def getDashBoardBar(request: WSGIRequest, range_days: str):
             # Inicializa a lista de valores para contagem dos tickets (inicia com 0 para cada dia)
             values = [0] * 7
 
-            # Itera sobre os tickets para contar quantos ocorreram em cada dia da semana
             for ticket in tickets_data:
                 ticket_day = ticket.start_date.date()
-                # Verifica se o ticket pertence à semana atual
-                if ticket_day.strftime("%U%Y") == current_week:
-                    # Incrementa o contador para o dia da semana correspondente
-                    values[ticket_day.weekday()] += 1
+                # Incrementa o contador para o dia da semana correspondente
+                values[ticket_day.weekday()] += 1
 
+            # Verifica se não há dados de tickets e retorna erro 204
             if all(num == 0 for num in values):
                 return JsonResponse({"Error": "Falta de dados"}, status=204, safe=True)
 
@@ -286,30 +302,44 @@ def getDashBoardBar(request: WSGIRequest, range_days: str):
         try:
             # Obtém a data e hora atuais
             now = datetime.now()
-            # Extrai o mês e o ano atuais
             current_month = now.month
             current_year = now.year
+            print(f"Data Atual: {now}, Mês: {current_month}, Ano: {current_year}")
 
-            # Obtém o número de dias no mês atual
+            # Verifica quantos dias tem no mês atual
             days_in_month = monthrange(current_year, current_month)[1]
 
             # Inicializa a lista de valores com 0 para cada dia do mês
             values = [0] * days_in_month
 
-            # Filtra os tickets da área "TI" para o mês e ano atuais
-            tickets_data = SupportTicket.objects.filter(
-                respective_area="TI",
-                start_date__year=current_year,
-                start_date__month=current_month,
-            )
+            # Anota os tickets com o número do mês
+            tickets_data = SupportTicket.objects.annotate(
+                month_number=Func(
+                    F("start_date"),
+                    function="MONTH",
+                    template="MONTH(%(expressions)s)",  # Similar ao MySQL MONTH
+                    output_field=IntegerField(),  # Garantir que o retorno seja um inteiro
+                )
+            ).filter(month_number=now.month, start_date__year=current_year)
+
+            print(
+                f"Tickets encontrados: {tickets_data.count()}"
+            )  # Verifique quantos tickets foram encontrados
+
+            if tickets_data.count() == 0:
+                print("Nenhum ticket encontrado para este mês")
+                return JsonResponse(
+                    {"Error": "Nenhum ticket encontrado para este mês"}, status=204
+                )
 
             # Itera sobre os tickets para contar quantos ocorreram em cada dia do mês
             for ticket in tickets_data:
                 ticket_day = ticket.start_date.day
-                # Incrementa o contador para o dia correspondente
-                values[ticket_day - 1] += 1
+                values[
+                    ticket_day - 1
+                ] += 1  # Incrementa o contador para o dia correspondente
 
-            # Monta os dados para o gráfico, incluindo os dias do mês e os valores contados
+            # Monta os dados para o gráfico
             histogram_data = {
                 "days": list(range(1, days_in_month + 1)),
                 "values": values,
@@ -319,12 +349,8 @@ def getDashBoardBar(request: WSGIRequest, range_days: str):
             return JsonResponse(histogram_data, status=200, safe=True)
 
         except Exception as e:
-            # Registra qualquer erro inesperado que ocorra
             logger.error(f"Erro inesperado em DashBoardBarMonth: {e}")
-            # Retorna uma resposta de erro JSON
-            return JsonResponse(
-                {"Error": f"Erro inesperado DashBoardBarMonth {e}"}, status=210
-            )
+            return JsonResponse({"Error": f"Erro inesperado {e}"}, status=210)
 
     elif range_days == "year":
         try:
@@ -347,18 +373,24 @@ def getDashBoardBar(request: WSGIRequest, range_days: str):
             ]
 
             # Obtém a contagem de chamados agrupados por mês, para o ano atual e para a área de TI
-            ticket_counts = (
-                SupportTicket.objects.filter(
-                    start_date__year=today.year, respective_area="TI"
+            tickets_data = SupportTicket.objects.annotate(
+                month_number=Func(
+                    F("start_date"),
+                    function="MONTH",
+                    template="MONTH(%(expressions)s)",  # Similar ao MySQL MONTH
+                    output_field=IntegerField(),  # Garantir que o retorno seja um inteiro
                 )
-                .values("start_date__month")
-                .annotate(count=Count("id"))
+            ).filter(start_date__year=today.year, respective_area="TI")
+
+            # Obtém a contagem de chamados agrupados por mês
+            ticket_counts = tickets_data.values("month_number").annotate(
+                count=Count("id")
             )
 
             # Inicializa todos os meses com 0, e preenche com os valores da contagem
             values = defaultdict(
                 int,
-                {item["start_date__month"]: item["count"] for item in ticket_counts},
+                {item["month_number"]: item["count"] for item in ticket_counts},
             )
 
             # Monta os dados para o gráfico, incluindo os meses do ano e os valores contados
@@ -382,21 +414,31 @@ def getDashBoardBar(request: WSGIRequest, range_days: str):
 
     elif range_days == "all":
         try:
-            # Conta os chamados agrupados por ano e ordenados por ano
-            ticket_counts = (
-                SupportTicket.objects.values("start_date__year")
-                .annotate(count=Count("id"))
-                .order_by("start_date__year")
+            tickets_data = SupportTicket.objects.annotate(
+                year_number=Func(
+                    F("start_date"),
+                    function="YEAR",
+                    template="YEAR(%(expressions)s)",  # Similar ao MySQL YEAR
+                    output_field=IntegerField(),  # Garantir que o retorno seja um inteiro
+                )
             )
 
-            # Se não houver registros, retorna resposta vazia com status 204
-            if not ticket_counts:
-                return JsonResponse({"data": None}, status=204, safe=True)
+            # Obtém a contagem de chamados agrupados por ano
+            ticket_counts = (
+                tickets_data.values("year_number")
+                .annotate(count=Count("id"))
+                .order_by("year_number")
+            )
 
-            # Extrai os anos e as contagens em listas separadas para o gráfico
+            # Extrai os anos únicos dos resultados
+            years = sorted({item["year_number"] for item in ticket_counts})
+
+            # Monta os dados para o gráfico, incluindo os anos e os valores contados
             histogram_data = {
-                "days": [str(item["start_date__year"]) for item in ticket_counts],
-                "values": [item["count"] for item in ticket_counts],
+                "days": years,
+                "values": [
+                    item["count"] for item in ticket_counts
+                ],  # Garante que os anos estejam na ordem correta
             }
 
             # Retorna os dados como resposta JSON
@@ -404,10 +446,10 @@ def getDashBoardBar(request: WSGIRequest, range_days: str):
 
         except Exception as e:
             # Registra qualquer erro inesperado que ocorra
-            logger.error(f"Erro inesperado em get_dashboard_bar_all: {e}")
+            logger.error(f"Erro inesperado em get_dashboard_bar: {e}")
             # Retorna uma resposta de erro JSON
             return JsonResponse(
-                {"Error": f"Erro inesperado em DashBoardBarAll: {e}"}, status=210
+                {"Error": f"Erro inesperado em DashBoardBarYear: {e}"}, status=210
             )
 
 

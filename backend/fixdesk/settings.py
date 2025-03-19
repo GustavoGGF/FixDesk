@@ -1,5 +1,6 @@
 from pathlib import Path
-from os import path
+from os import path, getenv
+from dotenv import load_dotenv
 
 # Define o diretório base do projeto.
 # BASE_DIR aponta para o diretório pai do arquivo atual (settings.py),
@@ -95,10 +96,22 @@ WSGI_APPLICATION = "fixdesk.wsgi.application"
 # Define o banco de dados padrão como SQLite3, com o arquivo de banco de dados localizado
 # no diretório base do projeto (BASE_DIR) com o nome 'db.sqlite3'.
 # SQLite é ideal para desenvolvimento, mas em produção, considere usar PostgreSQL, MySQL ou outro SGBD robusto.
+load_dotenv()
+user = getenv("USER_DB")
+pwd = getenv("USER_PWD_DB")
+host = getenv("DB_HOST")
+port = getenv("DB_PORT")
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",  # Usa o backend do SQLite3.
-        "NAME": BASE_DIR / "db.sqlite3",  # Caminho para o arquivo do banco de dados.
+        "ENGINE": "django.db.backends.mysql",  # Usa o backend do SQLite3.
+        "NAME": "fixdesk_database_dev",  # Caminho para o arquivo do banco de dados.
+        "USER": user,
+        "PASSWORD": pwd,
+        "HOST": host,
+        "PORT": port,
+        "OPTIONS": {
+            "charset": "utf8mb4",  # Defina o charset para utf8mb4
+        },
     }
 }
 

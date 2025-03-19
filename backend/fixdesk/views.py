@@ -46,7 +46,6 @@ def CreateOrVerifyUser(
     :return: Tupla (bool, str|Exception), onde o booleano indica sucesso e o segundo valor contém erro ou mensagem vazia.
     """
     try:
-        print("type(request): ", type(request))
         # Verifica se o usuário já existe no banco de dados
         user_auth = User.objects.get(username=user)
     except User.DoesNotExist:
@@ -162,7 +161,6 @@ def validation(request):
         "mail": data_class.mail,
         "company": data_class.company,
         "helpdesk": data_class.helpdesk,
-        "pid": data_class.pid,
     }
 
     # Retorna os dados do usuário autenticado em formato JSON
@@ -253,16 +251,13 @@ def create_class_user(extractor: dict):
 
         # Definição da classe para armazenar os dados do usuário
         class UserHelpDesk:
-            def __init__(
-                self, name, department, job_title, mail, company, helpdesk, pid
-            ):
+            def __init__(self, name, department, job_title, mail, company, helpdesk):
                 self.name = name or ""
                 self.department = department or ""
                 self.job_title = job_title or ""
                 self.mail = mail or ""
                 self.company = company or ""
                 self.helpdesk = helpdesk or ""
-                self.pid = pid or ""
 
         # Extração dos dados relevantes do LDAP
         name = information.get("displayName", "")
@@ -270,7 +265,6 @@ def create_class_user(extractor: dict):
         job_title = information.get("title", "")
         mail = information.get("mail", "")
         company = information.get("company", "")
-        pid = information.get("employeeID", "")
 
         # Determinação do nível de suporte do usuário com base nos grupos LDAP
         helpdesk = ""
@@ -287,7 +281,7 @@ def create_class_user(extractor: dict):
                 break
 
         # Criação da instância do usuário com os dados extraídos
-        client = UserHelpDesk(name, department, job_title, mail, company, helpdesk, pid)
+        client = UserHelpDesk(name, department, job_title, mail, company, helpdesk)
 
         return (
             client,

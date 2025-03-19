@@ -1,5 +1,4 @@
 # Importando os módulos necessários para o funcionamento do código.
-from cmath import log
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from smtplib import SMTP
@@ -41,6 +40,7 @@ from threading import Lock
 from dotenv import load_dotenv
 from django.core.handlers.wsgi import WSGIRequest
 from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.views.decorators.cache import cache_page
 
 # Configuração básica de logging
 basicConfig(level=WARNING)
@@ -188,7 +188,6 @@ def submitTicket(request):
                 "observation"
             ),  # Obtém observações adicionais
             "occurrence": request.POST.get("occurrence"),  # Obtém o tipo de ocorrência
-            "pid": request.POST.get("PID"),  # Obtém o identificador único do chamado
             "problemn": request.POST.get("problemn"),  # Obtém a descrição do problema
             "respective_area": request.POST.get(
                 "respective_area"
@@ -203,10 +202,6 @@ def submitTicket(request):
                 "ticketRequester"
             ),  # Obtém o solicitante do chamado
         }
-
-        # Validar se o PID foi fornecido, pois é um campo obrigatório
-        if not form_data["pid"]:
-            return JsonResponse({"error": "PID is required"}, status=403)
 
         # Processar e validar a data de início
         if not form_data["start_date"]:
@@ -244,6 +239,8 @@ def submitTicket(request):
             )
         valid = True  # Marca que houve um processamento válido
 
+    pid = request.user.id
+
     # Caso não haja imagem nem equipamento, cria um chamado de suporte normal
     if not valid:
         ticket = SupportTicket(
@@ -259,7 +256,7 @@ def submitTicket(request):
             problemn=form_data["problemn"],  # Define a descrição do problema
             observation=form_data["observation"],  # Define observações adicionais
             start_date=form_data["start_date"],  # Define a data de início do chamado
-            PID=form_data["pid"],  # Define o identificador único do chamado
+            PID=pid,
             equipament=request.POST.get(
                 "id_equipament"
             ),  # Associa equipamento, se houver
@@ -306,7 +303,7 @@ def process_files(request: WSGIRequest, form_data: dict):
             problemn=form_data["problemn"],  # Define a descrição do problema
             observation=form_data["observation"],  # Define observações adicionais
             start_date=form_data["start_date"],  # Define a data de início do chamado
-            PID=form_data["pid"],  # Define o identificador único do chamado
+            PID=request.user.id,  # Define o identificador único do chamado
             open=True,  # Define o chamado como aberto
         )
 
@@ -369,8 +366,8 @@ def is_valid_file(file: InMemoryUploadedFile, file_type: str) -> bool:
 
 @csrf_exempt
 @login_required(login_url="/login")
-@never_cache
 @require_GET
+@cache_page(60 * 1)
 def history(request: WSGIRequest):
     """
     Processa e retorna o histórico de chamados do usuário.
@@ -411,7 +408,7 @@ def history_get_ticket(request, quantity: int, usr: str, status: str, order: str
                 {"status": "Invalid Credentials"}, status=402, safe=True
             )
 
-        filters = {"ticketRequester": usr}
+        filters = {"ticketRequester": usr, "PID": request.user.id}
 
         if status_opng not in {"All", "null", "all"}:
             filters["open"] = status_opng
@@ -435,7 +432,6 @@ def history_get_ticket(request, quantity: int, usr: str, status: str, order: str
 
 
 @csrf_exempt
-@never_cache
 @require_GET
 def exit(request: WSGIRequest):
     """
@@ -611,18 +607,16 @@ def ticket(
             # Recupera o ticket correspondente ao ID fornecido ou retorna erro 404
             ticket = get_object_or_404(SupportTicket, id=id)
 
-            pid = ticket.PID
-            # Verifica se o PID do ticket está presente
-            if not pid:
-                return redirect("/helpdesk")
-
             user = request.user
             # Verifica se o usuário pertence ao grupo "Back_User"
-            if user.groups.filter(name="Back_User").exists():
-                pid_viewer = request.META.get("HTTP_PID")
-                # Verifica se o PID fornecido no cabeçalho corresponde ao PID do ticket
-                if not pid_viewer or int(pid_viewer) != pid:
+            if not user.groups.filter(name=Back_User).exists():
+                if not user.groups.filter(name=Back_Tech).exists():
                     return redirect("/helpdesk")
+            else:
+                if ticket.PID != request.user.id:
+                    return JsonResponse(
+                        {"Error": "Chamado não pertence a você"}, status=403, safe=True
+                    )
 
             # Processamento de arquivos do ticket (imagens ou outros arquivos)
             image_data, content_file, name_file = process_ticket_files(id)
@@ -638,7 +632,7 @@ def ticket(
                 "problemn": ticket.problemn,
                 "observation": ticket.observation,
                 "start_date": ticket.start_date,
-                "PID": pid,
+                "PID": ticket.PID,
                 "responsible_technician": ticket.responsible_technician,
                 "id": ticket.id,
                 "chat": ticket.chat,
@@ -1126,14 +1120,12 @@ def updating_chat_change_sender(
 
     # Obtém o ticket de suporte pelo ID fornecido
     ticket = SupportTicket.objects.get(id=id)
-
     if helpdesk == "helpdesk":
         chat_message = f",[[Date:{date}],[User: {chat}],[Hours:{hours}]]"
         update_last_sender(ticket, user, date, hours)
-    elif helpdesk == "dashboards":
+    elif helpdesk == "dashboard":
         chat_message = f",[[Date:{date}],[Technician: {chat}],[Hours:{hours}]]"
         update_last_sender(ticket, technician, date, hours)
-
     # Atualiza o histórico do chat do ticket
     ticket.chat += chat_message
 
@@ -1394,7 +1386,7 @@ def get_database_connection():
 
 @login_required(login_url="/login")
 @require_GET
-@never_cache
+@cache_page(60 * 5)
 def equipamentsForAlocate(request):
     """
     Conecta-se ao banco de dados MySQL e busca uma lista de computadores disponíveis

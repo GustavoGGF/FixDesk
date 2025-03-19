@@ -476,7 +476,6 @@ export default function DashboardTI() {
       method: "GET",
       headers: {
         "X-CSRFToken": token,
-        pid: userData.pid,
         "Cache-Control": "no-cache", // Adiciona o cabeçalho para evitar cache
       },
     })
