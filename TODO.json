@@ -12,7 +12,8 @@
       "43": "Verificar todos os codigos que lidam com o banco de dados e por @transaction.atomic",
       "12": "Adicionar a telca esc em detalhes tecnicos e imagem aberta",
       "39": "Mudar nomes de funções e variaveis para boas praticas",
-      "40": "Remover o uso do PID"
+      "40": "Remover o uso do PID",
+      "46": "verificar as rotas e tratamento para quando o token expira"
     },
     "Study Possibility": {}
   },

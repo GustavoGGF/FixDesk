@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from dotenv import load_dotenv
 from json import loads
 from os import getenv
-from ldap3 import Connection, SAFE_SYNC, ALL_ATTRIBUTES
+from ldap3 import SUBTREE, Connection, SAFE_SYNC, ALL_ATTRIBUTES, LEVEL, BASE
 from django.contrib.auth.models import User, Group
 from django.contrib.auth import login
 from django.views.decorators.http import require_POST
@@ -132,6 +132,7 @@ def validation(request: WSGIRequest):
         # Retorna erro caso o acesso ao LDAP seja negado
         return JsonResponse({"status": "invalid access"}, status=401, safe=True)
 
+    print(response[2])
     # Extração dos dados do usuário autenticado no LDAP
     extractor = response[2][0]
 
@@ -207,11 +208,19 @@ def connect_ldap(user: str, password: str):
             response = conn.search(
                 ldap_base_dn,
                 search_filter,
-                attributes=ALL_ATTRIBUTES,  # Retorna todos os atributos do usuário
-                search_scope="SUBTREE",  # Busca recursivamente na árvore LDAP
+                attributes=[
+                    "mail",
+                    "memberOf",
+                    "displayName",
+                    "department",
+                    "title",
+                    "company",
+                    "givenName",
+                    "sn",
+                ],  # Retorna todos os atributos do usuário
+                search_scope=SUBTREE,  # Busca recursivamente na árvore LDAP
                 types_only=False,  # Retorna os valores completos dos atributos
             )
-
             return response  # Retorna os dados obtidos na busca
 
     except Exception as e:
