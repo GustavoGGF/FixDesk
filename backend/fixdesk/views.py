@@ -132,7 +132,6 @@ def validation(request: WSGIRequest):
         # Retorna erro caso o acesso ao LDAP seja negado
         return JsonResponse({"status": "invalid access"}, status=401, safe=True)
 
-    print(response[2])
     # Extração dos dados do usuário autenticado no LDAP
     extractor = response[2][0]
 

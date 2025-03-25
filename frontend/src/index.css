@@ -507,6 +507,7 @@
   min-width: 7%;
 }
 
-mt6 {
-  margin-top: 6em !important;
+.ticketHover:hover {
+  transform: scale(1.1);
+  -webkit-transform: scale(1.1); /* Adicionado para compatibilidade com navegadores baseados em WebKit */
 }

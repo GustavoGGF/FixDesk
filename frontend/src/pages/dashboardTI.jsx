@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useContext } from "react";
+import React, { useEffect, useState, useRef, useContext, useCallback } from "react";
 import "react-day-picker/dist/style.css";
 import { Div } from "../styles/dashboardTI.js";
 import DashBoardPie from "../components/dashboard/dashboardPie.jsx";
@@ -345,7 +345,7 @@ export default function DashboardTI() {
         <DivCard
           key={ticket["id"]}
           ref={(el) => (divRefs.current[`tck${ticket.id}`] = el)}
-          className={`animate__animated animate__zoomInDown ${colorBorder} ${themeCard}`}
+          className={`animate__animated animate__zoomInDown ${colorBorder} ${themeCard} tickets_method`}
           onClick={() => {
             helpdeskPage({ id: ticket["id"] });
           }}
@@ -462,6 +462,30 @@ export default function DashboardTI() {
       }
     });
   }
+
+  const handleAnimationEnd = useCallback((event) => {
+    console.log("Animação terminou para:", event.target);
+
+    // Aplicando a classe diretamente no elemento que terminou a animação
+    event.target.classList.add("ticketHover");
+  }, []);
+
+  useEffect(() => {
+    if (!ticketsDash || ticketsDash.length === 0) return;
+
+    const ticketsInCard = document.querySelectorAll(".tickets_method");
+
+    ticketsInCard.forEach((ticket) => {
+      ticket.addEventListener("animationend", handleAnimationEnd);
+    });
+
+    return () => {
+      ticketsInCard.forEach((ticket) => {
+        ticket.removeEventListener("animationend", handleAnimationEnd);
+      });
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ticketsDash]);
 
   /**
    * Altera o último visualizador de um chamado no sistema de helpdesk.

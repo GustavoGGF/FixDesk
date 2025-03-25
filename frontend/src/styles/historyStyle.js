@@ -36,10 +36,6 @@ export const DivCard = styled.div`
   -webkit-border-radius: 10px; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   -webkit-padding: 5px; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   -webkit-margin: 10px; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
-  &:hover {
-    transform: scale(1.1);
-    -webkit-transform: scale(1.1); /* Adicionado para compatibilidade com navegadores baseados em WebKit */
-  }
 `;
 
 export const H5Card = styled.h5`

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useContext } from "react";
+import React, { useState, useEffect, useRef, useContext, useCallback } from "react";
 import Navbar from "../components/general/navbar";
 import { Div, DivCard, H5Card, SpanCard, Table, TD, TH, TR, TRSPACE, DivZ } from "../styles/historyStyle";
 import { TitlePage } from "../styles/helpdeskStyle";
@@ -414,7 +414,7 @@ export default function History() {
 
       const Div = (
         <DivCard
-          className={`animate__animated animate__zoomInDown ${colorBorder} ${themeCard}`}
+          className={`animate__animated animate__zoomInDown ${colorBorder} ${themeCard} tickets_method`}
           onClick={() => {
             helpdeskPage({ id: ticket["id"] });
           }}
@@ -521,6 +521,30 @@ export default function History() {
       return ticketData;
     });
   }
+
+  const handleAnimationEnd = useCallback((event) => {
+    console.log("Animação terminou para:", event.target);
+
+    // Aplicando a classe diretamente no elemento que terminou a animação
+    event.target.classList.add("ticketHover");
+  }, []);
+
+  useEffect(() => {
+    if (!tickets || tickets.length === 0) return;
+
+    const ticketsInCard = document.querySelectorAll(".tickets_method");
+
+    ticketsInCard.forEach((ticket) => {
+      ticket.addEventListener("animationend", handleAnimationEnd);
+    });
+
+    return () => {
+      ticketsInCard.forEach((ticket) => {
+        ticket.removeEventListener("animationend", handleAnimationEnd);
+      });
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tickets]);
 
   async function CloseTicket() {
     const dash = document.getElementById("dashboard");

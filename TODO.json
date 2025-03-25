@@ -4,7 +4,6 @@
       "4": "adicioanr o email do fixdesk como seguro",
       "23": "Implementar @retry",
       "27": "Implementar @measure_time: Para medir o tempo de execução da função.",
-      "33": "Automatizar a Subida dos Dockers",
       "44": "Implementar o useCallBack"
     },
     "HotFix's": {
@@ -18,15 +17,15 @@
     "Study Possibility": {}
   },
   "Login": {
-    "HotFix's": { "23": "Procurar por atributos especificos invez de todos na função connect_ldap" }
+    "HotFix's": {}
   },
   "HelpDesk": {
     "Upgrade": {},
-    "HotFix": { "30": "Ao envis arquivo no firefox pelo menos ele da um erro" }
+    "HotFix": {}
   },
   "History": {
     "Upgrade": {},
-    "HotFix": { "31": "Quantidade de ticketes que vem ao entrar na page", "ESC 41": "ativar o Esc pra fechar o chamado" }
+    "HotFix": { "ESC 41": "ativar o Esc pra fechar o chamado" }
   },
   "Dashboard": {
     "Upgrade": {},
@@ -37,9 +36,8 @@
   },
   "Chat": {},
   "Tickets": {
-    "32": "Ter teça de loading quando começar a baixar o chamado",
     "35": "Deixar PDF do chamado bonito",
-    "34": "Deixar uma imagem no chamado que contem maquina alocada e no PDF tambem",
+    "34": "Deixar uma imagem no PDF tambem",
     "36": "Ajustar o salvamento dos filtros e quando atualizar a pagina fazer busca conforme os mesmos",
     "37": "Fazer uma puta revisão nesses filtros",
     "38": "Filtro de modo lista ta feio demais KKKKKk",
