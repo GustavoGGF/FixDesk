@@ -27,6 +27,7 @@ import {
   ButtonDet,
   DivChatDetails,
   ImgSend,
+  DivColorGray,
 } from "../../styles/ticket/ticketWindow";
 import { DivNameFile, BtnFile, ImgFile } from "../../styles/helpdeskStyle";
 import { DropDown, DropBTN, DropContent2 } from "../../styles/navbarStyle";
@@ -45,6 +46,7 @@ import excludeImage from "../../images/components/close.png";
 import setingIMG from "../../images/components/definicoes.png";
 import sendIMG from "../../images/components/enviar.png";
 import { TicketContext } from "../../context/TicketContext";
+import { ImgMachines } from "../../styles/ticketsOptionsStyle";
 
 export default function OpenTicketWindow({
   helpdesk,
@@ -88,6 +90,7 @@ export default function OpenTicketWindow({
   const [selectedTech, setSelectedTech] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [detailsChat, setDetailsChat] = useState("");
+  const [modelName, setModelName] = useState("");
 
   const [uploadNewFiles, setUploadNewFiles] = useState([]);
   const [fileticket, setFileTicket] = useState([]);
@@ -137,6 +140,24 @@ export default function OpenTicketWindow({
     },
     [techDetails, imageopen, setTechDetails, setImageOpen, setTicketWindowAtt]
   );
+
+  useEffect(() => {
+    if (showEquipament) {
+      fetch("/helpdesk/get-image/" + equipament, {
+        method: "GET",
+        headers: { Accept: "application/json" },
+      })
+        .then((response) => {
+          return response.json();
+        })
+        .then((data) => {
+          setModelName(data.model.trim());
+        })
+        .catch((err) => {
+          return console.log(err);
+        });
+    }
+  }, [equipament, showEquipament]);
 
   useEffect(() => {
     document.addEventListener("keydown", handleEscape);
@@ -490,7 +511,7 @@ export default function OpenTicketWindow({
       },
       body: JSON.stringify({
         helpdesk: helpdesk,
-        User: userName, // Nome do usuário que está enviando a mensagem
+        user: userName, // Nome do usuário que está enviando a mensagem
         chat: textChat, // O conteúdo do chat
         hours: horaFormatada, // Hora formatada da mensagem
         date: dataFormatada, // Data formatada da mensagem
@@ -712,7 +733,7 @@ export default function OpenTicketWindow({
               alt="Baixar"
               onClick={() => {
                 const blob = DownloadFile({
-                  data: "application/pdf",
+                  data: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                   content: ContentFileWord,
                 });
 
@@ -1245,9 +1266,11 @@ export default function OpenTicketWindow({
           <input type="text" value={"Ocorrência: " + ticketOCCURRENCE} className="form-control" disabled />{" "}
           <input type="text" value={"Detalhes: " + ticketPROBLEMN} className="form-control" disabled />
           {showEquipament && (
-            <div>
+            <DivColorGray>
+              <ImgMachines src={`http://sappp01:3000/home/computers/get-image/${modelName}`} className="img-fluid" alt={`imagem ${modelName}`} />
+              <input value={"Modelo: " + modelName} className="form-control" disabled />
               <input value={"ID do Equipamento: " + equipament} className="form-control" disabled />
-            </div>
+            </DivColorGray>
           )}
           <TextObersavation ref={textareaRef} name="observation" className="autosize-textarea" disabled>
             {observation}

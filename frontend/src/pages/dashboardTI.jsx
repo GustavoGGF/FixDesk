@@ -96,8 +96,21 @@ export default function DashboardTI() {
   const sectionTicket = useRef(null);
   const divRefs = useRef({});
 
-  const { ticketData, setTicketData, ticketWindowAtt, setTicketWindowAtt, changeTech, setChangeTech } = useContext(TicketContext);
+  const { ticketData, setTicketData, ticketWindowAtt, setTicketWindowAtt, changeTech, setChangeTech, cardOrList, setCardOrList } = useContext(TicketContext);
   const { setTypeError, setMessageError, setMessage, message } = useContext(MessageContext);
+
+  useEffect(() => {
+    if (cardOrList && cardOrList.length !== 0) {
+      if (cardOrList === "List") {
+        listCard();
+        setCardOrList("");
+      } else if (cardOrList === "Card") {
+        viewCard();
+        setCardOrList("");
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cardOrList]);
 
   useEffect(() => {
     if (ticketWindowAtt) {

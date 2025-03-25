@@ -28,3 +28,8 @@ export const DivMachine = styled.div`
     transform: scale(1.13);
   }
 `;
+
+export const ImgMachines = styled.img`
+  width: 14em;
+  margin: 0 auto;
+`;

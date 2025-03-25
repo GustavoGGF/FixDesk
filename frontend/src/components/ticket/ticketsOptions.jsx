@@ -1,5 +1,5 @@
 import React, { useRef, useState, useContext, useEffect } from "react";
-import { Select, DivMachine, Contract } from "../../styles/ticketsOptionsStyle";
+import { Select, DivMachine, Contract, ImgMachines } from "../../styles/ticketsOptionsStyle";
 import Close from "../../images/components/close.png";
 import { OptionsContext } from "../../context/OptionsContext";
 import RoboGlimpse from "../loading/robotGlimpse";
@@ -372,6 +372,8 @@ export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
           })
           .then((data) => {
             if (data.machines) {
+              console.log("data maachines: ", data.machines);
+
               setEquipaments(data.machines);
             }
           })
@@ -392,19 +394,36 @@ export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
   }
 
   useEffect(() => {
-    if (equipaments.length > 0) {
-      const newDashEquipaments = equipaments.map((element) => (
-        <DivMachine
-          key={element.mac_address}
-          onClick={() => {
-            selectMachine(element.mac_address);
-          }}
-        >
-          <h3>{element.model}</h3>
-          <span>{element.manufacturer}</span>
-          <span>{element.distribution}</span>
-        </DivMachine>
-      ));
+    if (equipaments.length !== 0) {
+      const newDashEquipaments = equipaments.map((element) => {
+        console.log(element);
+
+        // Separando o campo "name" para extrair o prefixo
+
+        // eslint-disable-next-line no-unused-vars
+        const [prefix, _] = element.name.split("-");
+        let localidade = "";
+
+        // Verificando o prefixo e atribuindo a localidade
+        if (prefix === "LP00") {
+          localidade = "Lupatech CSC";
+        }
+
+        return (
+          <DivMachine
+            key={element.mac_address}
+            onClick={() => {
+              selectMachine(element.mac_address);
+            }}
+          >
+            <ImgMachines src={`http://sappp01:3000/home/computers/get-image/${element.model}`} className="img-fluid" alt={`imagem ${element.model}`} />
+            <h3>{element.model}</h3>
+            <span>{element.manufacturer}</span>
+            <span>{element.distribution}</span>
+            <div className="mt-2">{localidade}</div>
+          </DivMachine>
+        );
+      });
 
       setDashEquipaments(newDashEquipaments);
       setLoadingoFetchingEquipaments(false);
@@ -428,6 +447,7 @@ export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
           selectMachine(foundEquipament.mac_address);
         }}
       >
+        <ImgMachines src={`http://sappp01:3000/home/computers/get-image/${foundEquipament.model}`} className="img-fluid" alt={`imagem ${foundEquipament.model}`} />
         <h3>{foundEquipament.model}</h3>
         <span>{foundEquipament.manufacturer}</span>
         <span>{foundEquipament.distribution}</span>
@@ -472,13 +492,57 @@ export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
       default:
         break;
       case "adduser":
+        fetch("/helpdesk/download-word/create", {
+          method: "GET",
+        })
+          .then((response) => {
+            return response.blob();
+          })
+          .then((blob) => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "Criação de Usuário.docx";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+          })
+          .catch((err) => {
+            return console.log(err);
+          });
         setAlert(false);
         setProblemn("Criacao de usuario de rede");
+        setMessagetitle("Caso de Criar Usuario");
+        setMessageinfo1("1. Anexar formulario de Criação de Usuário");
+        setAlert(true);
         setAlertVerify(false);
         break;
       case "deluser":
+        fetch("/helpdesk/download-word/delete", {
+          method: "GET",
+        })
+          .then((response) => {
+            return response.blob();
+          })
+          .then((blob) => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "Exclusão de Usuário.docx";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+          })
+          .catch((err) => {
+            return console.log(err);
+          });
         setAlert(false);
         setProblemn("Exclusao de usuario de rede");
+        setMessagetitle("Caso de Excluir Usuario");
+        setMessageinfo1("1. Anexar formulario de Exclusão de Usuário");
+        setAlert(true);
         setAlertVerify(false);
         break;
       case "none":

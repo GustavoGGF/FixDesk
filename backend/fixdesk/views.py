@@ -101,7 +101,7 @@ def CreateOrVerifyUser(
 @never_cache  # Garante que a resposta não será armazenada em cache
 @require_POST  # Restringe a view para aceitar apenas requisições do tipo POST
 @transaction.atomic  # Garante que todas as operações no banco de dados dentro da view sejam atômicas
-def validation(request):
+def validation(request: WSGIRequest):
     """
     Função para validar as credenciais do usuário via autenticação LDAP e retornar seus dados.
 

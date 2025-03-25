@@ -295,3 +295,7 @@ export const PChatHourR = styled.div`
   -webkit-font-size: 0.7em; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   -webkit-margin-right: 1em; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
 `;
+
+export const DivColorGray = styled.div`
+  background-color: #e9ecef;
+`;

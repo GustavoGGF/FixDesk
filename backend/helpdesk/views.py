@@ -5,14 +5,13 @@ from smtplib import SMTP
 from threading import Thread, Timer
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.decorators.csrf import csrf_exempt, requires_csrf_token
-from django.http import JsonResponse
+from django.http import JsonResponse, FileResponse
 from django.contrib.auth.decorators import login_required
-from os import getenv
+from os import getenv, path
 from json import loads
 from django.middleware.csrf import get_token
 from datetime import datetime
 from .models import SupportTicket, TicketFile
-from .models import SupportTicket
 from django.core.serializers import serialize
 from django.contrib.auth import logout
 from dashboards.models import Equipaments
@@ -41,6 +40,8 @@ from dotenv import load_dotenv
 from django.core.handlers.wsgi import WSGIRequest
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.views.decorators.cache import cache_page
+from requests import get as getUrl
+import mysql
 
 # Configuração básica de logging
 basicConfig(level=WARNING)
@@ -345,10 +346,6 @@ def is_valid_file(file: InMemoryUploadedFile, file_type: str) -> bool:
     # Extrai apenas a parte relevante do tipo do arquivo
     file_type_clean = plt(r",|\(", file_type)[0].strip().lower()
 
-    # Print para debug
-    print("Arquivo identificado como:", file_type_clean)
-    print("Tipos permitidos:", types_str)
-
     # Verifica se algum dos tipos permitidos está no tipo detectado
     if any(ext.lower() in file_type_clean for ext in types_str):
         return True
@@ -427,7 +424,7 @@ def history_get_ticket(request, quantity: int, usr: str, status: str, order: str
             {"tickets": ticket_objects, "token": csrf}, status=200, safe=True
         )
     except Exception as e:
-        print(e)  # Exibe o erro no console (melhor utilizar logger)
+        logger.error(e)  # Exibe o erro no console (melhor utilizar logger)
         return JsonResponse({"status": "Invalid Credentials"}, status=402, safe=True)
 
 
@@ -534,7 +531,7 @@ def ticket(
                 # Se o status retornado for 400, um erro é enviado na resposta.
                 # Caso contrário, a resposta retorna o chat atualizado.
                 status, chat = updating_chat_change_sender(
-                    body, id, chat, date, hours, technician, user, helpdesk
+                    body, id, chat, date, hours, user, helpdesk
                 )
 
                 if status == 400:
@@ -663,6 +660,7 @@ def ticket(
                 "name_file": name_file,
                 "content_file": content_file,
                 "equipament": ticket.equipament,
+                "date_alocate": ticket.date_alocate,
             }
 
             # Retorna os dados do ticket como resposta JSON com código de status 200
@@ -1133,7 +1131,6 @@ def updating_chat_change_sender(
     chat: str,
     date: str,
     hours: str,
-    technician: str,
     user: str,
     helpdesk: str,
 ):
@@ -1157,7 +1154,7 @@ def updating_chat_change_sender(
         update_last_sender(ticket, user, date, hours)
     elif helpdesk == "dashboard":
         chat_message = f",[[Date:{date}],[Technician: {chat}],[Hours:{hours}]]"
-        update_last_sender(ticket, technician, date, hours)
+        update_last_sender(ticket, user, date, hours)
     # Atualiza o histórico do chat do ticket
     ticket.chat += chat_message
 
@@ -1170,6 +1167,7 @@ def updating_chat_change_sender(
     return 200, ticket.chat
 
 
+@transaction.atomic
 def update_last_sender(ticket: SupportTicket, user: str, date: str, hours: str):
     """
     Atualiza o remetente da última mensagem do ticket se a nova data e hora forem posteriores à anterior.
@@ -1198,6 +1196,8 @@ def update_last_sender(ticket: SupportTicket, user: str, date: str, hours: str):
         # Se 'last_sender' não estiver definido, atribui o valor inicial
         ticket.last_sender = f"{user}, {date} {hours}"
 
+    ticket.save()
+
 
 def process_ticket_files(ticket_id):
     """Processa arquivos anexados ao chamado e retorna listas organizadas"""
@@ -1215,6 +1215,11 @@ def process_ticket_files(ticket_id):
     for file in ticket_files:
         file_path = str(file.file)
         file_name = "/".join(file_path.split("/")[2:])
+        file_abs_path = path.join(getcwd(), file_path)
+
+        if not path.exists(file_abs_path):
+            print(f"Arquivo não encontrado: {file_abs_path}")
+            continue
 
         try:
             with file.file.open() as img:
@@ -1231,7 +1236,6 @@ def process_ticket_files(ticket_id):
             with file.file.open("rb") as f:
                 file_content = f.read()
                 file_type = mime.from_buffer(file_content).lower()
-                print(file_type)
                 file_type_clean = plt(r",|\(", file_type)[0].strip()
 
                 type_mapping = {
@@ -1444,6 +1448,7 @@ def equipamentsForAlocate(request):
                 results_list = [
                     {
                         "mac_address": row[0],
+                        "name": row[1],
                         "distribution": row[3],
                         "manufacturer": row[9],
                         "model": row[10],
@@ -1488,7 +1493,7 @@ def convert_to_dict(chat_data):
 
     except Exception as e:
         # Em caso de erro, imprime o erro e retorna um JsonResponse com status de erro
-        print(e)
+        logger.error(e)
         return JsonResponse({"Error": f"Erro inesperado {e}"}, status=311)
 
 
@@ -1726,7 +1731,7 @@ def notify(id):
             return stop_timer(id)
 
         # Verifica se o status do chamado está aberto.
-        if not status or status == None:
+        if not status or status == None or status == False:
             return stop_timer(id)
 
         # Divide o chat em seções para processar as mensagens.
@@ -1751,7 +1756,7 @@ def notify(id):
             primary = "User"
             mailTo = mail_tech  # Envia para o técnico.
         else:
-            print("Erro ao detectar quem enviou a menssagem")
+            logger.error("Erro ao detectar quem enviou a menssagem")
             # Para o temporizador ativo e remove da lista de timers.
             active_timers[id].stop()
             del active_timers[id]
@@ -1778,10 +1783,12 @@ def notify(id):
             return
 
         # Inicia a thread para enviar o e-mail.
-        Thread(
+        task = Thread(
             target=sendMail,
             args=(mailTo, msg, msg2),
         )
+
+        task.start()
 
         # Retorna finalizando o time do ID especificado
         return stop_timer(id)
@@ -1881,3 +1888,40 @@ def verifyNotificationCall(id):
     except Exception as e:
         # Caso ocorra algum erro, loga a exceção.
         return logger.error(f"Erro ao verificar o chamado {id}: {e}")
+
+
+@require_GET
+def get_image(request, mac):
+    try:
+        with get_database_connection() as connection:  # 🔹 Agora usa 'with'
+            cursor = connection.cursor()
+            query = "SELECT model FROM machines WHERE mac_address = %s;"
+            cursor.execute(query, (mac,))
+            result = cursor.fetchone()
+            cursor.close()
+
+            if result is None:
+                return JsonResponse({"error": "Modelo não encontrado"}, status=404)
+
+            return JsonResponse({"model": result[0]})
+
+    except mysql.connector.Error as e:
+        logger.error(f"Erro na consulta ao banco de dados: {e}")
+        return JsonResponse({"error": "Erro na consulta ao banco de dados"}, status=500)
+
+
+@require_GET
+def download_word(request, method):
+    base_dir = path.dirname(
+        path.dirname(path.abspath(__file__))
+    )  # Obtém o diretório base do projeto
+    if method == "create":
+        file_path = path.join(
+            base_dir, "files", "Formulário de Criação de Usuário de Rede - v2.0.docx"
+        )
+    elif method == "delete":
+        file_path = path.join(base_dir, "files", "FORMULÁRIO EXCLUSÃO USUÁRIO.docx")
+
+    return FileResponse(
+        open(file_path, "rb"), as_attachment=True, filename="documento.docx"
+    )

@@ -1,7 +1,7 @@
 from cmath import log
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt, requires_csrf_token
-from os import getenv
+from os import getcwd, getenv, path
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
@@ -504,7 +504,13 @@ def process_files(file: TicketFile):
             )
             content_file.append("img")
             name_file.append("/".join(str(file.file).split("/")[2:]))
+            file_abs_path = path.join(getcwd(), file_path)
+
+            if not path.exists(file_abs_path):
+                print(f"Arquivo não encontrado: {file_abs_path}")
+                pass
             file.file.close()
+
     except UnidentifiedImageError:
         try:
             file.file.open()
@@ -514,6 +520,12 @@ def process_files(file: TicketFile):
             file_type = mime.from_buffer(image_bytes)
             file_path = str(file.file)
             file_name = "/".join(file_path.split("/")[2:])
+            file_abs_path = path.join(getcwd(), file_path)
+
+            if not path.exists(file_abs_path):
+                print(f"Arquivo não encontrado: {file_abs_path}")
+                pass
+
             type_mapping = {
                 "mail": "mail",
                 "rfc 822 mail": "mail",
@@ -545,7 +557,6 @@ def process_files(file: TicketFile):
     except Exception as e:
         logger.error(f"Unexpected error processing file {file.file.name}: {e}")
         return JsonResponse({"error": str(e)}, status=340)
-
     return content_file, name_file, image_data
 
 

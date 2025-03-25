@@ -10,6 +10,7 @@ export const TicketProvider = ({ children }) => {
   const [ticketWindowAtt, setTicketWindowAtt] = useState(false);
 
   const [changeTech, setChangeTech] = useState("");
+  const [cardOrList, setCardOrList] = useState("");
 
   const [ticketData, setTicketData] = useState([]);
 
@@ -24,6 +25,8 @@ export const TicketProvider = ({ children }) => {
         setTicketWindowAtt,
         changeTech,
         setChangeTech,
+        cardOrList,
+        setCardOrList,
       }}
     >
       {children}
