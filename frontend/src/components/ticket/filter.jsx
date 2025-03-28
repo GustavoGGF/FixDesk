@@ -1,5 +1,18 @@
 import React, { useEffect, useRef, useState, useContext } from "react";
-import { DivFilter, Input1, Select1, DivContainerImages, PSelectView, DivImages, IMGS1, PQuantity, Button1, Button2, DivSelectView, ImgSelectView } from "../../styles/filter";
+import {
+  DivFilter,
+  Input1,
+  Select1,
+  DivContainerImages,
+  PSelectView,
+  DivImages,
+  IMGS1,
+  PQuantity,
+  Button1,
+  Button2,
+  DivSelectView,
+  ImgSelectView,
+} from "../../styles/filter";
 import IMG1 from "../../images/dashboard_TI/quantity_1.png";
 import IMG2 from "../../images/dashboard_TI/quantity_2.png";
 import IMG3 from "../../images/dashboard_TI/quantity_3.png";
@@ -10,7 +23,16 @@ import { TicketContext } from "../../context/TicketContext";
 import { MessageContext } from "../../context/MessageContext";
 // import { FilterContext } from "../../context/FilterContext";
 
-export default function FilterTickets({ url, blurNav, themeFilter, dateValue, quantityMap, statusFilter, userName, moreTickets }) {
+export default function FilterTickets({
+  url,
+  blurNav,
+  themeFilter,
+  dateValue,
+  quantityMap,
+  statusFilter,
+  userName,
+  moreTickets,
+}) {
   const [fakeSelect, setFakeSelect] = useState(true);
   const [problemInfra, setProblemInfra] = useState(false);
   const [problemSyst, setProblemSyst] = useState(false);
@@ -27,11 +49,18 @@ export default function FilterTickets({ url, blurNav, themeFilter, dateValue, qu
   const btnStop = useRef(null);
   const btnAll = useRef(null);
 
-  const { setLoadingDash, setBtnMore, setCardOrList, setTicketData } = useContext(TicketContext);
-  const { setMessage, setMessageError, setTypeError } = useContext(MessageContext);
+  const { setLoadingDash, setCardOrList, setTicketData } =
+    useContext(TicketContext);
+  const { setMessage, setMessageError, setTypeError } =
+    useContext(MessageContext);
   useEffect(() => {
     if (moreTickets > 0) {
-      getTicketFilter({ id: "null", quantity: moreTickets, statusTicket: "null", search_query: "null" });
+      getTicketFilter({
+        id: "null",
+        quantity: moreTickets,
+        statusTicket: "null",
+        search_query: "null",
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [moreTickets]);
@@ -196,12 +225,30 @@ export default function FilterTickets({ url, blurNav, themeFilter, dateValue, qu
       quantity = localStorage.getItem("quantity");
     }
 
-    fetch("/helpdesk/get-ticket-filter/" + url + "/" + sector + "/" + occurrence + "/" + orderTicket + "/" + userName + "/" + quantity + "/" + statusTicket + "/" + search_query, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-      },
-    })
+    fetch(
+      "/helpdesk/get-ticket-filter/" +
+        url +
+        "/" +
+        sector +
+        "/" +
+        occurrence +
+        "/" +
+        orderTicket +
+        "/" +
+        userName +
+        "/" +
+        quantity +
+        "/" +
+        statusTicket +
+        "/" +
+        search_query,
+      {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+        },
+      }
+    )
       .then((response) => {
         return response.json();
       })
@@ -210,7 +257,6 @@ export default function FilterTickets({ url, blurNav, themeFilter, dateValue, qu
           setMessage(true);
           setTypeError("Falta de dados");
           setMessageError("Nenhum ticket com esses Filtros");
-          setBtnMore(false);
           return;
         } else {
           setLoadingDash(false);
@@ -236,7 +282,12 @@ export default function FilterTickets({ url, blurNav, themeFilter, dateValue, qu
           className="form-control"
           id="floatingInput"
           onKeyUp={(event) => {
-            getTicketFilter({ id: "null", quantity: "null", statusTicket: "null", search_query: event.target.value });
+            getTicketFilter({
+              id: "null",
+              quantity: "null",
+              statusTicket: "null",
+              search_query: event.target.value,
+            });
           }}
         />
         <label htmlFor="floatingInput">Ocorrência | Problema | Data...</label>
@@ -247,7 +298,12 @@ export default function FilterTickets({ url, blurNav, themeFilter, dateValue, qu
         ref={selectOccurrence}
         onChange={() => {
           validateSelectFilter();
-          getTicketFilter({ id: "null", quantity: "null", statusTicket: "null", search_query: "null" });
+          getTicketFilter({
+            id: "null",
+            quantity: "null",
+            statusTicket: "null",
+            search_query: "null",
+          });
         }}
       >
         <option value="null" selected disabled>
@@ -270,7 +326,12 @@ export default function FilterTickets({ url, blurNav, themeFilter, dateValue, qu
           className="form-select"
           ref={selectProblem}
           onChange={() => {
-            getTicketFilter({ id: "null", quantity: "null", statusTicket: "null", search_query: "null" });
+            getTicketFilter({
+              id: "null",
+              quantity: "null",
+              statusTicket: "null",
+              search_query: "null",
+            });
           }}
         >
           <option value="null" selected disabled>
@@ -279,7 +340,9 @@ export default function FilterTickets({ url, blurNav, themeFilter, dateValue, qu
           <option value="Backup">Backup/Restore</option>
           <option value="E-mail">E-mail</option>
           <option value="Equipamento">Equipamento</option>
-          <option value="Gerenciamento de Usuario">Gerenciamento de Usuario</option>
+          <option value="Gerenciamento de Usuario">
+            Gerenciamento de Usuario
+          </option>
           <option value="Internet">Internet</option>
           <option value="Permissão">Pasta</option>
           <option value="Novo SoftWare">Software e Aplicativos</option>
@@ -293,7 +356,12 @@ export default function FilterTickets({ url, blurNav, themeFilter, dateValue, qu
           className="form-select"
           ref={selectProblem}
           onChange={() => {
-            getTicketFilter({ id: "null", quantity: "null", statusTicket: "null", search_query: "null" });
+            getTicketFilter({
+              id: "null",
+              quantity: "null",
+              statusTicket: "null",
+              search_query: "null",
+            });
           }}
         >
           <option value="null" selected disabled>
@@ -313,7 +381,12 @@ export default function FilterTickets({ url, blurNav, themeFilter, dateValue, qu
         id="select-order"
         className="form-select"
         onChange={() => {
-          getTicketFilter({ id: "null", quantity: "null", statusTicket: "null", search_query: "null" });
+          getTicketFilter({
+            id: "null",
+            quantity: "null",
+            statusTicket: "null",
+            search_query: "null",
+          });
         }}
       >
         <option value="none" disabled>
@@ -323,13 +396,20 @@ export default function FilterTickets({ url, blurNav, themeFilter, dateValue, qu
         <option value="id">Data Antiga</option>
       </Select1>
       <DivContainerImages className="d-flex">
-        <PSelectView className="position-absolute top-0 start-0 translate-middle">Quantidade</PSelectView>
+        <PSelectView className="position-absolute top-0 start-0 translate-middle">
+          Quantidade
+        </PSelectView>
         <DivImages
           className="btn"
           id="fiveView"
           ref={fiveView}
           onClick={() => {
-            getTicketFilter({ id: "fiveView", quantity: 5, statusTicket: "null", search_query: "null" });
+            getTicketFilter({
+              id: "fiveView",
+              quantity: 5,
+              statusTicket: "null",
+              search_query: "null",
+            });
           }}
         >
           <IMGS1 src={IMG1} alt="" />
@@ -340,7 +420,12 @@ export default function FilterTickets({ url, blurNav, themeFilter, dateValue, qu
           id="thenView"
           ref={thenView}
           onClick={() => {
-            getTicketFilter({ id: "thenView", quantity: 10, statusTicket: "null", search_query: "null" });
+            getTicketFilter({
+              id: "thenView",
+              quantity: 10,
+              statusTicket: "null",
+              search_query: "null",
+            });
           }}
         >
           <IMGS1 src={IMG2} alt="" />
@@ -351,7 +436,12 @@ export default function FilterTickets({ url, blurNav, themeFilter, dateValue, qu
           id="fiftyView"
           ref={fiftyView}
           onClick={() => {
-            getTicketFilter({ id: "fiftyView", quantity: 50, statusTicket: "null", search_query: "null" });
+            getTicketFilter({
+              id: "fiftyView",
+              quantity: 50,
+              statusTicket: "null",
+              search_query: "null",
+            });
           }}
         >
           <IMGS1 src={IMG3} alt="" />
@@ -362,7 +452,12 @@ export default function FilterTickets({ url, blurNav, themeFilter, dateValue, qu
           id="allView"
           ref={allView}
           onClick={() => {
-            getTicketFilter({ id: "allView", quantity: 100000, statusTicket: "null", search_query: "null" });
+            getTicketFilter({
+              id: "allView",
+              quantity: 100000,
+              statusTicket: "null",
+              search_query: "null",
+            });
           }}
         >
           <IMGS1 src={IMG4} alt="" />
@@ -370,7 +465,9 @@ export default function FilterTickets({ url, blurNav, themeFilter, dateValue, qu
         </DivImages>
       </DivContainerImages>
       <DivSelectView>
-        <PSelectView className="position-absolute top-0 start-0 translate-middle">Modo de Visualização</PSelectView>
+        <PSelectView className="position-absolute top-0 start-0 translate-middle">
+          Modo de Visualização
+        </PSelectView>
         <button
           className="btn"
           id="selectView-List"
@@ -391,13 +488,20 @@ export default function FilterTickets({ url, blurNav, themeFilter, dateValue, qu
         </button>
       </DivSelectView>
       <DivSelectView>
-        <PSelectView className="position-absolute top-0 start-0 translate-middle">Status</PSelectView>
+        <PSelectView className="position-absolute top-0 start-0 translate-middle">
+          Status
+        </PSelectView>
         <Button1
           className="btn"
           id="btnopen"
           ref={btnOpen}
           onClick={() => {
-            getTicketFilter({ id: "null", quantity: "null", statusTicket: "open", search_query: "null" });
+            getTicketFilter({
+              id: "null",
+              quantity: "null",
+              statusTicket: "open",
+              search_query: "null",
+            });
           }}
         >
           Aberto
@@ -408,7 +512,12 @@ export default function FilterTickets({ url, blurNav, themeFilter, dateValue, qu
           id="btnclose"
           ref={btnClose}
           onClick={() => {
-            getTicketFilter({ id: "null", quantity: "null", statusTicket: "close", search_query: "null" });
+            getTicketFilter({
+              id: "null",
+              quantity: "null",
+              statusTicket: "close",
+              search_query: "null",
+            });
           }}
         >
           Fechado
@@ -419,7 +528,12 @@ export default function FilterTickets({ url, blurNav, themeFilter, dateValue, qu
           id="btnstop"
           ref={btnStop}
           onClick={() => {
-            getTicketFilter({ id: "null", quantity: "null", statusTicket: "stop", search_query: "null" });
+            getTicketFilter({
+              id: "null",
+              quantity: "null",
+              statusTicket: "stop",
+              search_query: "null",
+            });
           }}
         >
           Aguardo
@@ -430,7 +544,12 @@ export default function FilterTickets({ url, blurNav, themeFilter, dateValue, qu
           id="btnall"
           ref={btnAll}
           onClick={() => {
-            getTicketFilter({ id: "null", quantity: "null", statusTicket: "all", search_query: "null" });
+            getTicketFilter({
+              id: "null",
+              quantity: "null",
+              statusTicket: "all",
+              search_query: "null",
+            });
           }}
         >
           Todos

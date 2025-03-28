@@ -31,7 +31,6 @@ export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
     setAlert,
     setMessageinfo2,
     setMachineAlocate,
-    create_user_acess,
     alocate_machine_acess,
     setMessageinfo1,
     setSelectedDay,
@@ -372,8 +371,6 @@ export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
           })
           .then((data) => {
             if (data.machines) {
-              console.log("data maachines: ", data.machines);
-
               setEquipaments(data.machines);
             }
           })
@@ -396,8 +393,6 @@ export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
   useEffect(() => {
     if (equipaments.length !== 0) {
       const newDashEquipaments = equipaments.map((element) => {
-        console.log(element);
-
         // Separando o campo "name" para extrair o prefixo
 
         // eslint-disable-next-line no-unused-vars
@@ -416,7 +411,7 @@ export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
               selectMachine(element.mac_address);
             }}
           >
-            <ImgMachines src={`http://sappp01:3000/home/computers/get-image/${element.model}`} className="img-fluid" alt={`imagem ${element.model}`} />
+            <ImgMachines src={`https://sappp01.lupatech.com.br/home/computers/get-image/${element.model}`} className="img-fluid" alt={`imagem ${element.model}`} />
             <h3>{element.model}</h3>
             <span>{element.manufacturer}</span>
             <span>{element.distribution}</span>
@@ -447,7 +442,7 @@ export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
           selectMachine(foundEquipament.mac_address);
         }}
       >
-        <ImgMachines src={`http://sappp01:3000/home/computers/get-image/${foundEquipament.model}`} className="img-fluid" alt={`imagem ${foundEquipament.model}`} />
+        <ImgMachines src={`https://sappp01.lupatech.com.br/home/computers/get-image/${foundEquipament.model}`} className="img-fluid" alt={`imagem ${foundEquipament.model}`} />
         <h3>{foundEquipament.model}</h3>
         <span>{foundEquipament.manufacturer}</span>
         <span>{foundEquipament.distribution}</span>
@@ -749,7 +744,6 @@ export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
 
   // Atualiza o contexto e o estado local ao selecionar datas
   const handleSelect = (dates) => {
-    console.log(dates);
     setSelectedInternal(dates);
     setSelectedDay(dates);
   };
@@ -779,10 +773,8 @@ export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
           <option value="backup">Backup/Restore</option>
           <option value="mail">E-mail</option>
           <option value="equip">Equipamento</option>
-          <option value="user" hidden={!create_user_acess}>
-            Gerenciamento de usuário
-          </option>
-          )<option value="internet">Internet</option>
+          <option value="user">Gerenciamento de usuário</option>
+          <option value="internet">Internet</option>
           <option value="folder">Pasta</option>
           <option value="soft">Software e Aplicativos</option>
           <option value="dados">Integridade de Dados</option>

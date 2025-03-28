@@ -41,7 +41,8 @@ from django.core.handlers.wsgi import WSGIRequest
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.views.decorators.cache import cache_page
 from requests import get as getUrl
-import mysql
+from django.test import RequestFactory
+from tempfile import NamedTemporaryFile
 
 # Configuração básica de logging
 basicConfig(level=WARNING)
@@ -828,21 +829,50 @@ def add_ticket_info_to_pdf(ticket: SupportTicket, pdf: FPDF):
 
 
 def add_machine_info_to_pdf(ticket: SupportTicket, pdf: FPDF):
-    """
-    Adiciona informações sobre a máquina alocada no ticket de suporte ao PDF, incluindo o nome da máquina
-    e a data de alocação.
+    try:
+        """
+        Adiciona informações sobre a máquina alocada no ticket de suporte ao PDF, incluindo o nome da máquina
+        e a data de alocação.
 
-    :param ticket: O ticket de suporte que contém informações sobre a máquina alocada.
-    :param pdf: A instância do FPDF onde as informações sobre a máquina serão adicionadas.
-    """
+        :param ticket: O ticket de suporte que contém informações sobre a máquina alocada.
+        :param pdf: A instância do FPDF onde as informações sobre a máquina serão adicionadas.
+        """
+        factory = RequestFactory()
 
-    # Adiciona o nome da máquina alocada ao PDF
-    pdf.cell(200, 10, txt=f"Máquina Alocada: {ticket.equipament}", ln=True, align="L")
+        request = factory.get(
+            f"/get_image/{ticket.equipament}"
+        )  # Substitua pelo MAC desejado
+        response = get_image(request, ticket.equipament)
+        response_data = loads(response.content.decode("utf-8"))
 
-    # Adiciona a data de alocação da máquina ao PDF
-    pdf.cell(
-        200, 10, txt=f"Data de alocação: {ticket.date_alocate}", ln=True, align="L"
-    )
+        # Obter o valor de "model"
+        model = response_data.get("model")
+        model_adjust = model.strip()
+        model_adjust2 = model.replace(" ", "").lower()
+        # Adiciona o nome da máquina alocada ao PDF
+        pdf.cell(
+            200, 10, txt=f"Máquina Alocada: {ticket.equipament}", ln=True, align="L"
+        )
+        pdf.cell(200, 10, txt=f"Modelo: {model_adjust}", ln=True, align="L")
+        y_atual = pdf.get_y()
+        url = f"http://sappp01:3000/home/computers/get-image/{model_adjust2}"
+        print(url)
+
+        # Faz a requisição GET para obter a imagem
+        response = getUrl(url)
+
+        if response.status_code == 200:
+            # Criar um arquivo temporário
+            with NamedTemporaryFile(delete=True, suffix=".png") as temp_image:
+                temp_image.write(response.content)
+                temp_image.flush()  # Garante que os dados sejam escritos
+
+                # Adicionar a imagem logo abaixo do texto "Modelo"
+                pdf.image(
+                    temp_image.name, x=10, y=y_atual + 5, w=50
+                )  # Ajuste 'x', 'y' e 'w' conforme necessário
+    except Exception as e:
+        logger.error(e)
 
 
 def add_chat_to_pdf(chat: str, pdf: FPDF):
@@ -1359,15 +1389,18 @@ def get_ticket_filter(
                 search_filters |= Q(sector__icontains=search_query)
                 search_filters |= Q(occurrence__icontains=search_query)
                 search_filters |= Q(problemn__icontains=search_query)
+                search_filters |= Q(ticketRequester__icontains=search_query)
 
             # Se a ocorrência não for filtrada, adiciona também a busca por ocorrência ou problema
             if not filter_occurrence:
                 search_filters |= Q(occurrence__icontains=search_query)
                 search_filters |= Q(problemn__icontains=search_query)
+                search_filters |= Q(ticketRequester__icontains=search_query)
 
             # Se ambos setor e ocorrência forem filtrados, busca apenas pelo problema
             if filter_sector and filter_occurrence:
                 search_filters |= Q(problemn__icontains=search_query)
+                search_filters |= Q(ticketRequester__icontains=search_query)
 
         # Aplica o filtro de pesquisa caso haja search_query
         if search_query:
@@ -1905,7 +1938,7 @@ def get_image(request, mac):
 
             return JsonResponse({"model": result[0]})
 
-    except mysql.connector.Error as e:
+    except connector.Error as e:
         logger.error(f"Erro na consulta ao banco de dados: {e}")
         return JsonResponse({"error": "Erro na consulta ao banco de dados"}, status=500)
 

@@ -17,7 +17,6 @@ export const OptionsProvider = ({ children }) => {
 
   const [alertverify, setAlertVerify] = useState(false);
   const [alert, setAlert] = useState(false);
-  const [create_user_acess, setCreate_user_acess] = useState(true);
   const [alocate_machine_acess, seAlocate_Machine_Acess] = useState(true);
 
   const [selectedDay, setSelectedDay] = useState([]);
@@ -47,8 +46,6 @@ export const OptionsProvider = ({ children }) => {
         setMachineAlocate,
         selectedDay,
         setSelectedDay,
-        create_user_acess,
-        setCreate_user_acess,
         alocate_machine_acess,
         seAlocate_Machine_Acess,
       }}

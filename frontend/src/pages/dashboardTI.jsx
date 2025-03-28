@@ -464,8 +464,6 @@ export default function DashboardTI() {
   }
 
   const handleAnimationEnd = useCallback((event) => {
-    console.log("Animação terminou para:", event.target);
-
     // Aplicando a classe diretamente no elemento que terminou a animação
     event.target.classList.add("ticketHover");
   }, []);
