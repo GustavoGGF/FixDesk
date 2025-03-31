@@ -1,5 +1,10 @@
 import React, { useRef, useState, useContext, useEffect } from "react";
-import { Select, DivMachine, Contract, ImgMachines } from "../../styles/ticketsOptionsStyle";
+import {
+  Select,
+  DivMachine,
+  Contract,
+  ImgMachines,
+} from "../../styles/ticketsOptionsStyle";
 import Close from "../../images/components/close.png";
 import { OptionsContext } from "../../context/OptionsContext";
 import RoboGlimpse from "../loading/robotGlimpse";
@@ -23,7 +28,8 @@ export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
   const [dadosCase, setDados] = useState(false);
   const [softAPP, setSoftAPP] = useState(false);
   const [comodato, setComodato] = useState(false);
-  const [loadingoFetchingEquipaments, setLoadingoFetchingEquipaments] = useState(true);
+  const [loadingoFetchingEquipaments, setLoadingoFetchingEquipaments] =
+    useState(true);
 
   const {
     setMessagetitle,
@@ -47,12 +53,21 @@ export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
   const [dashequipaments, setDashEquipaments] = useState("");
   const [equipaments, setEquipaments] = useState("");
   const [dashEquipamentSelected, setDashEquipamentSelected] = useState("");
+  const [locationCurrentMachines, setLocationCurrentMachines] = useState("");
+
+  const companyEquip = useRef(null);
 
   const footer =
     selectedInternal.length > 0
       ? `Datas de Locação: ${selectedInternal
           .sort((a, b) => a - b) // Ordena as datas em ordem crescente
-          .map((date) => date.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" })) // Formata como dd/mm/yyyy
+          .map((date) =>
+            date.toLocaleDateString("pt-BR", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+            })
+          ) // Formata como dd/mm/yyyy
           .join(", ")}` // Junta as datas formatadas em uma string
       : "Selecione pelo menos um dia.";
 
@@ -246,7 +261,9 @@ export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
         setAlert(true);
         setMessagetitle("Caso de pasta");
         setMessageinfo1("1. Informar o caminho completo da pasta");
-        setMessageinfo2("2. Informar a dataUser de criação e exclusão do arquivo");
+        setMessageinfo2(
+          "2. Informar a dataUser de criação e exclusão do arquivo"
+        );
         setProblemn("Restaurar pasta");
         setAlertVerify(false);
         break;
@@ -310,7 +327,9 @@ export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
         setAlocate(false);
         setAlert(true);
         setMessagetitle("Caso de computador não ligar");
-        setMessageinfo1("1. Informar o usuario e setor de onde fica o equipamento");
+        setMessageinfo1(
+          "1. Informar o usuario e setor de onde fica o equipamento"
+        );
         setMessageinfo2("");
         setProblemn("Equipamento não liga");
         setAlertVerify(false);
@@ -328,7 +347,9 @@ export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
         setAlocate(false);
         setAlert(true);
         setMessagetitle("Caso de troca de local de trabalho");
-        setMessageinfo1("1. Informar se no local existe ponto de rede e de energia");
+        setMessageinfo1(
+          "1. Informar se no local existe ponto de rede e de energia"
+        );
         setMessageinfo2("");
         setProblemn("Mudanca de local de trabalho");
         setAlertVerify(false);
@@ -338,7 +359,9 @@ export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
         setAlert(true);
         setMessagetitle("Caso de liberação/bloqueio de USB");
         setMessageinfo1("1. Justificar a solicitação");
-        setMessageinfo2("2. Caso não seja o gestor da area, anexar a autorização do mesmo");
+        setMessageinfo2(
+          "2. Caso não seja o gestor da area, anexar a autorização do mesmo"
+        );
         setProblemn("USB");
         setAlertVerify(false);
         break;
@@ -353,30 +376,14 @@ export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
         setAlert(true);
         setMessagetitle("Caso de Alocação de equipamento");
         setMessageinfo1("1. Selecionar o equipamento desejado");
-        setMessageinfo2("2. Informar a dataUser e a necessidade de equipamentos adicionais como teclado, etc...");
+        setMessageinfo2(
+          "2. Informar a dataUser e a necessidade de equipamentos adicionais como teclado, etc..."
+        );
         setAlertVerify(false);
         setAlocate(true);
         setLoadingoFetchingEquipaments(true);
         setDisabledDates([]);
         setSelectedInternal([]);
-        fetch("equipaments-for-alocate", {
-          method: "GET",
-          headers: {
-            Accept: "application/json",
-            "Cache-Control": "no-cache",
-          },
-        })
-          .then((response) => {
-            return response.json();
-          })
-          .then((data) => {
-            if (data.machines) {
-              setEquipaments(data.machines);
-            }
-          })
-          .catch((err) => {
-            console.log(err);
-          });
         setProblemn("Alocação de Máquina");
         break;
       case "change":
@@ -397,12 +404,6 @@ export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
 
         // eslint-disable-next-line no-unused-vars
         const [prefix, _] = element.name.split("-");
-        let localidade = "";
-
-        // Verificando o prefixo e atribuindo a localidade
-        if (prefix === "LP00") {
-          localidade = "Lupatech CSC";
-        }
 
         return (
           <DivMachine
@@ -411,11 +412,15 @@ export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
               selectMachine(element.mac_address);
             }}
           >
-            <ImgMachines src={`https://sappp01.lupatech.com.br/home/computers/get-image/${element.model}`} className="img-fluid" alt={`imagem ${element.model}`} />
+            <ImgMachines
+              src={`https://sappp01.lupatech.com.br/home/computers/get-image/${element.model}`}
+              className="img-fluid"
+              alt={`imagem ${element.model}`}
+            />
             <h3>{element.model}</h3>
             <span>{element.manufacturer}</span>
             <span>{element.distribution}</span>
-            <div className="mt-2">{localidade}</div>
+            <div className="mt-2">{"Lupatech " + locationCurrentMachines}</div>
           </DivMachine>
         );
       });
@@ -427,7 +432,9 @@ export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
   }, [equipaments]);
 
   const findEquipamentByMacAddress = (macAddress) => {
-    return equipaments.find((equipament) => equipament.mac_address === macAddress);
+    return equipaments.find(
+      (equipament) => equipament.mac_address === macAddress
+    );
   };
 
   function selectMachine(mac) {
@@ -442,7 +449,11 @@ export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
           selectMachine(foundEquipament.mac_address);
         }}
       >
-        <ImgMachines src={`https://sappp01.lupatech.com.br/home/computers/get-image/${foundEquipament.model}`} className="img-fluid" alt={`imagem ${foundEquipament.model}`} />
+        <ImgMachines
+          src={`https://sappp01.lupatech.com.br/home/computers/get-image/${foundEquipament.model}`}
+          className="img-fluid"
+          alt={`imagem ${foundEquipament.model}`}
+        />
         <h3>{foundEquipament.model}</h3>
         <span>{foundEquipament.manufacturer}</span>
         <span>{foundEquipament.distribution}</span>
@@ -558,7 +569,9 @@ export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
         setAlert(true);
         setMessagetitle("Caso de liberação de site");
         setMessageinfo1("1. Informar o link completo do site");
-        setMessageinfo2("2.Caso não seja o gestor da area, anexar a autorização do mesmo");
+        setMessageinfo2(
+          "2.Caso não seja o gestor da area, anexar a autorização do mesmo"
+        );
         setProblemn("Liberacao de site");
         setAlertVerify(false);
         break;
@@ -566,7 +579,9 @@ export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
         setAlert(true);
         setMessagetitle("Caso de bloqueio de site");
         setMessageinfo1("1. Informar o link completo do site");
-        setMessageinfo2("2.Caso não seja o gestor da area, anexar a autorização do mesmo");
+        setMessageinfo2(
+          "2.Caso não seja o gestor da area, anexar a autorização do mesmo"
+        );
         setProblemn("Bloqueio de site");
         setAlertVerify(false);
         break;
@@ -590,7 +605,9 @@ export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
         setAlert(true);
         setMessagetitle("Caso de liberação de pasta");
         setMessageinfo1("1. Informar o diretorio completo da pasta");
-        setMessageinfo2("2.Caso não seja o gestor responsavel pela pasta, anexar a autorização do mesmo");
+        setMessageinfo2(
+          "2.Caso não seja o gestor responsavel pela pasta, anexar a autorização do mesmo"
+        );
         setProblemn("Liberar pasta");
         setAlertVerify(false);
         break;
@@ -598,7 +615,9 @@ export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
         setAlert(true);
         setMessagetitle("Caso de bloqueio de pasta");
         setMessageinfo1("1. Informar o diretorio completo da pasta");
-        setMessageinfo2("2.Caso não seja o gestor responsavel pela pasta, anexar a autorização do mesmo");
+        setMessageinfo2(
+          "2.Caso não seja o gestor responsavel pela pasta, anexar a autorização do mesmo"
+        );
         setProblemn("Bloquear pasta");
         setAlertVerify(false);
         break;
@@ -620,7 +639,9 @@ export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
         break;
       case "user":
         setMessagetitle("Caso de Criação/exclusão de usuários");
-        setMessageinfo1("1. Informar o usuário que deverá ser criado ou excluido");
+        setMessageinfo1(
+          "1. Informar o usuário que deverá ser criado ou excluido"
+        );
         setMessageinfo2("2. Informar os acessos que o mesmo poderá utilizar");
         setProblemn("Criação/exclusão usuário");
         setAlert(true);
@@ -748,16 +769,55 @@ export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
     setSelectedDay(dates);
   };
 
+  function selectCompanyEquip() {
+    setLoadingoFetchingEquipaments(true);
+    setEquipaments("");
+    setDashEquipaments("");
+    if (!companyEquip) {
+      return;
+    }
+    fetch("equipaments-for-alocate/" + companyEquip.current.value, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Cache-Control": "no-cache",
+      },
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        if (data.machines && data.machines.length !== 0) {
+          setLocationCurrentMachines(companyEquip.current.value);
+          setEquipaments(data.machines);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
   return (
     <>
-      <Select ref={selectAR} className="form-select mb-3" aria-label="Default select example" id="selectAR" onChange={selectARes}>
+      <Select
+        ref={selectAR}
+        className="form-select mb-3"
+        aria-label="Default select example"
+        id="selectAR"
+        onChange={selectARes}
+      >
         <option value="none" disabled selected>
           Seleciona a Área Respectiva
         </option>
         <option value="TI">TI</option>
       </Select>
       {respectiveTI && (
-        <Select className="form-select mb-3" aria-label="Default select example" id="select-Form" onChange={selectOcorrence}>
+        <Select
+          className="form-select mb-3"
+          aria-label="Default select example"
+          id="select-Form"
+          onChange={selectOcorrence}
+        >
           <option value="none" disabled selected>
             Selecione o tipo de ocorrência
           </option>
@@ -766,7 +826,12 @@ export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
         </Select>
       )}
       {infra && (
-        <Select className="form-select mb-3" aria-label="Default select example" id="select-error" onChange={selectProblem}>
+        <Select
+          className="form-select mb-3"
+          aria-label="Default select example"
+          id="select-error"
+          onChange={selectProblem}
+        >
           <option value="none" disabled selected>
             Selecione o problema ocorrido
           </option>
@@ -781,7 +846,12 @@ export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
         </Select>
       )}
       {backup && (
-        <Select className="form-select mb-3" aria-label="Default select example" id="select-backup" onChange={selectBackup}>
+        <Select
+          className="form-select mb-3"
+          aria-label="Default select example"
+          id="select-backup"
+          onChange={selectBackup}
+        >
           <option value="none" disabled selected>
             Selecione o problema ocorrido
           </option>
@@ -790,7 +860,12 @@ export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
         </Select>
       )}
       {mail && (
-        <Select className="form-select mb-3" aria-label="Default select example" id="select-mail" onChange={selectMail}>
+        <Select
+          className="form-select mb-3"
+          aria-label="Default select example"
+          id="select-mail"
+          onChange={selectMail}
+        >
           <option value="none" disabled selected>
             Selecione o problema ocorrido
           </option>
@@ -800,7 +875,12 @@ export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
         </Select>
       )}
       {equip && (
-        <Select className="form-select mb-3" aria-label="Default select example" id="select-equip" onChange={selectEquip}>
+        <Select
+          className="form-select mb-3"
+          aria-label="Default select example"
+          id="select-equip"
+          onChange={selectEquip}
+        >
           <option value="none" disabled selected>
             Selecione o problema ocorrido
           </option>
@@ -815,7 +895,12 @@ export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
         </Select>
       )}
       {user && (
-        <Select className="form-select mb-3" aria-label="Default select example" id="select-user" onChange={selectUser}>
+        <Select
+          className="form-select mb-3"
+          aria-label="Default select example"
+          id="select-user"
+          onChange={selectUser}
+        >
           <option value="none" disabled selected>
             Selecione o problema ocorrido
           </option>
@@ -824,7 +909,12 @@ export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
         </Select>
       )}
       {internet && (
-        <Select className="form-select mb-3" aria-label="Default select example" id="select-internet" onChange={selectInternet}>
+        <Select
+          className="form-select mb-3"
+          aria-label="Default select example"
+          id="select-internet"
+          onChange={selectInternet}
+        >
           <option value="none" disabled selected>
             Selecione o problema ocorrido
           </option>
@@ -833,7 +923,12 @@ export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
         </Select>
       )}
       {folder && (
-        <Select className="form-select mb-3" aria-label="Default select example" id="select-folder" onChange={selectFolder}>
+        <Select
+          className="form-select mb-3"
+          aria-label="Default select example"
+          id="select-folder"
+          onChange={selectFolder}
+        >
           <option value="none" disabled selected>
             Selecione o problema ocorrido
           </option>
@@ -842,7 +937,12 @@ export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
         </Select>
       )}
       {system && (
-        <Select className="form-select mb-3" aria-label="Default select example" id="select-error" onChange={selectProblem}>
+        <Select
+          className="form-select mb-3"
+          aria-label="Default select example"
+          id="select-error"
+          onChange={selectProblem}
+        >
           <option value="none" disabled selected>
             Selecione o Sistema
           </option>
@@ -855,7 +955,12 @@ export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
         </Select>
       )}
       {sys && (
-        <Select className="form-select mb-3" aria-label="Default select example" id="select-sap" onChange={selectSys}>
+        <Select
+          className="form-select mb-3"
+          aria-label="Default select example"
+          id="select-sap"
+          onChange={selectSys}
+        >
           <option value="none" disabled selected>
             Selecione o Problema
           </option>
@@ -867,7 +972,12 @@ export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
         </Select>
       )}
       {sys2 && (
-        <Select className="form-select mb-3" aria-label="Default select example" id="select-office" onChange={selectOffice}>
+        <Select
+          className="form-select mb-3"
+          aria-label="Default select example"
+          id="select-office"
+          onChange={selectOffice}
+        >
           <option value="none" disabled selected>
             Selecione o Problema
           </option>
@@ -876,7 +986,12 @@ export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
         </Select>
       )}
       {softAPP && (
-        <Select className="form-select mb-3" aria-label="Default select example" id="select-soft" onChange={selectSoftAPP}>
+        <Select
+          className="form-select mb-3"
+          aria-label="Default select example"
+          id="select-soft"
+          onChange={selectSoftAPP}
+        >
           <option value="none" disabled selected>
             Selecione o Problema
           </option>
@@ -885,7 +1000,12 @@ export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
         </Select>
       )}
       {dadosCase && (
-        <Select className="form-select mb-3" aria-label="Default select example" id="select-dado" onChange={selectDado}>
+        <Select
+          className="form-select mb-3"
+          aria-label="Default select example"
+          id="select-dado"
+          onChange={selectDado}
+        >
           <option value="none" disabled selected>
             Selecione o Problema
           </option>
@@ -895,22 +1015,36 @@ export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
       {alocate && (
         <div className="w-100">
           <div className="d-flex justify-content-center">
-            <Select className="form-select mb-3" aria-label="Default select example" id="select-company-equip" onChange={"selectCompanyEquip"}>
+            <Select
+              className="form-select mb-3"
+              aria-label="Default select example"
+              id="select-company-equip"
+              onChange={selectCompanyEquip}
+              ref={companyEquip}
+            >
               <option value="none" disabled selected>
                 Selecione uma Unidade
               </option>
-              <option value="csc">CSC</option>
+              <option value="CSC">CSC</option>
               <option value="fiber">Fiber</option>
               <option value="vera">Vera</option>
               <option value="ropes">Ropes</option>
               <option value="mna">MNA</option>
-              <option value="all">Todas Unidades</option>
             </Select>
           </div>
           <div className="d-flex flex-wrap justify-content-center position-relative">
             <div className="d-flex flex-column">
               {dashEquipamentSelected}
-              {dateequip && <DayPicker mode="multiple" disabled={disabledDates} onSelect={handleSelect} selected={selectedInternal} showOutsideDays footer={footer} />}
+              {dateequip && (
+                <DayPicker
+                  mode="multiple"
+                  disabled={disabledDates}
+                  onSelect={handleSelect}
+                  selected={selectedInternal}
+                  showOutsideDays
+                  footer={footer}
+                />
+              )}
             </div>
             {dashequipaments} {loadingoFetchingEquipaments && <RoboGlimpse />}
           </div>
@@ -931,18 +1065,23 @@ export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
           <div class="d-flex flex-column">
             <h3 class="mt-3">INSTRUMENTO PARTICULAR DE COMODATO</h3>
             <span class="mt-3">
-              <b>LUPATECH S.A. - EM RECUPERAÇÃO JUDICIAL, </b>à, Rua Dalton Lanh dos reis, 201, bairro Distrito Industrial, no Município de Caxias do Sul, Estado de Rio Grande do Sul &ndash; CEP
-              95112-090, regularmente inscrita no CNPJ/MF sob o nº89.463.822/0012-75, doravante denominada simplesmente de <b>COMODANTE.</b>
+              <b>LUPATECH S.A. - EM RECUPERAÇÃO JUDICIAL, </b>à, Rua Dalton Lanh
+              dos reis, 201, bairro Distrito Industrial, no Município de Caxias
+              do Sul, Estado de Rio Grande do Sul &ndash; CEP 95112-090,
+              regularmente inscrita no CNPJ/MF sob o nº89.463.822/0012-75,
+              doravante denominada simplesmente de <b>COMODANTE.</b>
             </span>
             <span class="mt-3">e</span>
             <span class="mt-3">
-              <b>{Name}</b>, doravante denominada simplesmente <b>COMODATÁRIO</b>.
+              <b>{Name}</b>, doravante denominada simplesmente{" "}
+              <b>COMODATÁRIO</b>.
             </span>
             <span class="mt-3">
               <b>CONSIDERAÇÕES</b>
             </span>
             <span>
-              A <b>COMODANTE </b> é proprietária e legítima possuidora do seguinte equipamento:
+              A <b>COMODANTE </b> é proprietária e legítima possuidora do
+              seguinte equipamento:
             </span>
           </div>
           <button>Concordo</button>

@@ -8,7 +8,8 @@ services:
     env_file:
       - ./.env
     networks:
-      - backend
+      - common_network
+    container_name: fixdesk_backend
 
   nginx:
     build:
@@ -21,8 +22,10 @@ services:
     depends_on:
       - fixdesk
     networks:
-      - backend
+      - common_network
+    container_name: fixdesk_nginx
 
 networks:
-  backend:
-    driver: bridge
+  common_network:
+    external: true
+    name: common_network

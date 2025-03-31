@@ -1457,7 +1457,7 @@ def get_database_connection():
 @login_required(login_url="/login")
 @require_GET
 @cache_page(60 * 5)
-def equipamentsForAlocate(request):
+def equipamentsForAlocate(request, location):
     """
     Conecta-se ao banco de dados MySQL e busca uma lista de computadores disponíveis
     para alocação (com o campo 'alocate' igual a 0).
@@ -1474,10 +1474,9 @@ def equipamentsForAlocate(request):
     try:
         with get_database_connection() as connection:
             with connection.cursor() as cursor:
-                query = "SELECT * from machines WHERE alocate = 0"
-                cursor.execute(query)
+                query = "SELECT * FROM machines WHERE alocate = 0 AND location = %s"
+                cursor.execute(query, (location, ))
                 result = cursor.fetchall()
-
                 results_list = [
                     {
                         "mac_address": row[0],

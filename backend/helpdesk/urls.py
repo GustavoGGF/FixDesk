@@ -23,7 +23,7 @@ urlpatterns = [
     ),
     # URL para pegar os equipamentos para alocagem
     path(
-        "equipaments-for-alocate/",
+        "equipaments-for-alocate/<str:location>",
         views.equipamentsForAlocate,
         name="central-equipaments-for-alocate",
     ),

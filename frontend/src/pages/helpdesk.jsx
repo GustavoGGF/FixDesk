@@ -49,7 +49,10 @@ export default function Helpdesk() {
     // Função para desabilitar atalhos de teclado específicos, como F12 e Ctrl+Shift+I
     const handleKeyDown = (event) => {
       // Verifica se a tecla pressionada é F12 ou o atalho Ctrl+Shift+I (inspecionar elemento)
-      if (event.key === "F12" || (event.ctrlKey && event.shiftKey && event.key === "I")) {
+      if (
+        event.key === "F12" ||
+        (event.ctrlKey && event.shiftKey && event.key === "I")
+      ) {
         // Previne o comportamento padrão associado a essas teclas
         event.preventDefault();
       }
@@ -102,10 +105,24 @@ export default function Helpdesk() {
   const [theme, setTheme] = useState("");
   const [themeTicket, setThemeTicket] = useState("");
 
-  const { messagetitle, sector, setAlertVerify, alertverify, alert, setMessagetitle, selectedDay, messageinfo2, messageinfo1, machineAlocate, respectiveArea, problemn, occurrence } =
-    useContext(OptionsContext);
+  const {
+    messagetitle,
+    sector,
+    setAlertVerify,
+    alertverify,
+    alert,
+    setMessagetitle,
+    selectedDay,
+    messageinfo2,
+    messageinfo1,
+    machineAlocate,
+    respectiveArea,
+    problemn,
+    occurrence,
+  } = useContext(OptionsContext);
 
-  const { setTypeError, setMessageError, setMessage, message } = useContext(MessageContext);
+  const { setTypeError, setMessageError, setMessage, message } =
+    useContext(MessageContext);
   // Declarando variaveis de estado Boolean
   const [dashboard, setDashboard] = useState(false);
   const [fileSizeNotify, setFileSizeNotify] = useState(false);
@@ -165,7 +182,9 @@ export default function Helpdesk() {
         setCSRFToken(data.token);
         // Processa dados do localStorage com segurança
         const storedDataUser = localStorage.getItem("dataInfo");
-        const dataUserInfo = storedDataUser ? JSON.parse(storedDataUser).data : null;
+        const dataUserInfo = storedDataUser
+          ? JSON.parse(storedDataUser).data
+          : null;
         setdataUser(dataUserInfo);
       } catch (error) {
         console.error("Erro na solicitação:", error);
@@ -198,7 +217,9 @@ export default function Helpdesk() {
           evt.preventDefault();
 
           // Verifica se é o Firefox
-          const isFirefox = navigator.userAgent.toLowerCase().includes("firefox");
+          const isFirefox = navigator.userAgent
+            .toLowerCase()
+            .includes("firefox");
 
           // Obtém os arquivos dependendo do navegador
           const files = isFirefox
@@ -230,7 +251,9 @@ export default function Helpdesk() {
             setTimeout(() => {
               const fileElement = document.querySelector(`.file--${fileIndex}`);
               if (fileElement) {
-                fileElement.querySelector(".progress").classList.remove("active");
+                fileElement
+                  .querySelector(".progress")
+                  .classList.remove("active");
                 fileElement.querySelector(".done").classList.add("anim");
               }
             }, load);
@@ -329,12 +352,22 @@ export default function Helpdesk() {
       }
       return numero;
     }
-    var horaFormatada = adicionaZero(dataUserAtual.getHours()) + ":" + adicionaZero(dataUserAtual.getMinutes());
+    var horaFormatada =
+      adicionaZero(dataUserAtual.getHours()) +
+      ":" +
+      adicionaZero(dataUserAtual.getMinutes());
 
     // Formatar a dataUser no formato dd/mm/yy
 
     // Formatando para dataUser BR
-    var dataUserFormatada = ano + "-" + ("0" + mes).slice(-2) + "-" + ("0" + dia).slice(-2) + " " + horaFormatada;
+    var dataUserFormatada =
+      ano +
+      "-" +
+      ("0" + mes).slice(-2) +
+      "-" +
+      ("0" + dia).slice(-2) +
+      " " +
+      horaFormatada;
 
     /**
      * Inicialização de variáveis dentro do escopo da função ou bloco de código.
@@ -565,7 +598,9 @@ export default function Helpdesk() {
       return;
     }
 
-    const updatedFiles = arrayInput.filter((_, index) => index !== indexToRemove);
+    const updatedFiles = arrayInput.filter(
+      (_, index) => index !== indexToRemove
+    );
     setArrayInput(updatedFiles);
 
     const updatedParagraphs = updatedFiles.map((file, index) => (
@@ -592,8 +627,19 @@ export default function Helpdesk() {
 
   return (
     <Div className={theme}>
-      {navbar && <NavBar Name={dataUser.name} JobTitle={dataUser.job_title.length > 0 ? dataUser.job_title : "Informar TI para Atualizar"} />}
-      {info && <Info id={infoID} cls={infoClass} cls2={infoClass2} funct={closeInfo} />}
+      {navbar && (
+        <NavBar
+          Name={dataUser.name}
+          JobTitle={
+            dataUser.job_title.length > 0
+              ? dataUser.job_title
+              : "Informar TI para Atualizar"
+          }
+        />
+      )}
+      {info && (
+        <Info id={infoID} cls={infoClass} cls2={infoClass2} funct={closeInfo} />
+      )}
       {loading && (
         <div className="position-absolute top-50 start-50 translate-middle">
           <Loading />
@@ -609,38 +655,65 @@ export default function Helpdesk() {
         </div>
       )}
       {dashboard && (
-        <Form className={`mx-auto d-flex flex-column align-items-center justify-content-around ${themeTicket}`} ref={primaryContainerRef}>
+        <Form
+          className={`mx-auto d-flex flex-column align-items-center justify-content-around ${themeTicket}`}
+          ref={primaryContainerRef}
+        >
           <TitlePage>Criação de Chamados</TitlePage>
           <div className="mb-3">
             <input type="hidden" name="_csrf" value={csrfToken} />
             <label htmlFor="nameInput" className="form-label">
               Nome
             </label>
-            <Input type="name" className="form-control" id="nameInput" value={dataUser.name} disabled />
+            <Input
+              type="name"
+              className="form-control"
+              id="nameInput"
+              value={dataUser.name}
+              disabled
+            />
           </div>
           <div className="mb-3">
             <label htmlFor="departmentInput" className="form-label">
               Departamento
             </label>
-            <Input type="text" className="form-control" id="departmentInput" value={dataUser.departament || ""} disabled={dataUser.departament} />
+            <Input
+              type="text"
+              className="form-control"
+              id="departmentInput"
+              value={dataUser.departament || ""}
+              disabled={dataUser.departament}
+            />
           </div>
           <div className="mb-3">
             <label htmlFor="mailInput" className="form-label">
               Email
             </label>
-            <Input type="text" className="form-control" id="mailInput" value={dataUser.mail || ""} disabled={dataUser.mail} />
+            <Input
+              type="text"
+              className="form-control"
+              id="mailInput"
+              value={dataUser.mail || ""}
+              disabled={dataUser.mail}
+            />
           </div>
           <div className="mb-3">
             <label htmlFor="companyInput" className="form-label">
               Empresa
             </label>
-            <Input type="text" className="form-control" id="companyInput" value={dataUser.company || ""} disabled={dataUser.company} />
+            <Input
+              type="text"
+              className="form-control"
+              id="companyInput"
+              value={dataUser.company || ""}
+              disabled={dataUser.company}
+            />
           </div>
 
           <TicketsOptions reset={reset} />
           {alert && (
             <div className="alert alert-info d-flex flex-column" role="alert">
-              <h5 className="fw-bold">{messagetitle}</h5>
+              <h5 className="fw-bold text-center">{messagetitle}</h5>
               <span>{messageinfo1}</span>
               <span>{messageinfo2}</span>
             </div>
@@ -668,7 +741,12 @@ export default function Helpdesk() {
                 <HeaderFiles>
                   <PFiles className="position-relative pointer w-100 h-100">
                     <IMGFile2 src={Cloud} alt="" />
-                    <InputFile className="w-100 h-100 position-absolute pointer" type="file" multiple onChange={inputManual} />
+                    <InputFile
+                      className="w-100 h-100 position-absolute pointer"
+                      type="file"
+                      multiple
+                      onChange={inputManual}
+                    />
                     <Span1 className="up">up</Span1>
                     <Span2 className="load">load</Span2>
                   </PFiles>
@@ -689,13 +767,24 @@ export default function Helpdesk() {
                       {nameOnDropFiles}
                     </ListFiles>
                   )}
-                  {inputManualControl && <ListFiles>{nameOnInutFiles}</ListFiles>}
-                  {fileSizeNotify && <div className="mt-2">Limite Máximo de arquivo é de 20MB</div>}
+                  {inputManualControl && (
+                    <ListFiles>{nameOnInutFiles}</ListFiles>
+                  )}
+                  {fileSizeNotify && (
+                    <div className="mt-2">
+                      Limite Máximo de arquivo é de 20MB
+                    </div>
+                  )}
                 </FooterFiles>
               </div>
             </DivUpload>
           </div>
-          <input type="submit" className="importar btn btn-primary mt-3 mb-3" onClick={submitTicket} value={"Enviar"} />
+          <input
+            type="submit"
+            className="importar btn btn-primary mt-3 mb-3"
+            onClick={submitTicket}
+            value={"Enviar"}
+          />
         </Form>
       )}
     </Div>
