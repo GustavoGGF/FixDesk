@@ -413,7 +413,7 @@ export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
             }}
           >
             <ImgMachines
-              src={`https://sappp01.lupatech.com.br/home/computers/get-image/${element.model}`}
+              src={`https://techmind.lupatech.com.br/home/computers/get-image/${element.model}`}
               className="img-fluid"
               alt={`imagem ${element.model}`}
             />
@@ -450,7 +450,7 @@ export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
         }}
       >
         <ImgMachines
-          src={`https://sappp01.lupatech.com.br/home/computers/get-image/${foundEquipament.model}`}
+          src={`https://techmind.lupatech.com.br/home/computers/get-image/${foundEquipament.model}`}
           className="img-fluid"
           alt={`imagem ${foundEquipament.model}`}
         />
@@ -769,6 +769,7 @@ export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
     setSelectedDay(dates);
   };
 
+  // Essa função busca pelo equipamento pela sua respectiva unidade
   function selectCompanyEquip() {
     setLoadingoFetchingEquipaments(true);
     setEquipaments("");
@@ -776,6 +777,7 @@ export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
     if (!companyEquip) {
       return;
     }
+    // O valor de companyEquip.current.value deve ser correspondente a unidade do banco de dados do TechMind
     fetch("equipaments-for-alocate/" + companyEquip.current.value, {
       method: "GET",
       headers: {

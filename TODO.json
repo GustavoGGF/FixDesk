@@ -4,7 +4,8 @@
       "4": "adicioanr o email do fixdesk como seguro",
       "23": "Implementar @retry",
       "27": "Implementar @measure_time: Para medir o tempo de execução da função.",
-      "44": "Implementar o useCallBack no lugar de useEffect se fazer sentido"
+      "44": "Implementar o useCallBack no lugar de useEffect se fazer sentido",
+      "50": "mudar sappp01 para fixdesk"
     },
     "HotFix's": {
       "2": "Apos ficar logado por um tempo da um erro te dereciona pra uma tela (quando expira o token)",
