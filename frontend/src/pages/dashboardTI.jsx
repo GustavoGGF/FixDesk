@@ -1,9 +1,25 @@
-import React, { useEffect, useState, useRef, useContext, useCallback } from "react";
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useContext,
+  useCallback,
+} from "react";
 import "react-day-picker/dist/style.css";
 import { Div } from "../styles/dashboardTI.js";
 import DashBoardPie from "../components/dashboard/dashboardPie.jsx";
 import Navbar from "../components/general/navbar.jsx";
-import { DivCard, H5Card, SpanCard, TD, TH, TR, TRSPACE, Table, DivZ } from "../styles/historyStyle.js";
+import {
+  DivCard,
+  H5Card,
+  SpanCard,
+  TD,
+  TH,
+  TR,
+  TRSPACE,
+  Table,
+  DivZ,
+} from "../styles/historyStyle.js";
 import { TitlePage } from "../styles/helpdeskStyle.js";
 import Message from "../components/utility/message.jsx";
 import "../styles/bootstrap/css/bootstrap.css";
@@ -66,7 +82,8 @@ export default function DashboardTI() {
   const [ticketMAIL, setTicketMAIL] = useState("");
   const [ticketOCCURRENCE, setTicketOCCURRENCE] = useState("");
   const [ticketPROBLEMN, setTicketPROBLEMN] = useState("");
-  const [ticketResponsible_Technician, setTicketResponsible_Technician] = useState("");
+  const [ticketResponsible_Technician, setTicketResponsible_Technician] =
+    useState("");
   const [ticketSECTOR, setTicketSECTOR] = useState("");
   const [token, setToken] = useState("");
   const [equipament, setEquipament] = useState("");
@@ -77,6 +94,7 @@ export default function DashboardTI() {
   const [initialFileData, setInitialFileData] = useState("");
   const [initialFileName, setInitialFileName] = useState("");
   const [initialContentFile, setInitialContentFile] = useState("");
+  const [dateAlocate, setDateAlocate] = useState("");
   /**
    * Variáveis de estado Int.
    */
@@ -96,8 +114,18 @@ export default function DashboardTI() {
   const sectionTicket = useRef(null);
   const divRefs = useRef({});
 
-  const { ticketData, setTicketData, ticketWindowAtt, setTicketWindowAtt, changeTech, setChangeTech, cardOrList, setCardOrList } = useContext(TicketContext);
-  const { setTypeError, setMessageError, setMessage, message } = useContext(MessageContext);
+  const {
+    ticketData,
+    setTicketData,
+    ticketWindowAtt,
+    setTicketWindowAtt,
+    changeTech,
+    setChangeTech,
+    cardOrList,
+    setCardOrList,
+  } = useContext(TicketContext);
+  const { setTypeError, setMessageError, setMessage, message } =
+    useContext(MessageContext);
 
   useEffect(() => {
     if (cardOrList && cardOrList.length !== 0) {
@@ -260,7 +288,10 @@ export default function DashboardTI() {
       const selectView = localStorage.getItem("selectView");
 
       // Verificar se o valor do local storage está definido
-      if (selectView === null || (selectView === "card" && selectView !== "list")) {
+      if (
+        selectView === null ||
+        (selectView === "card" && selectView !== "list")
+      ) {
         // Se não estiver definido ou se for um valor inválido, definir como "card"
         viewCard();
       } else if (selectView === "list") {
@@ -311,8 +342,10 @@ export default function DashboardTI() {
       }
 
       // Variáveis que contêm data e hora formatadas utilizando a função adicionaZero.
-      var dataFormatada = adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
-      var horaFormatada = adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
+      var dataFormatada =
+        adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
+      var horaFormatada =
+        adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
 
       // Combinação da data e hora formatadas.
       const newDate = dataFormatada + " " + horaFormatada; // Combina a data e a hora formatadas separadas por um espaço.
@@ -321,7 +354,10 @@ export default function DashboardTI() {
       if (ticket["open"] === false) {
         // Se o chamado não estiver aberto, ele foi finalizado.
         colorBorder = "ticektClose"; // Define a borda como indicativa de chamado finalizado.
-      } else if (ticket["open"] === true && ticket["responsible_technician"] === null) {
+      } else if (
+        ticket["open"] === true &&
+        ticket["responsible_technician"] === null
+      ) {
         // Se o chamado estiver aberto e sem técnico responsável.
         const currentDate = new Date(); // Obtém a data atual.
         const differenceMilisecond = currentDate - date; // Calcula a diferença em milissegundos entre a data atual e a data de início do chamado.
@@ -333,7 +369,10 @@ export default function DashboardTI() {
           // Se o chamado estiver aberto há menos de 7 dias.
           colorBorder = "ticektOpenNotView"; // Define a borda como indicativa de chamado aberto, mas não visualizado.
         }
-      } else if (ticket["open"] === true && ticket["responsible_technician"] !== null) {
+      } else if (
+        ticket["open"] === true &&
+        ticket["responsible_technician"] !== null
+      ) {
         // Se o chamado estiver aberto e com técnico responsável.
         colorBorder = "ticektOpenInView"; // Define a borda como indicativa de chamado aberto e em atendimento.
       } else if (ticket["open"] === null) {
@@ -406,8 +445,10 @@ export default function DashboardTI() {
       }
 
       // Variáveis que contêm data e hora formatadas utilizando a função adicionaZero.
-      var dataFormatada = adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
-      var horaFormatada = adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
+      var dataFormatada =
+        adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
+      var horaFormatada =
+        adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
 
       const newDate = dataFormatada + " " + horaFormatada; // Combina a data e a hora formatadas separadas por um espaço.
 
@@ -415,7 +456,10 @@ export default function DashboardTI() {
       if (ticket["open"] === false) {
         // Se o chamado não estiver aberto, ele foi finalizado.
         colorBorder = "ticektClose"; // Define a borda como indicativa de chamado finalizado.
-      } else if (ticket["open"] === true && ticket["responsible_technician"] === null) {
+      } else if (
+        ticket["open"] === true &&
+        ticket["responsible_technician"] === null
+      ) {
         // Se o chamado estiver aberto e sem técnico responsável.
         const currentDate = new Date(); // Obtém a data atual.
         const differenceMilisecond = currentDate - date; // Calcula a diferença em milissegundos entre a data atual e a data de início do chamado.
@@ -427,7 +471,10 @@ export default function DashboardTI() {
           // Se o chamado estiver aberto há menos de 7 dias.
           colorBorder = "ticektOpenNotView"; // Define a borda como indicativa de chamado aberto, mas não visualizado.
         }
-      } else if (ticket["open"] === true && ticket["responsible_technician"] !== null) {
+      } else if (
+        ticket["open"] === true &&
+        ticket["responsible_technician"] !== null
+      ) {
         // Se o chamado estiver aberto e com técnico responsável.
         colorBorder = "ticektOpenInView"; // Define a borda como indicativa de chamado aberto e em atendimento.
       } else if (ticket["open"] === null) {
@@ -560,9 +607,13 @@ export default function DashboardTI() {
         if (data.equipament && data.equipament.length !== 0) {
           setShowEquipament(true);
           setEquipament(data.equipament);
+          setDateAlocate(data.date_alocate);
         }
         setLifetime(lifetime);
-        if (data.responsible_technician && data.responsible_technician.length !== 0) {
+        if (
+          data.responsible_technician &&
+          data.responsible_technician.length !== 0
+        ) {
           setTicketResponsible_Technician(data.responsible_technician);
         }
         setTicketID(data.id);
@@ -576,7 +627,11 @@ export default function DashboardTI() {
           setInitialFileTicket(true);
         }
         // Identifica o chat, verifica se contém valores e os separa em grupos de Data, Receptor e Horário.
-        if (data.chat !== null && data.chat !== undefined && data.chat !== "undefined") {
+        if (
+          data.chat !== null &&
+          data.chat !== undefined &&
+          data.chat !== "undefined"
+        ) {
           setFetchChat(true);
           setMountDataChat(true);
           setMountInitialChat(data.chat);
@@ -613,7 +668,10 @@ export default function DashboardTI() {
 
   // Evento para fechar dropdowns quando o usuário clica fora deles.
   window.onclick = function (event) {
-    if (!event.target.matches(".dropbtn") && !event.target.matches(".dropdown-content")) {
+    if (
+      !event.target.matches(".dropbtn") &&
+      !event.target.matches(".dropdown-content")
+    ) {
       var dropdowns = document.getElementsByClassName("dropdown-content");
       var i;
       for (i = 0; i < dropdowns.length; i++) {
@@ -639,6 +697,7 @@ export default function DashboardTI() {
     setTicketResponsible_Technician("");
     setChat(false);
     setShowEquipament(false);
+    setMountInitialChat([]);
     return;
   }
 
@@ -658,8 +717,12 @@ export default function DashboardTI() {
           />
         </DivZ>
       )}
-      <TitlePage className="text-center text-light mt-3">Central de Gerenciamento de Chamados TI</TitlePage>
-      <div className={`d-flex flex-column justify-content-center w-100 ${blurNav} mb-5`}>
+      <TitlePage className="text-center text-light mt-3">
+        Central de Gerenciamento de Chamados TI
+      </TitlePage>
+      <div
+        className={`d-flex flex-column justify-content-center w-100 ${blurNav} mb-5`}
+      >
         <div className="d-flex justify-content-center w-100">
           <DashBoardPie sector={"TI"} clss={colorTheme} />
         </div>
@@ -708,6 +771,7 @@ export default function DashboardTI() {
           ticketPROBLEMN={ticketPROBLEMN}
           ticketSECTOR={ticketSECTOR}
           equipament={equipament}
+          dateAlocate={dateAlocate}
           lifeTime={lifeTime}
           ticketResponsible_Technician={ticketResponsible_Technician}
           initialFileticket={initialFileticket}

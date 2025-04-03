@@ -18,6 +18,7 @@ export const OptionsProvider = ({ children }) => {
   const [alertverify, setAlertVerify] = useState(false);
   const [alert, setAlert] = useState(false);
   const [alocate_machine_acess, seAlocate_Machine_Acess] = useState(true);
+  const [reset, setReset] = useState(false);
 
   const [selectedDay, setSelectedDay] = useState([]);
 
@@ -48,6 +49,8 @@ export const OptionsProvider = ({ children }) => {
         setSelectedDay,
         alocate_machine_acess,
         seAlocate_Machine_Acess,
+        reset,
+        setReset,
       }}
     >
       {children}

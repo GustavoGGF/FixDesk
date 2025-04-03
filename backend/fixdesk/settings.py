@@ -56,13 +56,15 @@ INSTALLED_APPS = [
 # Middlewares são camadas que processam requisições e respostas.
 # A ordem é importante, pois define a sequência de execução.
 MIDDLEWARE = [
-    "django.middleware.security.SecurityMiddleware",  # Adiciona medidas de segurança básicas.
-    "django.contrib.sessions.middleware.SessionMiddleware",  # Gerencia sessões de usuários.
-    "django.middleware.common.CommonMiddleware",  # Processa requisições comuns (ex: normalização de URL).
-    "django.middleware.csrf.CsrfViewMiddleware",  # Proteção contra ataques CSRF (Cross-Site Request Forgery).
-    "django.contrib.auth.middleware.AuthenticationMiddleware",  # Autenticação de usuários.
-    "django.contrib.messages.middleware.MessageMiddleware",  # Gerencia mensagens para usuários.
-    "django.middleware.clickjacking.XFrameOptionsMiddleware",  # Proteção contra clickjacking.
+    "django.middleware.security.SecurityMiddleware",  # Segurança
+    "django.contrib.sessions.middleware.SessionMiddleware",  # Gerencia sessões
+    "django.middleware.common.CommonMiddleware",  # Normalização de URLs
+    "django.middleware.csrf.CsrfViewMiddleware",  # Proteção contra CSRF
+    "django.contrib.auth.middleware.AuthenticationMiddleware",  # Autenticação de usuários (DEVE ESTAR ANTES)
+    "fixdesk.middleware_permition.CustomCsrfMiddleware",  # Middleware personalizado CSRF
+    "fixdesk.middleware_expire.CsrfRedirectMiddleware",  # Middleware para redirecionamento CSRF
+    "django.contrib.messages.middleware.MessageMiddleware",  # Gerencia mensagens para usuários
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",  # Proteção contra clickjacking
 ]
 
 # Define o módulo de configuração de URLs principal do projeto.
@@ -193,6 +195,7 @@ SESSION_COOKIE_NAME = "sessionid"
 # Aqui, o cookie expira após 14.400 segundos (4 horas).
 # Após esse período, o usuário precisará fazer login novamente.
 SESSION_COOKIE_AGE = 14400
+CSRF_FAILURE_VIEW = "fixdesk.views.csrf_failure"
 
 # Define se a sessão deve ser salva no banco de dados a cada requisição.
 # Quando False, a sessão só é salva quando modificada, o que melhora o desempenho.

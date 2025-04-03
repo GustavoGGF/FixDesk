@@ -1,6 +1,23 @@
-import React, { useState, useEffect, useRef, useContext, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useContext,
+  useCallback,
+} from "react";
 import Navbar from "../components/general/navbar";
-import { Div, DivCard, H5Card, SpanCard, Table, TD, TH, TR, TRSPACE, DivZ } from "../styles/historyStyle";
+import {
+  Div,
+  DivCard,
+  H5Card,
+  SpanCard,
+  Table,
+  TD,
+  TH,
+  TR,
+  TRSPACE,
+  DivZ,
+} from "../styles/historyStyle";
 import { TitlePage } from "../styles/helpdeskStyle";
 import "react-day-picker/dist/style.css";
 import Message from "../components/utility/message";
@@ -20,7 +37,10 @@ export default function History() {
     // Função para desabilitar atalhos de teclado específicos, como F12 e Ctrl+Shift+I
     const handleKeyDown = (event) => {
       // Verifica se a tecla pressionada é F12 ou o atalho Ctrl+Shift+I (inspecionar elemento)
-      if (event.key === "F12" || (event.ctrlKey && event.shiftKey && event.key === "I")) {
+      if (
+        event.key === "F12" ||
+        (event.ctrlKey && event.shiftKey && event.key === "I")
+      ) {
         // Previne o comportamento padrão associado a essas teclas
         event.preventDefault();
       }
@@ -74,12 +94,14 @@ export default function History() {
   const [ticketSECTOR, setTicketSECTOR] = useState("");
   const [equipament, setEquipament] = useState("");
   const [lifeTime, setLifetime] = useState("");
-  const [ticketResponsible_Technician, setTicketResponsible_Technician] = useState("");
+  const [ticketResponsible_Technician, setTicketResponsible_Technician] =
+    useState("");
   const [blurNav, setBlurNav] = useState("");
   const [observation, setObservation] = useState("");
   const [initialFileData, setInitialFileData] = useState("");
   const [initialFileName, setInitialFileName] = useState("");
   const [initialContentFile, setInitialContentFile] = useState("");
+  const [dateAlocate, setDateAlocate] = useState("");
   // Declarando variaveis de estado Boolean
   const [chat, setChat] = useState(false);
   const [fetchchat, setFetchChat] = useState(false);
@@ -104,8 +126,16 @@ export default function History() {
 
   const dashBoard = useRef(null);
 
-  const { ticketData, setTicketData, ticketWindowAtt, setTicketWindowAtt, cardOrList, setCardOrList } = useContext(TicketContext);
-  const { setTypeError, setMessageError, setMessage, message } = useContext(MessageContext);
+  const {
+    ticketData,
+    setTicketData,
+    ticketWindowAtt,
+    setTicketWindowAtt,
+    cardOrList,
+    setCardOrList,
+  } = useContext(TicketContext);
+  const { setTypeError, setMessageError, setMessage, message } =
+    useContext(MessageContext);
 
   useEffect(() => {
     if (cardOrList && cardOrList.length !== 0) {
@@ -152,7 +182,8 @@ export default function History() {
         const dataInfo = JSON.parse(localStorage.getItem("dataInfo"));
 
         // Se os dados não existirem, lança um erro e interrompe a execução
-        if (!dataInfo) throw new Error("Informações de usuário não encontradas");
+        if (!dataInfo)
+          throw new Error("Informações de usuário não encontradas");
 
         // Atualiza o estado `data` com as informações obtidas do localStorage
         setData(dataInfo.data);
@@ -182,12 +213,22 @@ export default function History() {
         }
 
         // Envia os dados para o servidor através de uma requisição POST
-        const response = await fetch("/helpdesk/get-ticket/" + quantity + "/" + dataInfo.data.name + "/" + status_current + "/" + order_current, {
-          method: "GET",
-          headers: {
-            Accept: "application/json",
-          },
-        });
+        const response = await fetch(
+          "/helpdesk/get-ticket/" +
+            quantity +
+            "/" +
+            dataInfo.data.name +
+            "/" +
+            status_current +
+            "/" +
+            order_current,
+          {
+            method: "GET",
+            headers: {
+              Accept: "application/json",
+            },
+          }
+        );
 
         // Caso o status da resposta seja 402 (não autorizado ou sessão expirada), redireciona para a página de login
         if (response.status === 402) {
@@ -312,12 +353,16 @@ export default function History() {
         if (data.equipament && data.equipament.length !== 0) {
           setShowEquipament(true);
           setEquipament(data.equipament);
+          setDateAlocate(data.date_alocate);
         }
         if (data.observation && data.observation.length !== 0) {
           setObservation(data.observation);
         }
         setLifetime(lifetime);
-        if (data.responsible_technician && data.responsible_technician.length !== 0) {
+        if (
+          data.responsible_technician &&
+          data.responsible_technician.length !== 0
+        ) {
           setTicketResponsible_Technician(data.responsible_technician);
           if (data.open) {
             setChat(true);
@@ -331,7 +376,11 @@ export default function History() {
           setInitialContentFile(data.content_file);
           setInitialFileTicket(true);
         }
-        if (data.chat !== null && data.chat !== undefined && data.chat !== "undefined") {
+        if (
+          data.chat !== null &&
+          data.chat !== undefined &&
+          data.chat !== "undefined"
+        ) {
           setFetchChat(true);
           setMountDataChat(true);
           setMountInitialChat(data.chat);
@@ -387,14 +436,19 @@ export default function History() {
         return numero;
       }
 
-      var dataFormatada = adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
-      var horaFormatada = adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
+      var dataFormatada =
+        adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
+      var horaFormatada =
+        adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
 
       var newDate = dataFormatada + " " + horaFormatada;
 
       if (ticket["open"] === false) {
         colorBorder = "ticektClose";
-      } else if (ticket["open"] === true && ticket["responsible_technician"] === null) {
+      } else if (
+        ticket["open"] === true &&
+        ticket["responsible_technician"] === null
+      ) {
         const currentDate = new Date();
 
         const diferenceMilisecond = currentDate - date;
@@ -406,7 +460,10 @@ export default function History() {
         } else {
           colorBorder = "ticektOpenNotView";
         }
-      } else if (ticket["open"] === true && ticket["responsible_technician"] !== null) {
+      } else if (
+        ticket["open"] === true &&
+        ticket["responsible_technician"] !== null
+      ) {
         colorBorder = "ticektOpenInView";
       } else if (ticket["open"] === null) {
         colorBorder = "ticketStop";
@@ -467,14 +524,19 @@ export default function History() {
         return numero;
       }
 
-      var dataFormatada = adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
-      var horaFormatada = adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
+      var dataFormatada =
+        adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
+      var horaFormatada =
+        adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
 
       const newDate = dataFormatada + " " + horaFormatada;
 
       if (ticket["open"] === false) {
         colorBorder = "ticektCloseList";
-      } else if (ticket["open"] === true && ticket["responsible_technician"] === null) {
+      } else if (
+        ticket["open"] === true &&
+        ticket["responsible_technician"] === null
+      ) {
         const currentDate = new Date();
 
         const diferenceMilisecond = currentDate - date;
@@ -486,7 +548,10 @@ export default function History() {
         } else {
           colorBorder = "ticektOpenNotViewList";
         }
-      } else if (ticket["open"] === true && ticket["responsible_technician"] !== null) {
+      } else if (
+        ticket["open"] === true &&
+        ticket["responsible_technician"] !== null
+      ) {
         colorBorder = "ticektOpenInViewList";
       } else if (ticket["open"] === null) {
         colorBorder = "ticketStop";
@@ -523,8 +588,6 @@ export default function History() {
   }
 
   const handleAnimationEnd = useCallback((event) => {
-    console.log("Animação terminou para:", event.target);
-
     // Aplicando a classe diretamente no elemento que terminou a animação
     event.target.classList.add("ticketHover");
   }, []);
@@ -556,6 +619,7 @@ export default function History() {
     setTicketResponsible_Technician("");
     setChat(false);
     setShowEquipament(false);
+    setMountInitialChat([]);
     return;
   }
 
@@ -575,7 +639,9 @@ export default function History() {
           />
         </DivZ>
       )}
-      <TitlePage className="text-center text-light mt-3">Histórico de Chamados</TitlePage>
+      <TitlePage className="text-center text-light mt-3">
+        Histórico de Chamados
+      </TitlePage>
       <FilterTickets
         url={"history"}
         blurNav={blurNav}
@@ -615,6 +681,7 @@ export default function History() {
           ticketPROBLEMN={ticketPROBLEMN}
           ticketSECTOR={ticketSECTOR}
           equipament={equipament}
+          dateAlocate={dateAlocate}
           lifeTime={lifeTime}
           ticketResponsible_Technician={ticketResponsible_Technician}
           initialFileticket={initialFileticket}

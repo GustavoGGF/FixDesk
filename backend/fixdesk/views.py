@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from dotenv import load_dotenv
 from json import loads
 from os import getenv
-from ldap3 import SUBTREE, Connection, SAFE_SYNC, ALL_ATTRIBUTES, LEVEL, BASE
+from ldap3 import SUBTREE, Connection, SAFE_SYNC
 from django.contrib.auth.models import User, Group
 from django.contrib.auth import login
 from django.views.decorators.http import require_POST
@@ -11,6 +11,7 @@ from django.views.decorators.cache import never_cache
 from django.db import transaction
 from logging import basicConfig, INFO, getLogger
 from django.core.handlers.wsgi import WSGIRequest
+from django.shortcuts import redirect
 
 load_dotenv()
 dominio = getenv("DOMAIN_NAME_HELPDESK")
@@ -300,3 +301,6 @@ def create_class_user(extractor: dict):
     except Exception as e:
         logger.error(e)  # Registra o erro no log para depuração
         return 400, e, ""  # Retorna um código de erro e a exceção capturada
+
+def csrf_failure(request, reason=""):
+    return redirect('/login') 

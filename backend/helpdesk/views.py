@@ -731,8 +731,18 @@ def create_pdf(id: int):
         directory = getcwd()
         pdf.add_font("Arial", "", f"{directory}/arial.ttf")
         pdf.set_font("Arial", size=12)
+            # Obtém o caminho do diretório da pasta helpdesk
+        helpdesk_dir = path.dirname(path.abspath(__file__))
 
+        # Obtém o diretório pai (onde helpdesk e files estão localizados)
+        project_root = path.dirname(helpdesk_dir)
+
+        # Caminho para a imagem dentro da pasta "files"
+        lupatech_logo = path.join(project_root, "files", "lupalogo.png")
+        fixdesk_logo = path.join(project_root, "files", "fixdesk.png")
         # Adiciona o título do chamado ao PDF
+        pdf.image(lupatech_logo, x=10, y=0 + 5, w=10)
+        pdf.image(fixdesk_logo, x=200, y=0 + 5, w=10)
         pdf.cell(180, 5, txt=f"CHAMADO {ticket.id}", ln=False, align="C")
 
         # Adiciona informações do ticket ao PDF

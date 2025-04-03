@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useRef, useContext, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useContext,
+  useCallback,
+} from "react";
 import {
   TicketOpen,
   BtnNF,
@@ -61,6 +67,7 @@ export default function OpenTicketWindow({
   ticketPROBLEMN,
   ticketSECTOR,
   equipament,
+  dateAlocate,
   lifeTime,
   ticketResponsible_Technician,
   initialFileticket,
@@ -91,6 +98,7 @@ export default function OpenTicketWindow({
   const [imageUrl, setImageUrl] = useState("");
   const [detailsChat, setDetailsChat] = useState("");
   const [modelName, setModelName] = useState("");
+  const [dateEquipament, setDateEquipament] = useState("");
 
   const [uploadNewFiles, setUploadNewFiles] = useState([]);
   const [fileticket, setFileTicket] = useState([]);
@@ -108,7 +116,8 @@ export default function OpenTicketWindow({
   const inputRef = useRef(null);
 
   const { setTicketWindowAtt, setChangeTech } = useContext(TicketContext);
-  const { setMessageError, setMessage, setTypeError } = useContext(MessageContext);
+  const { setMessageError, setMessage, setTypeError } =
+    useContext(MessageContext);
 
   let count = 0;
   let timeoutId;
@@ -130,7 +139,10 @@ export default function OpenTicketWindow({
           return;
         }
 
-        if (dropCont.current && !dropCont.current.classList.contains("visually-hidden")) {
+        if (
+          dropCont.current &&
+          !dropCont.current.classList.contains("visually-hidden")
+        ) {
           dropCont.current.classList.add("visually-hidden");
           return;
         }
@@ -140,6 +152,57 @@ export default function OpenTicketWindow({
     },
     [techDetails, imageopen, setTechDetails, setImageOpen, setTicketWindowAtt]
   );
+
+  useEffect(() => {
+    if (dateAlocate && dateAlocate.length !== 0) {
+      const formatDates = (dateString) => {
+        const dates = dateString.split(",").map((date) => new Date(date));
+
+        // Ordena as datas para garantir que estejam em sequência correta
+        dates.sort((a, b) => a - b);
+
+        // Formata as datas para DD/MM/YYYY
+        const formattedDates = dates.map((date) =>
+          date.toLocaleDateString("pt-BR", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+          })
+        );
+
+        let isConsecutive = true;
+
+        for (let i = 1; i < dates.length; i++) {
+          const diffInDays = (dates[i] - dates[i - 1]) / (1000 * 60 * 60 * 24);
+          if (diffInDays !== 1) {
+            isConsecutive = false;
+            break;
+          }
+        }
+
+        if (formattedDates.length === 1) {
+          return setDateEquipament(
+            `Equipamento alocado em ${formattedDates[0]}`
+          );
+        }
+
+        if (isConsecutive) {
+          return setDateEquipament(
+            `Equipamento alocado de ${formattedDates[0]} a ${
+              formattedDates[formattedDates.length - 1]
+            }`
+          );
+        }
+
+        return setDateEquipament(
+          `Equipamento alocado em ${formattedDates.slice(0, -1).join(", ")} e ${
+            formattedDates[formattedDates.length - 1]
+          }`
+        );
+      };
+      formatDates(dateAlocate);
+    }
+  }, [dateAlocate]);
 
   useEffect(() => {
     if (showEquipament) {
@@ -244,7 +307,11 @@ export default function OpenTicketWindow({
 
   useEffect(() => {
     // Verifica se a referência do textarea está definida e se o valor não está vazio
-    if (textareaRef.current && textareaRef.current.value !== undefined && textareaRef.current.value !== "") {
+    if (
+      textareaRef.current &&
+      textareaRef.current.value !== undefined &&
+      textareaRef.current.value !== ""
+    ) {
       // Redimensiona o textarea com base no valor atual
       resizeTextarea(textareaRef.current);
     }
@@ -269,7 +336,11 @@ export default function OpenTicketWindow({
       const byteCharacters = atob(cleanBase64);
       const byteArrays = [];
 
-      for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+      for (
+        let offset = 0;
+        offset < byteCharacters.length;
+        offset += sliceSize
+      ) {
         const slice = byteCharacters.slice(offset, offset + sliceSize);
 
         const byteNumbers = new Array(slice.length);
@@ -327,9 +398,15 @@ export default function OpenTicketWindow({
   async function ReloadChat({ data }) {
     let varisAtBottom;
     if (chatDiv && chatDiv.current) {
-      varisAtBottom = chatDiv.current.scrollTop + chatDiv.current.clientHeight >= chatDiv.current.scrollHeight;
+      varisAtBottom =
+        chatDiv.current.scrollTop + chatDiv.current.clientHeight >=
+        chatDiv.current.scrollHeight;
     }
-    if (data.chat !== null && data.chat !== undefined && data.chat !== "undefined") {
+    if (
+      data.chat !== null &&
+      data.chat !== undefined &&
+      data.chat !== "undefined"
+    ) {
       setCountChat(data.chat.length);
 
       const regex = /\[\[([^[\]]+?)\],\[([^[\]]+?)\],\[([^[\]]+?)\]\]/g;
@@ -400,10 +477,14 @@ export default function OpenTicketWindow({
                   userOrTech = userOrTech.replace("User:", "").trim();
                   return (
                     <div key={index}>
-                      <div className={`d-flex ${justifyContetUser} w-100 text-break position-relative`}>
+                      <div
+                        className={`d-flex ${justifyContetUser} w-100 text-break position-relative`}
+                      >
                         <div className={`${userClass} position-relative`}>
                           <p>{userOrTech}</p>
-                          <PChatHourR className="position-absolute bottom-0 end-0">{time}</PChatHourR>
+                          <PChatHourR className="position-absolute bottom-0 end-0">
+                            {time}
+                          </PChatHourR>
                         </div>
                       </div>
                     </div>
@@ -412,10 +493,14 @@ export default function OpenTicketWindow({
                   userOrTech = userOrTech.replace("Technician:", "").trim();
                   return (
                     <div key={index}>
-                      <div className={`d-flex ${justifyContetTech} w-100 text-break position-relative`}>
+                      <div
+                        className={`d-flex ${justifyContetTech} w-100 text-break position-relative`}
+                      >
                         <div className={`${techClass} position-relative`}>
                           <p>{userOrTech}</p>
-                          <PChatHourL className="position-absolute bottom-0 start-0">{time}</PChatHourL>
+                          <PChatHourL className="position-absolute bottom-0 start-0">
+                            {time}
+                          </PChatHourL>
                         </div>
                       </div>
                     </div>
@@ -435,7 +520,10 @@ export default function OpenTicketWindow({
       setMountChat(renderGroupedItems());
 
       const callAsyncFunction = async () => {
-        await changeLastVW({ id: ticketID, tech: ticketResponsible_Technician });
+        await changeLastVW({
+          id: ticketID,
+          tech: ticketResponsible_Technician,
+        });
       };
 
       // Chama a função, mas o código segue sem esperar a execução terminar
@@ -489,10 +577,12 @@ export default function OpenTicketWindow({
     var year = date.getFullYear();
 
     // Formata a data no formato DD/MM/AAAA
-    var dataFormatada = adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
+    var dataFormatada =
+      adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
 
     // Formata a hora no formato HH:MM
-    var horaFormatada = adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
+    var horaFormatada =
+      adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
 
     // Limpa o campo de entrada do chat
     inputChat.current.value = "";
@@ -560,8 +650,10 @@ export default function OpenTicketWindow({
     var day = date.getDate();
     var month = date.getMonth() + 1;
     var year = date.getFullYear();
-    var dataFormatada = adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
-    var horaFormatada = adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
+    var dataFormatada =
+      adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
+    var horaFormatada =
+      adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
 
     // Adiciona a data e hora ao FormData
     formData.append("date", dataFormatada);
@@ -822,7 +914,10 @@ export default function OpenTicketWindow({
     // Itera sobre os arquivos no array UpNwfile
     for (let i = 0; i < UpNwfile.length; i++) {
       // Atualiza o estado dos arquivos a serem enviados
-      setUploadNewFiles((uploadNewFiles) => [...uploadNewFiles, ...UpNwfile[i]]);
+      setUploadNewFiles((uploadNewFiles) => [
+        ...uploadNewFiles,
+        ...UpNwfile[i],
+      ]);
     }
 
     // A função não retorna nenhum valor
@@ -837,7 +932,11 @@ export default function OpenTicketWindow({
 
       if (fileNM instanceof File) {
         paragraphs.push(
-          <div key={fileNM.name} id={fileNM.name} className="d-flex w-100 justify-content-center">
+          <div
+            key={fileNM.name}
+            id={fileNM.name}
+            className="d-flex w-100 justify-content-center"
+          >
             <DivNameFile key={0}>
               <PNWFile>{fileNM.name}</PNWFile>
             </DivNameFile>
@@ -871,7 +970,11 @@ export default function OpenTicketWindow({
           const file = fileNM[i];
           // Adiciona um elemento JSX para cada arquivo
           paragraphs.push(
-            <div key={file.name} id={file.name} className="d-flex w-100 justify-content-center">
+            <div
+              key={file.name}
+              id={file.name}
+              className="d-flex w-100 justify-content-center"
+            >
               <DivNameFile key={i}>
                 <PNWFile>{file.name}</PNWFile>
               </DivNameFile>
@@ -919,7 +1022,12 @@ export default function OpenTicketWindow({
   }
 
   function OpenConfig(event) {
-    if ((event.target.id === "drp" && dropCont.current.classList.contains("visually-hidden")) || (event.target.id === "imd" && dropCont.current.classList.contains("visually-hidden"))) {
+    if (
+      (event.target.id === "drp" &&
+        dropCont.current.classList.contains("visually-hidden")) ||
+      (event.target.id === "imd" &&
+        dropCont.current.classList.contains("visually-hidden"))
+    ) {
       dropCont.current.classList.remove("visually-hidden");
     } else {
       dropCont.current.classList.add("visually-hidden");
@@ -941,8 +1049,10 @@ export default function OpenTicketWindow({
     var day = date.getDate();
     var month = date.getMonth() + 1;
     var year = date.getFullYear();
-    var dataFormatada = adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
-    var horaFormatada = adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
+    var dataFormatada =
+      adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
+    var horaFormatada =
+      adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
 
     // Faz uma requisição POST para atualizar o status do chamado
     fetch("/helpdesk/ticket/" + ticketID, {
@@ -1001,7 +1111,10 @@ export default function OpenTicketWindow({
   }
 
   function TechDetails() {
-    fetch("/dashboard_TI/details/" + ticketID, { method: "GET", headers: { Accept: "application/json", "Cache-Control": "no-cache" } })
+    fetch("/dashboard_TI/details/" + ticketID, {
+      method: "GET",
+      headers: { Accept: "application/json", "Cache-Control": "no-cache" },
+    })
       .then((response) => {
         const status = response.status;
         if (status === 200) {
@@ -1066,7 +1179,9 @@ export default function OpenTicketWindow({
                     <div className="justify-content-start w-100 text-break position relative">
                       <div className="uChat2D position-relative">
                         <p>{chat}</p>
-                        <PChatHourL className="position-absolute bottom-0 start-0">{time}</PChatHourL>
+                        <PChatHourL className="position-absolute bottom-0 start-0">
+                          {time}
+                        </PChatHourL>
                       </div>
                     </div>
                   </div>
@@ -1109,14 +1224,25 @@ export default function OpenTicketWindow({
     var month = date.getMonth() + 1;
     var year = date.getFullYear();
 
-    var dataFormatada = adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
-    var horaFormatada = adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
+    var dataFormatada =
+      adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
+    var horaFormatada =
+      adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
 
     // Enviar informações do chat.
     fetch("/helpdesk/ticket/" + ticketID, {
       method: "POST",
-      headers: { "Content-Type": "application/json", "X-CSRFToken": token, "Tech-Details": "ok", "Cache-Control": "no-cache" },
-      body: JSON.stringify({ chat: detailsChat, date: dataFormatada, hours: horaFormatada }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+        "Tech-Details": "ok",
+        "Cache-Control": "no-cache",
+      },
+      body: JSON.stringify({
+        chat: detailsChat,
+        date: dataFormatada,
+        hours: horaFormatada,
+      }),
     })
       .then((response) => {
         const status = response.status;
@@ -1147,8 +1273,10 @@ export default function OpenTicketWindow({
       var month = date.getMonth() + 1;
       var year = date.getFullYear();
 
-      var dataFormatada = adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
-      var horaFormatada = adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
+      var dataFormatada =
+        adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
+      var horaFormatada =
+        adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
       fetch("/helpdesk/ticket/" + ticketID, {
         method: "POST",
         headers: {
@@ -1187,7 +1315,10 @@ export default function OpenTicketWindow({
   }, [selectedTech]);
 
   return (
-    <TicketOpen ref={ticketOpen} className="position-fixed top-50 start-50 translate-middle">
+    <TicketOpen
+      ref={ticketOpen}
+      className="position-fixed top-50 start-50 translate-middle"
+    >
       <div ref={ticketRef}>
         <div className="w-100 d-flex">
           <div className="d-flex justify-content-start w-100">
@@ -1198,7 +1329,11 @@ export default function OpenTicketWindow({
               <DropBTN id="drp" onClick={OpenConfig}>
                 <IMGConfig id="imd" src={setingIMG} alt="Configuração" />
               </DropBTN>
-              <DropContent2 ref={dropCont} id="dropContTicketWd" className="visually-hidden position-absolute top-100 start-50 translate-middle-x">
+              <DropContent2
+                ref={dropCont}
+                id="dropContTicketWd"
+                className="visually-hidden position-absolute top-100 start-50 translate-middle-x"
+              >
                 <DropBTN
                   className="btn btn-success w-100"
                   onClick={() => {
@@ -1249,7 +1384,9 @@ export default function OpenTicketWindow({
             </DropDown>
           </div>
           <div className="w-100 justify-content-center d-flex">
-            <h3 className="text-center text-uppercase fw-bold text-danger mt-3">chamado {ticketID}</h3>
+            <h3 className="text-center text-uppercase fw-bold text-danger mt-3">
+              chamado {ticketID}
+            </h3>
           </div>
           <div className="w-100 justify-content-end d-flex">
             <CloseBTN onClick={CloseTicket}>
@@ -1258,40 +1395,126 @@ export default function OpenTicketWindow({
           </div>
         </div>
         <div className="d-flex flex-column">
-          <input type="text" value={"Usuário: " + ticketNAME} className="form-control" disabled />
-          <input type="text" value={"Departamento: " + ticketDEPARTMENT} className="form-control" disabled />
-          <input type="text" value={"Email: " + ticketMAIL} className="form-control" disabled hidden={ticketMAIL.length > 1 ? false : true} />
-          <input type="text" value={"Unidade: " + ticketCOMPANY} className="form-control" disabled />
-          <input type="text" value={"Setor: " + ticketSECTOR} className="form-control" disabled />
-          <input type="text" value={"Ocorrência: " + ticketOCCURRENCE} className="form-control" disabled />{" "}
-          <input type="text" value={"Detalhes: " + ticketPROBLEMN} className="form-control" disabled />
+          <input
+            type="text"
+            value={"Usuário: " + ticketNAME}
+            className="form-control"
+            disabled
+          />
+          <input
+            type="text"
+            value={"Departamento: " + ticketDEPARTMENT}
+            className="form-control"
+            disabled
+          />
+          <input
+            type="text"
+            value={"Email: " + ticketMAIL}
+            className="form-control"
+            disabled
+            hidden={ticketMAIL.length > 1 ? false : true}
+          />
+          <input
+            type="text"
+            value={"Unidade: " + ticketCOMPANY}
+            className="form-control"
+            disabled
+          />
+          <input
+            type="text"
+            value={"Setor: " + ticketSECTOR}
+            className="form-control"
+            disabled
+          />
+          <input
+            type="text"
+            value={"Ocorrência: " + ticketOCCURRENCE}
+            className="form-control"
+            disabled
+          />{" "}
+          <input
+            type="text"
+            value={"Detalhes: " + ticketPROBLEMN}
+            className="form-control"
+            disabled
+          />
           {showEquipament && (
             <DivColorGray>
-              <ImgMachines src={`http://sappp01:3000/home/computers/get-image/${modelName}`} className="img-fluid" alt={`imagem ${modelName}`} />
-              <input value={"Modelo: " + modelName} className="form-control" disabled />
-              <input value={"ID do Equipamento: " + equipament} className="form-control" disabled />
+              <ImgMachines
+                src={`http://sappp01:3000/home/computers/get-image/${modelName}`}
+                className="img-fluid"
+                alt={`imagem ${modelName}`}
+              />
+              <input
+                value={"Modelo: " + modelName}
+                className="form-control"
+                disabled
+              />
+              <input
+                value={"ID do Equipamento: " + equipament}
+                className="form-control"
+                disabled
+              />
+              <input value={dateEquipament} className="form-control" disabled />
             </DivColorGray>
           )}
-          <TextObersavation ref={textareaRef} name="observation" className="autosize-textarea" disabled>
+          <TextObersavation
+            ref={textareaRef}
+            name="observation"
+            className="autosize-textarea"
+            disabled
+          >
             {observation}
           </TextObersavation>
-          <input type="text" value={"tempo de vida do chamado: " + lifeTime + " dias"} className="form-control" disabled />
-          <DivFile hidden={fileticket.length >= 1 ? false : true} className="w-100">
+          <input
+            type="text"
+            value={"tempo de vida do chamado: " + lifeTime + " dias"}
+            className="form-control"
+            disabled
+          />
+          <DivFile
+            hidden={fileticket.length >= 1 ? false : true}
+            className="w-100"
+          >
             {fileticket}
           </DivFile>
-          <input type="text" value={"Tecnico responsavel: " + (ticketResponsible_Technician ? ticketResponsible_Technician : "Nenhum técnico atribuído")} className="form-control" disabled />
+          <input
+            type="text"
+            value={
+              "Tecnico responsavel: " +
+              (ticketResponsible_Technician
+                ? ticketResponsible_Technician
+                : "Nenhum técnico atribuído")
+            }
+            className="form-control"
+            disabled
+          />
         </div>
         <DivChat ref={chatDiv}>{mountChat}</DivChat>
         {chat && (
           <div className="w-100 d-flex">
             <div className="w-100">
-              <input className="form-control h-100 fs-5" type="text" onKeyUp={NewChat} ref={inputChat} />
+              <input
+                className="form-control h-100 fs-5"
+                type="text"
+                onKeyUp={NewChat}
+                ref={inputChat}
+              />
             </div>
             <BtnChat2>
-              <InputFile className="w-100 cursor" type="file" multiple onInput={UploadNewFiles} />
+              <InputFile
+                className="w-100 cursor"
+                type="file"
+                multiple
+                onInput={UploadNewFiles}
+              />
             </BtnChat2>
             <div>
-              <BtnChat className="btn" type="submit" onClick={SendChat}></BtnChat>
+              <BtnChat
+                className="btn"
+                type="submit"
+                onClick={SendChat}
+              ></BtnChat>
             </div>
           </div>
         )}
@@ -1337,7 +1560,10 @@ export default function OpenTicketWindow({
           <AdjustListFiles>{nameNWFiles}</AdjustListFiles>
           <div className="d-flex justify-content-end align-items-center flex-column">
             <DivHR></DivHR>
-            <button className="btn btn-success w-50 mt-2" onClick={SubmitNewFiles}>
+            <button
+              className="btn btn-success w-50 mt-2"
+              onClick={SubmitNewFiles}
+            >
               Enviar
             </button>
           </div>
@@ -1359,11 +1585,23 @@ export default function OpenTicketWindow({
               </ButtonDet>
             </div>
           </div>
-          <div className="overflow-y-auto w-100 h-100 position relative">{mountDetails}</div>
+          <div className="overflow-y-auto w-100 h-100 position relative">
+            {mountDetails}
+          </div>
           <div>
             <DivChatDetails>
-              <input className="w-100 form-control" type="text" onKeyUp={NewChatDetails} ref={inputRef} />
-              <ImgSend className="img-fluid" src={sendIMG} alt="" onClick={SendDetails} />
+              <input
+                className="w-100 form-control"
+                type="text"
+                onKeyUp={NewChatDetails}
+                ref={inputRef}
+              />
+              <ImgSend
+                className="img-fluid"
+                src={sendIMG}
+                alt=""
+                onClick={SendDetails}
+              />
             </DivChatDetails>
           </div>
         </DivDetaisl>

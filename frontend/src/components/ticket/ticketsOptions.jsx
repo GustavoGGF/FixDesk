@@ -11,7 +11,7 @@ import RoboGlimpse from "../loading/robotGlimpse";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/src/style.css";
 
-export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
+export default function TicketsOptions({ Helpdesk, Name, Dashboard }) {
   const [respectiveTI, setRespectiveTI] = useState(false);
   const [infra, setInfra] = useState(false);
   const [backup, setBackup] = useState(false);
@@ -44,6 +44,8 @@ export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
     setOccurrence,
     setProblemn,
     setAlertVerify,
+    reset,
+    setReset,
   } = useContext(OptionsContext);
 
   const [selectedInternal, setSelectedInternal] = useState([]);
@@ -92,6 +94,8 @@ export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
       setAlocate(false);
       setDateEquip(false);
       setRespectiveTI(false);
+      setReset(false);
+      setSoftAPP(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reset]);
@@ -1075,7 +1079,7 @@ export default function TicketsOptions({ reset, Helpdesk, Name, Dashboard }) {
             </span>
             <span class="mt-3">e</span>
             <span class="mt-3">
-              <b>{Name}</b>, doravante denominada simplesmente{" "}
+              <b>{Name}</b>, doravante denominada simplesmente
               <b>COMODATÁRIO</b>.
             </span>
             <span class="mt-3">

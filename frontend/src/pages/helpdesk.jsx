@@ -119,6 +119,7 @@ export default function Helpdesk() {
     respectiveArea,
     problemn,
     occurrence,
+    setReset,
   } = useContext(OptionsContext);
 
   const { setTypeError, setMessageError, setMessage, message } =
@@ -130,7 +131,6 @@ export default function Helpdesk() {
   const [inputDropControl, setInputDropControl] = useState(true);
   const [inputManualControl, setInputManualControl] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [reset, setReset] = useState(false);
   const [navbar, setNavbar] = useState(false);
 
   // Declarando variaveis de estado Vazias
@@ -710,7 +710,7 @@ export default function Helpdesk() {
             />
           </div>
 
-          <TicketsOptions reset={reset} />
+          <TicketsOptions />
           {alert && (
             <div className="alert alert-info d-flex flex-column" role="alert">
               <h5 className="fw-bold text-center">{messagetitle}</h5>
