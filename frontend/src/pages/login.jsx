@@ -19,7 +19,10 @@ export default function Login() {
     // Função para desabilitar atalhos de teclado específicos, como F12 e Ctrl+Shift+I
     const handleKeyDown = (event) => {
       // Verifica se a tecla pressionada é F12 ou o atalho Ctrl+Shift+I (inspecionar elemento)
-      if (event.key === "F12" || (event.ctrlKey && event.shiftKey && event.key === "I")) {
+      if (
+        event.key === "F12" ||
+        (event.ctrlKey && event.shiftKey && event.key === "I")
+      ) {
         // Previne o comportamento padrão associado a essas teclas
         event.preventDefault();
       }
@@ -68,7 +71,8 @@ export default function Login() {
   const [color, setColor] = useState("");
   const [theme, setTheme] = useState("");
 
-  const { setMessageError, setTypeError, setMessage, message } = useContext(MessageContext);
+  const { setMessageError, setTypeError, setMessage, message } =
+    useContext(MessageContext);
 
   // Esta função é responsável por alterar o tema do site para "black".
   function setThemeBlack() {
@@ -89,7 +93,7 @@ export default function Login() {
   // Esta função recebe o nome de usuário e senha, envia - os para a view validation e ativa a
   // função handleInvalidCredentials se as credenciais estiverem incorretas, ou a função handleAccessRestricted se não houver permissão.
   // Se for concedido acesso, ela acessa o helpdesk.
-  function verifylogin(event) {
+  function Verifylogin(event) {
     event.preventDefault();
 
     const user = userRef.current.value;
@@ -156,7 +160,7 @@ export default function Login() {
     setAwaitValidation(false);
   }
 
-  function verifyPass() {
+  function VerifyPass() {
     const pass = passRef.current.value;
 
     if (pass.length > 10) {
@@ -185,18 +189,36 @@ export default function Login() {
           }}
         />
       )}
-      <IMG src={Logo} alt="Logo da lupatech" className="position-absolute top-0 start-20 animate__animated animate__slideInDown" />
+      <IMG
+        src={Logo}
+        alt="Logo da lupatech"
+        className="position-absolute top-0 start-20 animate__animated animate__slideInDown"
+      />
       {loginPage && (
         <div className="position-absolute top-50 start-50 translate-middle d-flex flex-column none animate__animated">
-          <form action="" method="POST">
+          <form>
             <Span className={color}>Usuário</Span>
-            <input ref={userRef} type="text" className="form-control" name="user" />
+            <input
+              ref={userRef}
+              type="text"
+              className="form-control"
+              name="user"
+            />
 
             <Span className={color}>Senha</Span>
-            <input ref={passRef} type="password" className="form-control mb-5" name="pass" onKeyUp={verifyPass} />
+            <input
+              ref={passRef}
+              type="password"
+              className="form-control mb-5"
+              name="pass"
+              onKeyUp={VerifyPass}
+            />
 
             {passlimit && (
-              <button className={`btn btn-success w-100 ${animation}`} onClick={verifylogin}>
+              <button
+                className={`btn btn-success w-100 ${animation}`}
+                onClick={Verifylogin}
+              >
                 Logar
               </button>
             )}

@@ -125,8 +125,7 @@ def get_info(request: WSGIRequest):
 
 @login_required(login_url="/login")  # Exige que o usuário esteja autenticado.
 @require_GET  # Permite apenas requisições GET para essa view.
-@cache_page(60 * 5)
-def getDashBoardPie(request, sector: str):
+def get_dash_board_pie(request, sector: str):
     if sector == "TI":  # Verifica se o setor é "TI".
         try:
             boardpie = [
@@ -190,7 +189,7 @@ def getDashBoardPie(request, sector: str):
 @login_required(login_url="/login")
 @require_GET
 @never_cache
-def get_ticket_TI(request, quantity: int, status: str, order: str):
+def get_ticket_ti(request, quantity: int, status: str, order: str):
     """
     Obtém os primeiros chamados de TI, com filtros de quantidade e status (aberto, fechado, etc.).
 
@@ -227,9 +226,9 @@ def get_ticket_TI(request, quantity: int, status: str, order: str):
 
 
 @require_GET
-@cache_page(60 * 5)
+@never_cache
 @login_required(login_url="/login")
-def getDashBoardBar(request: WSGIRequest, range_days: str):
+def get_dash_board_bar(request: WSGIRequest, range_days: str):
     """
     Retorna os dados do dashboard Bar conforme o limite de datas estipulado.
 
@@ -304,7 +303,6 @@ def getDashBoardBar(request: WSGIRequest, range_days: str):
             now = datetime.now()
             current_month = now.month
             current_year = now.year
-            print(f"Data Atual: {now}, Mês: {current_month}, Ano: {current_year}")
 
             # Verifica quantos dias tem no mês atual
             days_in_month = monthrange(current_year, current_month)[1]
@@ -322,12 +320,8 @@ def getDashBoardBar(request: WSGIRequest, range_days: str):
                 )
             ).filter(month_number=now.month, start_date__year=current_year)
 
-            print(
-                f"Tickets encontrados: {tickets_data.count()}"
-            )  # Verifique quantos tickets foram encontrados
-
             if tickets_data.count() == 0:
-                print("Nenhum ticket encontrado para este mês")
+                logger.error("Nenhum ticket encontrado para este mês")
                 return JsonResponse(
                     {"Error": "Nenhum ticket encontrado para este mês"}, status=204
                 )

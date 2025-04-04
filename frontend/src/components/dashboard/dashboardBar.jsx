@@ -32,11 +32,15 @@ export default function DashboardBar() {
    * - messageError: estado que armazena a mensagem de erro a ser exibida.
    */
   const [histogramData, setHistogramData] = useState([]);
+  const [oldHistogramData, setOldHistogramData] = useState([]);
 
   const [labeldash, setLabelDash] = useState("");
+  const [barChatDataRange, setBarChatDataRange] = useState("");
 
   const [loadingHistogram, setLoadingHistogram] = useState(true);
   const [messageBar, setMessageBar] = useState(false);
+
+  const [countAccess, setCountAccess] = useState(0);
 
   const [myChart, setMyChart] = useState(null);
 
@@ -77,8 +81,6 @@ export default function DashboardBar() {
    * - Em caso de erro, exibe uma mensagem de erro.
    */
   function getDataBar({ range_days }) {
-    setLabelDash("");
-    setHistogramData([]);
     fetch("get-dash-board-bar/" + range_days, {
       method: "GET",
       headers: {
@@ -93,28 +95,34 @@ export default function DashboardBar() {
         return response.json();
       })
       .then((data) => {
-        switch (range_days) {
-          default:
-            break;
-          case "week":
-            barChartData = range_days;
-            setLabelDash("Chamados da Semana");
-            break;
-          case "month":
-            barChartData = range_days;
-            setLabelDash("Chamados do Mês");
-            break;
-          case "year":
-            barChartData = "year";
-            setLabelDash("Chamados deste Ano");
-            break;
-          case "all":
-            barChartData = "all";
-            setLabelDash("Todos os Chamados");
-            break;
+        try {
+          setHistogramData([]);
+          switch (range_days) {
+            default:
+              break;
+            case "week":
+              barChartData = range_days;
+
+              setLabelDash("Chamados da Semana");
+              break;
+            case "month":
+              barChartData = range_days;
+              setLabelDash("Chamados do Mês");
+              break;
+            case "year":
+              barChartData = "year";
+              setLabelDash("Chamados deste Ano");
+              break;
+            case "all":
+              barChartData = "all";
+              setLabelDash("Todos os Chamados");
+              break;
+          }
+          setBarChatDataRange(barChartData);
+          setHistogramData(data);
+        } catch (err) {
+          return console.log(err);
         }
-        CallNewBar();
-        setHistogramData(data);
       })
       .catch((err) => {
         setMessageBar(true);
@@ -124,25 +132,31 @@ export default function DashboardBar() {
   }
 
   function recallGetBarData({ range }) {
-    switch (range) {
-      default:
-        break;
-      case "week":
-        selectPeriod.current.value = "2";
-        setMessageBar(true);
-        setTypeError("Falta de Dados");
-        setMessageError("Buscando Chamados do Mês");
-        barChartData = "";
-        getDataBar({ range_days: "month" });
-        break;
-      case "month":
-        selectPeriod.current.value = "3";
-        setMessageBar(true);
-        setTypeError("Falta de Dados");
-        setMessageError("Buscando Chamados do Ano");
-        barChartData = "";
-        getDataBar({ range_days: "year" });
-        break;
+    try {
+      switch (range) {
+        default:
+          break;
+        case "week":
+          selectPeriod.current.value = "2";
+          setMessageBar(true);
+          setTypeError("Falta de Dados");
+          setMessageError("Buscando Chamados do Mês");
+          barChartData = "";
+          setBarChatDataRange("");
+          getDataBar({ range_days: "month" });
+          break;
+        case "month":
+          selectPeriod.current.value = "3";
+          setMessageBar(true);
+          setTypeError("Falta de Dados");
+          setMessageError("Buscando Chamados do Ano");
+          barChartData = "";
+          setBarChatDataRange("");
+          getDataBar({ range_days: "year" });
+          break;
+      }
+    } catch (err) {
+      return console.log(err);
     }
   }
   /**
@@ -158,48 +172,70 @@ export default function DashboardBar() {
    * - É executado apenas quando os dados do histograma são modificados.
    */
   useEffect(() => {
+    var recall = false;
     const initChart = () => {
       try {
         if (histogramData && histogramData.days && histogramData.values) {
-          if (myChart) {
-            myChart.destroy();
+          try {
+            if (
+              countAccess > 0 &&
+              JSON.stringify(histogramData) === JSON.stringify(oldHistogramData)
+            ) {
+              CallNewBar();
+              recall = true;
+              return;
+            }
+
+            if (myChart) {
+              myChart.destroy();
+            }
+            const dashboard = document.getElementById("dashboard");
+            const newChart = new Chart(dashboard, {
+              type: "bar",
+              data: {
+                labels: histogramData.days,
+                datasets: [
+                  {
+                    label: [labeldash],
+                    data: histogramData.values,
+                  },
+                ],
+              },
+            });
+
+            setMyChart(newChart);
+            setOldHistogramData(histogramData);
+            var count = countAccess + 1;
+            setCountAccess(count);
+            dashboardBar.current.style.display = "block";
+            setLoadingHistogram(false);
+            return CallNewBar();
+          } catch (err) {
+            return console.log(err);
           }
-          const dashboard = document.getElementById("dashboard");
-          const newChart = new Chart(dashboard, {
-            type: "bar",
-            data: {
-              labels: histogramData.days,
-              datasets: [
-                {
-                  label: [labeldash],
-                  data: histogramData.values,
-                },
-              ],
-            },
-          });
-
-          setMyChart(newChart);
-
-          dashboardBar.current.style.display = "block";
-          setLoadingHistogram(false);
         } else {
           dashboardBar.current.style.display = "block";
           setLoadingHistogram(false);
+          return;
         }
       } catch (err) {
         setMessageBar(true);
         setTypeError("Fatal Error");
         setMessageError(err);
         console.log(err);
+        return;
       }
     };
 
     initChart();
 
     return () => {
-      if (myChart) {
-        myChart.destroy();
+      if (!recall) {
+        if (myChart) {
+          myChart.destroy();
+        }
       }
+      return;
     };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -212,33 +248,19 @@ export default function DashboardBar() {
    * - Define um novo timeoutBarUpdate para chamar a função de atualização a cada 1 minuto.
    */
   function CallNewBar() {
-    if (timeoutBarUpdateRef.current) {
-      clearTimeout(timeoutBarUpdateRef.current);
+    try {
+      if (timeoutBarUpdateRef.current) {
+        clearTimeout(timeoutBarUpdateRef.current);
+      }
+
+      timeoutBarUpdateRef.current = setTimeout(() => {
+        getDataBar({ range_days: barChatDataRange });
+
+        timeoutBarUpdateRef.current = null;
+      }, 60000);
+    } catch (err) {
+      return console.log(err);
     }
-
-    let updateFunction;
-    const currentBarChartData = barChartData;
-
-    switch (currentBarChartData) {
-      case "week":
-        updateFunction = () => getDataBar({ range_days: "week" });
-        break;
-      case "month":
-        updateFunction = () => getDataBar({ range_days: "month" });
-        break;
-      case "year":
-        updateFunction = () => getDataBar({ range_days: "year" });
-        break;
-      case "all":
-        updateFunction = () => getDataBar({ range_days: "all" });
-        break;
-      default:
-        return;
-    }
-
-    timeoutBarUpdateRef.current = setTimeout(() => {
-      updateFunction();
-    }, 60000);
   }
 
   /**
@@ -248,27 +270,38 @@ export default function DashboardBar() {
    * - Em caso de valor inválido, exibe uma mensagem de erro.
    */
   function changePeriod() {
-    const period = selectPeriod.current.options[selectPeriod.current.selectedIndex].value;
+    try {
+      const period =
+        selectPeriod.current.options[selectPeriod.current.selectedIndex].value;
 
-    switch (period) {
-      case "1":
-        getDataBar({ range_days: "week" });
-        break;
-      case "2":
-        getDataBar({ range_days: "month" });
-        break;
-      case "3":
-        getDataBar({ range_days: "year" });
-        break;
-      case "4":
-        getDataBar({ range_days: "all" });
-        break;
-      default:
-        console.log("periodo inválido: ", period);
-        setMessageBar(true);
-        setTypeError("Fatal Error");
-        setMessageError("Periodo inválido:", period);
-        break;
+      switch (period) {
+        case "1":
+          // setCountAccess(count);
+          // setHistogramData([]);
+          // setOldHistogramData([]);
+          getDataBar({ range_days: "week" });
+          break;
+        case "2":
+          // setCountAccess(count);
+          getDataBar({ range_days: "month" });
+          break;
+        case "3":
+          // setCountAccess(count);
+          getDataBar({ range_days: "year" });
+          break;
+        case "4":
+          // setCountAccess(count);
+          getDataBar({ range_days: "all" });
+          break;
+        default:
+          console.log("periodo inválido: ", period);
+          setMessageBar(true);
+          setTypeError("Fatal Error");
+          setMessageError("Periodo inválido:", period);
+          break;
+      }
+    } catch (err) {
+      return console.log(err);
     }
   }
 
@@ -284,9 +317,16 @@ export default function DashboardBar() {
         </div>
       )}
       <div>
-        <div className="h-100 w-100 d-flex justify-content-center">{loadingHistogram && <Loading />}</div>
+        <div className="h-100 w-100 d-flex justify-content-center">
+          {loadingHistogram && <Loading />}
+        </div>
         <Div2 className="d-flex flex-column">
-          <select className="form-select" ref={selectPeriod} onChange={changePeriod} defaultValue="1">
+          <select
+            className="form-select"
+            ref={selectPeriod}
+            onChange={changePeriod}
+            defaultValue="1"
+          >
             <option value="1" selected>
               Está Semana
             </option>

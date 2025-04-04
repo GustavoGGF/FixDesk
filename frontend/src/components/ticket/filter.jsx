@@ -470,7 +470,7 @@ export default function FilterTickets({
         </PSelectView>
         <button
           className="btn"
-          id="selectView-List"
+          id="select-view-list"
           onClick={() => {
             setCardOrList("List");
           }}
@@ -479,7 +479,7 @@ export default function FilterTickets({
         </button>
         <button
           className="btn"
-          id="selectView-Card"
+          id="select-view-card"
           onClick={() => {
             setCardOrList("Card");
           }}

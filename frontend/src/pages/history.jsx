@@ -140,10 +140,10 @@ export default function History() {
   useEffect(() => {
     if (cardOrList && cardOrList.length !== 0) {
       if (cardOrList === "List") {
-        listCard();
+        ViewList();
         setCardOrList("");
       } else if (cardOrList === "Card") {
-        viewCard();
+        ViewCard();
         setCardOrList("");
       }
     }
@@ -180,7 +180,9 @@ export default function History() {
       try {
         // Obtém os dados armazenados localmente no navegador (localStorage)
         const dataInfo = JSON.parse(localStorage.getItem("dataInfo"));
-
+        if (dataInfo === null || dataInfo === "null") {
+          return (window.location.href = "/login");
+        }
         // Se os dados não existirem, lança um erro e interrompe a execução
         if (!dataInfo)
           throw new Error("Informações de usuário não encontradas");
@@ -272,12 +274,11 @@ export default function History() {
    * @param {string} params.tech - Nome do técnico responsável pelo chamado.
    * @returns {Promise<Response>} - Retorna a resposta da requisição fetch.
    */
-  async function changeLastVW({ id, tech }) {
+  async function ChangeLastVW({ id, tech }) {
     return fetch(`/helpdesk/change-last-viewer/${id}`, {
       method: "POST",
       headers: {
         "X-CSRFToken": token, // Token CSRF para segurança da requisição
-        "Cache-Control": "no-cache", // Evita o uso de cache na requisição
         "Content-Type": "application/json", // Define o formato do corpo da requisição como JSON
       },
       body: JSON.stringify({
@@ -297,7 +298,7 @@ export default function History() {
    * @returns {void} - Esta função não retorna nada diretamente, mas dispara uma
    * solicitação de busca do ticket de chamado através da API do servidor.
    */
-  function helpdeskPage({ id }) {
+  function HelpdeskPage({ id }) {
     CloseTicket();
     fetch("/helpdesk/ticket/" + id, {
       method: "GET",
@@ -330,7 +331,7 @@ export default function History() {
         // Chama a função de forma assíncrona sem bloquear o restante do código
         if (data.responsible_technician !== null) {
           const callAsyncFunction = async () => {
-            await changeLastVW({ id: id, tech: data.responsible_technician });
+            await ChangeLastVW({ id: id, tech: data.responsible_technician });
           };
           callAsyncFunction();
         }
@@ -400,15 +401,15 @@ export default function History() {
     if (ticketData && Object.keys(ticketData).length > 0) {
       const selectView = localStorage.getItem("selectView");
       if (selectView === null || selectView === "card") {
-        return viewCard();
+        return ViewCard();
       } else {
-        return listCard();
+        return ViewList();
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ticketData]);
 
-  function viewCard() {
+  function ViewCard() {
     setTickets([]);
     setNavbar(true);
     setInCard(true);
@@ -416,10 +417,10 @@ export default function History() {
 
     localStorage.setItem("selectView", "card");
 
-    const btn = document.getElementById("selectView-Card");
+    const btn = document.getElementById("select-view-card");
     btn.style.backgroundColor = "#00B4D8";
 
-    const btn2 = document.getElementById("selectView-List");
+    const btn2 = document.getElementById("select-view-list");
     btn2.style.backgroundColor = "transparent";
 
     ticketData.forEach((ticket) => {
@@ -444,7 +445,7 @@ export default function History() {
       var newDate = dataFormatada + " " + horaFormatada;
 
       if (ticket["open"] === false) {
-        colorBorder = "ticektClose";
+        colorBorder = "ticket-close";
       } else if (
         ticket["open"] === true &&
         ticket["responsible_technician"] === null
@@ -456,24 +457,24 @@ export default function History() {
         const diferenceDays = diferenceMilisecond / (1000 * 60 * 60 * 24);
 
         if (diferenceDays >= 7) {
-          colorBorder = "ticketUrgent";
+          colorBorder = "ticket-urgent";
         } else {
-          colorBorder = "ticektOpenNotView";
+          colorBorder = "ticket-open-not-view";
         }
       } else if (
         ticket["open"] === true &&
         ticket["responsible_technician"] !== null
       ) {
-        colorBorder = "ticektOpenInView";
+        colorBorder = "ticket-open-in-view";
       } else if (ticket["open"] === null) {
-        colorBorder = "ticketStop";
+        colorBorder = "ticket-stop";
       }
 
       const Div = (
         <DivCard
-          className={`animate__animated animate__zoomInDown ${colorBorder} ${themeCard} tickets_method`}
+          className={`animate__animated animate__zoomInDown no-border ${colorBorder} ${themeCard} tickets_method`}
           onClick={() => {
-            helpdeskPage({ id: ticket["id"] });
+            HelpdeskPage({ id: ticket["id"] });
           }}
         >
           <H5Card>chamado {ticket["id"]}</H5Card>
@@ -486,7 +487,7 @@ export default function History() {
 
       setTickets((ticketsDash) => [...ticketsDash, Div]);
       const dash = document.getElementById("dashboard");
-      dash.classList.add("dashCard");
+      dash.classList.add("dash-card");
 
       if (localStorage.getItem("quantity") > 5) {
         setBtnMore(true);
@@ -496,7 +497,7 @@ export default function History() {
     });
   }
 
-  function listCard() {
+  function ViewList() {
     setTickets([]);
     setNavbar(true);
     setInList(true);
@@ -504,10 +505,10 @@ export default function History() {
 
     localStorage.setItem("selectView", "list");
 
-    const btn = document.getElementById("selectView-List");
+    const btn = document.getElementById("select-view-list");
     btn.style.backgroundColor = "#00B4D8";
 
-    const btn2 = document.getElementById("selectView-Card");
+    const btn2 = document.getElementById("select-view-card");
     btn2.style.backgroundColor = "transparent";
 
     ticketData.forEach((ticket) => {
@@ -532,7 +533,7 @@ export default function History() {
       const newDate = dataFormatada + " " + horaFormatada;
 
       if (ticket["open"] === false) {
-        colorBorder = "ticektCloseList";
+        colorBorder = "ticket-close-list";
       } else if (
         ticket["open"] === true &&
         ticket["responsible_technician"] === null
@@ -544,24 +545,24 @@ export default function History() {
         const diferenceDays = diferenceMilisecond / (1000 * 60 * 60 * 24);
 
         if (diferenceDays >= 7) {
-          colorBorder = "ticketUrgentList";
+          colorBorder = "ticket-urgent-list";
         } else {
-          colorBorder = "ticektOpenNotViewList";
+          colorBorder = "ticket-open-not-view-list";
         }
       } else if (
         ticket["open"] === true &&
         ticket["responsible_technician"] !== null
       ) {
-        colorBorder = "ticektOpenInViewList";
+        colorBorder = "ticket-open-in-view-list";
       } else if (ticket["open"] === null) {
-        colorBorder = "ticketStop";
+        colorBorder = "ticket-stop-list";
       }
       const Div = (
         <TR
           key={ticket["id"]}
-          className={`animate__animated animate__backInUp ${colorBorder}`}
+          className={`animate__animated animate__backInUp no-border ${colorBorder} tickets_method`}
           onClick={() => {
-            helpdeskPage({ id: ticket["id"] });
+            HelpdeskPage({ id: ticket["id"] });
           }}
         >
           <TD>{ticket["id"]}</TD>
@@ -577,7 +578,7 @@ export default function History() {
       setTickets((ticketsDash) => [...ticketsDash, Div]); // Adiciona o cartão ao array de chamados.
       setTickets((ticketsDash) => [...ticketsDash, Space]);
       const dash = document.getElementById("dashboard");
-      dash.classList.add("dashCard");
+      dash.classList.remove("dash-card");
 
       if (localStorage.getItem("quantity") > 5) {
         setBtnMore(true);
@@ -589,7 +590,8 @@ export default function History() {
 
   const handleAnimationEnd = useCallback((event) => {
     // Aplicando a classe diretamente no elemento que terminou a animação
-    event.target.classList.add("ticketHover");
+    event.target.classList.remove("no-border");
+    event.target.classList.add("ticket-hover");
   }, []);
 
   useEffect(() => {
@@ -654,8 +656,8 @@ export default function History() {
       />
       <section ref={dashBoard} id="dashboard">
         {inList && (
-          <Table>
-            <thead>
+          <Table className="container">
+            <thead className="cla">
               <TH className={colorTheme}>Chamado</TH>
               <TH className={colorTheme}>Usuario</TH>
               <TH className={colorTheme}>Ocorrencia</TH>

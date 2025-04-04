@@ -6,7 +6,7 @@
  * - Loading: componente responsável pela exibição de um indicador de carregamento.
  * - Chart: importação da classe Chart do módulo "chart.js/auto" para a renderização de gráficos.
  */
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Chart } from "chart.js/auto";
 
 /**
@@ -16,20 +16,17 @@ import { Chart } from "chart.js/auto";
 import { Div, Div2 } from "../../styles/dashboardPie";
 
 let myChart = null;
-let totalTickets = 0;
 
 export default function DashBoardPie({ sector, clss }) {
   /**
    * Variáveis de estado utilizadas neste componente.
    * - dataPie: estado que armazena os dados para o gráfico de pizza.
-   * - loading: estado que controla a exibição do indicador de carregamento.
    */
   const [dataPie, setDataPie] = useState("");
+  const [totalTickets, setTotalTickets] = useState(0);
 
-  /**
-   * Variável timeoutBarUpdate utilizada para armazenar o identificador do timeout responsável pela atualização contínua do dashboard.
-   */
-  let timeoutBarUpdate;
+  const timeoutRef = useRef(null);
+
   /**
    * - Acionado ao inicializar o componente para buscar dados para o dashboard de pizza.
    * - Utiliza uma função assíncrona para realizar a requisição dos dados.
@@ -43,7 +40,7 @@ export default function DashBoardPie({ sector, clss }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`getDashBoardPie/${sector}`, {
+        const response = await fetch(`get-dash-board-pie/${sector}`, {
           method: "GET",
           headers: {
             Accept: "application/json",
@@ -51,16 +48,10 @@ export default function DashBoardPie({ sector, clss }) {
           },
         });
 
-        if (response.status === 210) {
-          // setLoading(true);
-          // Faça algo aqui se a resposta for 210
-        }
-
         const data = await response.json();
+        setDataPie(data.data);
 
-        setDataPie(data);
-        CallNewBar();
-        return;
+        return dataPie;
       } catch (err) {
         return console.error(err);
       }
@@ -70,59 +61,67 @@ export default function DashBoardPie({ sector, clss }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  /**
-   * Acionado sempre que os dados do dashboard de pizza (dataPie) são atualizados.
-   * - Obtém a referência do elemento DOM que representa o dashboard de pizza.
-   * - Inicializa uma variável local para armazenar a instância do gráfico.
-   * - Verifica se existem dados válidos para o gráfico de pizza.
-   * - Se existirem dados válidos, cria um novo gráfico de pizza utilizando os dados atualizados.
-   * - Se um gráfico anterior já existir, ele é destruído para evitar duplicatas.
-   * - Define o gráfico como estado e exibe o dashboard de pizza.
-   * - O efeito é executado sempre que os dados do dashboard de pizza são modificados.
-   */
   useEffect(() => {
-    const dash = document.getElementById("dashpie");
+    if (dataPie && dataPie.length !== 0) {
+      try {
+        const dash = document.getElementById("dashpie");
+        if (myChart) {
+          myChart.destroy();
+        }
 
-    if (dataPie && dataPie.data) {
-      if (myChart) {
-        myChart.destroy();
+        var total = dataPie.at(0);
+        setTotalTickets(total);
+
+        var dataPieCopy = dataPie; // Cria uma cópia do array
+
+        dataPieCopy = dataPieCopy.slice(1);
+
+        myChart = new Chart(dash, {
+          type: "pie",
+          data: {
+            labels: [
+              "Chamados em Aberto",
+              "Chamados Finalizados",
+              "Chamados em Aguardo",
+              "Chamados Urgentes(mais de 7 dias aberto)",
+            ],
+            datasets: [
+              {
+                data: dataPieCopy,
+                backgroundColor: ["#ffd60a", "#38b000", "#f9f9f9", "#d00000"],
+                hoverOffset: 4,
+              },
+            ],
+          },
+        });
+
+        dash.style.display = "block";
+
+        return CallNewBar();
+      } catch (err) {
+        return console.log(err);
       }
-
-      totalTickets = dataPie.data.shift();
-
-      myChart = new Chart(dash, {
-        type: "pie",
-        data: {
-          labels: ["Chamados em Aberto", "Chamados Finalizados", "Chamados em Aguardo", "Chamados Urgentes(mais de 7 dias aberto)"],
-          datasets: [
-            {
-              data: dataPie.data,
-              backgroundColor: ["#ffd60a", "#38b000", "#f9f9f9", "#d00000"],
-              hoverOffset: 4,
-            },
-          ],
-        },
-      });
-
-      dash.style.display = "block";
     }
+    return;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataPie]);
 
   function CallNewBar() {
-    if (timeoutBarUpdate) {
-      clearTimeout(timeoutBarUpdate);
+    // Se já houver um timeout ativo, não cria um novo
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
     }
 
-    timeoutBarUpdate = setTimeout(() => {
+    timeoutRef.current = setTimeout(() => {
       fetchPie();
+      timeoutRef.current = null; // Reseta após a execução
     }, 60000);
   }
 
   function fetchPie() {
     const fetchData = async () => {
       try {
-        const response = await fetch(`getDashBoardPie/${sector}`, {
+        const response = await fetch(`get-dash-board-pie/${sector}`, {
           method: "GET",
           headers: {
             Accept: "application/json",
@@ -130,15 +129,12 @@ export default function DashBoardPie({ sector, clss }) {
           },
         });
 
-        if (response.status === 210) {
-          // setLoading(true);
-          // Faça algo aqui se a resposta for 210
-        }
-
         const data = await response.json();
 
-        setDataPie(data);
-        // setLoading(false);
+        if (JSON.stringify(data.data) !== JSON.stringify(dataPie)) {
+          setDataPie(data.data);
+        }
+        CallNewBar();
         return;
       } catch (err) {
         if (err instanceof SyntaxError) {

@@ -44,7 +44,9 @@ export const H5Card = styled.h5`
   color: var(--pure-black);
   -webkit-text-align: center; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   -webkit-text-transform: uppercase; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
-  -webkit-color: var(--pure-black); /* Adicionado para compatibilidade com navegadores baseados em WebKit */
+  -webkit-color: var(
+    --pure-black
+  ); /* Adicionado para compatibilidade com navegadores baseados em WebKit */
 `;
 
 export const SpanCard = styled.span`
@@ -57,7 +59,9 @@ export const SpanCard = styled.span`
   -webkit-text-align: center; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   -webkit-text-transform: uppercase; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   -webkit-font-weight: bold; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
-  -webkit-color: var(--pure-black); /* Adicionado para compatibilidade com navegadores baseados em WebKit */
+  -webkit-color: var(
+    --pure-black
+  ); /* Adicionado para compatibilidade com navegadores baseados em WebKit */
 `;
 
 export const DivList = styled.div`
@@ -77,7 +81,9 @@ export const DivList = styled.div`
   -webkit-margin-bottom: 10px; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   &:hover {
     transform: scale(1.03);
-    -webkit-transform: scale(1.03); /* Adicionado para compatibilidade com navegadores baseados em WebKit */
+    -webkit-transform: scale(
+      1.03
+    ); /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   }
 `;
 
@@ -89,17 +95,15 @@ export const SpanList = styled.span`
   -webkit-text-align: center; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   -webkit-text-transform: uppercase; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   -webkit-font-weight: bold; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
-  -webkit-color: var(--pure-black); /* Adicionado para compatibilidade com navegadores baseados em WebKit */
+  -webkit-color: var(
+    --pure-black
+  ); /* Adicionado para compatibilidade com navegadores baseados em WebKit */
 `;
 
 export const TR = styled.tr`
   cursor: pointer;
   transition: 0.7s;
   -webkit-transition: 0.7s; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
-  &:hover {
-    transform: scale(1.1);
-    -webkit-transform: scale(1.1); /* Adicionado para compatibilidade com navegadores baseados em WebKit */
-  }
 `;
 
 export const TRSPACE = styled.tr`
@@ -116,14 +120,18 @@ export const Table = styled.table`
 `;
 
 export const TH = styled.th`
-  width: calc(100% / 6); /* Dividir a largura total igualmente entre 6 colunas */
+  width: calc(
+    100% / 6
+  ); /* Dividir a largura total igualmente entre 6 colunas */
   border: 1px solid black;
   text-align: center;
   padding: 10px; /* Ajuste conforme necessário */
 `;
 
 export const TD = styled.td`
-  width: calc(100% / 6); /* Dividir a largura total igualmente entre 6 colunas */
+  width: calc(
+    100% / 6
+  ); /* Dividir a largura total igualmente entre 6 colunas */
   text-align: center;
   padding: 10px; /* Ajuste conforme necessário */
 `;

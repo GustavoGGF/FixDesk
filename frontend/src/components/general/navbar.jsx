@@ -15,7 +15,21 @@ import React, { useRef } from "react";
  * - ImgClose: importação da imagem "close.png" localizada em "../images/components".
  * - ArrowDown: importação da imagem "caret-down-square.svg" localizada em "../images/components".
  */
-import { Div1, Logout, Img, ALink, SpanUser, CLose, BtnClose, H5, DropBTN, DropDown, DropContent, Arrow, DropContent2 } from "../../styles/navbarStyle";
+import {
+  Div1,
+  Logout,
+  Img,
+  ALink,
+  SpanUser,
+  CLose,
+  BtnClose,
+  H5,
+  DropBTN,
+  DropDown,
+  DropContent,
+  Arrow,
+  DropContent2,
+} from "../../styles/navbarStyle";
 import "../../styles/bootstrap/css/bootstrap.css";
 import "../../styles/bootstrap/js/bootstrap.js";
 import Logo from "../../images/logos/fixdesk.png";
@@ -77,7 +91,6 @@ export default function NavBar({ Name, JobTitle }) {
       method: "GET",
       headers: {
         Accept: "text/html",
-        "Cache-Control": "no-cache",
       },
     })
       .then((response) => {
@@ -95,12 +108,19 @@ export default function NavBar({ Name, JobTitle }) {
   function DropD(event) {
     console.log(event.target.id);
 
-    if ((event.target.id === "btndrop" && dropContent.current.classList.contains("visually-hidden")) || (event.target.id === "imgdrop" && dropContent.current.classList.contains("visually-hidden"))) {
+    if (
+      (event.target.id === "btndrop" &&
+        dropContent.current.classList.contains("visually-hidden")) ||
+      (event.target.id === "imgdrop" &&
+        dropContent.current.classList.contains("visually-hidden"))
+    ) {
       dropContent.current.classList.remove("visually-hidden");
       return;
     } else if (
-      (event.target.id === "btndrop" && !dropContent.current.classList.contains("visually-hidden")) ||
-      (event.target.id === "imgdrop" && !dropContent.current.classList.contains("visually-hidden"))
+      (event.target.id === "btndrop" &&
+        !dropContent.current.classList.contains("visually-hidden")) ||
+      (event.target.id === "imgdrop" &&
+        !dropContent.current.classList.contains("visually-hidden"))
     ) {
       if (dropContent.current) {
         dropContent.current.classList.add("visually-hidden");
@@ -110,14 +130,18 @@ export default function NavBar({ Name, JobTitle }) {
       }
       return;
     } else if (
-      (event.target.id === "btn1" && themeOption.current.classList.contains("visually-hidden")) ||
-      (event.target.id === "btn1Image" && themeOption.current.classList.contains("visually-hidden"))
+      (event.target.id === "btn1" &&
+        themeOption.current.classList.contains("visually-hidden")) ||
+      (event.target.id === "btn1Image" &&
+        themeOption.current.classList.contains("visually-hidden"))
     ) {
       themeOption.current.classList.remove("visually-hidden");
       return;
     } else if (
-      (event.target.id === "btn1" && !themeOption.current.classList.contains("visually-hidden")) ||
-      (event.target.id === "btn1Image" && !themeOption.current.classList.contains("visually-hidden"))
+      (event.target.id === "btn1" &&
+        !themeOption.current.classList.contains("visually-hidden")) ||
+      (event.target.id === "btn1Image" &&
+        !themeOption.current.classList.contains("visually-hidden"))
     ) {
       themeOption.current.classList.add("visually-hidden");
       return;
@@ -132,7 +156,7 @@ export default function NavBar({ Name, JobTitle }) {
    * - Recarrega a página para aplicar as alterações do tema.
    */
   function ThemeLight() {
-    localStorage.setItem("Theme", "light");
+    localStorage.setItem("theme", "light");
 
     return window.location.reload();
   }
@@ -143,7 +167,7 @@ export default function NavBar({ Name, JobTitle }) {
    * - Recarrega a página para aplicar as alterações do tema.
    */
   function ThemeBlack() {
-    localStorage.setItem("Theme", "black");
+    localStorage.setItem("theme", "black");
 
     return window.location.reload();
   }
@@ -171,7 +195,14 @@ export default function NavBar({ Name, JobTitle }) {
                 <SpanUser>{Name}</SpanUser>
                 <SpanUser>{JobTitle}</SpanUser>
               </Div1>
-              <button className="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+              <button
+                className="navbar-toggler"
+                type="button"
+                data-bs-toggle="offcanvas"
+                data-bs-target="#offcanvasNavbar"
+                aria-controls="offcanvasNavbar"
+                aria-label="Toggle navigation"
+              >
                 <span className="navbar-toggler-icon"></span>
               </button>
             </divc>
@@ -186,48 +217,94 @@ export default function NavBar({ Name, JobTitle }) {
             <div className="offcanvas-header bg-primary">
               <div className="d-flex align-items-center">
                 <Img src={Logo} alt="" />
-                <H5 className="offcanvas-title fw-bold" id="offcanvasNavbarLabel">
+                <H5
+                  className="offcanvas-title fw-bold"
+                  id="offcanvasNavbarLabel"
+                >
                   FixDesk
                 </H5>
               </div>
-              <BtnClose type="button" data-bs-dismiss="offcanvas" aria-label="Close">
+              <BtnClose
+                type="button"
+                data-bs-dismiss="offcanvas"
+                aria-label="Close"
+              >
                 <CLose src={ImgClose} alt="" />
               </BtnClose>
             </div>
             <div className="offcanvas-body bg-primary">
               <ul className="navbar-nav justify-content-start flex-grow-1 pe-3 h-100 position-relative">
                 <li className="nav-item">
-                  <a className="nav-link btn btn-light pointer" aria-current="page" href="/helpdesk/">
+                  <a
+                    className="nav-link btn btn-light pointer"
+                    aria-current="page"
+                    href="/helpdesk/"
+                  >
                     Criar Chamado
                   </a>
                 </li>
                 <li className="nav-item">
-                  <a className="nav-link btn btn-light pointer" aria-current="page" href="/helpdesk/history/">
+                  <a
+                    className="nav-link btn btn-light pointer"
+                    aria-current="page"
+                    href="/helpdesk/history/"
+                  >
                     Meus Chamados
                   </a>
                 </li>
                 <li className="nav-item">
-                  <a className="nav-link btn btn-light pointer" aria-current="page" href="/dashboard_TI/">
+                  <a
+                    className="nav-link btn btn-light pointer"
+                    aria-current="page"
+                    href="/dashboard_TI/"
+                  >
                     Dashboard
                   </a>
                 </li>
                 <li className="nav-item">
                   <DropDown>
-                    <DropBTN className="btn btn-light" onClick={DropD} id="btndrop">
+                    <DropBTN
+                      className="btn btn-light"
+                      onClick={DropD}
+                      id="btndrop"
+                    >
                       Configuração
-                      <Arrow src={ArrowDown} alt="seta para abrir configurações" id="imgdrop" />
+                      <Arrow
+                        src={ArrowDown}
+                        alt="seta para abrir configurações"
+                        id="imgdrop"
+                      />
                     </DropBTN>
                     <DropContent className="visually-hidden" ref={dropContent}>
                       <DropDown id="dropdwn2">
-                        <DropBTN className="btn btn-light" id="btn1" onClick={DropD}>
+                        <DropBTN
+                          className="btn btn-light"
+                          id="btn1"
+                          onClick={DropD}
+                        >
                           Tema
-                          <Arrow src={ArrowDown} alt="seta para abrir temas" id="btn1Image" />
+                          <Arrow
+                            src={ArrowDown}
+                            alt="seta para abrir temas"
+                            id="btn1Image"
+                          />
                         </DropBTN>
-                        <DropContent2 className="visually-hidden" ref={themeOption}>
-                          <DropBTN className="btn btn-light" id="btn2" onClick={ThemeLight}>
+                        <DropContent2
+                          className="visually-hidden"
+                          ref={themeOption}
+                        >
+                          <DropBTN
+                            className="btn btn-light"
+                            id="btn2"
+                            onClick={ThemeLight}
+                          >
                             Claro
                           </DropBTN>
-                          <DropBTN className="btn btn-light" id="btn3" onClick={ThemeBlack}>
+                          <DropBTN
+                            className="btn btn-light"
+                            id="btn3"
+                            onClick={ThemeBlack}
+                          >
                             Escuro
                           </DropBTN>
                         </DropContent2>
@@ -236,7 +313,11 @@ export default function NavBar({ Name, JobTitle }) {
                   </DropDown>
                 </li>
                 <li className="nav-item position-absolute bottom-0 start-50 translate-middle-x w-100">
-                  <Logout className="nav-link btn btn-danger" aria-current="page" onClick={Exit}>
+                  <Logout
+                    className="nav-link btn btn-danger"
+                    aria-current="page"
+                    onClick={Exit}
+                  >
                     Sair
                   </Logout>
                 </li>

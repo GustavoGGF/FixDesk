@@ -41,9 +41,9 @@ import OpenTicketWindow from "../components/ticket/openTicketWindow.jsx";
 export default function DashboardTI() {
   useEffect(() => {
     document.title = "DashBoard TI";
-    const theme = localStorage.getItem("Theme");
+    const theme = localStorage.getItem("theme");
     if (theme === null || theme === "black") {
-      localStorage.setItem("Theme", "black");
+      localStorage.setItem("theme", "black");
       return ThemeBlack();
     } else {
       return ThemeLight();
@@ -124,16 +124,17 @@ export default function DashboardTI() {
     cardOrList,
     setCardOrList,
   } = useContext(TicketContext);
+
   const { setTypeError, setMessageError, setMessage, message } =
     useContext(MessageContext);
 
   useEffect(() => {
     if (cardOrList && cardOrList.length !== 0) {
       if (cardOrList === "List") {
-        listCard();
+        ListView();
         setCardOrList("");
       } else if (cardOrList === "Card") {
-        viewCard();
+        CardView();
         setCardOrList("");
       }
     }
@@ -151,7 +152,7 @@ export default function DashboardTI() {
   useEffect(() => {
     if (changeTech && changeTech.length !== 0) {
       CloseTicket();
-      helpdeskPage({ id: changeTech });
+      HelpdeskPage({ id: changeTech });
       setChangeTech("");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -186,13 +187,13 @@ export default function DashboardTI() {
    * Define os estilos de cartões e filtros como claros e define o tema como "themeLight".
    */
   function ThemeLight() {
-    setThemeCard("themeCardLight");
-    setThemeFilter("themeFilterLight");
-    setColorTheme("colorLight");
-    setTheme("themeLight");
+    setThemeCard("theme-card-light");
+    setThemeFilter("theme-filter-light");
+    setColorTheme("color-light");
+    setTheme("theme-light");
   }
 
-  let colorBorder = ""; // Variável para armazenar cor da borda.
+  var colorBorder = ""; // Variável para armazenar cor da borda.
 
   /**
    * useEffect para carregar os dados do usuário armazenados localmente ao carregar a página.
@@ -202,10 +203,13 @@ export default function DashboardTI() {
    */
   useEffect(() => {
     const dataInfo = JSON.parse(localStorage.getItem("dataInfo"));
+    if (dataInfo === null || dataInfo === "null") {
+      return (window.location.href = "/login");
+    }
     setUserData(dataInfo.data);
     fetch("get-info/", {
       method: "GET",
-      headers: { Accept: "application/json", "Cache-Control": "no-cache" },
+      headers: { Accept: "application/json" },
     })
       .then((response) => {
         return response.json();
@@ -235,46 +239,53 @@ export default function DashboardTI() {
    */
   useEffect(() => {
     if (userData && Object.keys(userData).length > 0) {
-      // Verifica se os dados do usuário estão disponíveis e não vazios.
-      var quantity = localStorage.getItem("quantity");
-      if (quantity === null) {
-        localStorage.setItem("quantity", "10");
-        quantity = 10;
-      }
-      setQuantityMap(quantity);
+      try {
+        // Verifica se os dados do usuário estão disponíveis e não vazios.
+        var quantity = localStorage.getItem("quantity");
+        if (quantity === null) {
+          localStorage.setItem("quantity", "10");
+          quantity = 10;
+        }
+        setQuantityMap(quantity);
 
-      var status = localStorage.getItem("status");
-      if (status === null) {
-        localStorage.setItem("status", "open");
-        status = "open";
-      }
-      setStatusFIlter(status);
+        var status = localStorage.getItem("status");
+        if (status === null) {
+          localStorage.setItem("status", "open");
+          status = "open";
+        }
+        setStatusFIlter(status);
 
-      var order = localStorage.getItem("order");
-      if (order === null) {
-        order = "-id";
-      }
-      setDateValue(order);
+        var order = localStorage.getItem("order");
+        if (order === null) {
+          order = "-id";
+        }
+        setDateValue(order);
 
-      setNavbar(true); // Define a flag de exibição da barra de navegação como verdadeira.
-      fetch("get-ticket-TI/" + quantity + "/" + status + "/" + order, {
-        // Faz uma solicitação ao backend para obter os chamados de TI.
-        method: "GET",
-        headers: { Accept: "application/json" },
-      })
-        .then((response) => {
-          return response.json(); // Converte a resposta para JSON.
+        setNavbar(true); // Define a flag de exibição da barra de navegação como verdadeira.
+        fetch("get-ticket-ti/" + quantity + "/" + status + "/" + order, {
+          // Faz uma solicitação ao backend para obter os chamados de TI.
+          method: "GET",
+          headers: { Accept: "application/json" },
         })
-        .then((data) => {
-          setTicketData(data.tickets); // Define os chamados no estado correspondente.
-        })
-        .catch((err) => {
-          // Trata erros.
-          setTypeError("FATAL ERROR"); // Define o tipo de erro como "FATAL ERROR".
-          setMessageError(err); // Define a mensagem de erro.
-          setMessage(true); // Define a flag de exibição de mensagem como verdadeira.
-          return console.log(err); // Registra o erro no console.
-        });
+          .then((response) => {
+            return response.json(); // Converte a resposta para JSON.
+          })
+          .then((data) => {
+            setTicketData(data.tickets); // Define os chamados no estado correspondente.
+          })
+          .catch((err) => {
+            // Trata erros.
+            setTypeError("FATAL ERROR"); // Define o tipo de erro como "FATAL ERROR".
+            setMessageError(err); // Define a mensagem de erro.
+            setMessage(true); // Define a flag de exibição de mensagem como verdadeira.
+            return console.log(err); // Registra o erro no console.
+          });
+      } catch (err) {
+        setTypeError("FATAL ERROR"); // Define o tipo de erro como "FATAL ERROR".
+        setMessageError(err); // Define a mensagem de erro.
+        setMessage(true); // Define a flag de exibição de mensagem como verdadeira.
+        return console.log(err); // Registra o erro no console.
+      }
     } else {
       return;
     }
@@ -293,10 +304,10 @@ export default function DashboardTI() {
         (selectView === "card" && selectView !== "list")
       ) {
         // Se não estiver definido ou se for um valor inválido, definir como "card"
-        viewCard();
+        CardView();
       } else if (selectView === "list") {
         // Se for "list", ativar a função de lista
-        listCard();
+        ListView();
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -305,230 +316,247 @@ export default function DashboardTI() {
   /**
    * Função para montar os chamados em forma de card.
    */
-  function viewCard() {
-    // Limpar o estado e preparar o ambiente
-    setTicketsDash([]);
-    setNavbar(true);
-    setInCard(true);
-    setInList(false);
+  function CardView() {
+    try {
+      // Limpar o estado e preparar o ambiente
+      setTicketsDash([]);
+      setNavbar(true);
+      setInCard(true);
+      setInList(false);
 
-    // Definir o tipo de visualização como "card" no local storage
-    localStorage.setItem("selectView", "card");
+      // Definir o tipo de visualização como "card" no local storage
+      localStorage.setItem("selectView", "card");
 
-    const btn = document.getElementById("selectView-List");
-    btn.style.backgroundColor = "transparent";
+      const btn = document.getElementById("select-view-list");
+      btn.style.backgroundColor = "transparent";
 
-    const btn2 = document.getElementById("selectView-Card");
-    btn2.style.backgroundColor = "#00B4D8";
+      const btn2 = document.getElementById("select-view-card");
+      btn2.style.backgroundColor = "#00B4D8";
 
-    // Mapear os tickets para elementos de cartão
-    ticketData.forEach((ticket) => {
-      // Variáveis para montar a data dos chamados.
-      var date = new Date(ticket["start_date"]); // Obtém a data de início do chamado.
-      var day = date.getDate(); // Obtém o dia do mês.
-      var month = date.getMonth() + 1; // Obtém o mês (0 = janeiro, 1 = fevereiro, etc.) e adiciona 1 para corresponder ao formato convencional.
-      var year = date.getFullYear(); // Obtém o ano.
+      // Mapear os tickets para elementos de cartão
+      ticketData.forEach((ticket) => {
+        // Variáveis para montar a data dos chamados.
+        var date = new Date(ticket["start_date"]); // Obtém a data de início do chamado.
+        var day = date.getDate(); // Obtém o dia do mês.
+        var month = date.getMonth() + 1; // Obtém o mês (0 = janeiro, 1 = fevereiro, etc.) e adiciona 1 para corresponder ao formato convencional.
+        var year = date.getFullYear(); // Obtém o ano.
 
-      /**
-       * Função para adicionar um zero na frente do número caso seja menor que 10.
-       * @param {number} numero - O número a ser formatado.
-       * @returns {string} O número formatado com zero à esquerda, se necessário.
-       */
-      function adicionaZero(numero) {
-        if (numero < 10) {
-          return "0" + numero; // Adiciona um zero à esquerda se o número for menor que 10.
+        /**
+         * Função para adicionar um zero na frente do número caso seja menor que 10.
+         * @param {number} numero - O número a ser formatado.
+         * @returns {string} O número formatado com zero à esquerda, se necessário.
+         */
+        function adicionaZero(numero) {
+          if (numero < 10) {
+            return "0" + numero; // Adiciona um zero à esquerda se o número for menor que 10.
+          }
+          return numero.toString(); // Retorna o número como string se não for menor que 10.
         }
-        return numero.toString(); // Retorna o número como string se não for menor que 10.
-      }
 
-      // Variáveis que contêm data e hora formatadas utilizando a função adicionaZero.
-      var dataFormatada =
-        adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
-      var horaFormatada =
-        adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
+        // Variáveis que contêm data e hora formatadas utilizando a função adicionaZero.
+        var dataFormatada =
+          adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
+        var horaFormatada =
+          adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
 
-      // Combinação da data e hora formatadas.
-      const newDate = dataFormatada + " " + horaFormatada; // Combina a data e a hora formatadas separadas por um espaço.
+        // Combinação da data e hora formatadas.
+        const newDate = dataFormatada + " " + horaFormatada; // Combina a data e a hora formatadas separadas por um espaço.
 
-      // Ajuste da borda do ticket com base no estado do chamado.
-      if (ticket["open"] === false) {
-        // Se o chamado não estiver aberto, ele foi finalizado.
-        colorBorder = "ticektClose"; // Define a borda como indicativa de chamado finalizado.
-      } else if (
-        ticket["open"] === true &&
-        ticket["responsible_technician"] === null
-      ) {
-        // Se o chamado estiver aberto e sem técnico responsável.
-        const currentDate = new Date(); // Obtém a data atual.
-        const differenceMilisecond = currentDate - date; // Calcula a diferença em milissegundos entre a data atual e a data de início do chamado.
-        const differenceDays = differenceMilisecond / (1000 * 60 * 60 * 24); // Converte a diferença para dias.
-        if (differenceDays >= 7) {
-          // Se o chamado estiver aberto há mais de 7 dias.
-          colorBorder = "ticketUrgent"; // Define a borda como indicativa de chamado urgente.
-        } else {
-          // Se o chamado estiver aberto há menos de 7 dias.
-          colorBorder = "ticektOpenNotView"; // Define a borda como indicativa de chamado aberto, mas não visualizado.
+        // Ajuste da borda do ticket com base no estado do chamado.
+        if (ticket["open"] === false) {
+          // Se o chamado não estiver aberto, ele foi finalizado.
+          colorBorder = "ticket-close"; // Define a borda como indicativa de chamado finalizado.
+        } else if (
+          ticket["open"] === true &&
+          ticket["responsible_technician"] === null
+        ) {
+          // Se o chamado estiver aberto e sem técnico responsável.
+          const currentDate = new Date(); // Obtém a data atual.
+          const differenceMilisecond = currentDate - date; // Calcula a diferença em milissegundos entre a data atual e a data de início do chamado.
+          const differenceDays = differenceMilisecond / (1000 * 60 * 60 * 24); // Converte a diferença para dias.
+          if (differenceDays >= 7) {
+            // Se o chamado estiver aberto há mais de 7 dias.
+            colorBorder = "ticket-urgent"; // Define a borda como indicativa de chamado urgente.
+          } else {
+            // Se o chamado estiver aberto há menos de 7 dias.
+            colorBorder = "ticket-open-not-view "; // Define a borda como indicativa de chamado aberto, mas não visualizado.
+          }
+        } else if (
+          ticket["open"] === true &&
+          ticket["responsible_technician"] !== null
+        ) {
+          // Se o chamado estiver aberto e com técnico responsável.
+          colorBorder = "ticket-open-in-view "; // Define a borda como indicativa de chamado aberto e em atendimento.
+        } else if (ticket["open"] === null) {
+          // Se o estado do chamado for nulo.
+          colorBorder = "ticket-stop"; // Define a borda como indicativa de chamado interrompido.
         }
-      } else if (
-        ticket["open"] === true &&
-        ticket["responsible_technician"] !== null
-      ) {
-        // Se o chamado estiver aberto e com técnico responsável.
-        colorBorder = "ticektOpenInView"; // Define a borda como indicativa de chamado aberto e em atendimento.
-      } else if (ticket["open"] === null) {
-        // Se o estado do chamado for nulo.
-        colorBorder = "ticketStop"; // Define a borda como indicativa de chamado interrompido.
-      }
 
-      const Div = (
-        <DivCard
-          key={ticket["id"]}
-          ref={(el) => (divRefs.current[`tck${ticket.id}`] = el)}
-          className={`animate__animated animate__zoomInDown ${colorBorder} ${themeCard} tickets_method`}
-          onClick={() => {
-            helpdeskPage({ id: ticket["id"] });
-          }}
-        >
-          <H5Card>chamado {ticket["id"]}</H5Card>
-          <SpanCard>{ticket["ticketRequester"]}</SpanCard>
-          <SpanCard>Ocorrência: {ticket["occurrence"]}</SpanCard>
-          <SpanCard>Problema: {ticket["problemn"]}</SpanCard>
-          <SpanCard>{newDate}</SpanCard>
-        </DivCard>
-      );
+        const Div = (
+          <DivCard
+            key={ticket["id"]}
+            ref={(el) => (divRefs.current[`tck${ticket.id}`] = el)}
+            className={`animate__animated animate__zoomInDown no-border ${colorBorder} ${themeCard} tickets-method`}
+            onClick={() => {
+              HelpdeskPage({ id: ticket["id"] });
+            }}
+          >
+            <H5Card>chamado {ticket["id"]}</H5Card>
+            <SpanCard>{ticket["ticketRequester"]}</SpanCard>
+            <SpanCard>Ocorrência: {ticket["occurrence"]}</SpanCard>
+            <SpanCard>Problema: {ticket["problemn"]}</SpanCard>
+            <SpanCard>{newDate}</SpanCard>
+          </DivCard>
+        );
 
-      setTicketsDash((ticketsDash) => [...ticketsDash, Div]); // Adiciona o cartão ao array de chamados.
-      sectionTicket.current.classList.add("dashCard"); // Adiciona a classe "dashCard" ao elemento HTML.
-      if (localStorage.getItem("quantity") > 5) {
-        setBtnMore(true);
-      }
-    });
+        setTicketsDash((ticketsDash) => [...ticketsDash, Div]); // Adiciona o cartão ao array de chamados.
+        sectionTicket.current.classList.add("dash-card"); // Adiciona a classe "dash-card" ao elemento HTML.
+        if (localStorage.getItem("quantity") > 5) {
+          setBtnMore(true);
+        }
+      });
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   /**
    * Função para montar os chamados em forma de lista.
    */
-  function listCard() {
-    // Limpar o estado e preparar o ambiente
-    setTicketsDash([]);
-    setNavbar(true);
-    setInList(true);
-    setInCard(false);
+  function ListView() {
+    try {
+      // Limpar o estado e preparar o ambiente
+      setTicketsDash([]);
+      setNavbar(true);
+      setInList(true);
+      setInCard(false);
 
-    // Definir o tipo de visualização como "list" no local storage
-    localStorage.setItem("selectView", "list");
+      // Definir o tipo de visualização como "list" no local storage
+      localStorage.setItem("selectView", "list");
 
-    const btn = document.getElementById("selectView-List");
-    btn.style.backgroundColor = "#00B4D8";
+      const btn = document.getElementById("select-view-list");
+      btn.style.backgroundColor = "#00B4D8";
 
-    const btn2 = document.getElementById("selectView-Card");
-    btn2.style.backgroundColor = "transparent";
+      const btn2 = document.getElementById("select-view-card");
+      btn2.style.backgroundColor = "transparent";
 
-    // Mapear os tickets para elementos de lista
-    ticketData.forEach((ticket) => {
-      // Variáveis para montar a data dos chamados.
-      var date = new Date(ticket["start_date"]); // Obtém a data de início do chamado.
-      var day = date.getDate(); // Obtém o dia do mês.
-      var month = date.getMonth() + 1; // Obtém o mês (0 = janeiro, 1 = fevereiro, etc.) e adiciona 1 para corresponder ao formato convencional.
-      var year = date.getFullYear(); // Obtém o ano.
+      // Mapear os tickets para elementos de lista
+      ticketData.forEach((ticket) => {
+        // Variáveis para montar a data dos chamados.
+        var date = new Date(ticket["start_date"]); // Obtém a data de início do chamado.
+        var day = date.getDate(); // Obtém o dia do mês.
+        var month = date.getMonth() + 1; // Obtém o mês (0 = janeiro, 1 = fevereiro, etc.) e adiciona 1 para corresponder ao formato convencional.
+        var year = date.getFullYear(); // Obtém o ano.
 
-      /**
-       * Função para adicionar um zero na frente do número caso seja menor que 10.
-       * @param {number} numero - O número a ser formatado.
-       * @returns {string} O número formatado com zero à esquerda, se necessário.
-       */
-      function adicionaZero(numero) {
-        if (numero < 10) {
-          return "0" + numero; // Adiciona um zero à esquerda se o número for menor que 10.
+        /**
+         * Função para adicionar um zero na frente do número caso seja menor que 10.
+         * @param {number} numero - O número a ser formatado.
+         * @returns {string} O número formatado com zero à esquerda, se necessário.
+         */
+        function adicionaZero(numero) {
+          if (numero < 10) {
+            return "0" + numero; // Adiciona um zero à esquerda se o número for menor que 10.
+          }
+          return numero.toString(); // Retorna o número como string se não for menor que 10.
         }
-        return numero.toString(); // Retorna o número como string se não for menor que 10.
-      }
 
-      // Variáveis que contêm data e hora formatadas utilizando a função adicionaZero.
-      var dataFormatada =
-        adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
-      var horaFormatada =
-        adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
+        // Variáveis que contêm data e hora formatadas utilizando a função adicionaZero.
+        var dataFormatada =
+          adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
+        var horaFormatada =
+          adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
 
-      const newDate = dataFormatada + " " + horaFormatada; // Combina a data e a hora formatadas separadas por um espaço.
+        const newDate = dataFormatada + " " + horaFormatada; // Combina a data e a hora formatadas separadas por um espaço.
 
-      // Ajuste da borda do ticket com base no estado do chamado.
-      if (ticket["open"] === false) {
-        // Se o chamado não estiver aberto, ele foi finalizado.
-        colorBorder = "ticektClose"; // Define a borda como indicativa de chamado finalizado.
-      } else if (
-        ticket["open"] === true &&
-        ticket["responsible_technician"] === null
-      ) {
-        // Se o chamado estiver aberto e sem técnico responsável.
-        const currentDate = new Date(); // Obtém a data atual.
-        const differenceMilisecond = currentDate - date; // Calcula a diferença em milissegundos entre a data atual e a data de início do chamado.
-        const differenceDays = differenceMilisecond / (1000 * 60 * 60 * 24); // Converte a diferença para dias.
-        if (differenceDays >= 7) {
-          // Se o chamado estiver aberto há mais de 7 dias.
-          colorBorder = "ticketUrgent"; // Define a borda como indicativa de chamado urgente.
-        } else {
-          // Se o chamado estiver aberto há menos de 7 dias.
-          colorBorder = "ticektOpenNotView"; // Define a borda como indicativa de chamado aberto, mas não visualizado.
+        // Ajuste da borda do ticket com base no estado do chamado.
+        if (ticket["open"] === false) {
+          // Se o chamado não estiver aberto, ele foi finalizado.
+          colorBorder = "ticket-close-list"; // Define a borda como indicativa de chamado finalizado.
+        } else if (
+          ticket["open"] === true &&
+          ticket["responsible_technician"] === null
+        ) {
+          // Se o chamado estiver aberto e sem técnico responsável.
+          const currentDate = new Date(); // Obtém a data atual.
+          const differenceMilisecond = currentDate - date; // Calcula a diferença em milissegundos entre a data atual e a data de início do chamado.
+          const differenceDays = differenceMilisecond / (1000 * 60 * 60 * 24); // Converte a diferença para dias.
+          if (differenceDays >= 7) {
+            // Se o chamado estiver aberto há mais de 7 dias.
+            colorBorder = "ticket-urgent-list"; // Define a borda como indicativa de chamado urgente.
+          } else {
+            // Se o chamado estiver aberto há menos de 7 dias.
+            colorBorder = "ticket-open-not-view-list"; // Define a borda como indicativa de chamado aberto, mas não visualizado.
+          }
+        } else if (
+          ticket["open"] === true &&
+          ticket["responsible_technician"] !== null
+        ) {
+          // Se o chamado estiver aberto e com técnico responsável.
+          colorBorder = "ticket-open-in-view-list"; // Define a borda como indicativa de chamado aberto e em atendimento.
+        } else if (ticket["open"] === null) {
+          // Se o estado do chamado for nulo.
+          colorBorder = "ticket-stop-list "; // Define a borda como indicativa de chamado interrompido.
         }
-      } else if (
-        ticket["open"] === true &&
-        ticket["responsible_technician"] !== null
-      ) {
-        // Se o chamado estiver aberto e com técnico responsável.
-        colorBorder = "ticektOpenInView"; // Define a borda como indicativa de chamado aberto e em atendimento.
-      } else if (ticket["open"] === null) {
-        // Se o estado do chamado for nulo.
-        colorBorder = "ticketStop"; // Define a borda como indicativa de chamado interrompido.
-      }
 
-      const Div = (
-        <TR
-          key={ticket["id"]}
-          ref={(el) => (divRefs.current[`tck${ticket.id}`] = el)}
-          className={`animate__animated animate__backInUp ${colorBorder}`}
-          onClick={() => {
-            helpdeskPage({ id: ticket["id"] });
-          }}
-        >
-          <TD>{ticket["id"]}</TD>
-          <TD>{ticket["ticketRequester"]}</TD>
-          <TD>{ticket["occurrence"]}</TD>
-          <TD>{ticket["problemn"]}</TD>
-          <TD>{newDate}</TD>
-        </TR>
-      );
+        const Div = (
+          <TR
+            key={ticket["id"]}
+            ref={(el) => (divRefs.current[`tck${ticket.id}`] = el)}
+            className={`animate__animated animate__backInUp no-border ${colorBorder} tickets-method`}
+            onClick={() => {
+              HelpdeskPage({ id: ticket["id"] });
+            }}
+          >
+            <TD>{ticket["id"]}</TD>
+            <TD>{ticket["ticketRequester"]}</TD>
+            <TD>{ticket["occurrence"]}</TD>
+            <TD>{ticket["problemn"]}</TD>
+            <TD>{newDate}</TD>
+          </TR>
+        );
 
-      const Space = <TRSPACE></TRSPACE>;
+        const Space = <TRSPACE></TRSPACE>;
 
-      setTicketsDash((ticketsDash) => [...ticketsDash, Div]); // Adiciona o cartão ao array de chamados.
-      setTicketsDash((ticketsDash) => [...ticketsDash, Space]);
-      sectionTicket.current.classList.remove("dashCard"); // remove a classe "dashCard" ao elemento HTML.
-      if (localStorage.getItem("quantity") > 5) {
-        setBtnMore(true);
-      }
-    });
+        setTicketsDash((ticketsDash) => [...ticketsDash, Div]); // Adiciona o cartão ao array de chamados.
+        setTicketsDash((ticketsDash) => [...ticketsDash, Space]);
+        sectionTicket.current.classList.remove("dash-card"); // remove a classe "dashCard" ao elemento HTML.
+        if (localStorage.getItem("quantity") > 5) {
+          setBtnMore(true);
+        }
+      });
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   const handleAnimationEnd = useCallback((event) => {
-    // Aplicando a classe diretamente no elemento que terminou a animação
-    event.target.classList.add("ticketHover");
+    try {
+      // Aplicando a classe diretamente no elemento que terminou a animação
+      event.target.classList.remove("no-border");
+      event.target.classList.add("ticket-hover");
+    } catch (err) {
+      console.log(err);
+    }
   }, []);
 
   useEffect(() => {
     if (!ticketsDash || ticketsDash.length === 0) return;
 
-    const ticketsInCard = document.querySelectorAll(".tickets_method");
+    try {
+      const ticketsInCard = document.querySelectorAll(".tickets-method");
 
-    ticketsInCard.forEach((ticket) => {
-      ticket.addEventListener("animationend", handleAnimationEnd);
-    });
-
-    return () => {
       ticketsInCard.forEach((ticket) => {
-        ticket.removeEventListener("animationend", handleAnimationEnd);
+        ticket.addEventListener("animationend", handleAnimationEnd);
       });
-    };
+
+      return () => {
+        ticketsInCard.forEach((ticket) => {
+          ticket.removeEventListener("animationend", handleAnimationEnd);
+        });
+      };
+    } catch (err) {
+      console.log(err);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ticketsDash]);
 
@@ -540,130 +568,136 @@ export default function DashboardTI() {
    * @param {string} params.tech - Nome do técnico responsável pelo chamado.
    * @returns {Promise<Response>} - Retorna a resposta da requisição fetch.
    */
-  async function changeLastVW({ id, tech }) {
-    return fetch(`/helpdesk/change-last-viewer/${id}`, {
-      method: "POST",
-      headers: {
-        "X-CSRFToken": token, // Token CSRF para segurança da requisição
-        "Cache-Control": "no-cache", // Evita o uso de cache na requisição
-        "Content-Type": "application/json", // Define o formato do corpo da requisição como JSON
-      },
-      body: JSON.stringify({
-        viewer: userData.name, // Nome do usuário que está visualizando o chamado
-        technician: tech, // Nome do técnico associado ao chamado
-        requester: "tech", // Indica que a alteração foi feita por um usuário tecnico
-        mail: userData.mail,
-      }),
-    });
+  async function ChangeLastVW({ id, tech }) {
+    try {
+      return fetch(`/helpdesk/change-last-viewer/${id}`, {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": token, // Token CSRF para segurança da requisição
+          "Content-Type": "application/json", // Define o formato do corpo da requisição como JSON
+        },
+        body: JSON.stringify({
+          viewer: userData.name, // Nome do usuário que está visualizando o chamado
+          technician: tech, // Nome do técnico associado ao chamado
+          requester: "tech", // Indica que a alteração foi feita por um usuário tecnico
+          mail: userData.mail,
+        }),
+      });
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   /**
    * Função para buscar os dados do chamado selecionado.
    * @param {object} id - O ID do chamado a ser buscado.
    */
-  async function helpdeskPage({ id }) {
-    CloseTicket();
-    fetch("/helpdesk/ticket/" + id, {
-      method: "GET",
-      headers: {
-        "X-CSRFToken": token,
-        "Cache-Control": "no-cache", // Adiciona o cabeçalho para evitar cache
-      },
-    })
-      .then((response) => {
-        return response.json();
+  async function HelpdeskPage({ id }) {
+    try {
+      CloseTicket();
+      fetch("/helpdesk/ticket/" + id, {
+        method: "GET",
+        headers: {
+          "X-CSRFToken": token,
+        },
       })
-      .then((dataBack) => {
-        setBlurNav("addBlur");
-        sectionTicket.current.style.filter = "blur(3px)";
-        const data = dataBack.data;
-        // Chama a função de forma assíncrona sem bloquear o restante do código
-        if (data.responsible_technician !== null) {
-          const callAsyncFunction = async () => {
-            await changeLastVW({ id: id, tech: data.responsible_technician });
-          };
+        .then((response) => {
+          return response.json();
+        })
+        .then((dataBack) => {
+          setBlurNav("addBlur");
+          sectionTicket.current.style.filter = "blur(3px)";
+          const data = dataBack.data;
+          // Chama a função de forma assíncrona sem bloquear o restante do código
+          if (data.responsible_technician !== null) {
+            const callAsyncFunction = async () => {
+              await ChangeLastVW({ id: id, tech: data.responsible_technician });
+            };
 
-          // Chama a função, mas o código segue sem esperar a execução terminar
-          callAsyncFunction();
-        }
-        setMessage(false);
+            // Chama a função, mas o código segue sem esperar a execução terminar
+            callAsyncFunction();
+          }
+          setMessage(false);
 
-        // Calculando o tempo de vida do chamado.
-        const start_date = new Date(data.start_date); // Obtém a data de início do chamado.
-        const currentDate = new Date(); // Obtém a data atual.
-        const calcDate = currentDate - start_date; // Calcula a diferença em milissegundos entre as duas datas.
-        const lifetime = Math.floor(calcDate / (1000 * 60 * 60 * 24)); // Calcula o tempo de vida do chamado em dias.
+          // Calculando o tempo de vida do chamado.
+          const start_date = new Date(data.start_date); // Obtém a data de início do chamado.
+          const currentDate = new Date(); // Obtém a data atual.
+          const calcDate = currentDate - start_date; // Calcula a diferença em milissegundos entre as duas datas.
+          const lifetime = Math.floor(calcDate / (1000 * 60 * 60 * 24)); // Calcula o tempo de vida do chamado em dias.
 
-        setTicketNAME(data.ticketRequester);
-        setTicketDEPARTMENT(data.department);
-        setTicketMAIL(data.mail);
-        setTicketCOMPANY(data.company);
-        setTicketSECTOR(data.sector);
-        setTicketOCCURRENCE(data.occurrence);
-        setTicketPROBLEMN(data.problemn);
-        if (data.observation && data.observation.length !== 0) {
-          setObservation(data.observation);
-        }
-        if (data.equipament && data.equipament.length !== 0) {
-          setShowEquipament(true);
-          setEquipament(data.equipament);
-          setDateAlocate(data.date_alocate);
-        }
-        setLifetime(lifetime);
-        if (
-          data.responsible_technician &&
-          data.responsible_technician.length !== 0
-        ) {
-          setTicketResponsible_Technician(data.responsible_technician);
-        }
-        setTicketID(data.id);
+          setTicketNAME(data.ticketRequester);
+          setTicketDEPARTMENT(data.department);
+          setTicketMAIL(data.mail);
+          setTicketCOMPANY(data.company);
+          setTicketSECTOR(data.sector);
+          setTicketOCCURRENCE(data.occurrence);
+          setTicketPROBLEMN(data.problemn);
+          if (data.observation && data.observation.length !== 0) {
+            setObservation(data.observation);
+          }
+          if (data.equipament && data.equipament.length !== 0) {
+            setShowEquipament(true);
+            setEquipament(data.equipament);
+            setDateAlocate(data.date_alocate);
+          }
+          setLifetime(lifetime);
+          if (
+            data.responsible_technician &&
+            data.responsible_technician.length !== 0
+          ) {
+            setTicketResponsible_Technician(data.responsible_technician);
+          }
+          setTicketID(data.id);
 
-        var name_verify = userData.name;
-        // Verifica se o ticket contém arquivos do tipo e-mail e gera a visualização correspondente, se aplicável.
-        if (data.file !== null && data.file.length >= 1) {
-          setInitialFileData(data.file);
-          setInitialFileName(data.name_file);
-          setInitialContentFile(data.content_file);
-          setInitialFileTicket(true);
-        }
-        // Identifica o chat, verifica se contém valores e os separa em grupos de Data, Receptor e Horário.
-        if (
-          data.chat !== null &&
-          data.chat !== undefined &&
-          data.chat !== "undefined"
-        ) {
-          setFetchChat(true);
-          setMountDataChat(true);
-          setMountInitialChat(data.chat);
-        }
+          var name_verify = userData.name;
+          // Verifica se o ticket contém arquivos do tipo e-mail e gera a visualização correspondente, se aplicável.
+          if (data.file !== null && data.file.length >= 1) {
+            setInitialFileData(data.file);
+            setInitialFileName(data.name_file);
+            setInitialContentFile(data.content_file);
+            setInitialFileTicket(true);
+          }
+          // Identifica o chat, verifica se contém valores e os separa em grupos de Data, Receptor e Horário.
+          if (
+            data.chat !== null &&
+            data.chat !== undefined &&
+            data.chat !== "undefined"
+          ) {
+            setFetchChat(true);
+            setMountDataChat(true);
+            setMountInitialChat(data.chat);
+          }
 
-        // Verifica se o nome que consta no técnico é o mesmo que está logado.
-        var nameVer = name_verify.split(" ");
+          // Verifica se o nome que consta no técnico é o mesmo que está logado.
+          var nameVer = name_verify.split(" ");
 
-        if (data.responsible_technician !== null) {
-          var techVer = data.responsible_technician.split(" ");
+          if (data.responsible_technician !== null) {
+            var techVer = data.responsible_technician.split(" ");
 
-          var allFind = true;
-          for (var i = 0; i < techVer.length; i++) {
-            if (nameVer.indexOf(techVer[i]) === -1) {
-              allFind = false;
-              break;
+            var allFind = true;
+            for (var i = 0; i < techVer.length; i++) {
+              if (nameVer.indexOf(techVer[i]) === -1) {
+                allFind = false;
+                break;
+              }
             }
           }
-        }
 
-        if (allFind && data.open) {
-          setChat(true);
-        }
-        setTicketWindow(true);
-        setTicketWindowAtt(false);
-      })
-      .catch((err) => {
-        setMessageError(err);
-        setTypeError("FATAL ERROR");
-        setMessage(true);
-        return console.log(err);
-      });
+          if (allFind && data.open) {
+            setChat(true);
+          }
+          setTicketWindow(true);
+          setTicketWindowAtt(false);
+        })
+        .catch((err) => {
+          setMessageError(err);
+          setTypeError("FATAL ERROR");
+          setMessage(true);
+          return console.log(err);
+        });
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   // Evento para fechar dropdowns quando o usuário clica fora deles.
@@ -672,20 +706,26 @@ export default function DashboardTI() {
       !event.target.matches(".dropbtn") &&
       !event.target.matches(".dropdown-content")
     ) {
-      var dropdowns = document.getElementsByClassName("dropdown-content");
-      var i;
-      for (i = 0; i < dropdowns.length; i++) {
-        var openDropdown = dropdowns[i];
-        if (openDropdown.classList.contains("showDP")) {
-          openDropdown.classList.remove("showDP");
+      try {
+        var dropdowns = document.getElementsByClassName("dropdown-content");
+        var i;
+        for (i = 0; i < dropdowns.length; i++) {
+          var openDropdown = dropdowns[i];
+          if (openDropdown.classList.contains("showDP")) {
+            openDropdown.classList.remove("showDP");
+          }
         }
+      } catch (err) {
+        return console.log(err);
       }
     }
     return;
   };
 
   async function CloseTicket() {
-    sectionTicket.current.style.filter = "blur(0)";
+    if (sectionTicket && sectionTicket.current) {
+      sectionTicket.current.style.filter = "blur(0)";
+    }
     setInitialFileData("");
     setInitialFileName("");
     setInitialContentFile("");
@@ -744,8 +784,8 @@ export default function DashboardTI() {
       </div>
       <section ref={sectionTicket} className="mt-3 position-relative">
         {inList && (
-          <Table>
-            <thead>
+          <Table className="container">
+            <thead className="cla">
               <TH className={colorTheme}>Chamado</TH>
               <TH className={colorTheme}>Usuario</TH>
               <TH className={colorTheme}>Ocorrencia</TH>

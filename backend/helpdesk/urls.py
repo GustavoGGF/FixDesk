@@ -6,6 +6,7 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path("", views.firstView, name="central-de-chamados"),
+    path("get-token/", views.get_new_token, name="central-get-token"),
     path("submit-ticket/", views.submitTicket, name="central-tickets"),
     path("history/", views.history, name="central-history"),
     path(

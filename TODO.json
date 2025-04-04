@@ -1,5 +1,13 @@
 {
   "All Site": {
+    "methodology": {
+      "frontend": "React",
+      "frontend Componentes/Funções": "PascalCase",
+      "frontend Variáveis": "camelCase",
+      "frontend CSS/ID's": "kebab-case ",
+      "backend": "python/django",
+      "DB": "mysql"
+    },
     "Upgrades": {
       "4": "adicioanr o email do fixdesk como seguro",
       "23": "Implementar @retry",
@@ -11,7 +19,9 @@
       "2": "Apos ficar logado por um tempo da um erro te dereciona pra uma tela (quando expira o token)",
       "43": "Verificar todos os codigos que lidam com o banco de dados e por @transaction.atomic",
       "39": "Mudar nomes de funções e variaveis para boas praticas",
-      "46": "verificar as rotas e tratamento para quando o token expira"
+      "46": "verificar as rotas e tratamento para quando o token expira",
+      "51": "verificar melhores paletas de cores para modo claro",
+      "52": "Revisar todos os useEffect"
     },
     "Study Possibility": {}
   },

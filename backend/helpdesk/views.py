@@ -95,69 +95,46 @@ def sendMail(mail: str, msgm1: str, msgm2: str):
         # Fechar conexão SMTP
         server_smtp.quit()
 
+@csrf_exempt
+@require_GET
+def get_new_token(request):
+    try:
+        user = request.user
+        if user.groups.filter(
+            name__in=[Back_User, Back_Tech, Back_Leader]
+        ).exists():
+            csrf = get_token(request)
+        else:
+            return redirect("/login")
+
+        return JsonResponse(
+            {"token": csrf},
+            status=200,
+            safe=True,
+        )
+    except Exception as e:
+        logger.error(e)
+        return JsonResponse({"status": str(e)}, status=300, safe=True)
 
 @csrf_exempt
 @never_cache
+@require_GET
 def firstView(request: WSGIRequest):
-    if request.method == "POST":
-        equipament_list = []
+    if request.user.is_authenticated:
         try:
-            csrf = get_token(request)
-
-            if Equipaments.objects.exists():
-                equipaments = Equipaments.objects.all().only(
-                    "equipament", "model", "company", "id"
-                )
-
-                for equipament in equipaments:
-                    try:
-                        with equipament.equipament.open() as img:
-                            pil_image = Image.open(img)
-
-                            img_bytes = BytesIO()
-                            pil_image.save(img_bytes, format="PNG")
-
-                            image_data = b64encode(img_bytes.getvalue()).decode("utf-8")
-
-                            equipament_list.append(
-                                {
-                                    "image": image_data,
-                                    "model": equipament.model,
-                                    "company": equipament.company,
-                                    "id": equipament.id,
-                                }
-                            )
-                    except Exception as img_error:
-                        logger.error(
-                            f"Erro ao processar imagem do equipamento {equipament.id}: {img_error}"
-                        )
-                        continue  # Se falhar ao processar a imagem, ignora esse item e continua
-
-            return JsonResponse(
-                {"token": csrf, "equipaments": equipament_list},
-                status=200,
-                safe=True,
-            )
+            user = request.user
+            if user.groups.filter(
+                name__in=[Back_User, Back_Tech, Back_Leader]
+            ).exists():
+                return render(request, "index.html", {})
+            else:
+                return redirect("/login")
         except Exception as e:
+            json_error = str(e)
             logger.error(e)
-            return JsonResponse({"status": str(e)}, status=300, safe=True)
-
-    if request.method == "GET":
-        if request.user.is_authenticated:
-            try:
-                user = request.user
-                if user.groups.filter(
-                    name__in=[Back_User, Back_Tech, Back_Leader]
-                ).exists():
-                    return render(request, "index.html", {})
-                else:
-                    return redirect("/login")
-            except Exception as e:
-                json_error = str(e)
-                logger.error(e)
-                return JsonResponse({"status": json_error}, status=300, safe=True)
-        else:
-            return redirect("/login")
+            return JsonResponse({"status": json_error}, status=300, safe=True)
+    else:
+        return redirect("/login")
 
 
 @requires_csrf_token

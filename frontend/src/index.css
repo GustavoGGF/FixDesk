@@ -17,25 +17,30 @@
   --pure-gray: #808080;
   --midnight-blue: #0c203c;
   --aqua-mist: #9bdaeb;
+  --reddish-orange: #d84b00;
 }
 
 @keyframes file {
   50% {
-    box-shadow: -8px 8px 0 -3px #fff, -8px 8px 0 lightgray, -8px 8px 0 -3px #fff, -8px 8px 0 lightgray;
+    box-shadow: -8px 8px 0 -3px #fff, -8px 8px 0 lightgray, -8px 8px 0 -3px #fff,
+      -8px 8px 0 lightgray;
   }
   75%,
   100% {
-    box-shadow: -8px 8px 0 -3px #fff, -8px 8px 0 lightgray, -16px 16px 0 -3px #fff, -16px 16px 0 lightgray;
+    box-shadow: -8px 8px 0 -3px #fff, -8px 8px 0 lightgray,
+      -16px 16px 0 -3px #fff, -16px 16px 0 lightgray;
   }
 }
 
 @-webkit-keyframes file {
   50% {
-    box-shadow: -8px 8px 0 -3px #fff, -8px 8px 0 lightgray, -8px 8px 0 -3px #fff, -8px 8px 0 lightgray;
+    box-shadow: -8px 8px 0 -3px #fff, -8px 8px 0 lightgray, -8px 8px 0 -3px #fff,
+      -8px 8px 0 lightgray;
   }
   75%,
   100% {
-    box-shadow: -8px 8px 0 -3px #fff, -8px 8px 0 lightgray, -16px 16px 0 -3px #fff, -16px 16px 0 lightgray;
+    box-shadow: -8px 8px 0 -3px #fff, -8px 8px 0 lightgray,
+      -16px 16px 0 -3px #fff, -16px 16px 0 lightgray;
   }
 }
 
@@ -173,7 +178,8 @@
         height: 5px;
         border: solid 1px lightgray;
         border-radius: 2px;
-        background: linear-gradient(to left, rgba(black, 0.2), rgba(black, 0.8)) no-repeat;
+        background: linear-gradient(to left, rgba(black, 0.2), rgba(black, 0.8))
+          no-repeat;
         background-size: 100% 100%;
         &.active {
           animation: progress 30s linear;
@@ -289,11 +295,11 @@
   }
 }
 
-.lineTop {
+.line-top {
   border-top: solid 4px #46aba1;
 }
 
-.dashCard {
+.dash-card {
   padding: 30px;
   justify-content: center;
   margin-top: 10px;
@@ -313,17 +319,17 @@
   filter: blur(3px);
 }
 
-.ticektClose {
+.ticket-close {
   border: 5px solid #10451d;
   background-color: forestgreen;
 }
 
-.ticektOpenNotView {
+.ticket-open-not-view {
   background: #00b4d8;
   border: 6px solid #0077b6;
 }
 
-.ticektOpenNotViewList {
+.ticket-open-not-view-list {
   background-color: #00b4d8;
   border-top: 5px solid #0077b6;
   border-bottom: 5px solid #0077b6;
@@ -335,12 +341,12 @@
   color: black;
 }
 
-.ticektOpenInView {
+.ticket-open-in-view {
   background-color: #ddce15;
   border: 6px solid #fff700;
 }
 
-.ticektOpenInViewList {
+.ticket-open-in-view-list {
   background-color: #ddce15;
   border-top: 5px solid #fff700;
   border-bottom: 5px solid #fff700;
@@ -348,20 +354,20 @@
   border-right: 3px solid #fff700;
 }
 
-.ticketStop {
+.ticket-stop {
   background-color: #d2d6d9;
   border: 6px solid #c5c5c5;
 }
 
-.ticketStopList {
+.ticket-stop-list {
   border-top: 5px solid #c5c5c5;
   border-bottom: 5px solid #c5c5c5;
   border-left: 3px solid #c5c5c5;
   border-right: 3px solid #c5c5c5;
-  background-color: d2d6d9;
+  background-color: #d2d6d9;
 }
 
-.ticektCloseList {
+.ticket-close-list {
   border-top: 5px solid #10451d;
   border-bottom: 5px solid #10451d;
   border-left: 3px solid #10451d;
@@ -369,12 +375,12 @@
   background-color: forestgreen;
 }
 
-.ticketUrgent {
+.ticket-urgent {
   background-color: crimson;
   border: 6px solid red;
 }
 
-.ticketUrgentList {
+.ticket-urgent-list {
   border-top: 5px solid red;
   border-bottom: 5px solid red;
   border-left: 3px solid red;
@@ -382,7 +388,7 @@
   background-color: crimson;
 }
 
-.themeLight {
+.theme-light {
   background-color: #f9f9f9;
 }
 
@@ -400,17 +406,17 @@
   color: #f1faee;
 }
 
-.colorLight {
+.color-light {
   color: #201b2c;
 }
 
-.themeFilterLight {
+.theme-filter-light {
   -webkit-box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.75);
   -moz-box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.75);
   box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.75);
 }
 
-.themeCardLight {
+.theme-card-light {
   -webkit-box-shadow: -1px 13px 10px 3px rgba(0, 0, 0, 0.75);
   -moz-box-shadow: -1px 13px 10px 3px rgba(0, 0, 0, 0.75);
   box-shadow: -1px 13px 10px 3px rgba(0, 0, 0, 0.75);
@@ -507,7 +513,24 @@
   min-width: 7%;
 }
 
-.ticketHover:hover {
-  transform: scale(1.1);
-  -webkit-transform: scale(1.1); /* Adicionado para compatibilidade com navegadores baseados em WebKit */
+.ticket-hover {
+  transform: scale(1) !important;
+  -webkit-transform: scale(
+    1
+  ) !important; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
+}
+
+.ticket-hover:hover {
+  transform: scale(1.1) !important;
+  -webkit-transform: scale(
+    1.1
+  ) !important; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
+}
+
+.cla {
+  background-color: var(--reddish-orange);
+}
+
+.no-border {
+  border: none !important;
 }

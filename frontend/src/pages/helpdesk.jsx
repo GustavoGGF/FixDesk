@@ -163,29 +163,30 @@ export default function Helpdesk() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("", {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            "Cache-Control": "no-cache",
-          },
-          body: {},
-        });
-        if (!response.ok) {
-          // Lançar um erro se a resposta não for ok
-          const errorData = await response.text(); // Obtém o texto de erro, se disponível
-          throw new Error(`Erro na solicitação: ${errorData}`);
-        }
-        const data = await response.json();
-        // Atualiza os estados com os dados recebidos
-        setCSRFToken(data.token);
-        // Processa dados do localStorage com segurança
-        const storedDataUser = localStorage.getItem("dataInfo");
-        const dataUserInfo = storedDataUser
-          ? JSON.parse(storedDataUser).data
-          : null;
-        setdataUser(dataUserInfo);
+        fetch("get-token/", {
+          method: "GET",
+          headers: { Accept: "application/json" },
+        })
+          .then((response) => {
+            return response.json();
+          })
+          .then((data) => {
+            console.log(data);
+
+            setCSRFToken(data.token);
+            // Processa dados do localStorage com segurança
+            const storedDataUser = localStorage.getItem("dataInfo");
+            if (storedDataUser === null || storedDataUser === "null") {
+              return (window.location.href = "/login");
+            }
+            const dataUserInfo = storedDataUser
+              ? JSON.parse(storedDataUser).data
+              : null;
+            setdataUser(dataUserInfo);
+          })
+          .catch((err) => {
+            return console.log(err);
+          });
       } catch (error) {
         console.error("Erro na solicitação:", error);
       }
@@ -277,7 +278,7 @@ export default function Helpdesk() {
 
           $("footer").classList.add("hasFiles");
           $("#divider").classList.remove("overflow-hidden");
-          $("#divider").classList.add("lineTop");
+          $("#divider").classList.add("line-top");
           $("#drop").classList.remove("active");
           evt.preventDefault();
         };
@@ -305,7 +306,7 @@ export default function Helpdesk() {
    * @param {Event} event - O evento associado ao envio do formulário ou à ação que aciona a função.
    * @returns {void} - Esta função não retorna nada diretamente, mas realiza o envio do ticket de chamado.
    */
-  function submitTicket(event) {
+  function SubmitTicket(event) {
     event.preventDefault();
     /**
      * Dentro da função 'submitTicket', são realizadas validações para verificar se determinados campos foram preenchidos antes de enviar o ticket de chamado.
@@ -346,16 +347,16 @@ export default function Helpdesk() {
     var mes = dataUserAtual.getMonth() + 1; // Os meses em JavaScript são indexados a partir de zero, por isso é necessário adicionar 1
     var ano = dataUserAtual.getFullYear();
 
-    function adicionaZero(numero) {
+    function AddZero(numero) {
       if (numero < 10) {
         return "0" + numero;
       }
       return numero;
     }
     var horaFormatada =
-      adicionaZero(dataUserAtual.getHours()) +
+      AddZero(dataUserAtual.getHours()) +
       ":" +
-      adicionaZero(dataUserAtual.getMinutes());
+      AddZero(dataUserAtual.getMinutes());
 
     // Formatar a dataUser no formato dd/mm/yy
 
@@ -441,11 +442,12 @@ export default function Helpdesk() {
     formdataUser.append("observation", observation);
     formdataUser.append("start_date", dataUserFormatada);
     formdataUser.append("respective_area", respectiveArea);
+    console.log("enviando");
+
     fetch("submit-ticket/", {
       method: "POST",
       headers: {
         "X-CSRFToken": csrfToken,
-        "Cache-Control": "no-cache",
       },
       body: formdataUser,
     })
@@ -483,7 +485,7 @@ export default function Helpdesk() {
       });
   }
 
-  function inputDrop() {
+  function InputDrop() {
     setInputDropControl(true);
     setInputManualControl(false);
     file_name = fileimg.map((fileItem) => fileItem.name);
@@ -516,9 +518,9 @@ export default function Helpdesk() {
           type="button"
           onClick={() => {
             fileimg.splice(index, 1);
-            inputDrop();
+            InputDrop();
             const divider = document.getElementById("divider");
-            divider.classList.remove("lineTop");
+            divider.classList.remove("line-top");
           }}
         >
           <ImgFile src={Exclude} alt="Excluir arquivo" />
@@ -534,7 +536,7 @@ export default function Helpdesk() {
 
   // Apos enviar um arquivo para upload é chamado essa função que mostra qual arquivo foi anexado
   // e seu tamanho
-  function inputManual(event) {
+  function InputManual(event) {
     // setInputDropControl(false);
     setInputManualControl(true);
 
@@ -546,7 +548,7 @@ export default function Helpdesk() {
     const drop = document.getElementById("drop");
     drop.classList.add("hidden");
     const divider = document.getElementById("divider");
-    divider.classList.add("lineTop");
+    divider.classList.add("line-top");
 
     const paragraphs = fileList.map((file, index) => (
       <DivNameFile>
@@ -577,8 +579,8 @@ export default function Helpdesk() {
             const drop = document.getElementById("drop");
             drop.classList.remove("hidden");
             const divider = document.getElementById("divider");
-            divider.classList.remove("lineTop");
-            removeFile(index);
+            divider.classList.remove("line-top");
+            RemoveFile(index);
           }}
         >
           <ImgFile src={Exclude} alt="Excluir arquivo" />
@@ -591,7 +593,7 @@ export default function Helpdesk() {
   }
 
   // Função que remove arquivo anexado para upload
-  function removeFile(indexToRemove) {
+  function RemoveFile(indexToRemove) {
     if (arrayInput.length < 1) {
       setNameOnInputFiles("");
       setInputManualControl(false);
@@ -606,7 +608,7 @@ export default function Helpdesk() {
     const updatedParagraphs = updatedFiles.map((file, index) => (
       <DivNameFile key={index}>
         <PNameFile className="text-break">{file.name}</PNameFile>
-        <BtnFile type="button" onClick={() => removeFile(index)}>
+        <BtnFile type="button" onClick={() => RemoveFile(index)}>
           <ImgFile src={Exclude} alt="Excluir arquivo" />
         </BtnFile>
       </DivNameFile>
@@ -615,14 +617,9 @@ export default function Helpdesk() {
     const drop = document.getElementById("drop");
     drop.classList.add("hidden");
     const divider = document.getElementById("divider");
-    divider.classList.add("lineTop");
+    divider.classList.add("line-top");
 
     setNameOnInputFiles(updatedParagraphs);
-  }
-
-  // Fechar informação
-  function closeInfo() {
-    setInfo(false);
   }
 
   return (
@@ -638,7 +635,14 @@ export default function Helpdesk() {
         />
       )}
       {info && (
-        <Info id={infoID} cls={infoClass} cls2={infoClass2} funct={closeInfo} />
+        <Info
+          id={infoID}
+          cls={infoClass}
+          cls2={infoClass2}
+          funct={() => {
+            setInfo(false);
+          }}
+        />
       )}
       {loading && (
         <div className="position-absolute top-50 start-50 translate-middle">
@@ -745,13 +749,13 @@ export default function Helpdesk() {
                       className="w-100 h-100 position-absolute pointer"
                       type="file"
                       multiple
-                      onChange={inputManual}
+                      onChange={InputManual}
                     />
                     <Span1 className="up">up</Span1>
                     <Span2 className="load">load</Span2>
                   </PFiles>
                 </HeaderFiles>
-                <BodyFiles id="drop" onDrop={() => inputDrop()}>
+                <BodyFiles id="drop" onDrop={() => InputDrop()}>
                   <IMGFile src={File} alt="" />
                   <PFiles2 className="pointer-none">
                     <B1>Arraste e Solte</B1> os arquivos aqui para fazer upload{" "}
@@ -782,7 +786,7 @@ export default function Helpdesk() {
           <input
             type="submit"
             className="importar btn btn-primary mt-3 mb-3"
-            onClick={submitTicket}
+            onClick={SubmitTicket}
             value={"Enviar"}
           />
         </Form>

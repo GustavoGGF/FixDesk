@@ -96,6 +96,7 @@ export default function TicketsOptions({ Helpdesk, Name, Dashboard }) {
       setRespectiveTI(false);
       setReset(false);
       setSoftAPP(false);
+      setDados(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reset]);

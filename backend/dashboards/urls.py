@@ -6,18 +6,18 @@ urlpatterns = [
     path("get-info/", views.get_info, name="central-dashboard-TI"),
     path("dashboard_TI/", views.dashboard_TI, name="central-dashboard-TI"),
     path(
-        "getDashBoardPie/<str:sector>",
-        views.getDashBoardPie,
+        "get-dash-board-pie/<str:sector>",
+        views.get_dash_board_pie,
         name="central-dashboard-pie",
     ),
     path(
-        "get-ticket-TI/<int:quantity>/<str:status>/<str:order>",
-        views.get_ticket_TI,
-        name="central-dashboard-ticket-TI",
+        "get-ticket-ti/<int:quantity>/<str:status>/<str:order>",
+        views.get_ticket_ti,
+        name="central-dashboard-ticket-ti",
     ),
     path(
         "get-dash-board-bar/<str:range_days>",
-        views.getDashBoardBar,
+        views.get_dash_board_bar,
         name="central-get-dashboard-bar",
     ),
     path(
