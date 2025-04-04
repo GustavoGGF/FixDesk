@@ -95,48 +95,51 @@ export default function Login() {
   // Se for concedido acesso, ela acessa o helpdesk.
   function Verifylogin(event) {
     event.preventDefault();
+    try {
+      const user = userRef.current.value;
+      const pass = passRef.current.value;
 
-    const user = userRef.current.value;
-    const pass = passRef.current.value;
+      setLoginPage(false);
+      setPassLimit(false);
+      setAwaitValidation(true);
 
-    setLoginPage(false);
-    setPassLimit(false);
-    setAwaitValidation(true);
-
-    fetch("validation/", {
-      method: "POST",
-      mode: "cors",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        user: user,
-        password: pass,
-      }),
-    })
-      .then((response) => {
-        if (response.status === 401) {
-          handleInvalidCredentials();
-        } else if (response.status === 425) {
-          handleAccessRestricted();
-        } else if (response.ok) {
-          return response.json();
-        }
+      fetch("validation/", {
+        method: "POST",
+        mode: "cors",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user: user,
+          password: pass,
+        }),
       })
-      .then((data) => {
-        if (data) {
-          localStorage.setItem("dataInfo", JSON.stringify(data));
-          return (window.location.href = "/helpdesk");
-        }
-      })
-      .catch((err) => {
-        console.error("Erro na validação do login:", err);
-        setMessage(true);
-        setMessageError("Erro ao verificar Login", err);
-        setTypeError("Fatal ERROR");
-        return;
-      });
+        .then((response) => {
+          if (response.status === 401) {
+            handleInvalidCredentials();
+          } else if (response.status === 425) {
+            handleAccessRestricted();
+          } else if (response.ok) {
+            return response.json();
+          }
+        })
+        .then((data) => {
+          if (data) {
+            localStorage.setItem("dataInfo", JSON.stringify(data));
+            return (window.location.href = "/helpdesk");
+          }
+        })
+        .catch((err) => {
+          console.error("Erro na validação do login:", err);
+          setMessage(true);
+          setMessageError("Erro ao verificar Login", err);
+          setTypeError("Fatal ERROR");
+          return;
+        });
+    } catch (err) {
+      return console.log(err);
+    }
   }
 
   // Funçaõ mostrada após erro de login por erro na credencial
@@ -161,13 +164,17 @@ export default function Login() {
   }
 
   function VerifyPass() {
-    const pass = passRef.current.value;
+    try {
+      const pass = passRef.current.value;
 
-    if (pass.length > 10) {
-      setPassLimit(true);
-      setAnimation("animate__bounceIn");
-    } else {
-      setAnimation("animate__bounceOut");
+      if (pass.length > 10) {
+        setPassLimit(true);
+        setAnimation("animate__bounceIn");
+      } else {
+        setAnimation("animate__bounceOut");
+      }
+    } catch (err) {
+      return console.log(err);
     }
   }
 

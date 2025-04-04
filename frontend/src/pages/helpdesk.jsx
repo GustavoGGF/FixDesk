@@ -171,8 +171,6 @@ export default function Helpdesk() {
             return response.json();
           })
           .then((data) => {
-            console.log(data);
-
             setCSRFToken(data.token);
             // Processa dados do localStorage com segurança
             const storedDataUser = localStorage.getItem("dataInfo");
@@ -320,306 +318,320 @@ export default function Helpdesk() {
      * @param {String} setMessagetitle - Uma String para definir o título da mensagem de alerta.
      * @returns {void} - Esta função não retorna nada diretamente, mas exibe alertas se os campos necessários não forem preenchidos.
      */
-    if (respectiveArea.length === 0) {
-      setAlertVerify(true);
-      setMessagetitle("Selecione a Área Responsável pelo Chamado");
-      return;
-    } else if (sector.length === 0) {
-      setAlertVerify(true);
-      setMessagetitle("Selecione um tipo de ocorrencia");
-      return;
-    } else if (occurrence.length === 0) {
-      setAlertVerify(true);
-      setMessagetitle("Selecione um tipo de problema");
-      return;
-    } else if (problemn.length === 0) {
-      setAlertVerify(true);
-      setMessagetitle("Selecione o problema em especifico");
-      return;
-    } else {
-      setAlertVerify(false);
-    }
-    // * Caso nenhuma opção seja selecionada mostra mensagem e não cria o chamado
-
-    // Obter o dia, mês e ano da dataUser atual
-    var dataUserAtual = new Date();
-    var dia = dataUserAtual.getDate();
-    var mes = dataUserAtual.getMonth() + 1; // Os meses em JavaScript são indexados a partir de zero, por isso é necessário adicionar 1
-    var ano = dataUserAtual.getFullYear();
-
-    function AddZero(numero) {
-      if (numero < 10) {
-        return "0" + numero;
+    try {
+      if (respectiveArea.length === 0) {
+        setAlertVerify(true);
+        setMessagetitle("Selecione a Área Responsável pelo Chamado");
+        return;
+      } else if (sector.length === 0) {
+        setAlertVerify(true);
+        setMessagetitle("Selecione um tipo de ocorrencia");
+        return;
+      } else if (occurrence.length === 0) {
+        setAlertVerify(true);
+        setMessagetitle("Selecione um tipo de problema");
+        return;
+      } else if (problemn.length === 0) {
+        setAlertVerify(true);
+        setMessagetitle("Selecione o problema em especifico");
+        return;
+      } else {
+        setAlertVerify(false);
       }
-      return numero;
-    }
-    var horaFormatada =
-      AddZero(dataUserAtual.getHours()) +
-      ":" +
-      AddZero(dataUserAtual.getMinutes());
+      // * Caso nenhuma opção seja selecionada mostra mensagem e não cria o chamado
 
-    // Formatar a dataUser no formato dd/mm/yy
+      // Obter o dia, mês e ano da dataUser atual
+      var dataUserAtual = new Date();
+      var dia = dataUserAtual.getDate();
+      var mes = dataUserAtual.getMonth() + 1; // Os meses em JavaScript são indexados a partir de zero, por isso é necessário adicionar 1
+      var ano = dataUserAtual.getFullYear();
 
-    // Formatando para dataUser BR
-    var dataUserFormatada =
-      ano +
-      "-" +
-      ("0" + mes).slice(-2) +
-      "-" +
-      ("0" + dia).slice(-2) +
-      " " +
-      horaFormatada;
-
-    /**
-     * Inicialização de variáveis dentro do escopo da função ou bloco de código.
-     *
-     * @type {string} Status - Variável para armazenar o status do ticket de chamado.
-     * @type {Array} NewDatesAlocate - Array vazio para armazenar novas datas alocadas.
-     * @type {FormData} formdataUser - Objeto FormData para coletar dados de formulário.
-     * @type {number} total_size - Variável para armazenar o tamanho total, inicializada com zero.
-     */
-    let Status;
-    let NewDatesAlocate = [];
-    const formdataUser = new FormData();
-    var total_size = 0;
-
-    if (filename.length > 0) {
-      for (let i = 0; i < fileimg.length; i++) {
-        const file = fileimg[i];
-        total_size += file.size;
-        formdataUser.append("image", file);
-      }
-    }
-    if (selectedDay.length > 0) {
-      for (let dateObj of selectedDay) {
-        const day = dateObj.getDate().toString().padStart(2, "0");
-        const month = (dateObj.getMonth() + 1).toString().padStart(2, "0");
-        const year = dateObj.getFullYear();
-        const dateFormated = `${year}-${month}-${day}`;
-        NewDatesAlocate.push(dateFormated);
-      }
-      formdataUser.append("id_equipament", machineAlocate);
-      formdataUser.append("days_alocated", NewDatesAlocate);
-    }
-
-    if (total_size > 10 * 1024 * 1024) {
-      setMessage(true);
-      setTypeError("Capacidade Máxima Ultrapassada");
-      setMessageError("Capacidade Máxima de Arquivos Anexado é de 20MB");
-      return;
-    }
-    formdataUser.append("ticketRequester", dataUser.name);
-    formdataUser.append("department", dataUser.departament);
-    if (dataUser.departament.length === 0) {
-      setMessageError("Informar TI para atualizar localidade {Departament}");
-      setTypeError("Falta de Dados");
-      setMessage(true);
-      return;
-    }
-    formdataUser.append("mail", dataUser.mail);
-    if (dataUser.mail.length === 0) {
-      setMessageError("Informar TI para atualizar localidade {Mail}");
-      setTypeError("Falta de Dados");
-      setMessage(true);
-      return;
-    }
-    if (dataUser.company.length === 0) {
-      setMessageError("Informar TI para atualizar localidade {Company}");
-      setTypeError("Falta de Dados");
-      setMessage(true);
-      return;
-    }
-    formdataUser.append("company", dataUser.company);
-    formdataUser.append("sector", sector);
-    formdataUser.append("occurrence", occurrence);
-    formdataUser.append("problemn", problemn);
-    if (observation.length < 2) {
-      setMessageError("Obrigatório Escrever Obversação conforme o chamado");
-      setTypeError("Falta de Dados");
-      setMessage(true);
-      return;
-    }
-    formdataUser.append("observation", observation);
-    formdataUser.append("start_date", dataUserFormatada);
-    formdataUser.append("respective_area", respectiveArea);
-    console.log("enviando");
-
-    fetch("submit-ticket/", {
-      method: "POST",
-      headers: {
-        "X-CSRFToken": csrfToken,
-      },
-      body: formdataUser,
-    })
-      .then((response) => {
-        Status = response.status;
-        return response.json();
-      })
-      .then((dataUser) => {
-        if (Status === 200) {
-          setObservation("");
-          setInfoID(dataUser.id);
-          setInfo(true);
-          setInfoClass("animate__lightSpeedInRight");
-          setReset(true);
-          observationRef.current.value = "";
-          setInfoClass2("closeInfo");
-          setNameOnInputFiles("");
-          setNameOnDropFiles("");
-          setFileSizeNotify(false);
-          setTimeout(() => {
-            setInfo(false);
-          }, 6000);
-        } else if (Status === 320) {
-          setMessage(true);
-          setTypeError("Dados Inválidos");
-          setMessageError("Arquivo Anexado Inválido");
-          return window.scrollTo({
-            top: 0,
-            behavior: "smooth",
-          });
+      function AddZero(numero) {
+        if (numero < 10) {
+          return "0" + numero;
         }
+        return numero;
+      }
+      var horaFormatada =
+        AddZero(dataUserAtual.getHours()) +
+        ":" +
+        AddZero(dataUserAtual.getMinutes());
+
+      // Formatar a dataUser no formato dd/mm/yy
+
+      // Formatando para dataUser BR
+      var dataUserFormatada =
+        ano +
+        "-" +
+        ("0" + mes).slice(-2) +
+        "-" +
+        ("0" + dia).slice(-2) +
+        " " +
+        horaFormatada;
+
+      /**
+       * Inicialização de variáveis dentro do escopo da função ou bloco de código.
+       *
+       * @type {string} Status - Variável para armazenar o status do ticket de chamado.
+       * @type {Array} NewDatesAlocate - Array vazio para armazenar novas datas alocadas.
+       * @type {FormData} formdataUser - Objeto FormData para coletar dados de formulário.
+       * @type {number} total_size - Variável para armazenar o tamanho total, inicializada com zero.
+       */
+      let Status;
+      let NewDatesAlocate = [];
+      const formdataUser = new FormData();
+      var total_size = 0;
+
+      if (filename.length > 0) {
+        for (let i = 0; i < fileimg.length; i++) {
+          const file = fileimg[i];
+          total_size += file.size;
+          formdataUser.append("image", file);
+        }
+      }
+      if (selectedDay.length > 0) {
+        for (let dateObj of selectedDay) {
+          const day = dateObj.getDate().toString().padStart(2, "0");
+          const month = (dateObj.getMonth() + 1).toString().padStart(2, "0");
+          const year = dateObj.getFullYear();
+          const dateFormated = `${year}-${month}-${day}`;
+          NewDatesAlocate.push(dateFormated);
+        }
+        formdataUser.append("id_equipament", machineAlocate);
+        formdataUser.append("days_alocated", NewDatesAlocate);
+      }
+
+      if (total_size > 10 * 1024 * 1024) {
+        setMessage(true);
+        setTypeError("Capacidade Máxima Ultrapassada");
+        setMessageError("Capacidade Máxima de Arquivos Anexado é de 20MB");
+        return;
+      }
+      formdataUser.append("ticketRequester", dataUser.name);
+      formdataUser.append("department", dataUser.departament);
+      if (dataUser.departament.length === 0) {
+        setMessageError("Informar TI para atualizar localidade {Departament}");
+        setTypeError("Falta de Dados");
+        setMessage(true);
+        return;
+      }
+      formdataUser.append("mail", dataUser.mail);
+      if (dataUser.mail.length === 0) {
+        setMessageError("Informar TI para atualizar localidade {Mail}");
+        setTypeError("Falta de Dados");
+        setMessage(true);
+        return;
+      }
+      if (dataUser.company.length === 0) {
+        setMessageError("Informar TI para atualizar localidade {Company}");
+        setTypeError("Falta de Dados");
+        setMessage(true);
+        return;
+      }
+      formdataUser.append("company", dataUser.company);
+      formdataUser.append("sector", sector);
+      formdataUser.append("occurrence", occurrence);
+      formdataUser.append("problemn", problemn);
+      if (observation.length < 2) {
+        setMessageError("Obrigatório Escrever Obversação conforme o chamado");
+        setTypeError("Falta de Dados");
+        setMessage(true);
+        return;
+      }
+      formdataUser.append("observation", observation);
+      formdataUser.append("start_date", dataUserFormatada);
+      formdataUser.append("respective_area", respectiveArea);
+
+      fetch("submit-ticket/", {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": csrfToken,
+        },
+        body: formdataUser,
       })
-      .catch((err) => {
-        return console.log(err);
-      });
+        .then((response) => {
+          Status = response.status;
+          return response.json();
+        })
+        .then((dataUser) => {
+          if (Status === 200) {
+            setObservation("");
+            setInfoID(dataUser.id);
+            setInfo(true);
+            setInfoClass("animate__lightSpeedInRight");
+            setReset(true);
+            observationRef.current.value = "";
+            setInfoClass2("closeInfo");
+            setNameOnInputFiles("");
+            setNameOnDropFiles("");
+            setFileSizeNotify(false);
+            setTimeout(() => {
+              setInfo(false);
+            }, 6000);
+          } else if (Status === 320) {
+            setMessage(true);
+            setTypeError("Dados Inválidos");
+            setMessageError("Arquivo Anexado Inválido");
+            return window.scrollTo({
+              top: 0,
+              behavior: "smooth",
+            });
+          }
+        })
+        .catch((err) => {
+          return console.log(err);
+        });
+    } catch (err) {
+      return console.log(err);
+    }
   }
 
   function InputDrop() {
-    setInputDropControl(true);
-    setInputManualControl(false);
-    file_name = fileimg.map((fileItem) => fileItem.name);
-    setFileName(file_name);
+    try {
+      setInputDropControl(true);
+      setInputManualControl(false);
+      file_name = fileimg.map((fileItem) => fileItem.name);
+      setFileName(file_name);
 
-    const paragraphs = file_name.map((fileName, index) => (
-      <DivNameFile>
-        <PNameFile key={index} className="text-break">
-          {fileName}
-        </PNameFile>
-        <div>
-          {(() => {
-            const file = fileimg[index];
-            const sizeInBytes = file.size;
-            let size;
-            let unit;
+      const paragraphs = file_name.map((fileName, index) => (
+        <DivNameFile>
+          <PNameFile key={index} className="text-break">
+            {fileName}
+          </PNameFile>
+          <div>
+            {(() => {
+              const file = fileimg[index];
+              const sizeInBytes = file.size;
+              let size;
+              let unit;
 
-            if (sizeInBytes >= 1024 * 1024) {
-              size = sizeInBytes / (1024 * 1024);
-              unit = "MB";
-            } else {
-              size = sizeInBytes / 1024;
-              unit = "KB";
-            }
+              if (sizeInBytes >= 1024 * 1024) {
+                size = sizeInBytes / (1024 * 1024);
+                unit = "MB";
+              } else {
+                size = sizeInBytes / 1024;
+                unit = "KB";
+              }
 
-            return `${size.toFixed(2)} ${unit}`;
-          })()}
-        </div>
-        <BtnFile
-          type="button"
-          onClick={() => {
-            fileimg.splice(index, 1);
-            InputDrop();
-            const divider = document.getElementById("divider");
-            divider.classList.remove("line-top");
-          }}
-        >
-          <ImgFile src={Exclude} alt="Excluir arquivo" />
-        </BtnFile>
-      </DivNameFile>
-    ));
+              return `${size.toFixed(2)} ${unit}`;
+            })()}
+          </div>
+          <BtnFile
+            type="button"
+            onClick={() => {
+              fileimg.splice(index, 1);
+              InputDrop();
+              const divider = document.getElementById("divider");
+              divider.classList.remove("line-top");
+            }}
+          >
+            <ImgFile src={Exclude} alt="Excluir arquivo" />
+          </BtnFile>
+        </DivNameFile>
+      ));
 
-    const Div = <div className="w-100">{paragraphs}</div>;
+      const Div = <div className="w-100">{paragraphs}</div>;
 
-    setNameOnDropFiles(Div);
-    setFileSizeNotify(true);
+      setNameOnDropFiles(Div);
+      setFileSizeNotify(true);
+    } catch (err) {
+      return console.log(err);
+    }
   }
 
   // Apos enviar um arquivo para upload é chamado essa função que mostra qual arquivo foi anexado
   // e seu tamanho
   function InputManual(event) {
-    // setInputDropControl(false);
-    setInputManualControl(true);
+    try {
+      setInputManualControl(true);
 
-    const files = event.target.files;
+      const files = event.target.files;
 
-    const fileList = Array.from(files);
-    setArrayInput(fileList);
+      const fileList = Array.from(files);
+      setArrayInput(fileList);
 
-    const drop = document.getElementById("drop");
-    drop.classList.add("hidden");
-    const divider = document.getElementById("divider");
-    divider.classList.add("line-top");
+      const drop = document.getElementById("drop");
+      drop.classList.add("hidden");
+      const divider = document.getElementById("divider");
+      divider.classList.add("line-top");
 
-    const paragraphs = fileList.map((file, index) => (
-      <DivNameFile>
-        <PNameFile key={index} className="text-break">
-          {file.name}
-        </PNameFile>
-        <div>
-          {(() => {
-            const file = fileList[index];
-            const sizeInBytes = file.size;
-            let size;
-            let unit;
+      const paragraphs = fileList.map((file, index) => (
+        <DivNameFile>
+          <PNameFile key={index} className="text-break">
+            {file.name}
+          </PNameFile>
+          <div>
+            {(() => {
+              const file = fileList[index];
+              const sizeInBytes = file.size;
+              let size;
+              let unit;
 
-            if (sizeInBytes >= 1024 * 1024) {
-              size = sizeInBytes / (1024 * 1024);
-              unit = "MB";
-            } else {
-              size = sizeInBytes / 1024;
-              unit = "KB";
-            }
+              if (sizeInBytes >= 1024 * 1024) {
+                size = sizeInBytes / (1024 * 1024);
+                unit = "MB";
+              } else {
+                size = sizeInBytes / 1024;
+                unit = "KB";
+              }
 
-            return `${size.toFixed(2)} ${unit}`;
-          })()}
-        </div>
-        <BtnFile
-          type="button"
-          onClick={() => {
-            const drop = document.getElementById("drop");
-            drop.classList.remove("hidden");
-            const divider = document.getElementById("divider");
-            divider.classList.remove("line-top");
-            RemoveFile(index);
-          }}
-        >
-          <ImgFile src={Exclude} alt="Excluir arquivo" />
-        </BtnFile>
-      </DivNameFile>
-    ));
+              return `${size.toFixed(2)} ${unit}`;
+            })()}
+          </div>
+          <BtnFile
+            type="button"
+            onClick={() => {
+              const drop = document.getElementById("drop");
+              drop.classList.remove("hidden");
+              const divider = document.getElementById("divider");
+              divider.classList.remove("line-top");
+              RemoveFile(index);
+            }}
+          >
+            <ImgFile src={Exclude} alt="Excluir arquivo" />
+          </BtnFile>
+        </DivNameFile>
+      ));
 
-    setNameOnInputFiles(paragraphs);
-    setFileSizeNotify(true);
+      setNameOnInputFiles(paragraphs);
+      setFileSizeNotify(true);
+    } catch (err) {
+      return console.log(err);
+    }
   }
 
   // Função que remove arquivo anexado para upload
   function RemoveFile(indexToRemove) {
-    if (arrayInput.length < 1) {
-      setNameOnInputFiles("");
-      setInputManualControl(false);
-      return;
+    try {
+      if (arrayInput.length < 1) {
+        setNameOnInputFiles("");
+        setInputManualControl(false);
+        return;
+      }
+
+      const updatedFiles = arrayInput.filter(
+        (_, index) => index !== indexToRemove
+      );
+      setArrayInput(updatedFiles);
+
+      const updatedParagraphs = updatedFiles.map((file, index) => (
+        <DivNameFile key={index}>
+          <PNameFile className="text-break">{file.name}</PNameFile>
+          <BtnFile type="button" onClick={() => RemoveFile(index)}>
+            <ImgFile src={Exclude} alt="Excluir arquivo" />
+          </BtnFile>
+        </DivNameFile>
+      ));
+
+      const drop = document.getElementById("drop");
+      drop.classList.add("hidden");
+      const divider = document.getElementById("divider");
+      divider.classList.add("line-top");
+
+      setNameOnInputFiles(updatedParagraphs);
+    } catch (err) {
+      return console.log(err);
     }
-
-    const updatedFiles = arrayInput.filter(
-      (_, index) => index !== indexToRemove
-    );
-    setArrayInput(updatedFiles);
-
-    const updatedParagraphs = updatedFiles.map((file, index) => (
-      <DivNameFile key={index}>
-        <PNameFile className="text-break">{file.name}</PNameFile>
-        <BtnFile type="button" onClick={() => RemoveFile(index)}>
-          <ImgFile src={Exclude} alt="Excluir arquivo" />
-        </BtnFile>
-      </DivNameFile>
-    ));
-
-    const drop = document.getElementById("drop");
-    drop.classList.add("hidden");
-    const divider = document.getElementById("divider");
-    divider.classList.add("line-top");
-
-    setNameOnInputFiles(updatedParagraphs);
   }
 
   return (
