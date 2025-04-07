@@ -26,7 +26,9 @@ const TicketLayout = ({ children }) => (
   </TicketProvider>
 );
 
-const UtilityLayout = ({ children }) => <MessageProvider>{children}</MessageProvider>;
+const UtilityLayout = ({ children }) => (
+  <MessageProvider>{children}</MessageProvider>
+);
 
 export default function App() {
   const router = createBrowserRouter([
@@ -71,7 +73,7 @@ export default function App() {
       ),
     },
     {
-      path: "/dashboard_TI",
+      path: "/dashboard-ti",
       element: (
         <TicketLayout>
           <DashboardTI />

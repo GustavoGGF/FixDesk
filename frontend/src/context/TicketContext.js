@@ -14,6 +14,8 @@ export const TicketProvider = ({ children }) => {
 
   const [ticketData, setTicketData] = useState([]);
 
+  const [totalTickets, setTotalTickets] = useState(0);
+
   return (
     <TicketContext.Provider
       value={{
@@ -27,6 +29,8 @@ export const TicketProvider = ({ children }) => {
         setChangeTech,
         cardOrList,
         setCardOrList,
+        totalTickets,
+        setTotalTickets,
       }}
     >
       {children}

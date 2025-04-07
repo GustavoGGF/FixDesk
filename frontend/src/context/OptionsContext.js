@@ -14,6 +14,7 @@ export const OptionsProvider = ({ children }) => {
   const [messageinfo1, setMessageinfo1] = useState("");
   const [messageinfo2, setMessageinfo2] = useState("");
   const [machineAlocate, setMachineAlocate] = useState("");
+  const [linkAcess, setLinkAcess] = useState("");
 
   const [alertverify, setAlertVerify] = useState(false);
   const [alert, setAlert] = useState(false);
@@ -51,6 +52,8 @@ export const OptionsProvider = ({ children }) => {
         seAlocate_Machine_Acess,
         reset,
         setReset,
+        linkAcess,
+        setLinkAcess,
       }}
     >
       {children}

@@ -314,6 +314,18 @@ export default function DashboardTI() {
   }, [ticketData]);
 
   /**
+   * Função para adicionar um zero na frente do número caso seja menor que 10.
+   * @param {number} numero - O número a ser formatado.
+   * @returns {string} O número formatado com zero à esquerda, se necessário.
+   */
+  function AddZero(numero) {
+    if (numero < 10) {
+      return "0" + numero; // Adiciona um zero à esquerda se o número for menor que 10.
+    }
+    return numero.toString(); // Retorna o número como string se não for menor que 10.
+  }
+
+  /**
    * Função para montar os chamados em forma de card.
    */
   function CardView() {
@@ -341,23 +353,10 @@ export default function DashboardTI() {
         var month = date.getMonth() + 1; // Obtém o mês (0 = janeiro, 1 = fevereiro, etc.) e adiciona 1 para corresponder ao formato convencional.
         var year = date.getFullYear(); // Obtém o ano.
 
-        /**
-         * Função para adicionar um zero na frente do número caso seja menor que 10.
-         * @param {number} numero - O número a ser formatado.
-         * @returns {string} O número formatado com zero à esquerda, se necessário.
-         */
-        function adicionaZero(numero) {
-          if (numero < 10) {
-            return "0" + numero; // Adiciona um zero à esquerda se o número for menor que 10.
-          }
-          return numero.toString(); // Retorna o número como string se não for menor que 10.
-        }
-
         // Variáveis que contêm data e hora formatadas utilizando a função adicionaZero.
-        var dataFormatada =
-          adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
+        var dataFormatada = AddZero(day) + "/" + AddZero(month) + "/" + year;
         var horaFormatada =
-          adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
+          AddZero(date.getHours()) + ":" + AddZero(date.getMinutes());
 
         // Combinação da data e hora formatadas.
         const newDate = dataFormatada + " " + horaFormatada; // Combina a data e a hora formatadas separadas por um espaço.
@@ -448,23 +447,10 @@ export default function DashboardTI() {
         var month = date.getMonth() + 1; // Obtém o mês (0 = janeiro, 1 = fevereiro, etc.) e adiciona 1 para corresponder ao formato convencional.
         var year = date.getFullYear(); // Obtém o ano.
 
-        /**
-         * Função para adicionar um zero na frente do número caso seja menor que 10.
-         * @param {number} numero - O número a ser formatado.
-         * @returns {string} O número formatado com zero à esquerda, se necessário.
-         */
-        function adicionaZero(numero) {
-          if (numero < 10) {
-            return "0" + numero; // Adiciona um zero à esquerda se o número for menor que 10.
-          }
-          return numero.toString(); // Retorna o número como string se não for menor que 10.
-        }
-
         // Variáveis que contêm data e hora formatadas utilizando a função adicionaZero.
-        var dataFormatada =
-          adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
+        var dataFormatada = AddZero(day) + "/" + AddZero(month) + "/" + year;
         var horaFormatada =
-          adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
+          AddZero(date.getHours()) + ":" + AddZero(date.getMinutes());
 
         const newDate = dataFormatada + " " + horaFormatada; // Combina a data e a hora formatadas separadas por um espaço.
 
@@ -619,11 +605,48 @@ export default function DashboardTI() {
           }
           setMessage(false);
 
-          // Calculando o tempo de vida do chamado.
-          const start_date = new Date(data.start_date); // Obtém a data de início do chamado.
-          const currentDate = new Date(); // Obtém a data atual.
-          const calcDate = currentDate - start_date; // Calcula a diferença em milissegundos entre as duas datas.
-          const lifetime = Math.floor(calcDate / (1000 * 60 * 60 * 24)); // Calcula o tempo de vida do chamado em dias.
+          const CalculateDiference = (dataStr) => {
+            const data = new Date(dataStr);
+            const agora = new Date();
+
+            // Diferença em milissegundos
+            const diffMs = agora - data;
+
+            // Se a data for no futuro, diffMs será negativo
+            const diffAbs = Math.abs(diffMs);
+
+            // Diferença em dias
+            const diffDias = Math.floor(diffAbs / (1000 * 60 * 60 * 24));
+
+            // Diferença em horas e minutos
+            const diffHorasTotal = Math.floor(diffAbs / (1000 * 60 * 60));
+            const diffMinutosTotal = Math.floor(diffAbs / (1000 * 60));
+            const diffHoras = diffHorasTotal % 24;
+            const diffMinutos = diffMinutosTotal % 60;
+
+            // Formatar hora da data original
+            const hora = data.toLocaleTimeString("pt-BR", {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false,
+            });
+
+            // Formatar data da data original
+            const dataFormatada = data.toLocaleDateString("pt-BR");
+
+            return {
+              hora,
+              dataFormatada,
+              diffDias,
+              diffHoras,
+              diffMinutos,
+              noFuturo: diffMs < 0,
+            };
+          };
+
+          const resultado = CalculateDiference(data.start_date);
+
+          const lifetime = `${resultado.diffDias} Dias e ${resultado.diffHoras}:${resultado.diffMinutos} Horas`;
 
           setTicketNAME(data.ticketRequester);
           setTicketDEPARTMENT(data.department);

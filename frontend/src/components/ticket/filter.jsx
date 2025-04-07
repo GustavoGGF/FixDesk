@@ -49,13 +49,29 @@ export default function FilterTickets({
   const btnStop = useRef(null);
   const btnAll = useRef(null);
 
-  const { setLoadingDash, setCardOrList, setTicketData } =
+  const skyBlue = "#00B4D8";
+
+  const { setLoadingDash, setCardOrList, setTicketData, totalTickets } =
     useContext(TicketContext);
+
   const { setMessage, setMessageError, setTypeError } =
     useContext(MessageContext);
+
+  useEffect(() => {
+    if (totalTickets) {
+      return GetTicketFilter({
+        id: "null",
+        quantity: "null",
+        statusTicket: "null",
+        search_query: "null",
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [totalTickets]);
+
   useEffect(() => {
     if (moreTickets > 0) {
-      getTicketFilter({
+      GetTicketFilter({
         id: "null",
         quantity: moreTickets,
         statusTicket: "null",
@@ -71,20 +87,24 @@ export default function FilterTickets({
   }, [dateValue]);
 
   useEffect(() => {
-    // Mapeia valores de quantity para os refs correspondentes
-    const refMapQuantity = {
-      5: fiveView,
-      10: thenView,
-      50: fiftyView,
-      100000: allView, // Supondo que "all" seja um valor possível
-    };
+    try {
+      // Mapeia valores de quantity para os refs correspondentes
+      const refMapQuantity = {
+        5: fiveView,
+        10: thenView,
+        50: fiftyView,
+        100000: allView, // Supondo que "all" seja um valor possível
+      };
 
-    // Obtém o ref correspondente ao valor de quantity
-    const selectedRefQuantity = refMapQuantity[quantityMap];
+      // Obtém o ref correspondente ao valor de quantity
+      const selectedRefQuantity = refMapQuantity[quantityMap];
 
-    // Aplica o estilo apenas se o ref existir
-    if (selectedRefQuantity?.current) {
-      selectedRefQuantity.current.style.backgroundColor = "#00B4D8";
+      // Aplica o estilo apenas se o ref existir
+      if (selectedRefQuantity?.current) {
+        selectedRefQuantity.current.style.backgroundColor = skyBlue;
+      }
+    } catch (err) {
+      return console.log(err);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [quantityMap]);
@@ -108,7 +128,7 @@ export default function FilterTickets({
     }
   }, [statusFilter]);
 
-  function validateSelectFilter() {
+  function ValidateSelectFilter() {
     if (selectOccurrence.current) {
       switch (selectOccurrence.current.value) {
         default:
@@ -134,144 +154,148 @@ export default function FilterTickets({
     }
   }
 
-  function getTicketFilter({ id, quantity, statusTicket, search_query }) {
-    setTicketData([]);
-    setLoadingDash(true);
+  function GetTicketFilter({ id, quantity, statusTicket, search_query }) {
+    try {
+      setTicketData([]);
+      setLoadingDash(true);
 
-    if (id !== "null") {
-      switch (id) {
-        default:
-          break;
-        case "fiveView":
-          fiveView.current.style.backgroundColor = "#00B4D8";
-          thenView.current.style.backgroundColor = "transparent";
-          fiftyView.current.style.backgroundColor = "transparent";
-          allView.current.style.backgroundColor = "transparent";
-          break;
-        case "thenView":
-          fiveView.current.style.backgroundColor = "transparent";
-          thenView.current.style.backgroundColor = "#00B4D8";
-          fiftyView.current.style.backgroundColor = "transparent";
-          allView.current.style.backgroundColor = "transparent";
-          break;
-        case "fiftyView":
-          fiveView.current.style.backgroundColor = "transparent";
-          thenView.current.style.backgroundColor = "transparent";
-          fiftyView.current.style.backgroundColor = "#00B4D8";
-          allView.current.style.backgroundColor = "transparent";
-          break;
-        case "allView":
-          fiveView.current.style.backgroundColor = "transparent";
-          thenView.current.style.backgroundColor = "transparent";
-          fiftyView.current.style.backgroundColor = "transparent";
-          allView.current.style.backgroundColor = "#00B4D8";
-          break;
-      }
-    }
-
-    if (statusTicket !== "null") {
-      switch (statusTicket) {
-        default:
-          break;
-        case "open":
-          btnOpen.current.classList.add("btn-open"); // Marca o botão "Open" como ativo
-          btnStop.current.classList.remove("btn-light");
-          btnClose.current.classList.remove("btn-success");
-          btnAll.current.classList.remove("btn-all");
-          break;
-        case "stop":
-          btnOpen.current.classList.remove("btn-open"); // Marca o botão "Open" como ativo
-          btnStop.current.classList.add("btn-light");
-          btnClose.current.classList.remove("btn-success");
-          btnAll.current.classList.remove("btn-all");
-          break;
-        case "close":
-          btnOpen.current.classList.remove("btn-open"); // Marca o botão "Open" como ativo
-          btnStop.current.classList.remove("btn-light");
-          btnClose.current.classList.add("btn-success");
-          btnAll.current.classList.remove("btn-all");
-          break;
-        case "all":
-          btnOpen.current.classList.remove("btn-open"); // Marca o botão "Open" como ativo
-          btnStop.current.classList.remove("btn-light");
-          btnClose.current.classList.remove("btn-success");
-          btnAll.current.classList.add("btn-all");
-          break;
-      }
-    }
-
-    var orderTicket = dateSelect.current.value;
-
-    if (statusTicket === "null") {
-      statusTicket = localStorage.getItem("status");
-    }
-
-    var sector = selectOccurrence.current.value;
-    var occurrence = "null";
-
-    if (selectProblem.current) {
-      occurrence = selectProblem.current.value;
-    }
-
-    if (occurrence === "") {
-      occurrence = "null";
-    }
-
-    if (search_query === "") {
-      search_query = "null";
-    }
-
-    if (quantity === "null") {
-      quantity = localStorage.getItem("quantity");
-    }
-
-    fetch(
-      "/helpdesk/get-ticket-filter/" +
-        url +
-        "/" +
-        sector +
-        "/" +
-        occurrence +
-        "/" +
-        orderTicket +
-        "/" +
-        userName +
-        "/" +
-        quantity +
-        "/" +
-        statusTicket +
-        "/" +
-        search_query,
-      {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-        },
-      }
-    )
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        if (data.tickets.length === 0) {
-          setMessage(true);
-          setTypeError("Falta de dados");
-          setMessageError("Nenhum ticket com esses Filtros");
-          return;
-        } else {
-          setLoadingDash(false);
-          localStorage.setItem("quantity", quantity);
-          localStorage.setItem("status", statusTicket);
-          localStorage.setItem("order", orderTicket);
-          return setTicketData(data.tickets);
+      if (id !== "null") {
+        switch (id) {
+          default:
+            break;
+          case "fiveView":
+            fiveView.current.style.backgroundColor = skyBlue;
+            thenView.current.style.backgroundColor = "transparent";
+            fiftyView.current.style.backgroundColor = "transparent";
+            allView.current.style.backgroundColor = "transparent";
+            break;
+          case "thenView":
+            fiveView.current.style.backgroundColor = "transparent";
+            thenView.current.style.backgroundColor = skyBlue;
+            fiftyView.current.style.backgroundColor = "transparent";
+            allView.current.style.backgroundColor = "transparent";
+            break;
+          case "fiftyView":
+            fiveView.current.style.backgroundColor = "transparent";
+            thenView.current.style.backgroundColor = "transparent";
+            fiftyView.current.style.backgroundColor = skyBlue;
+            allView.current.style.backgroundColor = "transparent";
+            break;
+          case "allView":
+            fiveView.current.style.backgroundColor = "transparent";
+            thenView.current.style.backgroundColor = "transparent";
+            fiftyView.current.style.backgroundColor = "transparent";
+            allView.current.style.backgroundColor = skyBlue;
+            break;
         }
-      })
-      .catch((err) => {
-        setMessageError(err);
-        setTypeError("Fatal ERROR");
-        setMessage(true);
-        return console.log(err);
-      });
+      }
+
+      if (statusTicket !== "null") {
+        switch (statusTicket) {
+          default:
+            break;
+          case "open":
+            btnOpen.current.classList.add("btn-open"); // Marca o botão "Open" como ativo
+            btnStop.current.classList.remove("btn-light");
+            btnClose.current.classList.remove("btn-success");
+            btnAll.current.classList.remove("btn-all");
+            break;
+          case "stop":
+            btnOpen.current.classList.remove("btn-open"); // Marca o botão "Open" como ativo
+            btnStop.current.classList.add("btn-light");
+            btnClose.current.classList.remove("btn-success");
+            btnAll.current.classList.remove("btn-all");
+            break;
+          case "close":
+            btnOpen.current.classList.remove("btn-open"); // Marca o botão "Open" como ativo
+            btnStop.current.classList.remove("btn-light");
+            btnClose.current.classList.add("btn-success");
+            btnAll.current.classList.remove("btn-all");
+            break;
+          case "all":
+            btnOpen.current.classList.remove("btn-open"); // Marca o botão "Open" como ativo
+            btnStop.current.classList.remove("btn-light");
+            btnClose.current.classList.remove("btn-success");
+            btnAll.current.classList.add("btn-all");
+            break;
+        }
+      }
+
+      var orderTicket = dateSelect.current.value;
+
+      if (statusTicket === "null") {
+        statusTicket = localStorage.getItem("status");
+      }
+
+      var sector = selectOccurrence.current.value;
+      var occurrence = "null";
+
+      if (selectProblem.current) {
+        occurrence = selectProblem.current.value;
+      }
+
+      if (occurrence === "") {
+        occurrence = "null";
+      }
+
+      if (search_query === "") {
+        search_query = "null";
+      }
+
+      if (quantity === "null") {
+        quantity = localStorage.getItem("quantity");
+      }
+
+      fetch(
+        "/helpdesk/get-ticket-filter/" +
+          url +
+          "/" +
+          sector +
+          "/" +
+          occurrence +
+          "/" +
+          orderTicket +
+          "/" +
+          userName +
+          "/" +
+          quantity +
+          "/" +
+          statusTicket +
+          "/" +
+          search_query,
+        {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+          },
+        }
+      )
+        .then((response) => {
+          return response.json();
+        })
+        .then((data) => {
+          if (data.tickets.length === 0) {
+            setMessage(true);
+            setTypeError("Falta de dados");
+            setMessageError("Nenhum ticket com esses Filtros");
+            return;
+          } else {
+            setLoadingDash(false);
+            localStorage.setItem("quantity", quantity);
+            localStorage.setItem("status", statusTicket);
+            localStorage.setItem("order", orderTicket);
+            return setTicketData(data.tickets);
+          }
+        })
+        .catch((err) => {
+          setMessageError(err);
+          setTypeError("Fatal ERROR");
+          setMessage(true);
+          return console.log(err);
+        });
+    } catch (err) {
+      return console.log(err);
+    }
   }
 
   return (
@@ -282,7 +306,7 @@ export default function FilterTickets({
           className="form-control"
           id="floatingInput"
           onKeyUp={(event) => {
-            getTicketFilter({
+            GetTicketFilter({
               id: "null",
               quantity: "null",
               statusTicket: "null",
@@ -293,12 +317,11 @@ export default function FilterTickets({
         <label htmlFor="floatingInput">Ocorrência | Problema | Data...</label>
       </div>
       <Select1
-        id="selectOcorrence"
         className="form-select"
         ref={selectOccurrence}
         onChange={() => {
-          validateSelectFilter();
-          getTicketFilter({
+          ValidateSelectFilter();
+          GetTicketFilter({
             id: "null",
             quantity: "null",
             statusTicket: "null",
@@ -322,11 +345,10 @@ export default function FilterTickets({
       )}
       {problemInfra && (
         <Select1
-          id="selectBo"
           className="form-select"
           ref={selectProblem}
           onChange={() => {
-            getTicketFilter({
+            GetTicketFilter({
               id: "null",
               quantity: "null",
               statusTicket: "null",
@@ -352,11 +374,10 @@ export default function FilterTickets({
       )}
       {problemSyst && (
         <Select1
-          id="selectBo"
           className="form-select"
           ref={selectProblem}
           onChange={() => {
-            getTicketFilter({
+            GetTicketFilter({
               id: "null",
               quantity: "null",
               statusTicket: "null",
@@ -381,7 +402,7 @@ export default function FilterTickets({
         id="select-order"
         className="form-select"
         onChange={() => {
-          getTicketFilter({
+          GetTicketFilter({
             id: "null",
             quantity: "null",
             statusTicket: "null",
@@ -401,10 +422,9 @@ export default function FilterTickets({
         </PSelectView>
         <DivImages
           className="btn"
-          id="fiveView"
           ref={fiveView}
           onClick={() => {
-            getTicketFilter({
+            GetTicketFilter({
               id: "fiveView",
               quantity: 5,
               statusTicket: "null",
@@ -412,15 +432,14 @@ export default function FilterTickets({
             });
           }}
         >
-          <IMGS1 src={IMG1} alt="" />
+          <IMGS1 src={IMG1} alt="Mostrar apenas 5" />
           <PQuantity>5</PQuantity>
         </DivImages>
         <DivImages
           className="btn"
-          id="thenView"
           ref={thenView}
           onClick={() => {
-            getTicketFilter({
+            GetTicketFilter({
               id: "thenView",
               quantity: 10,
               statusTicket: "null",
@@ -428,15 +447,14 @@ export default function FilterTickets({
             });
           }}
         >
-          <IMGS1 src={IMG2} alt="" />
+          <IMGS1 src={IMG2} alt="Mostrar apenas 10" />
           <PQuantity>10</PQuantity>
         </DivImages>
         <DivImages
           className="btn"
-          id="fiftyView"
           ref={fiftyView}
           onClick={() => {
-            getTicketFilter({
+            GetTicketFilter({
               id: "fiftyView",
               quantity: 50,
               statusTicket: "null",
@@ -444,15 +462,14 @@ export default function FilterTickets({
             });
           }}
         >
-          <IMGS1 src={IMG3} alt="" />
+          <IMGS1 src={IMG3} alt="Mostrar apenas 50" />
           <PQuantity>50</PQuantity>
         </DivImages>
         <DivImages
           className="btn"
-          id="allView"
           ref={allView}
           onClick={() => {
-            getTicketFilter({
+            GetTicketFilter({
               id: "allView",
               quantity: 100000,
               statusTicket: "null",
@@ -460,7 +477,7 @@ export default function FilterTickets({
             });
           }}
         >
-          <IMGS1 src={IMG4} alt="" />
+          <IMGS1 src={IMG4} alt="Mostrat todos" />
           <PQuantity>todos</PQuantity>
         </DivImages>
       </DivContainerImages>
@@ -475,7 +492,7 @@ export default function FilterTickets({
             setCardOrList("List");
           }}
         >
-          <ImgSelectView src={List} className="img-fluid" alt="" />
+          <ImgSelectView src={List} className="img-fluid" alt="Modo Lista" />
         </button>
         <button
           className="btn"
@@ -484,7 +501,7 @@ export default function FilterTickets({
             setCardOrList("Card");
           }}
         >
-          <ImgSelectView src={Card} clasName="img-fluid" alt="" />
+          <ImgSelectView src={Card} clasName="img-fluid" alt="Modo Card" />
         </button>
       </DivSelectView>
       <DivSelectView>
@@ -493,10 +510,9 @@ export default function FilterTickets({
         </PSelectView>
         <Button1
           className="btn"
-          id="btnopen"
           ref={btnOpen}
           onClick={() => {
-            getTicketFilter({
+            GetTicketFilter({
               id: "null",
               quantity: "null",
               statusTicket: "open",
@@ -509,10 +525,9 @@ export default function FilterTickets({
         <button
           className="btn"
           value="close"
-          id="btnclose"
           ref={btnClose}
           onClick={() => {
-            getTicketFilter({
+            GetTicketFilter({
               id: "null",
               quantity: "null",
               statusTicket: "close",
@@ -525,10 +540,9 @@ export default function FilterTickets({
         <button
           className="btn"
           value="close"
-          id="btnstop"
           ref={btnStop}
           onClick={() => {
-            getTicketFilter({
+            GetTicketFilter({
               id: "null",
               quantity: "null",
               statusTicket: "stop",
@@ -541,10 +555,9 @@ export default function FilterTickets({
         <Button2
           className="btn"
           value="all"
-          id="btnall"
           ref={btnAll}
           onClick={() => {
-            getTicketFilter({
+            GetTicketFilter({
               id: "null",
               quantity: "null",
               statusTicket: "all",

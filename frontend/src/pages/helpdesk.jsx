@@ -115,6 +115,7 @@ export default function Helpdesk() {
     selectedDay,
     messageinfo2,
     messageinfo1,
+    linkAcess,
     machineAlocate,
     respectiveArea,
     problemn,
@@ -201,6 +202,13 @@ export default function Helpdesk() {
       setDashboard(true);
     }
   }, [dataUser]); // Dependência de dataUser para atualizar o efeito quando dataUser mudar
+
+  function AddZero(numero) {
+    if (numero < 10) {
+      return "0" + numero;
+    }
+    return numero;
+  }
 
   // Função inicia quando dashboard é renderizado, realiza animação e funcionalidade para imagens adicionadas quando soltadas
   useEffect(() => {
@@ -346,12 +354,6 @@ export default function Helpdesk() {
       var mes = dataUserAtual.getMonth() + 1; // Os meses em JavaScript são indexados a partir de zero, por isso é necessário adicionar 1
       var ano = dataUserAtual.getFullYear();
 
-      function AddZero(numero) {
-        if (numero < 10) {
-          return "0" + numero;
-        }
-        return numero;
-      }
       var horaFormatada =
         AddZero(dataUserAtual.getHours()) +
         ":" +
@@ -731,6 +733,9 @@ export default function Helpdesk() {
             <div className="alert alert-info d-flex flex-column" role="alert">
               <h5 className="fw-bold text-center">{messagetitle}</h5>
               <span>{messageinfo1}</span>
+              <a href={linkAcess} hidden={linkAcess.length >= 1 ? false : true}>
+                Formulário Lupatech
+              </a>
               <span>{messageinfo2}</span>
             </div>
           )}

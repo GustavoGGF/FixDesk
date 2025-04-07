@@ -61,7 +61,7 @@ mail_password = getenv("MAIL_PWD")
 status_mapping = {"open": True, "close": False, "stop": None, "all": "All"}
 
 
-def sendMail(mail: str, msgm1: str, msgm2: str):
+def send_mail(mail: str, msgm1: str, msgm2: str):
     """
     Envia um e-mail para o destinatário especificado.
 
@@ -119,7 +119,7 @@ def get_new_token(request):
 @csrf_exempt
 @never_cache
 @require_GET
-def firstView(request: WSGIRequest):
+def first_view(request: WSGIRequest):
     if request.user.is_authenticated:
         try:
             user = request.user
@@ -141,7 +141,7 @@ def firstView(request: WSGIRequest):
 @login_required(login_url="/login")
 @require_POST
 @transaction.atomic
-def submitTicket(request):
+def submit_ticket(request):
     """
     Cria um novo chamado de suporte conforme os dados enviados pelo frontend.
 
@@ -253,7 +253,7 @@ def submitTicket(request):
         {"id": id}, status=200, safe=True
     )  # Retorna o ID do chamado criado com sucesso
 
-
+@transaction.atomic
 def process_files(request: WSGIRequest, form_data: dict):
     """
     Processa e armazena arquivos enviados no chamado de suporte.
@@ -649,7 +649,7 @@ def ticket(
             logger.error(e)
             return JsonResponse({"Error": f"Erro inesperado {e}"}, status=304)
 
-
+@transaction.atomic
 def update_tech_details(
     chat: str, id: int, date: str, hours: str, request: WSGIRequest
 ):
@@ -685,6 +685,15 @@ def update_tech_details(
         logger.error(e)
         return 300, e
 
+class CustomPDF(FPDF):
+    def __init__(self, footer_path: str, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.footer_path = footer_path
+
+    def footer(self):
+        # Posição a 25 unidades da parte inferior
+        self.set_y(-25)
+        self.image(self.footer_path, x=0, y=self.get_y(), w=self.w)
 
 def create_pdf(id: int):
     """
@@ -700,15 +709,7 @@ def create_pdf(id: int):
         # Obtém o ticket de suporte com base no ID fornecido
         ticket = SupportTicket.objects.get(id=id)
 
-        # Cria uma nova instância do FPDF para gerar o PDF
-        pdf = FPDF()
-        pdf.add_page()
-
-        # Obtém o diretório de trabalho atual e define a fonte Arial para o PDF
-        directory = getcwd()
-        pdf.add_font("Arial", "", f"{directory}/arial.ttf")
-        pdf.set_font("Arial", size=12)
-            # Obtém o caminho do diretório da pasta helpdesk
+        # Obtém o caminho do diretório da pasta helpdesk
         helpdesk_dir = path.dirname(path.abspath(__file__))
 
         # Obtém o diretório pai (onde helpdesk e files estão localizados)
@@ -717,11 +718,22 @@ def create_pdf(id: int):
         # Caminho para a imagem dentro da pasta "files"
         lupatech_logo = path.join(project_root, "files", "lupalogo.png")
         fixdesk_logo = path.join(project_root, "files", "fixdesk.png")
+        lupatech_footer = path.join(project_root, "files", "footer.png")
+        # Cria uma nova instância do FPDF para gerar o PDF
+        pdf = CustomPDF(lupatech_footer)
+        pdf.add_page()
+
+        # Obtém o diretório de trabalho atual e define a fonte Arial para o PDF
+        directory = getcwd()
+        pdf.add_font("Arial", "", f"{directory}/arial.ttf")
+        pdf.set_font("Arial", size=12)
+
         # Adiciona o título do chamado ao PDF
         pdf.image(lupatech_logo, x=10, y=0 + 5, w=10)
         pdf.image(fixdesk_logo, x=200, y=0 + 5, w=10)
         pdf.cell(180, 5, txt=f"CHAMADO {ticket.id}", ln=False, align="C")
-
+        
+        
         # Adiciona informações do ticket ao PDF
         add_ticket_info_to_pdf(ticket, pdf)
 
@@ -814,6 +826,8 @@ def add_ticket_info_to_pdf(ticket: SupportTicket, pdf: FPDF):
         align="L",
     )
 
+    return
+
 
 def add_machine_info_to_pdf(ticket: SupportTicket, pdf: FPDF):
     try:
@@ -876,12 +890,12 @@ def add_chat_to_pdf(chat: str, pdf: FPDF):
 
     # Adiciona uma nova página no PDF para o chat
     pdf.add_page()
-
+    
     # Adiciona um título "CHAT" centralizado
     pdf.cell(200, 10, txt="CHAT", ln=True, align="C")
 
     current_date = None
-
+    print(chat_dicts)
     # Itera sobre cada entrada no histórico de chat
     for entry in chat_dicts:
         # Extrai as informações de data, sistema, técnico, usuário e hora da entrada
@@ -910,8 +924,9 @@ def add_chat_to_pdf(chat: str, pdf: FPDF):
         # Adiciona mensagens do usuário ao PDF, alinhadas à esquerda
         if user_msg:
             pdf.cell(200, 10, txt=f"{user_msg} - {entry_hour}", ln=True, align="L")
+    return
 
-
+@transaction.atomic
 def ticket_stop(id: int, technician: str, date: str, hours: str, mail: str):
     """
     Altera o status do ticket para 'em aguardo', registrando a ação do técnico e enviando uma notificação.
@@ -955,7 +970,7 @@ def ticket_stop(id: int, technician: str, date: str, hours: str, mail: str):
 
             # Inicia uma thread para enviar o e-mail de notificação
             task = Thread(
-                target=sendMail,
+                target=send_mail,
                 args=(mail, msg, msg2),
             )
 
@@ -971,7 +986,7 @@ def ticket_stop(id: int, technician: str, date: str, hours: str, mail: str):
     except Exception as e:
         logger.error(e)
 
-
+@transaction.atomic
 def ticket_close(id: int, technician: str, date: str, hours: str, mail: str):
     """
     Altera o status do chamado para finalizado e envia uma notificação por e-mail.
@@ -1027,7 +1042,7 @@ def ticket_close(id: int, technician: str, date: str, hours: str, mail: str):
 
         # Inicia uma thread para enviar o e-mail de notificação
         task = Thread(
-            target=sendMail,
+            target=send_mail,
             args=(mail, msg, msg2),
         )
         task.start()
@@ -1038,7 +1053,7 @@ def ticket_close(id: int, technician: str, date: str, hours: str, mail: str):
     else:
         return 304, "Identificado que o Tecnico não é o atribuido ao Chamado"
 
-
+@transaction.atomic
 def ticket_open(
     id: int, date: str, technician: str, hours: str, techMail: str, mail: str
 ):
@@ -1078,7 +1093,7 @@ def ticket_open(
 
         # Inicia uma thread para enviar o e-mail de notificação
         task = Thread(
-            target=sendMail,
+            target=send_mail,
             args=(mail, msg, msg2),
         )
 
@@ -1090,7 +1105,7 @@ def ticket_open(
     except Exception as e:
         logger.error(e)
 
-
+@transaction.atomic
 def change_responsible_technician(
     id: int,
     responsible_technician: str,
@@ -1125,7 +1140,7 @@ def change_responsible_technician(
                 msg2 = f"Atendimento do Chamado {ticket.id}"  # Assunto do e-mail
 
                 # Envia o e-mail em uma thread separada para evitar bloqueio da execução
-                Thread(target=sendMail, args=(mail, msg, msg2)).start()
+                Thread(target=send_mail, args=(mail, msg, msg2)).start()
         else:
             # Se já houver mensagens no chat, adiciona um registro informando a transferência do chamado
             ticket.chat += f"[[Date:{date}],[System: {technician} transferiu o Chamado para {responsible_technician}],[Hours:{hours}]],"
@@ -1141,7 +1156,7 @@ def change_responsible_technician(
         # Em caso de erro, registra a exceção nos logs
         logger.error(e)
 
-
+@transaction.atomic
 def updating_chat_change_sender(
     body: dict,
     id: int,
@@ -1179,7 +1194,7 @@ def updating_chat_change_sender(
     ticket.save()
 
     # Inicia uma nova thread para verificar notificações de chamada
-    Thread(target=verifyNotificationCall, args=(id,)).start()
+    Thread(target=verify_notificationcall, args=(id,)).start()
 
     return 200, ticket.chat
 
@@ -1444,7 +1459,7 @@ def get_database_connection():
 @login_required(login_url="/login")
 @require_GET
 @cache_page(60 * 5)
-def equipamentsForAlocate(request, location):
+def equipaments_for_alocate(request, location):
     """
     Conecta-se ao banco de dados MySQL e busca uma lista de computadores disponíveis
     para alocação (com o campo 'alocate' igual a 0).
@@ -1516,7 +1531,7 @@ def convert_to_dict(chat_data):
         return JsonResponse({"Error": f"Erro inesperado {e}"}, status=311)
 
 
-def dateEquipamentsAlocate(request, mac: str):
+def date_equipaments_alocate(request, mac: str):
     """
     Verifica as datas disponíveis para locação de um equipamento com base no seu MAC address.
 
@@ -1625,7 +1640,7 @@ def change_last_viewer(request: WSGIRequest, id: int):
 
         # Inicia uma thread para verificar a notificação do chamado
         Thread(
-            target=verifyNotificationCall,
+            target=verify_notificationcall,
             args=(id,),
         ).start()
 
@@ -1803,7 +1818,7 @@ def notify(id):
 
         # Inicia a thread para enviar o e-mail.
         task = Thread(
-            target=sendMail,
+            target=send_mail,
             args=(mailTo, msg, msg2),
         )
 
@@ -1837,7 +1852,7 @@ def stop_timer(id):
         del active_timers[id]
 
 
-def callTimer(id, status):
+def call_timer(id, status):
     """
     Inicia ou para a chamada de e-mail de um chamado específico baseado no status fornecido.
 
@@ -1873,7 +1888,7 @@ def callTimer(id, status):
             logger.error(f"Erro ao tentar {status} o timer para o chamado {id}: {e}")
 
 
-def verifyNotificationCall(id):
+def verify_notificationcall(id):
     """
     Verifica se é válido iniciar o temporizador para enviar a notificação por e-mail, com base
     nos dados do chamado. A função compara os campos 'last_sender' e 'last_viewer' e decide
@@ -1899,10 +1914,10 @@ def verifyNotificationCall(id):
 
         # Se o último remetente e o último visualizador forem iguais, inicia o temporizador.
         if last_sender_adjusted == last_viewer_adjusted:
-            return callTimer(id, "start")
+            return call_timer(id, "start")
         else:
             # Caso contrário, para o temporizador.
-            return callTimer(id, "stop")
+            return call_timer(id, "stop")
 
     except Exception as e:
         # Caso ocorra algum erro, loga a exceção.

@@ -336,13 +336,48 @@ export default function History() {
           callAsyncFunction();
         }
 
-        const start_date = new Date(data.start_date);
-        // Obtém a data atual
-        var CurrentDate = new Date();
-        // Calcula a diferença de tempo entre a data atual e a data de criação do chamado
-        var calcDate = CurrentDate - start_date;
-        // Calcula o tempo de vida do chamado em dias
-        var lifetime = Math.floor(calcDate / (1000 * 60 * 60 * 24));
+        const CalculateDiference = (dataStr) => {
+          const data = new Date(dataStr);
+          const agora = new Date();
+
+          // Diferença em milissegundos
+          const diffMs = agora - data;
+
+          // Se a data for no futuro, diffMs será negativo
+          const diffAbs = Math.abs(diffMs);
+
+          // Diferença em dias
+          const diffDias = Math.floor(diffAbs / (1000 * 60 * 60 * 24));
+
+          // Diferença em horas e minutos
+          const diffHorasTotal = Math.floor(diffAbs / (1000 * 60 * 60));
+          const diffMinutosTotal = Math.floor(diffAbs / (1000 * 60));
+          const diffHoras = diffHorasTotal % 24;
+          const diffMinutos = diffMinutosTotal % 60;
+
+          // Formatar hora da data original
+          const hora = data.toLocaleTimeString("pt-BR", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+          });
+
+          // Formatar data da data original
+          const dataFormatada = data.toLocaleDateString("pt-BR");
+
+          return {
+            hora,
+            dataFormatada,
+            diffDias,
+            diffHoras,
+            diffMinutos,
+            noFuturo: diffMs < 0,
+          };
+        };
+
+        const resultado = CalculateDiference(data.start_date);
+
+        const lifetime = `${resultado.diffDias} Dias e ${resultado.diffHoras}:${resultado.diffMinutos} Horas`;
 
         setTicketNAME(data.ticketRequester);
         setTicketDEPARTMENT(data.department);
@@ -409,6 +444,13 @@ export default function History() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ticketData]);
 
+  function AddZero(numero) {
+    if (numero < 10) {
+      return "0" + numero;
+    }
+    return numero;
+  }
+
   function ViewCard() {
     setTickets([]);
     setNavbar(true);
@@ -430,17 +472,9 @@ export default function History() {
       var month = date.getMonth() + 1;
       var year = date.getFullYear();
 
-      function adicionaZero(numero) {
-        if (numero < 10) {
-          return "0" + numero;
-        }
-        return numero;
-      }
-
-      var dataFormatada =
-        adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
+      var dataFormatada = AddZero(day) + "/" + AddZero(month) + "/" + year;
       var horaFormatada =
-        adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
+        AddZero(date.getHours()) + ":" + AddZero(date.getMinutes());
 
       var newDate = dataFormatada + " " + horaFormatada;
 
@@ -518,17 +552,9 @@ export default function History() {
       var month = date.getMonth() + 1;
       var year = date.getFullYear();
 
-      function adicionaZero(numero) {
-        if (numero < 10) {
-          return "0" + numero;
-        }
-        return numero;
-      }
-
-      var dataFormatada =
-        adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
+      var dataFormatada = AddZero(day) + "/" + AddZero(month) + "/" + year;
       var horaFormatada =
-        adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
+        AddZero(date.getHours()) + ":" + AddZero(date.getMinutes());
 
       const newDate = dataFormatada + " " + horaFormatada;
 

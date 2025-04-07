@@ -25,7 +25,7 @@ logger = getLogger(__name__)
 
 
 @transaction.atomic  # Garante que todas as operações no banco de dados sejam atômicas
-def CreateOrVerifyUser(
+def create_or_verify_user(
     user: str, password: str, request: WSGIRequest, helpdesk: str, name_create_user: str
 ):
     """
@@ -145,7 +145,7 @@ def validation(request: WSGIRequest):
 
     helpdesk = data_class.helpdesk
 
-    create_user, error = CreateOrVerifyUser(
+    create_user, error = create_or_verify_user(
         user, password, request, helpdesk, name_create_user
     )
 

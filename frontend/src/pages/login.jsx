@@ -50,12 +50,12 @@ export default function Login() {
     const theme = localStorage.getItem("Theme");
     if (!theme) {
       localStorage.setItem("Theme", "black");
-      setThemeBlack();
+      SetThemeBlack();
     } else {
       if (theme === "black") {
-        setThemeBlack();
+        SetThemeBlack();
       } else if (theme === "light") {
-        setThemeLight();
+        SetThemeLight();
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -75,12 +75,12 @@ export default function Login() {
     useContext(MessageContext);
 
   // Esta função é responsável por alterar o tema do site para "black".
-  function setThemeBlack() {
+  function SetThemeBlack() {
     setColor("colorBlack");
     return setTheme("themeBlack");
   }
   // Esta função é responsável por alterar o tema do site para "white".
-  function setThemeLight() {
+  function SetThemeLight() {
     setColor("colorLight");
     return setTheme("themeLight");
   }
@@ -117,9 +117,9 @@ export default function Login() {
       })
         .then((response) => {
           if (response.status === 401) {
-            handleInvalidCredentials();
+            InvalidCredentials();
           } else if (response.status === 425) {
-            handleAccessRestricted();
+            AccessRestricted();
           } else if (response.ok) {
             return response.json();
           }
@@ -143,7 +143,7 @@ export default function Login() {
   }
 
   // Funçaõ mostrada após erro de login por erro na credencial
-  function handleInvalidCredentials() {
+  function InvalidCredentials() {
     setMessage(true);
     setTypeError("Credencial Inválida");
     setMessageError("Usuário e/ou Senha Inválido(s)");
@@ -154,7 +154,7 @@ export default function Login() {
   }
 
   // Função mostrada após erro de acesso indevido
-  function handleAccessRestricted() {
+  function AccessRestricted() {
     setMessage(true);
     setTypeError("Acesso Restrito");
     setMessageError("Você não possui permissão para essa Ferramenta");

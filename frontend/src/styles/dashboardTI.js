@@ -95,6 +95,8 @@ export const TextObersavation = styled.textarea`
   color: #212529;
   padding: 0.375rem 0.75rem;
   height: 7em !important;
+  border-left: 0;
+  border-right: 0;
 `;
 
 export const BtnClose = styled.button`

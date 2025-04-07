@@ -18,6 +18,7 @@
   --midnight-blue: #0c203c;
   --aqua-mist: #9bdaeb;
   --reddish-orange: #d84b00;
+  --disable-color: #e9ecef;
 }
 
 @keyframes file {
@@ -53,7 +54,7 @@
   transform: scale(1.1);
 }
 
-.pChat {
+.p-chat {
   background: #b8babb;
   border-radius: 20px;
   margin-top: 3px;
@@ -83,7 +84,7 @@
   border-bottom-left-radius: 0;
 }
 
-.uChat1 {
+.u-chat1 {
   background: #ade8f4;
   border-radius: 20px;
   padding: 10px;
@@ -95,7 +96,7 @@
   min-width: 7%;
 }
 
-.uChat2 {
+.u-chat2 {
   background: #ade8f4;
   border-radius: 20px;
   padding: 10px;
@@ -502,7 +503,7 @@
   animation: closeInfo 6s ease-in-out;
 }
 
-.uChat2D {
+.u-chat-2D {
   background: #ade8f4;
   border-radius: 20px;
   padding: 10px;
@@ -533,4 +534,11 @@
 
 .no-border {
   border: none !important;
+}
+
+.disabled {
+  background-color: var(--disable-color) !important;
+  pointer-events: none !important;
+  border-radius: 0 !important;
+  opacity: 1;
 }

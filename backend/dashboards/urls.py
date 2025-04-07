@@ -2,9 +2,9 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path("", views.dashboard_TI, name="central-dashboard-TI"),
+    path("", views.dashboard_ti, name="central-dashboard-TI"),
     path("get-info/", views.get_info, name="central-dashboard-TI"),
-    path("dashboard_TI/", views.dashboard_TI, name="central-dashboard-TI"),
+    path("dashboard_TI/", views.dashboard_ti, name="central-dashboard-TI"),
     path(
         "get-dash-board-pie/<str:sector>",
         views.get_dash_board_pie,
@@ -25,5 +25,5 @@ urlpatterns = [
         views.upload_new_files,
         name="central-upload-new-files",
     ),
-    path("details/<int:id>", views.detailsChat, name="central-details-chat"),
+    path("details/<int:id>", views.details_chat, name="central-details-chat"),
 ]

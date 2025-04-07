@@ -9,7 +9,9 @@ export const TicketOpen = styled.div`
   overflow-y: auto;
   z-index: 10 !important;
   max-height: 95%;
-  -webkit-background: var(--pure-white); /* Adicionado para compatibilidade com navegadores baseados em WebKit */
+  -webkit-background: var(
+    --pure-white
+  ); /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   -webkit-width: 80%; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   -webkit-border-radius: 1.2em; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   -webkit-overflow-y: auto; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
@@ -49,16 +51,12 @@ export const DropContent2 = styled.div`
 export const CloseBTN = styled.button`
   width: 2em;
   border: none;
-  position: absolute;
   background-color: transparent;
-  margin-right: 1.5em;
-  margin-top: 0.5em;
+  margin-right: 2em;
   -webkit-width: 2em; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   -webkit-border: none; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
-  -webkit-position: absolute; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   -webkit-background-color: transparent;
   -webkit-margin-right: 1.5em; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
-  -webkit-margin-top: 0.5em; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
 `;
 
 export const TextObersavation = styled.textarea`
@@ -83,7 +81,10 @@ export const DivFile = styled.div`
   -webkit-padding-top: 7px; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   -webkit-padding-bottom: 7px; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   -webkit-display: grid; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
-  -webkit-grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Adicionado para compatibilidade com navegadores baseados em WebKit */
+  -webkit-grid-template-columns: repeat(
+    auto-fill,
+    minmax(200px, 1fr)
+  ); /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   -webkit-gap: 20px; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
 `;
 
@@ -136,7 +137,12 @@ export const DivNewFiles = styled.div`
   -webkit-z-index: 10; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   -webkit-max-height: 300px; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   -webkit-width: 300px; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
-  -webkit-background: rgba(52, 58, 64, 0.7); /* Adicionado para compatibilidade com navegadores baseados em WebKit */
+  -webkit-background: rgba(
+    52,
+    58,
+    64,
+    0.7
+  ); /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   -webkit-padding: 10px; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   -webkit-border-radius: 20px; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
 `;
@@ -227,7 +233,9 @@ export const DivChat = styled.div`
   margin: 0 auto;
   overflow-y: scroll;
   overflow-x: hidden;
-  -webkit-background-color: var(--light-white2); /* Adicionado para compatibilidade com navegadores baseados em WebKit */
+  -webkit-background-color: var(
+    --light-white2
+  ); /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   -webkit-height: 16em; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   -webkit-border: 2px solid var(--light-blue); /* Adicionado para compatibilidade com navegadores baseados em WebKit */
   -webkit-margin: 0 auto; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
@@ -245,7 +253,9 @@ export const PNWFile = styled.p`
   font-size: 1.4em;
   color: var(--cultured);
   -webkit-font-size: 1.4em; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
-  -webkit-color: var(--cultured); /* Adicionado para compatibilidade com navegadores baseados em WebKit */
+  -webkit-color: var(
+    --cultured
+  ); /* Adicionado para compatibilidade com navegadores baseados em WebKit */
 `;
 
 export const DivOnBoardFile = styled.div`

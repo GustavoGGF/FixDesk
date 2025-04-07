@@ -68,7 +68,7 @@ export default function DashboardBar() {
    * A dependência vazia [] garante que o efeito será executado apenas uma vez após a montagem do componente.
    */
   useEffect(() => {
-    getDataBar({ range_days: "week" });
+    GetDataBar({ range_days: "week" });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -80,7 +80,7 @@ export default function DashboardBar() {
    * - Se a requisição for bem-sucedida, atualiza o rótulo do dashboard, chama a função CallNewBar() para atualizar o gráfico e define os dados do histograma.
    * - Em caso de erro, exibe uma mensagem de erro.
    */
-  function getDataBar({ range_days }) {
+  function GetDataBar({ range_days }) {
     fetch("get-dash-board-bar/" + range_days, {
       method: "GET",
       headers: {
@@ -90,7 +90,7 @@ export default function DashboardBar() {
     })
       .then((response) => {
         if (response.status === 204) {
-          return recallGetBarData({ range: range_days });
+          return RecallGetBarData({ range: range_days });
         }
         return response.json();
       })
@@ -131,7 +131,7 @@ export default function DashboardBar() {
       });
   }
 
-  function recallGetBarData({ range }) {
+  function RecallGetBarData({ range }) {
     try {
       switch (range) {
         default:
@@ -143,7 +143,7 @@ export default function DashboardBar() {
           setMessageError("Buscando Chamados do Mês");
           barChartData = "";
           setBarChatDataRange("");
-          getDataBar({ range_days: "month" });
+          GetDataBar({ range_days: "month" });
           break;
         case "month":
           selectPeriod.current.value = "3";
@@ -152,7 +152,7 @@ export default function DashboardBar() {
           setMessageError("Buscando Chamados do Ano");
           barChartData = "";
           setBarChatDataRange("");
-          getDataBar({ range_days: "year" });
+          GetDataBar({ range_days: "year" });
           break;
       }
     } catch (err) {
@@ -254,7 +254,7 @@ export default function DashboardBar() {
       }
 
       timeoutBarUpdateRef.current = setTimeout(() => {
-        getDataBar({ range_days: barChatDataRange });
+        GetDataBar({ range_days: barChatDataRange });
 
         timeoutBarUpdateRef.current = null;
       }, 60000);
@@ -269,7 +269,7 @@ export default function DashboardBar() {
    * - Com base no valor selecionado, chama a função correspondente para buscar os dados do dashboard.
    * - Em caso de valor inválido, exibe uma mensagem de erro.
    */
-  function changePeriod() {
+  function ChangePeriod() {
     try {
       const period =
         selectPeriod.current.options[selectPeriod.current.selectedIndex].value;
@@ -279,19 +279,19 @@ export default function DashboardBar() {
           // setCountAccess(count);
           // setHistogramData([]);
           // setOldHistogramData([]);
-          getDataBar({ range_days: "week" });
+          GetDataBar({ range_days: "week" });
           break;
         case "2":
           // setCountAccess(count);
-          getDataBar({ range_days: "month" });
+          GetDataBar({ range_days: "month" });
           break;
         case "3":
           // setCountAccess(count);
-          getDataBar({ range_days: "year" });
+          GetDataBar({ range_days: "year" });
           break;
         case "4":
           // setCountAccess(count);
-          getDataBar({ range_days: "all" });
+          GetDataBar({ range_days: "all" });
           break;
         default:
           console.log("periodo inválido: ", period);
@@ -324,7 +324,7 @@ export default function DashboardBar() {
           <select
             className="form-select"
             ref={selectPeriod}
-            onChange={changePeriod}
+            onChange={ChangePeriod}
             defaultValue="1"
           >
             <option value="1" selected>

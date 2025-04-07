@@ -106,6 +106,7 @@ export default function OpenTicketWindow({
   const [nameNWFiles, setNameNWFiles] = useState([]);
 
   const techs = techsNames;
+  const softGray = "#e9ecef";
 
   const textareaRef = useRef(null);
   const chatDiv = useRef(null);
@@ -126,79 +127,114 @@ export default function OpenTicketWindow({
   const handleEscape = useCallback(
     (event) => {
       if (event.key === "Escape" || event.keyCode === 27) {
-        if (imageopen) {
-          ticketRef.current.style.filter = "blur(0)";
-          ticketRef.current.style.background = "var(--pure-white)";
-          ticketOpen.current.style.overflowY = "auto";
-          setImageOpen(false);
-          return;
-        }
+        try {
+          if (imageopen) {
+            ticketRef.current.style.filter = "blur(0)";
+            ticketRef.current.style.background = "var(--pure-white)";
+            ticketOpen.current.style.overflowY = "auto";
+            setImageOpen(false);
+            return;
+          }
 
-        if (techDetails) {
-          setTechDetails(false);
-          return;
-        }
+          if (techDetails) {
+            setTechDetails(false);
+            return;
+          }
 
-        if (
-          dropCont.current &&
-          !dropCont.current.classList.contains("visually-hidden")
-        ) {
-          dropCont.current.classList.add("visually-hidden");
-          return;
-        }
+          if (
+            dropCont.current &&
+            !dropCont.current.classList.contains("visually-hidden")
+          ) {
+            dropCont.current.classList.add("visually-hidden");
+            return;
+          }
 
-        setTicketWindowAtt(true);
+          setTicketWindowAtt(true);
+        } catch (err) {
+          return console.log(err);
+        }
       }
     },
     [techDetails, imageopen, setTechDetails, setImageOpen, setTicketWindowAtt]
   );
 
+  const handleCloseConfigs = useCallback(
+    (event) => {
+      if (
+        (event.target.id === "drp" &&
+          dropCont.current.classList.contains("visually-hidden")) ||
+        (event.target.id === "imd" &&
+          dropCont.current.classList.contains("visually-hidden"))
+      ) {
+        return dropCont.current.classList.remove("visually-hidden");
+      } else if (
+        event.target.id === "dropContTicketWd" ||
+        event.target.id === "selectTech"
+      ) {
+        return;
+      } else {
+        return dropCont.current.classList.add("visually-hidden");
+      }
+    },
+    [dropCont]
+  );
+
+  useEffect(() => {
+    document.addEventListener("click", handleCloseConfigs);
+    return () => document.removeEventListener("click", handleCloseConfigs);
+  }, [handleCloseConfigs]);
+
   useEffect(() => {
     if (dateAlocate && dateAlocate.length !== 0) {
       const formatDates = (dateString) => {
-        const dates = dateString.split(",").map((date) => new Date(date));
+        try {
+          const dates = dateString.split(",").map((date) => new Date(date));
 
-        // Ordena as datas para garantir que estejam em sequência correta
-        dates.sort((a, b) => a - b);
+          // Ordena as datas para garantir que estejam em sequência correta
+          dates.sort((a, b) => a - b);
 
-        // Formata as datas para DD/MM/YYYY
-        const formattedDates = dates.map((date) =>
-          date.toLocaleDateString("pt-BR", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-          })
-        );
+          // Formata as datas para DD/MM/YYYY
+          const formattedDates = dates.map((date) =>
+            date.toLocaleDateString("pt-BR", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+            })
+          );
 
-        let isConsecutive = true;
+          let isConsecutive = true;
 
-        for (let i = 1; i < dates.length; i++) {
-          const diffInDays = (dates[i] - dates[i - 1]) / (1000 * 60 * 60 * 24);
-          if (diffInDays !== 1) {
-            isConsecutive = false;
-            break;
+          for (let i = 1; i < dates.length; i++) {
+            const diffInDays =
+              (dates[i] - dates[i - 1]) / (1000 * 60 * 60 * 24);
+            if (diffInDays !== 1) {
+              isConsecutive = false;
+              break;
+            }
           }
-        }
 
-        if (formattedDates.length === 1) {
+          if (formattedDates.length === 1) {
+            return setDateEquipament(
+              `Equipamento alocado em ${formattedDates[0]}`
+            );
+          }
+
+          if (isConsecutive) {
+            return setDateEquipament(
+              `Equipamento alocado de ${formattedDates[0]} a ${
+                formattedDates[formattedDates.length - 1]
+              }`
+            );
+          }
+
           return setDateEquipament(
-            `Equipamento alocado em ${formattedDates[0]}`
+            `Equipamento alocado em ${formattedDates
+              .slice(0, -1)
+              .join(", ")} e ${formattedDates[formattedDates.length - 1]}`
           );
+        } catch (err) {
+          return console.log(err);
         }
-
-        if (isConsecutive) {
-          return setDateEquipament(
-            `Equipamento alocado de ${formattedDates[0]} a ${
-              formattedDates[formattedDates.length - 1]
-            }`
-          );
-        }
-
-        return setDateEquipament(
-          `Equipamento alocado em ${formattedDates.slice(0, -1).join(", ")} e ${
-            formattedDates[formattedDates.length - 1]
-          }`
-        );
       };
       formatDates(dateAlocate);
     }
@@ -231,7 +267,7 @@ export default function OpenTicketWindow({
     if (mountDataChat) {
       ReloadChat({ data: mountInitialChat });
     } else {
-      chatDiv.current.style.background = "#e9ecef";
+      chatDiv.current.style.background = softGray;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mountDataChat]);
@@ -250,7 +286,7 @@ export default function OpenTicketWindow({
 
   useEffect(() => {
     if (fetchchat === true) {
-      fetch("/helpdesk/update_chat/" + ticketID, {
+      fetch("/helpdesk/update-chat/" + ticketID, {
         method: "GET",
         headers: { Accept: "application/json" },
       })
@@ -313,12 +349,12 @@ export default function OpenTicketWindow({
       textareaRef.current.value !== ""
     ) {
       // Redimensiona o textarea com base no valor atual
-      resizeTextarea(textareaRef.current);
+      ResizeTextarea(textareaRef.current);
     }
     // A lista de dependências inclui ticketWindow para executar o efeito quando ticketWindow mudar
   }, []); // Inclua aqui todas as dependências necessárias
 
-  function resizeTextarea(textarea) {
+  function ResizeTextarea(textarea) {
     // Obtém o estilo de altura da linha do textarea, assumindo que esteja definido em pixels
     const lineHeight = parseFloat(window.getComputedStyle(textarea).lineHeight);
 
@@ -366,7 +402,6 @@ export default function OpenTicketWindow({
       headers: {
         "X-CSRFToken": token,
         "Download-Ticket": "download Ticket",
-        "Cache-Control": "no-cache",
       },
       body: JSON.stringify({ download: "download" }),
     })
@@ -407,131 +442,135 @@ export default function OpenTicketWindow({
       data.chat !== undefined &&
       data.chat !== "undefined"
     ) {
-      setCountChat(data.chat.length);
+      try {
+        setCountChat(data.chat.length);
 
-      const regex = /\[\[([^[\]]+?)\],\[([^[\]]+?)\],\[([^[\]]+?)\]\]/g;
+        const regex = /\[\[([^[\]]+?)\],\[([^[\]]+?)\],\[([^[\]]+?)\]\]/g;
 
-      const chatValue = [];
-      let match;
+        const chatValue = [];
+        let match;
 
-      while ((match = regex.exec(data.chat)) !== null) {
-        const [, value1, value2, value3] = match;
-        chatValue.push([value1, value2, value3]);
-      }
-
-      setMountChat([]);
-      setIsAtButton(false);
-
-      const groupedByDate = {};
-
-      chatValue.forEach((item) => {
-        const date = item[0].split(":")[1].trim(); // Extrai a data do primeiro elemento
-        if (!groupedByDate[date]) {
-          groupedByDate[date] = [];
+        while ((match = regex.exec(data.chat)) !== null) {
+          const [, value1, value2, value3] = match;
+          chatValue.push([value1, value2, value3]);
         }
-        groupedByDate[date].push(item);
-      });
-      let userClass;
-      let techClass;
-      let justifyContetUser;
-      let justifyContetTech;
 
-      if (helpdesk === "helpdesk") {
-        userClass = "uChat1";
-        techClass = "uChat2";
-        justifyContetUser = "justify-content-end";
-        justifyContetTech = "justify-content-start";
-      } else if (helpdesk === "dashboard") {
-        userClass = "uChat2";
-        techClass = "uChat1";
-        justifyContetUser = "justify-content-start";
-        justifyContetTech = "justify-content-end";
-      }
+        setMountChat([]);
+        setIsAtButton(false);
 
-      const renderGroupedItems = () => {
-        const groupedItems = [];
-        for (const date in groupedByDate) {
-          groupedItems.push(
-            <div key={date}>
-              <div className="text-center d-flex justify-content-center text-break">
-                <p className="pChat">{date}</p>
-              </div>
-              {groupedByDate[date].map((item, index) => {
-                // Remover "User:" ou "Tech:" do início da string
-                var userOrTech = item[1];
-                var time = item[2].replace("Hours:", "").trim();
-                if (userOrTech.includes("System")) {
-                  userOrTech = userOrTech.replace("System:", "").trim();
-                  return (
-                    <div key={index}>
-                      <div className="text-center d-flex justify-content-center text-break">
-                        <div className="pChat">
-                          <p>{userOrTech + " " + time}</p>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                }
+        const groupedByDate = {};
 
-                if (userOrTech.includes("User")) {
-                  userOrTech = userOrTech.replace("User:", "").trim();
-                  return (
-                    <div key={index}>
-                      <div
-                        className={`d-flex ${justifyContetUser} w-100 text-break position-relative`}
-                      >
-                        <div className={`${userClass} position-relative`}>
-                          <p>{userOrTech}</p>
-                          <PChatHourR className="position-absolute bottom-0 end-0">
-                            {time}
-                          </PChatHourR>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                } else if (userOrTech.includes("Technician")) {
-                  userOrTech = userOrTech.replace("Technician:", "").trim();
-                  return (
-                    <div key={index}>
-                      <div
-                        className={`d-flex ${justifyContetTech} w-100 text-break position-relative`}
-                      >
-                        <div className={`${techClass} position-relative`}>
-                          <p>{userOrTech}</p>
-                          <PChatHourL className="position-absolute bottom-0 start-0">
-                            {time}
-                          </PChatHourL>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                }
-                return null;
-              })}
-            </div>
-          );
-        }
-        return groupedItems;
-      };
-
-      if (varisAtBottom) {
-        setIsAtButton(true);
-      }
-      setMountChat(renderGroupedItems());
-
-      const callAsyncFunction = async () => {
-        await changeLastVW({
-          id: ticketID,
-          tech: ticketResponsible_Technician,
+        chatValue.forEach((item) => {
+          const date = item[0].split(":")[1].trim(); // Extrai a data do primeiro elemento
+          if (!groupedByDate[date]) {
+            groupedByDate[date] = [];
+          }
+          groupedByDate[date].push(item);
         });
-      };
+        let userClass;
+        let techClass;
+        let justifyContetUser;
+        let justifyContetTech;
 
-      // Chama a função, mas o código segue sem esperar a execução terminar
-      callAsyncFunction();
+        if (helpdesk === "helpdesk") {
+          userClass = "u-chat1";
+          techClass = "u-chat2";
+          justifyContetUser = "justify-content-end";
+          justifyContetTech = "justify-content-start";
+        } else if (helpdesk === "dashboard") {
+          userClass = "u-chat2";
+          techClass = "u-chat1";
+          justifyContetUser = "justify-content-start";
+          justifyContetTech = "justify-content-end";
+        }
+
+        const renderGroupedItems = () => {
+          const groupedItems = [];
+          for (const date in groupedByDate) {
+            groupedItems.push(
+              <div key={date}>
+                <div className="text-center d-flex justify-content-center text-break">
+                  <p className="p-chat">{date}</p>
+                </div>
+                {groupedByDate[date].map((item, index) => {
+                  // Remover "User:" ou "Tech:" do início da string
+                  var userOrTech = item[1];
+                  var time = item[2].replace("Hours:", "").trim();
+                  if (userOrTech.includes("System")) {
+                    userOrTech = userOrTech.replace("System:", "").trim();
+                    return (
+                      <div key={index}>
+                        <div className="text-center d-flex justify-content-center text-break">
+                          <div className="p-chat">
+                            <p>{userOrTech + " " + time}</p>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  if (userOrTech.includes("User")) {
+                    userOrTech = userOrTech.replace("User:", "").trim();
+                    return (
+                      <div key={index}>
+                        <div
+                          className={`d-flex ${justifyContetUser} w-100 text-break position-relative`}
+                        >
+                          <div className={`${userClass} position-relative`}>
+                            <p>{userOrTech}</p>
+                            <PChatHourR className="position-absolute bottom-0 end-0">
+                              {time}
+                            </PChatHourR>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  } else if (userOrTech.includes("Technician")) {
+                    userOrTech = userOrTech.replace("Technician:", "").trim();
+                    return (
+                      <div key={index}>
+                        <div
+                          className={`d-flex ${justifyContetTech} w-100 text-break position-relative`}
+                        >
+                          <div className={`${techClass} position-relative`}>
+                            <p>{userOrTech}</p>
+                            <PChatHourL className="position-absolute bottom-0 start-0">
+                              {time}
+                            </PChatHourL>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }
+                  return null;
+                })}
+              </div>
+            );
+          }
+          return groupedItems;
+        };
+
+        if (varisAtBottom) {
+          setIsAtButton(true);
+        }
+        setMountChat(renderGroupedItems());
+
+        const callAsyncFunction = async () => {
+          await ChangeLastVW({
+            id: ticketID,
+            tech: ticketResponsible_Technician,
+          });
+        };
+
+        // Chama a função, mas o código segue sem esperar a execução terminar
+        callAsyncFunction();
+      } catch (err) {
+        return console.log(err);
+      }
     }
   }
 
-  async function changeLastVW({ id, tech }) {
+  async function ChangeLastVW({ id, tech }) {
     return fetch(`/helpdesk/change-last-viewer/${id}`, {
       method: "POST",
       headers: {
@@ -559,350 +598,375 @@ export default function OpenTicketWindow({
     }
   }
 
+  // Função auxiliar para adicionar um zero à esquerda para números menores que 10
+  function AddZero(numero) {
+    if (numero < 10) {
+      return "0" + numero;
+    }
+    return numero;
+  }
+
   function SendChat() {
-    // Cria uma instância de data para capturar o momento atual
-    var date = new Date();
+    try {
+      // Cria uma instância de data para capturar o momento atual
+      var date = new Date();
 
-    // Função auxiliar para adicionar um zero à esquerda para números menores que 10
-    function adicionaZero(numero) {
-      if (numero < 10) {
-        return "0" + numero;
+      // Obtém o dia, mês e ano atuais
+      var day = date.getDate();
+      var month = date.getMonth() + 1; // O mês é baseado em zero, então soma-se 1
+      var year = date.getFullYear();
+
+      // Formata a data no formato DD/MM/AAAA
+      var dataFormatada = AddZero(day) + "/" + AddZero(month) + "/" + year;
+
+      // Formata a hora no formato HH:MM
+      var horaFormatada =
+        AddZero(date.getHours()) + ":" + AddZero(date.getMinutes());
+
+      // Limpa o campo de entrada do chat
+      inputChat.current.value = "";
+
+      // Se o texto do chat estiver vazio, não faz nada
+      if (textChat.length === 0) {
+        return;
       }
-      return numero;
-    }
 
-    // Obtém o dia, mês e ano atuais
-    var day = date.getDate();
-    var month = date.getMonth() + 1; // O mês é baseado em zero, então soma-se 1
-    var year = date.getFullYear();
-
-    // Formata a data no formato DD/MM/AAAA
-    var dataFormatada =
-      adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
-
-    // Formata a hora no formato HH:MM
-    var horaFormatada =
-      adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
-
-    // Limpa o campo de entrada do chat
-    inputChat.current.value = "";
-
-    // Se o texto do chat estiver vazio, não faz nada
-    if (textChat.length === 0) {
-      return;
-    }
-
-    // Envia a mensagem do chat para o servidor
-    fetch("/helpdesk/ticket/" + ticketID, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json", // Define o tipo de conteúdo como JSON
-        "X-CSRFToken": token, // Adiciona o token CSRF para segurança da requisição
-      },
-      body: JSON.stringify({
-        helpdesk: helpdesk,
-        user: userName, // Nome do usuário que está enviando a mensagem
-        chat: textChat, // O conteúdo do chat
-        hours: horaFormatada, // Hora formatada da mensagem
-        date: dataFormatada, // Data formatada da mensagem
-        mail: userMail,
-      }),
-    })
-      .then((response) => {
-        // Converte a resposta para JSON
-        return response.json();
+      // Envia a mensagem do chat para o servidor
+      fetch("/helpdesk/ticket/" + ticketID, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json", // Define o tipo de conteúdo como JSON
+          "X-CSRFToken": token, // Adiciona o token CSRF para segurança da requisição
+        },
+        body: JSON.stringify({
+          helpdesk: helpdesk,
+          user: userName, // Nome do usuário que está enviando a mensagem
+          chat: textChat, // O conteúdo do chat
+          hours: horaFormatada, // Hora formatada da mensagem
+          date: dataFormatada, // Data formatada da mensagem
+          mail: userMail,
+        }),
       })
-      .then((data) => {
-        setTextChat("");
-        // Atualiza a interface do chat com os novos dados
-        ReloadChat({ data: data });
-      })
-      .catch((err) => {
-        // Se ocorrer um erro, exibe a mensagem de erro no frontend
-        setMessageError(err);
-        setTypeError("Fatal ERROR");
-        setMessage(true);
-        return console.log(err); // Exibe o erro no console para depuração
-      });
+        .then((response) => {
+          // Converte a resposta para JSON
+          return response.json();
+        })
+        .then((data) => {
+          setTextChat("");
+          // Atualiza a interface do chat com os novos dados
+          ReloadChat({ data: data });
+        })
+        .catch((err) => {
+          // Se ocorrer um erro, exibe a mensagem de erro no frontend
+          setMessageError(err);
+          setTypeError("Fatal ERROR");
+          setMessage(true);
+          return console.log(err); // Exibe o erro no console para depuração
+        });
+    } catch (err) {
+      return console.log(err);
+    }
   }
 
   function SubmitNewFiles() {
-    // Cria um objeto FormData para enviar os arquivos e informações adicionais
-    const formData = new FormData();
+    try {
+      // Cria um objeto FormData para enviar os arquivos e informações adicionais
+      const formData = new FormData();
 
-    // Adiciona os arquivos selecionados ao FormData
-    for (let i = 0; i < uploadNewFiles.length; i++) {
-      const file = uploadNewFiles[i];
+      // Adiciona os arquivos selecionados ao FormData
+      for (let i = 0; i < uploadNewFiles.length; i++) {
+        const file = uploadNewFiles[i];
 
-      formData.append("files", file);
-    }
-
-    // Função para adicionar zero à esquerda de números menores que 10
-    function adicionaZero(numero) {
-      if (numero < 10) {
-        return "0" + numero;
+        formData.append("files", file);
       }
-      return numero;
-    }
 
-    // Obtém e formata a data e a hora atuais
-    var date = new Date();
-    var day = date.getDate();
-    var month = date.getMonth() + 1;
-    var year = date.getFullYear();
-    var dataFormatada =
-      adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
-    var horaFormatada =
-      adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
+      // Obtém e formata a data e a hora atuais
+      var date = new Date();
+      var day = date.getDate();
+      var month = date.getMonth() + 1;
+      var year = date.getFullYear();
+      var dataFormatada = AddZero(day) + "/" + AddZero(month) + "/" + year;
+      var horaFormatada =
+        AddZero(date.getHours()) + ":" + AddZero(date.getMinutes());
 
-    // Adiciona a data e hora ao FormData
-    formData.append("date", dataFormatada);
-    formData.append("hours", horaFormatada);
+      // Adiciona a data e hora ao FormData
+      formData.append("date", dataFormatada);
+      formData.append("hours", horaFormatada);
 
-    // Envia os arquivos e dados ao servidor
-    fetch("/dashboard_TI/upload-new-files/" + ticketID, {
-      method: "POST",
-      headers: {
-        "X-CSRFToken": token,
-        "Cache-Control": "no-cache",
-      },
-      body: formData,
-    })
-      .then((response) => {
-        // Converte a resposta para JSON
-        return response.json();
+      // Envia os arquivos e dados ao servidor
+      fetch("/dashboard-ti/upload-new-files/" + ticketID, {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": token,
+        },
+        body: formData,
       })
-      .then(async (data) => {
-        setUploadNewFiles([]);
-        setNameNWFiles();
-        // Atualiza o estado para indicar que não há novos arquivos
-        setNewFiles(false);
-        // Recarrega a visualização dos arquivos e o chat com as novas informações
-        ReloadFiles({
-          files: data.files,
-          name_file: data.name_file,
-          content_file: data.content_file,
+        .then((response) => {
+          // Converte a resposta para JSON
+          return response.json();
+        })
+        .then(async (data) => {
+          setUploadNewFiles([]);
+          setNameNWFiles();
+          // Atualiza o estado para indicar que não há novos arquivos
+          setNewFiles(false);
+          // Recarrega a visualização dos arquivos e o chat com as novas informações
+          ReloadFiles({
+            files: data.files,
+            name_file: data.name_file,
+            content_file: data.content_file,
+          });
+          // reloadChat({ data: data.chat });
+        })
+        .catch((err) => {
+          // Exibe mensagem de erro e loga o erro no console
+          setMessageError(err);
+          setTypeError("FATAL ERROR");
+          setMessage(true);
+          return console.log(err);
         });
-        // reloadChat({ data: data.chat });
-      })
-      .catch((err) => {
-        // Exibe mensagem de erro e loga o erro no console
-        setMessageError(err);
-        setTypeError("FATAL ERROR");
-        setMessage(true);
-        return console.log(err);
-      });
+    } catch (err) {
+      return console.log(err);
+    }
   }
 
   function ReloadFiles({ files, name_file, content_file }) {
     for (let i = 0; i < files.length; i++) {
       var file = files[i];
       if (file === "mail") {
-        const contentFileMail = content_file[i];
-        const nameFileMail = name_file[i];
-        const Div = (
-          <DivOnBoardFile className="position-relative">
-            <IMGFiles src={mailImage} alt="" />
-            <ImageFile
-              className="position-absolute bottom-0 start-50 translate-middle-x"
-              src={downloadImage}
-              alt="Baixar"
-              onClick={() => {
-                const blob = DownloadFile({
-                  data: "message/rfc822",
-                  content: contentFileMail,
-                });
+        try {
+          const contentFileMail = content_file[i];
+          const nameFileMail = name_file[i];
+          const Div = (
+            <DivOnBoardFile className="position-relative">
+              <IMGFiles src={mailImage} alt="Ícone de um arquivo de E-mail" />
+              <ImageFile
+                className="position-absolute bottom-0 start-50 translate-middle-x"
+                src={downloadImage}
+                alt="Baixar"
+                onClick={() => {
+                  const blob = DownloadFile({
+                    data: "message/rfc822",
+                    content: contentFileMail,
+                  });
 
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement("a");
-                a.href = url;
-                a.download = nameFileMail;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-              }}
-            />
-            <p className="text-center text-break">{nameFileMail}</p>
-          </DivOnBoardFile>
-        );
-        setFileTicket((fileticket) => [...fileticket, Div]);
+                  const url = window.URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+                  a.href = url;
+                  a.download = nameFileMail;
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
+                }}
+              />
+              <p className="text-center text-break">{nameFileMail}</p>
+            </DivOnBoardFile>
+          );
+          setFileTicket((fileticket) => [...fileticket, Div]);
+        } catch (err) {
+          return console.log(err);
+        }
       } else if (file === "excel") {
-        const ContentFileExcel = content_file[i];
-        const NameFileExcel = name_file[i];
-        const Div = (
-          <DivOnBoardFile className="position-relative">
-            <IMGFiles src={XLSImage} alt="" />
-            <ImageFile
-              className="position-absolute bottom-0 start-50 translate-middle-x"
-              src={downloadImage}
-              alt="Baixar"
-              onClick={() => {
-                const blob = DownloadFile({
-                  data: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                  content: ContentFileExcel,
-                });
+        try {
+          const ContentFileExcel = content_file[i];
+          const NameFileExcel = name_file[i];
+          const Div = (
+            <DivOnBoardFile className="position-relative">
+              <IMGFiles src={XLSImage} alt="Ícone de um arquivo Excell" />
+              <ImageFile
+                className="position-absolute bottom-0 start-50 translate-middle-x"
+                src={downloadImage}
+                alt="Baixar"
+                onClick={() => {
+                  const blob = DownloadFile({
+                    data: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    content: ContentFileExcel,
+                  });
 
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement("a");
-                a.href = url;
-                a.download = NameFileExcel;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-              }}
-            />
-            <p className="text-center text-break">{NameFileExcel}</p>
-          </DivOnBoardFile>
-        );
-        setFileTicket((fileticket) => [...fileticket, Div]);
+                  const url = window.URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+                  a.href = url;
+                  a.download = NameFileExcel;
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
+                }}
+              />
+              <p className="text-center text-break">{NameFileExcel}</p>
+            </DivOnBoardFile>
+          );
+          setFileTicket((fileticket) => [...fileticket, Div]);
+        } catch (err) {
+          return console.log(err);
+        }
       } else if (file === "zip") {
-        const ContentFileZip = content_file[i];
-        const NameFileZip = name_file[i];
-        const Div = (
-          <DivOnBoardFile className="position-relative">
-            <IMGFiles src={ZIPImage} alt="" />
-            <ImageFile
-              className="position-absolute bottom-0 start-50 translate-middle-x"
-              src={downloadImage}
-              alt="Baixar"
-              onClick={() => {
-                const blob = DownloadFile({
-                  data: "application/zip",
-                  content: ContentFileZip,
-                });
+        try {
+          const ContentFileZip = content_file[i];
+          const NameFileZip = name_file[i];
+          const Div = (
+            <DivOnBoardFile className="position-relative">
+              <IMGFiles src={ZIPImage} alt="ìcone de um arquivo ZIP" />
+              <ImageFile
+                className="position-absolute bottom-0 start-50 translate-middle-x"
+                src={downloadImage}
+                alt="Baixar"
+                onClick={() => {
+                  const blob = DownloadFile({
+                    data: "application/zip",
+                    content: ContentFileZip,
+                  });
 
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement("a");
-                a.href = url;
-                a.download = NameFileZip;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-              }}
-            />
-            <p className="text-center text-break">{NameFileZip}</p>
-          </DivOnBoardFile>
-        );
-        setFileTicket((fileticket) => [...fileticket, Div]);
+                  const url = window.URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+                  a.href = url;
+                  a.download = NameFileZip;
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
+                }}
+              />
+              <p className="text-center text-break">{NameFileZip}</p>
+            </DivOnBoardFile>
+          );
+          setFileTicket((fileticket) => [...fileticket, Div]);
+        } catch (err) {
+          return console.log(err);
+        }
       } else if (file === "txt") {
-        const ContentFileTXT = content_file[i];
-        const NameFileTXT = name_file[i];
-        const Div = (
-          <DivOnBoardFile className="position-relative">
-            <IMGFiles src={TXTImage} alt="" />
-            <ImageFile
-              className="position-absolute bottom-0 start-50 translate-middle-x"
-              src={downloadImage}
-              alt="Baixar"
-              onClick={() => {
-                const blob = DownloadFile({
-                  data: "text/plain",
-                  content: ContentFileTXT,
-                });
+        try {
+        } catch (err) {
+          const ContentFileTXT = content_file[i];
+          const NameFileTXT = name_file[i];
+          const Div = (
+            <DivOnBoardFile className="position-relative">
+              <IMGFiles src={TXTImage} alt=" Ícone de um arquivo TXT" />
+              <ImageFile
+                className="position-absolute bottom-0 start-50 translate-middle-x"
+                src={downloadImage}
+                alt="Baixar"
+                onClick={() => {
+                  const blob = DownloadFile({
+                    data: "text/plain",
+                    content: ContentFileTXT,
+                  });
 
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement("a");
-                a.href = url;
-                a.download = NameFileTXT;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-              }}
-            />
-            <p className="text-center text-break">{NameFileTXT}</p>
-          </DivOnBoardFile>
-        );
-        setFileTicket((fileticket) => [...fileticket, Div]);
+                  const url = window.URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+                  a.href = url;
+                  a.download = NameFileTXT;
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
+                }}
+              />
+              <p className="text-center text-break">{NameFileTXT}</p>
+            </DivOnBoardFile>
+          );
+          setFileTicket((fileticket) => [...fileticket, Div]);
+          return console.log(err);
+        }
       } else if (file === "word") {
-        const ContentFileWord = content_file[i];
-        const NameFileWord = name_file[i];
-        const Div = (
-          <DivOnBoardFile className="position-relative">
-            <IMGFiles src={wordImage} alt="" />
-            <ImageFile
-              className="position-absolute bottom-0 start-50 translate-middle-x"
-              src={downloadImage}
-              alt="Baixar"
-              onClick={() => {
-                const blob = DownloadFile({
-                  data: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                  content: ContentFileWord,
-                });
+        try {
+          const ContentFileWord = content_file[i];
+          const NameFileWord = name_file[i];
+          const Div = (
+            <DivOnBoardFile className="position-relative">
+              <IMGFiles src={wordImage} alt="Ícone de um Arquivo Word" />
+              <ImageFile
+                className="position-absolute bottom-0 start-50 translate-middle-x"
+                src={downloadImage}
+                alt="Baixar"
+                onClick={() => {
+                  const blob = DownloadFile({
+                    data: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                    content: ContentFileWord,
+                  });
 
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement("a");
-                a.href = url;
-                a.download = NameFileWord;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-              }}
-            />
-            <p className="text-center text-break">{NameFileWord}</p>
-          </DivOnBoardFile>
-        );
-        setFileTicket((fileticket) => [...fileticket, Div]);
+                  const url = window.URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+                  a.href = url;
+                  a.download = NameFileWord;
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
+                }}
+              />
+              <p className="text-center text-break">{NameFileWord}</p>
+            </DivOnBoardFile>
+          );
+          setFileTicket((fileticket) => [...fileticket, Div]);
+        } catch (err) {
+          return console.log(err);
+        }
       } else if (file === "pdf") {
-        const ContentFilePDF = content_file[i];
-        const NameFilePDF = name_file[i];
-        const Div = (
-          <DivOnBoardFile className="position-relative">
-            <IMGFiles src={PDFImage} alt="" />
-            <ImageFile
-              className="position-absolute bottom-0 start-50 translate-middle-x"
-              src={downloadImage}
-              alt="Baixar"
-              onClick={() => {
-                const blob = DownloadFile({
-                  data: "application/pdf",
-                  content: ContentFilePDF,
-                });
+        try {
+          const ContentFilePDF = content_file[i];
+          const NameFilePDF = name_file[i];
+          const Div = (
+            <DivOnBoardFile className="position-relative">
+              <IMGFiles src={PDFImage} alt="Ícone de um Arquivo PDF" />
+              <ImageFile
+                className="position-absolute bottom-0 start-50 translate-middle-x"
+                src={downloadImage}
+                alt="Baixar"
+                onClick={() => {
+                  const blob = DownloadFile({
+                    data: "application/pdf",
+                    content: ContentFilePDF,
+                  });
 
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement("a");
-                a.href = url;
-                a.download = NameFilePDF;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-              }}
-            />
-            <p className="text-center text-break">{NameFilePDF}</p>
-          </DivOnBoardFile>
-        );
-        setFileTicket((fileticket) => [...fileticket, Div]);
+                  const url = window.URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+                  a.href = url;
+                  a.download = NameFilePDF;
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
+                }}
+              />
+              <p className="text-center text-break">{NameFilePDF}</p>
+            </DivOnBoardFile>
+          );
+          setFileTicket((fileticket) => [...fileticket, Div]);
+        } catch (err) {
+          return console.log(err);
+        }
       } else if (typeof file === "object") {
-        const image = file.image;
-        const nameFile = name_file[i];
-        const Div = (
-          <DivOnBoardFile className="position-relative">
-            <IMGFiles
-              src={`data:image/jpeg;base64,${file.image}`}
-              onClick={() => {
-                setImageUrl(`data:image/jpeg;base64,${image}`);
-                ticketRef.current.style.filter = "blur(4px)";
-                ticketRef.current.style.background = "rgba(0, 0, 0, 0.4)";
-                ticketOpen.current.style.overflowY = "hidden";
-                setImageOpen(true);
-              }}
-              alt={"imagem:" + name_file}
-            />
-            <ImageFile
-              className="position-absolute bottom-0 start-50 translate-middle-x"
-              src={downloadImage}
-              alt="Baixar"
-              onClick={() => {
-                const link = document.createElement("a");
-                link.href = `data:image/jpeg;base64,${image}`;
-                link.download = nameFile;
-                link.click();
-                link.remove();
-              }}
-            />
-            <p className="text-center text-break">{nameFile}</p>
-          </DivOnBoardFile>
-        );
-        setFileTicket((fileticket) => [...fileticket, Div]);
+        try {
+          const image = file.image;
+          const nameFile = name_file[i];
+          const Div = (
+            <DivOnBoardFile className="position-relative">
+              <IMGFiles
+                src={`data:image/jpeg;base64,${file.image}`}
+                onClick={() => {
+                  setImageUrl(`data:image/jpeg;base64,${image}`);
+                  ticketRef.current.style.filter = "blur(4px)";
+                  ticketRef.current.style.background = "rgba(0, 0, 0, 0.4)";
+                  ticketOpen.current.style.overflowY = "hidden";
+                  setImageOpen(true);
+                }}
+                alt={"imagem:" + name_file}
+              />
+              <ImageFile
+                className="position-absolute bottom-0 start-50 translate-middle-x"
+                src={downloadImage}
+                alt="Baixar"
+                onClick={() => {
+                  const link = document.createElement("a");
+                  link.href = `data:image/jpeg;base64,${image}`;
+                  link.download = nameFile;
+                  link.click();
+                  link.remove();
+                }}
+              />
+              <p className="text-center text-break">{nameFile}</p>
+            </DivOnBoardFile>
+          );
+          setFileTicket((fileticket) => [...fileticket, Div]);
+        } catch (err) {
+          return console.log(err);
+        }
       }
     }
   }
@@ -927,62 +991,37 @@ export default function OpenTicketWindow({
   useEffect(() => {
     let paragraphs = [];
     if (uploadNewFiles.length !== 0) {
-      // Obtém a lista de arquivos do primeiro item em uploadNewFiles
-      const fileNM = uploadNewFiles;
+      try {
+        // Obtém a lista de arquivos do primeiro item em uploadNewFiles
+        const fileNM = uploadNewFiles;
 
-      if (fileNM instanceof File) {
-        paragraphs.push(
-          <div
-            key={fileNM.name}
-            id={fileNM.name}
-            className="d-flex w-100 justify-content-center"
-          >
-            <DivNameFile key={0}>
-              <PNWFile>{fileNM.name}</PNWFile>
-            </DivNameFile>
-            <div>
-              <BtnFile
-                type="button"
-                onClick={() => {
-                  // Cria uma cópia do array de arquivos e remove o arquivo atual
-                  const newArray = Array.from(fileNM);
-                  newArray.splice(0, 1);
-
-                  // Cria um novo DataTransfer para atualizar a lista de arquivos
-                  const dataTransfer = new DataTransfer();
-                  newArray.forEach((file) => {
-                    dataTransfer.items.add(file);
-                  });
-
-                  // Atualiza o estado com a nova lista de arquivos
-                  const newFileList = dataTransfer.files;
-                  setUploadNewFiles([newFileList]);
-                }}
-              >
-                <ImgFile src={excludeImage} alt="Excluir arquivo" />
-              </BtnFile>
-            </div>
-          </div>
-        );
-      } else if (fileNM.length) {
-        // Itera sobre cada arquivo na lista
-        for (let i = 0; i < fileNM.length; i++) {
-          const file = fileNM[i];
-          // Adiciona um elemento JSX para cada arquivo
+        if (fileNM instanceof File) {
           paragraphs.push(
             <div
-              key={file.name}
-              id={file.name}
+              key={fileNM.name}
+              id={fileNM.name}
               className="d-flex w-100 justify-content-center"
             >
-              <DivNameFile key={i}>
-                <PNWFile>{file.name}</PNWFile>
+              <DivNameFile key={0}>
+                <PNWFile>{fileNM.name}</PNWFile>
               </DivNameFile>
               <div>
                 <BtnFile
                   type="button"
                   onClick={() => {
-                    RemoveFile({ fileNM: fileNM, count: i });
+                    // Cria uma cópia do array de arquivos e remove o arquivo atual
+                    const newArray = Array.from(fileNM);
+                    newArray.splice(0, 1);
+
+                    // Cria um novo DataTransfer para atualizar a lista de arquivos
+                    const dataTransfer = new DataTransfer();
+                    newArray.forEach((file) => {
+                      dataTransfer.items.add(file);
+                    });
+
+                    // Atualiza o estado com a nova lista de arquivos
+                    const newFileList = dataTransfer.files;
+                    setUploadNewFiles([newFileList]);
                   }}
                 >
                   <ImgFile src={excludeImage} alt="Excluir arquivo" />
@@ -990,14 +1029,43 @@ export default function OpenTicketWindow({
               </div>
             </div>
           );
+        } else if (fileNM.length) {
+          // Itera sobre cada arquivo na lista
+          for (let i = 0; i < fileNM.length; i++) {
+            const file = fileNM[i];
+            // Adiciona um elemento JSX para cada arquivo
+            paragraphs.push(
+              <div
+                key={file.name}
+                id={file.name}
+                className="d-flex w-100 justify-content-center"
+              >
+                <DivNameFile key={i}>
+                  <PNWFile>{file.name}</PNWFile>
+                </DivNameFile>
+                <div>
+                  <BtnFile
+                    type="button"
+                    onClick={() => {
+                      RemoveFile({ fileNM: fileNM, count: i });
+                    }}
+                  >
+                    <ImgFile src={excludeImage} alt="Excluir arquivo" />
+                  </BtnFile>
+                </div>
+              </div>
+            );
+          }
         }
+
+        // Atualiza o estado com a nova lista de elementos JSX
+        setNameNWFiles(paragraphs);
+
+        // Indica que novos arquivos foram selecionados
+        setNewFiles(true);
+      } catch (err) {
+        return console.log(err);
       }
-
-      // Atualiza o estado com a nova lista de elementos JSX
-      setNameNWFiles(paragraphs);
-
-      // Indica que novos arquivos foram selecionados
-      setNewFiles(true);
     } else {
       return setNameNWFiles();
     }
@@ -1005,115 +1073,100 @@ export default function OpenTicketWindow({
   }, [uploadNewFiles]);
 
   function RemoveFile({ fileNM, count }) {
-    const newArray = [...fileNM]; // Faz uma cópia do array original
-    newArray.splice(count, 1); // Remove o arquivo específico
+    try {
+      const newArray = [...fileNM]; // Faz uma cópia do array original
+      newArray.splice(count, 1); // Remove o arquivo específico
 
-    if (newArray.length === 0) {
-      setUploadNewFiles([]); // Se não houver mais arquivos, zera o estado
-      return;
-    }
+      if (newArray.length === 0) {
+        setUploadNewFiles([]); // Se não houver mais arquivos, zera o estado
+        return;
+      }
 
-    // Cria um novo DataTransfer para atualizar a lista de arquivos corretamente
-    const dataTransfer = new DataTransfer();
-    newArray.forEach((file) => dataTransfer.items.add(file));
+      // Cria um novo DataTransfer para atualizar a lista de arquivos corretamente
+      const dataTransfer = new DataTransfer();
+      newArray.forEach((file) => dataTransfer.items.add(file));
 
-    // Atualiza o estado com a nova lista de arquivos
-    setUploadNewFiles(Array.from(dataTransfer.files));
-  }
-
-  function OpenConfig(event) {
-    if (
-      (event.target.id === "drp" &&
-        dropCont.current.classList.contains("visually-hidden")) ||
-      (event.target.id === "imd" &&
-        dropCont.current.classList.contains("visually-hidden"))
-    ) {
-      dropCont.current.classList.remove("visually-hidden");
-    } else {
-      dropCont.current.classList.add("visually-hidden");
+      // Atualiza o estado com a nova lista de arquivos
+      setUploadNewFiles(Array.from(dataTransfer.files));
+    } catch (err) {
+      return console.log(err);
     }
   }
 
   function ChangeStatusTicket({ status }) {
-    var date = new Date();
+    try {
+      var date = new Date();
 
-    // Adiciona um zero à frente de números menores que 10 para formatar corretamente a data e hora
-    function adicionaZero(numero) {
-      if (numero < 10) {
-        return "0" + numero;
-      }
-      return numero;
-    }
+      // Obtém e formata a data e hora atuais
+      var day = date.getDate();
+      var month = date.getMonth() + 1;
+      var year = date.getFullYear();
+      var dataFormatada = AddZero(day) + "/" + AddZero(month) + "/" + year;
+      var horaFormatada =
+        AddZero(date.getHours()) + ":" + AddZero(date.getMinutes());
 
-    // Obtém e formata a data e hora atuais
-    var day = date.getDate();
-    var month = date.getMonth() + 1;
-    var year = date.getFullYear();
-    var dataFormatada =
-      adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
-    var horaFormatada =
-      adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
-
-    // Faz uma requisição POST para atualizar o status do chamado
-    fetch("/helpdesk/ticket/" + ticketID, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRFToken": token, // Inclui o token CSRF para segurança
-        "Cache-Control": "no-cache", // Evita cache da requisição
-      },
-      body: JSON.stringify({
-        technician: userName, // Nome do técnico que está finalizando o chamado
-        status: status, // Novo status do chamado
-        hours: horaFormatada, // Hora de conclusão
-        date: dataFormatada, // Data de conclusão
-        mail: ticketMAIL, // E-mail associado ao chamado
-        techMail: userMail,
-      }),
-    })
-      .then((response) => {
-        if (response.status === 304) {
-          // Se o status for 304, o chamado não pertence ao usuário
-          setMessageError("Ticket não pertence a você");
-          setTypeError("Permissão Negada");
-          setMessage(true);
-          return;
-        } else if (response.status === 200) {
-          setChangeTech(ticketID);
-          return;
-        } else if (response.status === 204) {
-          setMessageError("Ticket Já está em aguardo");
-          setTypeError("Permissão Negada");
-          setMessage(true);
-          return;
-        } else if (response.status === 205) {
-          setMessageError("Ticket Já está Finalizado");
-          setTypeError("Permissão Negada");
-          setMessage(true);
-          return;
-        } else if (response.status === 206) {
-          setMessageError("Ticket Já está Aberto");
-          setTypeError("Permissão Negada");
-          setMessage(true);
-          return;
-        } else {
-          // Para outros status, tenta converter a resposta em JSON e exibir uma mensagem de erro
-          return response.json();
-        }
+      // Faz uma requisição POST para atualizar o status do chamado
+      fetch("/helpdesk/ticket/" + ticketID, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": token, // Inclui o token CSRF para segurança
+        },
+        body: JSON.stringify({
+          technician: userName, // Nome do técnico que está finalizando o chamado
+          status: status, // Novo status do chamado
+          hours: horaFormatada, // Hora de conclusão
+          date: dataFormatada, // Data de conclusão
+          mail: ticketMAIL, // E-mail associado ao chamado
+          techMail: userMail,
+        }),
       })
-      .catch((err) => {
-        // Trata erros de requisição e exibe uma mensagem de erro
-        setMessageError("Erro ao finalizar o Ticket");
-        setTypeError("FATAL ERROR");
-        setMessage(true);
-        return console.log(err); // Exibe o erro no console para depuração
-      });
+        .then((response) => {
+          if (response.status === 304) {
+            // Se o status for 304, o chamado não pertence ao usuário
+            setMessageError("Ticket não pertence a você");
+            setTypeError("Permissão Negada");
+            setMessage(true);
+            return;
+          } else if (response.status === 200) {
+            setChangeTech(ticketID);
+            return;
+          } else if (response.status === 204) {
+            setMessageError("Ticket Já está em aguardo");
+            setTypeError("Permissão Negada");
+            setMessage(true);
+            return;
+          } else if (response.status === 205) {
+            setMessageError("Ticket Já está Finalizado");
+            setTypeError("Permissão Negada");
+            setMessage(true);
+            return;
+          } else if (response.status === 206) {
+            setMessageError("Ticket Já está Aberto");
+            setTypeError("Permissão Negada");
+            setMessage(true);
+            return;
+          } else {
+            // Para outros status, tenta converter a resposta em JSON e exibir uma mensagem de erro
+            return response.json();
+          }
+        })
+        .catch((err) => {
+          // Trata erros de requisição e exibe uma mensagem de erro
+          setMessageError("Erro ao finalizar o Ticket");
+          setTypeError("FATAL ERROR");
+          setMessage(true);
+          return console.log(err); // Exibe o erro no console para depuração
+        });
+    } catch (err) {
+      return console.log(err);
+    }
   }
 
   function TechDetails() {
     fetch("/dashboard_TI/details/" + ticketID, {
       method: "GET",
-      headers: { Accept: "application/json", "Cache-Control": "no-cache" },
+      headers: { Accept: "application/json" },
     })
       .then((response) => {
         const status = response.status;
@@ -1135,64 +1188,68 @@ export default function OpenTicketWindow({
 
     // Verifica se há mensagens no chat.
     if (chat !== null && chat !== undefined && chat !== "undefined") {
-      const regex = /\[\[([^[\]]+?)\],\[([^[\]]+?)\],\[([^[\]]+?)\]\]/g;
+      try {
+        const regex = /\[\[([^[\]]+?)\],\[([^[\]]+?)\],\[([^[\]]+?)\]\]/g;
 
-      const chatValue = [];
-      let match;
+        const chatValue = [];
+        let match;
 
-      // Extrai os dados das mensagens do chat.
-      while ((match = regex.exec(chat)) !== null) {
-        const [, value1, value2, value3] = match;
-        chatValue.push([value1, value2, value3]);
-      }
-
-      setMountChat([]); // Limpa as mensagens já montadas.
-      setIsAtButton(false);
-
-      const groupedByDate = {};
-
-      chatValue.forEach((item) => {
-        const date = item[0].split(":")[1].trim(); // Extrai a data do primeiro elemento
-        if (!groupedByDate[date]) {
-          groupedByDate[date] = [];
+        // Extrai os dados das mensagens do chat.
+        while ((match = regex.exec(chat)) !== null) {
+          const [, value1, value2, value3] = match;
+          chatValue.push([value1, value2, value3]);
         }
-        groupedByDate[date].push(item);
-      });
 
-      // Função para renderizar as mensagens agrupadas.
-      const renderGroupedItems = () => {
-        const groupedItems = [];
-        for (const date in groupedByDate) {
-          groupedItems.push(
-            <div key={date}>
-              <div className="text-center d-flex justify-content-center text-break">
-                <p className="pChat">{date}</p>
-              </div>
-              {groupedByDate[date].map((item, index) => {
-                // Remover "User:" ou "Tech:" do início da string
-                var chat = item[1];
-                var time = item[2];
-                time = time.replace("Hours:", "").trim();
+        setMountChat([]); // Limpa as mensagens já montadas.
+        setIsAtButton(false);
 
-                return (
-                  <div key={index}>
-                    <div className="justify-content-start w-100 text-break position relative">
-                      <div className="uChat2D position-relative">
-                        <p>{chat}</p>
-                        <PChatHourL className="position-absolute bottom-0 start-0">
-                          {time}
-                        </PChatHourL>
+        const groupedByDate = {};
+
+        chatValue.forEach((item) => {
+          const date = item[0].split(":")[1].trim(); // Extrai a data do primeiro elemento
+          if (!groupedByDate[date]) {
+            groupedByDate[date] = [];
+          }
+          groupedByDate[date].push(item);
+        });
+
+        // Função para renderizar as mensagens agrupadas.
+        const renderGroupedItems = () => {
+          const groupedItems = [];
+          for (const date in groupedByDate) {
+            groupedItems.push(
+              <div key={date}>
+                <div className="text-center d-flex justify-content-center text-break">
+                  <p className="p-chat">{date}</p>
+                </div>
+                {groupedByDate[date].map((item, index) => {
+                  // Remover "User:" ou "Tech:" do início da string
+                  var chat = item[1];
+                  var time = item[2];
+                  time = time.replace("Hours:", "").trim();
+
+                  return (
+                    <div key={index}>
+                      <div className="justify-content-start w-100 text-break position relative">
+                        <div className="u-chat-2D position-relative">
+                          <p>{chat}</p>
+                          <PChatHourL className="position-absolute bottom-0 start-0">
+                            {time}
+                          </PChatHourL>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
-          );
-        }
-        return groupedItems;
-      };
-      setMountDetails(renderGroupedItems()); // Define as mensagens montadas.
+                  );
+                })}
+              </div>
+            );
+          }
+          return groupedItems;
+        };
+        setMountDetails(renderGroupedItems()); // Define as mensagens montadas.
+      } catch (err) {
+        return console.log(err);
+      }
     }
   }
 
@@ -1207,109 +1264,102 @@ export default function OpenTicketWindow({
   }
 
   function SendDetails() {
-    inputRef.current.value = ""; // Limpa o valor do campo de entrada.
-    if (detailsChat.length === 0) {
-      return;
-    }
-    // Implementação para enviar mensagens para o chat de detalhes técnicos.
-    // Pega a data, dia, mês e ano e ajusta.
-    var date = new Date();
-    function adicionaZero(numero) {
-      if (numero < 10) {
-        return "0" + numero;
+    try {
+      inputRef.current.value = ""; // Limpa o valor do campo de entrada.
+      if (detailsChat.length === 0) {
+        return;
       }
-      return numero;
-    }
-    var day = date.getDate();
-    var month = date.getMonth() + 1;
-    var year = date.getFullYear();
-
-    var dataFormatada =
-      adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
-    var horaFormatada =
-      adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
-
-    // Enviar informações do chat.
-    fetch("/helpdesk/ticket/" + ticketID, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRFToken": token,
-        "Tech-Details": "ok",
-        "Cache-Control": "no-cache",
-      },
-      body: JSON.stringify({
-        chat: detailsChat,
-        date: dataFormatada,
-        hours: horaFormatada,
-      }),
-    })
-      .then((response) => {
-        const status = response.status;
-        if (status === 200) {
-          return response.json();
-        }
-        return response.json();
-      })
-      .then((data) => {
-        MountChatDetails(data.chat);
-      })
-      .catch((err) => {
-        return console.log(err);
-      });
-  }
-
-  useEffect(() => {
-    if (selectedTech.length > 1) {
+      // Implementação para enviar mensagens para o chat de detalhes técnicos.
+      // Pega a data, dia, mês e ano e ajusta.
       var date = new Date();
 
-      function adicionaZero(numero) {
-        if (numero < 10) {
-          return "0" + numero;
-        }
-        return numero;
-      }
       var day = date.getDate();
       var month = date.getMonth() + 1;
       var year = date.getFullYear();
 
-      var dataFormatada =
-        adicionaZero(day) + "/" + adicionaZero(month) + "/" + year;
+      var dataFormatada = AddZero(day) + "/" + AddZero(month) + "/" + year;
       var horaFormatada =
-        adicionaZero(date.getHours()) + ":" + adicionaZero(date.getMinutes());
+        AddZero(date.getHours()) + ":" + AddZero(date.getMinutes());
+
+      // Enviar informações do chat.
       fetch("/helpdesk/ticket/" + ticketID, {
         method: "POST",
         headers: {
-          Accept: "application/json",
+          "Content-Type": "application/json",
           "X-CSRFToken": token,
-          "Cache-Control": "no-cache",
+          "Tech-Details": "ok",
         },
         body: JSON.stringify({
-          responsible_technician: selectedTech,
-          technician: userName,
+          chat: detailsChat,
           date: dataFormatada,
           hours: horaFormatada,
-          mail: ticketMAIL,
-          techMail: userMail,
         }),
       })
         .then((response) => {
-          if (response.status === 200) {
+          const status = response.status;
+          if (status === 200) {
             return response.json();
           }
+          return response.json();
         })
         .then((data) => {
-          if (data) {
-            setChangeTech(ticketID);
-            return;
-          }
+          MountChatDetails(data.chat);
         })
         .catch((err) => {
-          setMessageError(err);
-          setTypeError("FATAL ERROR");
-          setMessage(true);
           return console.log(err);
         });
+    } catch (err) {
+      return console.log();
+    }
+  }
+
+  useEffect(() => {
+    if (selectedTech.length > 1) {
+      try {
+        var date = new Date();
+
+        var day = date.getDate();
+        var month = date.getMonth() + 1;
+        var year = date.getFullYear();
+
+        var dataFormatada = AddZero(day) + "/" + AddZero(month) + "/" + year;
+        var horaFormatada =
+          AddZero(date.getHours()) + ":" + AddZero(date.getMinutes());
+        fetch("/helpdesk/ticket/" + ticketID, {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "X-CSRFToken": token,
+          },
+          body: JSON.stringify({
+            responsible_technician: selectedTech,
+            technician: userName,
+            date: dataFormatada,
+            hours: horaFormatada,
+            mail: ticketMAIL,
+            techMail: userMail,
+          }),
+        })
+          .then((response) => {
+            if (response.status === 200) {
+              return response.json();
+            }
+          })
+          .then((data) => {
+            if (data) {
+              setChangeTech(ticketID);
+              return;
+            }
+          })
+          .catch((err) => {
+            setMessageError(err);
+            setTypeError("FATAL ERROR");
+            setMessage(true);
+            return console.log(err);
+          });
+      } catch (err) {
+        return console.log(err);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedTech]);
@@ -1322,66 +1372,72 @@ export default function OpenTicketWindow({
       <div ref={ticketRef}>
         <div className="w-100 d-flex">
           <div className="d-flex justify-content-start w-100">
-            <BtnNF onClick={DownloadTicket}>
-              <img src={downTick} alt="download Ticket" />
-            </BtnNF>
-            <DropDown hidden={helpdesk === "helpdesk" ? true : false}>
-              <DropBTN id="drp" onClick={OpenConfig}>
-                <IMGConfig id="imd" src={setingIMG} alt="Configuração" />
-              </DropBTN>
-              <DropContent2
-                ref={dropCont}
-                id="dropContTicketWd"
-                className="visually-hidden position-absolute top-100 start-50 translate-middle-x"
-              >
-                <DropBTN
-                  className="btn btn-success w-100"
-                  onClick={() => {
-                    ChangeStatusTicket({ status: "close" });
-                  }}
-                  hidden={ticketResponsible_Technician.length === 0}
-                >
-                  Finalizar
+            <div className="d-flex w-100 justify-content-evenly">
+              <BtnNF onClick={DownloadTicket}>
+                <img src={downTick} alt="download Ticket" />
+              </BtnNF>
+              <DropDown hidden={helpdesk === "helpdesk" ? true : false}>
+                <DropBTN id="drp">
+                  <IMGConfig id="imd" src={setingIMG} alt="Configuração" />
                 </DropBTN>
-                <DropBTN
-                  className="btn btn-info w-100"
-                  onClick={() => {
-                    ChangeStatusTicket({ status: "open" });
-                  }}
-                  hidden={ticketResponsible_Technician.length === 0}
+                <DropContent2
+                  ref={dropCont}
+                  id="dropContTicketWd"
+                  className="visually-hidden position-absolute top-100 start-50 translate-middle-x"
                 >
-                  Reabrir
-                </DropBTN>
-                <DropBTN
-                  className="btn btn-primary w-100"
-                  onClick={() => {
-                    ChangeStatusTicket({ status: "stop" });
-                  }}
-                  hidden={ticketResponsible_Technician.length === 0}
-                >
-                  Aguardar
-                </DropBTN>
-                <DropBTN className="btn btn-danger w-100" onClick={TechDetails}>
-                  Detalhes Tecnicos
-                </DropBTN>
-                <select
-                  className="form-select"
-                  onChange={(event) => {
-                    setSelectedTech(event.target.value);
-                  }}
-                  value={selectedTech}
-                >
-                  <option key={0} value="" disabled>
-                    Transferir
-                  </option>
-                  {techs.map((tech, index) => (
-                    <option key={index + 1} value={tech}>
-                      {tech}
+                  <DropBTN
+                    className="btn btn-success w-100"
+                    onClick={() => {
+                      ChangeStatusTicket({ status: "close" });
+                    }}
+                    hidden={ticketResponsible_Technician.length === 0}
+                  >
+                    Finalizar
+                  </DropBTN>
+                  <DropBTN
+                    className="btn btn-info w-100"
+                    onClick={() => {
+                      ChangeStatusTicket({ status: "open" });
+                    }}
+                    hidden={ticketResponsible_Technician.length === 0}
+                  >
+                    Reabrir
+                  </DropBTN>
+                  <DropBTN
+                    className="btn btn-primary w-100"
+                    onClick={() => {
+                      ChangeStatusTicket({ status: "stop" });
+                    }}
+                    hidden={ticketResponsible_Technician.length === 0}
+                  >
+                    Aguardar
+                  </DropBTN>
+                  <DropBTN
+                    className="btn btn-danger w-100"
+                    onClick={TechDetails}
+                  >
+                    Detalhes Tecnicos
+                  </DropBTN>
+                  <select
+                    className="form-select"
+                    id="selectTech"
+                    onChange={(event) => {
+                      setSelectedTech(event.target.value);
+                    }}
+                    value={selectedTech}
+                  >
+                    <option key={0} value="" disabled>
+                      Transferir
                     </option>
-                  ))}
-                </select>
-              </DropContent2>
-            </DropDown>
+                    {techs.map((tech, index) => (
+                      <option key={index + 1} value={tech}>
+                        {tech}
+                      </option>
+                    ))}
+                  </select>
+                </DropContent2>
+              </DropDown>
+            </div>
           </div>
           <div className="w-100 justify-content-center d-flex">
             <h3 className="text-center text-uppercase fw-bold text-danger mt-3">
@@ -1398,45 +1454,38 @@ export default function OpenTicketWindow({
           <input
             type="text"
             value={"Usuário: " + ticketNAME}
-            className="form-control"
-            disabled
+            className="form-control disabled"
           />
           <input
             type="text"
             value={"Departamento: " + ticketDEPARTMENT}
-            className="form-control"
-            disabled
+            className="form-control disabled"
           />
           <input
             type="text"
             value={"Email: " + ticketMAIL}
-            className="form-control"
-            disabled
+            className="form-control disabled"
             hidden={ticketMAIL.length > 1 ? false : true}
           />
           <input
             type="text"
             value={"Unidade: " + ticketCOMPANY}
-            className="form-control"
-            disabled
+            className="form-control disabled"
           />
           <input
             type="text"
             value={"Setor: " + ticketSECTOR}
-            className="form-control"
-            disabled
+            className="form-control disabled"
           />
           <input
             type="text"
             value={"Ocorrência: " + ticketOCCURRENCE}
-            className="form-control"
-            disabled
-          />{" "}
+            className="form-control disabled"
+          />
           <input
             type="text"
             value={"Detalhes: " + ticketPROBLEMN}
-            className="form-control"
-            disabled
+            className="form-control disabled"
           />
           {showEquipament && (
             <DivColorGray>
@@ -1447,30 +1496,26 @@ export default function OpenTicketWindow({
               />
               <input
                 value={"Modelo: " + modelName}
-                className="form-control"
-                disabled
+                className="form-control disabled"
               />
               <input
                 value={"ID do Equipamento: " + equipament}
-                className="form-control"
-                disabled
+                className="form-control disabled"
               />
-              <input value={dateEquipament} className="form-control" disabled />
+              <input value={dateEquipament} className="form-control disabled" />
             </DivColorGray>
           )}
           <TextObersavation
             ref={textareaRef}
             name="observation"
-            className="autosize-textarea"
-            disabled
+            className="autosize-textarea disabled"
           >
             {observation}
           </TextObersavation>
           <input
             type="text"
-            value={"tempo de vida do chamado: " + lifeTime + " dias"}
-            className="form-control"
-            disabled
+            value={"tempo de vida do chamado: " + lifeTime}
+            className="form-control disabled"
           />
           <DivFile
             hidden={fileticket.length >= 1 ? false : true}
@@ -1486,8 +1531,7 @@ export default function OpenTicketWindow({
                 ? ticketResponsible_Technician
                 : "Nenhum técnico atribuído")
             }
-            className="form-control"
-            disabled
+            className="form-control disabled"
           />
         </div>
         <DivChat ref={chatDiv}>{mountChat}</DivChat>

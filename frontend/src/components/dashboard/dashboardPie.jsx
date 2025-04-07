@@ -6,7 +6,7 @@
  * - Loading: componente responsável pela exibição de um indicador de carregamento.
  * - Chart: importação da classe Chart do módulo "chart.js/auto" para a renderização de gráficos.
  */
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { Chart } from "chart.js/auto";
 
 /**
@@ -14,6 +14,7 @@ import { Chart } from "chart.js/auto";
  * - Div: importação do componente Div do módulo "../styles/dashboardPie".
  */
 import { Div, Div2 } from "../../styles/dashboardPie";
+import { TicketContext } from "../../context/TicketContext";
 
 let myChart = null;
 
@@ -23,7 +24,8 @@ export default function DashBoardPie({ sector, clss }) {
    * - dataPie: estado que armazena os dados para o gráfico de pizza.
    */
   const [dataPie, setDataPie] = useState("");
-  const [totalTickets, setTotalTickets] = useState(0);
+
+  const { totalTickets, setTotalTickets } = useContext(TicketContext);
 
   const timeoutRef = useRef(null);
 
@@ -113,12 +115,12 @@ export default function DashBoardPie({ sector, clss }) {
     }
 
     timeoutRef.current = setTimeout(() => {
-      fetchPie();
+      FetchPie();
       timeoutRef.current = null; // Reseta após a execução
     }, 60000);
   }
 
-  function fetchPie() {
+  function FetchPie() {
     const fetchData = async () => {
       try {
         const response = await fetch(`get-dash-board-pie/${sector}`, {

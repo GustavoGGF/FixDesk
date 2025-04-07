@@ -12,13 +12,10 @@
       "4": "adicioanr o email do fixdesk como seguro",
       "23": "Implementar @retry",
       "27": "Implementar @measure_time: Para medir o tempo de execução da função.",
-      "44": "Implementar o useCallBack no lugar de useEffect se fazer sentido",
       "50": "mudar sappp01 para fixdesk"
     },
     "HotFix's": {
       "2": "Apos ficar logado por um tempo da um erro te dereciona pra uma tela (quando expira o token)",
-      "43": "Verificar todos os codigos que lidam com o banco de dados e por @transaction.atomic",
-      "39": "Mudar nomes de funções e variaveis para boas praticas",
       "46": "verificar as rotas e tratamento para quando o token expira",
       "51": "verificar melhores paletas de cores para modo claro",
       "52": "Revisar todos os useEffect"
@@ -45,9 +42,6 @@
   },
   "Chat": {},
   "Tickets": {
-    "35": "Deixar PDF do chamado bonito",
-    "38": "Filtro de modo lista ta feio demais KKKKKk",
-    "42": "Colocar as horasno lifetime para pessoas não ficarem confusas",
     "45": "Atualizar o ticket de tempos e tempos",
     "47": "ao clicar fora da engranagem (ticket dashboard) deve fechar a tela de opções",
     "48": "a data de locação não aparece",

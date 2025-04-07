@@ -26,7 +26,7 @@ urlpatterns = [
     path("helpdesk/", include("helpdesk.urls")),
     # Inclui as URLs do aplicativo "dashboards".
     # Todas as URLs que começam com "/dashboard_TI/" serão roteadas para o arquivo `urls.py` do aplicativo "dashboards".
-    path("dashboard_TI/", include("dashboards.urls")),
+    path("dashboard-ti/", include("dashboards.urls")),
 ]
 
 # Adiciona suporte para servir arquivos estáticos durante o desenvolvimento.

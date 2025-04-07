@@ -46,6 +46,7 @@ export default function TicketsOptions({ Helpdesk, Name, Dashboard }) {
     setAlertVerify,
     reset,
     setReset,
+    setLinkAcess,
   } = useContext(OptionsContext);
 
   const [selectedInternal, setSelectedInternal] = useState([]);
@@ -97,11 +98,13 @@ export default function TicketsOptions({ Helpdesk, Name, Dashboard }) {
       setReset(false);
       setSoftAPP(false);
       setDados(false);
+      setComodato(false);
+      setLinkAcess("");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reset]);
 
-  function selectARes(event) {
+  function SelectARes(event) {
     const selectedValue = event.target.value;
 
     if (selectedValue === "TI") {
@@ -115,7 +118,7 @@ export default function TicketsOptions({ Helpdesk, Name, Dashboard }) {
     }
   }
 
-  function updateOccurrence({
+  function UpdateOccurrence({
     infra = false,
     backup = false,
     mail = false,
@@ -149,7 +152,7 @@ export default function TicketsOptions({ Helpdesk, Name, Dashboard }) {
     setDateEquip(dateEquip);
   }
 
-  function selectOcorrence() {
+  function SelectOcorrence() {
     const select = document.getElementById("select-Form");
     const option = select.options[select.selectedIndex].value;
 
@@ -157,17 +160,17 @@ export default function TicketsOptions({ Helpdesk, Name, Dashboard }) {
       default:
         break;
       case "infra":
-        updateOccurrence({ infra: true, sector: "Infraestrutura" });
+        UpdateOccurrence({ infra: true, sector: "Infraestrutura" });
         break;
       case "sistema":
-        updateOccurrence({ system: true, sector: "Sistema" });
+        UpdateOccurrence({ system: true, sector: "Sistema" });
         break;
       case "none":
         break;
     }
   }
 
-  function updateProblemn({
+  function UpdateProblemn({
     backup = false,
     mail = false,
     equip = false,
@@ -183,6 +186,7 @@ export default function TicketsOptions({ Helpdesk, Name, Dashboard }) {
     dateEquip = false,
     dados = false,
     softApp = false,
+    linkAcess = "",
   }) {
     setBackup(backup);
     setMail(mail);
@@ -199,9 +203,10 @@ export default function TicketsOptions({ Helpdesk, Name, Dashboard }) {
     setDateEquip(dateEquip);
     setDados(dados);
     setSoftAPP(softApp);
+    setLinkAcess(linkAcess);
   }
 
-  function selectProblem() {
+  function SelectProblem() {
     const select = document.getElementById("select-error");
     const option = select.options[select.selectedIndex].value;
 
@@ -209,53 +214,53 @@ export default function TicketsOptions({ Helpdesk, Name, Dashboard }) {
       default:
         break;
       case "backup":
-        updateProblemn({ backup: true, occurrence: "Backup" });
+        UpdateProblemn({ backup: true, occurrence: "Backup" });
         break;
       case "mail":
-        updateProblemn({ mail: true, occurrence: "E-mail" });
+        UpdateProblemn({ mail: true, occurrence: "E-mail" });
         break;
       case "equip":
-        updateProblemn({ equip: true, occurrence: "Equipamento" });
+        UpdateProblemn({ equip: true, occurrence: "Equipamento" });
         break;
       case "user":
-        updateProblemn({ user: true, occurrence: "Gerenciamento de Usuario" });
+        UpdateProblemn({ user: true, occurrence: "Gerenciamento de Usuario" });
         break;
       case "internet":
-        updateProblemn({ internet: true, occurrence: "Internet" });
+        UpdateProblemn({ internet: true, occurrence: "Internet" });
         break;
       case "folder":
-        updateProblemn({ folder: true, occurrence: "Permissão" });
+        UpdateProblemn({ folder: true, occurrence: "Permissão" });
         break;
       case "none":
         break;
       case "sap":
-        updateProblemn({ sys: true, occurrence: "SAP" });
+        UpdateProblemn({ sys: true, occurrence: "SAP" });
         break;
       case "mbi":
-        updateProblemn({ sys: true, occurrence: "MBI" });
+        UpdateProblemn({ sys: true, occurrence: "MBI" });
         break;
       case "synch":
-        updateProblemn({ sys: true, occurrence: "Synchro" });
+        UpdateProblemn({ sys: true, occurrence: "Synchro" });
         break;
       case "office":
-        updateProblemn({ sys2: true, occurrence: "Office" });
+        UpdateProblemn({ sys2: true, occurrence: "Office" });
         break;
       case "eng":
-        updateProblemn({ sys2: true, occurrence: "Softwares de Eng" });
+        UpdateProblemn({ sys2: true, occurrence: "Softwares de Eng" });
         break;
       case "soft":
-        updateProblemn({ softApp: true, occurrence: "Novo SoftWare" });
+        UpdateProblemn({ softApp: true, occurrence: "Novo SoftWare" });
         break;
       case "dados":
-        updateProblemn({ dados: true, occurrence: "Integridade de Dados" });
+        UpdateProblemn({ dados: true, occurrence: "Integridade de Dados" });
         break;
       case "metadados":
-        updateProblemn({ sys: true, occurrence: "Metadados" });
+        UpdateProblemn({ sys: true, occurrence: "Metadados" });
         break;
     }
   }
 
-  function selectBackup() {
+  function SelectBackup() {
     const selectBackup = document.getElementById("select-backup");
     const optionBackup = selectBackup.options[selectBackup.selectedIndex].value;
 
@@ -287,7 +292,7 @@ export default function TicketsOptions({ Helpdesk, Name, Dashboard }) {
     }
   }
 
-  function selectMail() {
+  function SelectMail() {
     const selectMail = document.getElementById("select-mail");
     const optionMail = selectMail.options[selectMail.selectedIndex].value;
 
@@ -321,7 +326,7 @@ export default function TicketsOptions({ Helpdesk, Name, Dashboard }) {
     }
   }
 
-  function selectEquip() {
+  function SelectEquip() {
     const selectEquip = document.getElementById("select-equip");
     const optionEquip = selectEquip.options[selectEquip.selectedIndex].value;
 
@@ -414,7 +419,7 @@ export default function TicketsOptions({ Helpdesk, Name, Dashboard }) {
           <DivMachine
             key={element.mac_address}
             onClick={() => {
-              selectMachine(element.mac_address);
+              SelectMachine(element.mac_address);
             }}
           >
             <ImgMachines
@@ -442,7 +447,7 @@ export default function TicketsOptions({ Helpdesk, Name, Dashboard }) {
     );
   };
 
-  function selectMachine(mac) {
+  function SelectMachine(mac) {
     setLoadingoFetchingEquipaments(true);
     setDashEquipaments("");
     const foundEquipament = findEquipamentByMacAddress(mac);
@@ -451,7 +456,7 @@ export default function TicketsOptions({ Helpdesk, Name, Dashboard }) {
       <DivMachine
         key={foundEquipament.mac_address}
         onClick={() => {
-          selectMachine(foundEquipament.mac_address);
+          SelectMachine(foundEquipament.mac_address);
         }}
       >
         <ImgMachines
@@ -495,75 +500,21 @@ export default function TicketsOptions({ Helpdesk, Name, Dashboard }) {
     setMachineAlocate(mac);
   }
 
-  function selectUser() {
-    const select = document.getElementById("select-user");
-    const option = select.options[select.selectedIndex].value;
-
-    switch (option) {
-      default:
-        break;
-      case "adduser":
-        fetch("/helpdesk/download-word/create", {
-          method: "GET",
-        })
-          .then((response) => {
-            return response.blob();
-          })
-          .then((blob) => {
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = "Criação de Usuário.docx";
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
-          })
-          .catch((err) => {
-            return console.log(err);
-          });
-        setAlert(false);
-        setProblemn("Criacao de usuario de rede");
-        setMessagetitle("Caso de Criar Usuario");
-        setMessageinfo1("1. Anexar formulario de Criação de Usuário");
-        setAlert(true);
-        setAlertVerify(false);
-        break;
-      case "deluser":
-        fetch("/helpdesk/download-word/delete", {
-          method: "GET",
-        })
-          .then((response) => {
-            return response.blob();
-          })
-          .then((blob) => {
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = "Exclusão de Usuário.docx";
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
-          })
-          .catch((err) => {
-            return console.log(err);
-          });
-        setAlert(false);
-        setProblemn("Exclusao de usuario de rede");
-        setMessagetitle("Caso de Excluir Usuario");
-        setMessageinfo1("1. Anexar formulario de Exclusão de Usuário");
-        setAlert(true);
-        setAlertVerify(false);
-        break;
-      case "none":
-        setAlert(false);
-        setAlertVerify(false);
-        break;
-    }
+  function SelectUser() {
+    setProblemn("Criacao/Exclusão de usuario de rede");
+    setMessagetitle("Caso de Criar/Excluir Usuario");
+    setMessageinfo1("1. Acessar: ");
+    setLinkAcess(
+      "https://tilupatech.sharepoint.com/sites/Intranet/SitePages/Formul%C3%A1rios-Internos-LUPATECH-S-A.aspx"
+    );
+    setMessageinfo2(
+      "2. No link a cima escolher seguinte opção: Fomulários de TI"
+    );
+    setAlert(true);
+    setAlertVerify(false);
   }
 
-  function selectInternet() {
+  function SelectInternet() {
     const select = document.getElementById("select-internet");
     const option = select.options[select.selectedIndex].value;
 
@@ -599,7 +550,7 @@ export default function TicketsOptions({ Helpdesk, Name, Dashboard }) {
     }
   }
 
-  function selectFolder() {
+  function SelectFolder() {
     const select = document.getElementById("select-folder");
     const option = select.options[select.selectedIndex].value;
 
@@ -635,7 +586,7 @@ export default function TicketsOptions({ Helpdesk, Name, Dashboard }) {
     }
   }
 
-  function selectSys() {
+  function SelectSys() {
     const select = document.getElementById("select-sap");
     const option = select.options[select.selectedIndex].value;
 
@@ -689,7 +640,7 @@ export default function TicketsOptions({ Helpdesk, Name, Dashboard }) {
     }
   }
 
-  function selectOffice() {
+  function SelectOffice() {
     const selectOffice = document.getElementById("select-office");
     const optionOffice = selectOffice.options[selectOffice.selectedIndex].value;
 
@@ -718,7 +669,7 @@ export default function TicketsOptions({ Helpdesk, Name, Dashboard }) {
     }
   }
 
-  function selectSoftAPP() {
+  function SelectSoftAPP() {
     const select = document.getElementById("select-soft");
     const option = select.options[select.selectedIndex].value;
 
@@ -747,7 +698,7 @@ export default function TicketsOptions({ Helpdesk, Name, Dashboard }) {
     }
   }
 
-  function selectDado() {
+  function SelectDado() {
     const selectOffice = document.getElementById("select-dado");
     const optionOffice = selectOffice.options[selectOffice.selectedIndex].value;
 
@@ -775,7 +726,7 @@ export default function TicketsOptions({ Helpdesk, Name, Dashboard }) {
   };
 
   // Essa função busca pelo equipamento pela sua respectiva unidade
-  function selectCompanyEquip() {
+  function SelectCompanyEquip() {
     setLoadingoFetchingEquipaments(true);
     setEquipaments("");
     setDashEquipaments("");
@@ -811,7 +762,7 @@ export default function TicketsOptions({ Helpdesk, Name, Dashboard }) {
         className="form-select mb-3"
         aria-label="Default select example"
         id="selectAR"
-        onChange={selectARes}
+        onChange={SelectARes}
       >
         <option value="none" disabled selected>
           Seleciona a Área Respectiva
@@ -823,7 +774,7 @@ export default function TicketsOptions({ Helpdesk, Name, Dashboard }) {
           className="form-select mb-3"
           aria-label="Default select example"
           id="select-Form"
-          onChange={selectOcorrence}
+          onChange={SelectOcorrence}
         >
           <option value="none" disabled selected>
             Selecione o tipo de ocorrência
@@ -837,7 +788,7 @@ export default function TicketsOptions({ Helpdesk, Name, Dashboard }) {
           className="form-select mb-3"
           aria-label="Default select example"
           id="select-error"
-          onChange={selectProblem}
+          onChange={SelectProblem}
         >
           <option value="none" disabled selected>
             Selecione o problema ocorrido
@@ -857,7 +808,7 @@ export default function TicketsOptions({ Helpdesk, Name, Dashboard }) {
           className="form-select mb-3"
           aria-label="Default select example"
           id="select-backup"
-          onChange={selectBackup}
+          onChange={SelectBackup}
         >
           <option value="none" disabled selected>
             Selecione o problema ocorrido
@@ -871,7 +822,7 @@ export default function TicketsOptions({ Helpdesk, Name, Dashboard }) {
           className="form-select mb-3"
           aria-label="Default select example"
           id="select-mail"
-          onChange={selectMail}
+          onChange={SelectMail}
         >
           <option value="none" disabled selected>
             Selecione o problema ocorrido
@@ -886,7 +837,7 @@ export default function TicketsOptions({ Helpdesk, Name, Dashboard }) {
           className="form-select mb-3"
           aria-label="Default select example"
           id="select-equip"
-          onChange={selectEquip}
+          onChange={SelectEquip}
         >
           <option value="none" disabled selected>
             Selecione o problema ocorrido
@@ -906,13 +857,12 @@ export default function TicketsOptions({ Helpdesk, Name, Dashboard }) {
           className="form-select mb-3"
           aria-label="Default select example"
           id="select-user"
-          onChange={selectUser}
+          onChange={SelectUser}
         >
           <option value="none" disabled selected>
             Selecione o problema ocorrido
           </option>
-          <option value="adduser">Criar usuário de rede</option>
-          <option value="deluser">Excluir usuário de rede</option>
+          <option value="adduser">Criar/Excluir usuário de rede</option>
         </Select>
       )}
       {internet && (
@@ -920,7 +870,7 @@ export default function TicketsOptions({ Helpdesk, Name, Dashboard }) {
           className="form-select mb-3"
           aria-label="Default select example"
           id="select-internet"
-          onChange={selectInternet}
+          onChange={SelectInternet}
         >
           <option value="none" disabled selected>
             Selecione o problema ocorrido
@@ -934,7 +884,7 @@ export default function TicketsOptions({ Helpdesk, Name, Dashboard }) {
           className="form-select mb-3"
           aria-label="Default select example"
           id="select-folder"
-          onChange={selectFolder}
+          onChange={SelectFolder}
         >
           <option value="none" disabled selected>
             Selecione o problema ocorrido
@@ -948,7 +898,7 @@ export default function TicketsOptions({ Helpdesk, Name, Dashboard }) {
           className="form-select mb-3"
           aria-label="Default select example"
           id="select-error"
-          onChange={selectProblem}
+          onChange={SelectProblem}
         >
           <option value="none" disabled selected>
             Selecione o Sistema
@@ -966,7 +916,7 @@ export default function TicketsOptions({ Helpdesk, Name, Dashboard }) {
           className="form-select mb-3"
           aria-label="Default select example"
           id="select-sap"
-          onChange={selectSys}
+          onChange={SelectSys}
         >
           <option value="none" disabled selected>
             Selecione o Problema
@@ -983,7 +933,7 @@ export default function TicketsOptions({ Helpdesk, Name, Dashboard }) {
           className="form-select mb-3"
           aria-label="Default select example"
           id="select-office"
-          onChange={selectOffice}
+          onChange={SelectOffice}
         >
           <option value="none" disabled selected>
             Selecione o Problema
@@ -997,7 +947,7 @@ export default function TicketsOptions({ Helpdesk, Name, Dashboard }) {
           className="form-select mb-3"
           aria-label="Default select example"
           id="select-soft"
-          onChange={selectSoftAPP}
+          onChange={SelectSoftAPP}
         >
           <option value="none" disabled selected>
             Selecione o Problema
@@ -1011,7 +961,7 @@ export default function TicketsOptions({ Helpdesk, Name, Dashboard }) {
           className="form-select mb-3"
           aria-label="Default select example"
           id="select-dado"
-          onChange={selectDado}
+          onChange={SelectDado}
         >
           <option value="none" disabled selected>
             Selecione o Problema
@@ -1026,7 +976,7 @@ export default function TicketsOptions({ Helpdesk, Name, Dashboard }) {
               className="form-select mb-3"
               aria-label="Default select example"
               id="select-company-equip"
-              onChange={selectCompanyEquip}
+              onChange={SelectCompanyEquip}
               ref={companyEquip}
             >
               <option value="none" disabled selected>

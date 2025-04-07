@@ -1,4 +1,3 @@
-from cmath import log
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt, requires_csrf_token
 from os import getcwd, getenv, path
@@ -44,7 +43,7 @@ types_str = getenv("VALID_TYPES")
 @login_required(login_url="/login")  # Exige que o usuário esteja autenticado.
 @require_GET  # Exige que a requisição seja do tipo GET.
 @cache_page(60 * 5)
-def dashboard_TI(request: WSGIRequest):
+def dashboard_ti(request: WSGIRequest):
     """
     Função que valida se o usuário possui permissão para acessar o dashboard da área de TI.
     Se o usuário não pertence aos grupos de técnico ou líder, será redirecionado para a página de helpdesk.
@@ -447,7 +446,7 @@ def get_dash_board_bar(request: WSGIRequest, range_days: str):
             )
 
 
-def verifyValidOrNot(file: InMemoryUploadedFile, types: list):
+def verify_valid_or_not(file: InMemoryUploadedFile, types: list):
     """
     Verifica se o arquivo enviado é de um tipo válido.
 
@@ -578,7 +577,7 @@ def upload_new_files(request, id):
 
         if other_files:
             for unit_file in other_files:
-                valid, image_bytes = verifyValidOrNot(unit_file, types_str)
+                valid, image_bytes = verify_valid_or_not(unit_file, types_str)
 
                 if not valid:
                     image_str = str(unit_file)
@@ -623,7 +622,7 @@ def upload_new_files(request, id):
 @login_required(login_url="/login")
 @never_cache
 @require_GET
-def detailsChat(request: WSGIRequest, id: int):
+def details_chat(request: WSGIRequest, id: int):
     """
     Obtém os detalhes técnicos de um chamado de suporte.
 

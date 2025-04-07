@@ -5,9 +5,9 @@ from . import views
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path("", views.firstView, name="central-de-chamados"),
+    path("", views.first_view, name="central-de-chamados"),
     path("get-token/", views.get_new_token, name="central-get-token"),
-    path("submit-ticket/", views.submitTicket, name="central-tickets"),
+    path("submit-ticket/", views.submit_ticket, name="central-tickets"),
     path("history/", views.history, name="central-history"),
     path(
         "get-ticket/<int:quantity>/<str:usr>/<str:status>/<str:order>",
@@ -16,7 +16,7 @@ urlpatterns = [
     ),
     path("exit/", views.exit, name="central-exit"),
     path("ticket/<int:id>", views.ticket, name="central-ticket"),
-    path("update_chat/<int:id>", views.update_chat, name="central-update-chat"),
+    path("update-chat/<int:id>", views.update_chat, name="central-update-chat"),
     path(
         "get-ticket-filter/<str:url>/<str:sector>/<str:occurrence>/<str:order>/<str:user>/<int:quantity>/<str:status>/<str:search_query>",
         views.get_ticket_filter,
@@ -25,13 +25,13 @@ urlpatterns = [
     # URL para pegar os equipamentos para alocagem
     path(
         "equipaments-for-alocate/<str:location>",
-        views.equipamentsForAlocate,
+        views.equipaments_for_alocate,
         name="central-equipaments-for-alocate",
     ),
     # URL que verifica se os equipamentos focam locados.
     path(
         "date-equipaments-alocate/<str:mac>",
-        views.dateEquipamentsAlocate,
+        views.date_equipaments_alocate,
         name="central-date-equipaments-alocate",
     ),
     path(
