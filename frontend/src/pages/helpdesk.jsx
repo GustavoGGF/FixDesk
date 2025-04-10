@@ -140,7 +140,7 @@ export default function Helpdesk() {
   // Declarando varaiveis de estado array
   const [arrayInput, setArrayInput] = useState([]);
   const [fileimg, setFileImg] = useState([]);
-  const [filename, setFileName] = useState([]);
+  const [fileName, setFileName] = useState([]);
 
   // Declarando Variaveis Null
   const observationRef = useRef(null);
@@ -384,7 +384,7 @@ export default function Helpdesk() {
       const formdataUser = new FormData();
       var total_size = 0;
 
-      if (filename.length > 0) {
+      if (fileName.length > 0) {
         for (let i = 0; i < fileimg.length; i++) {
           const file = fileimg[i];
           total_size += file.size;
@@ -455,29 +455,36 @@ export default function Helpdesk() {
           Status = response.status;
           return response.json();
         })
-        .then((dataUser) => {
+        .then((data) => {
           if (Status === 200) {
-            setObservation("");
-            setInfoID(dataUser.id);
-            setInfo(true);
-            setInfoClass("animate__lightSpeedInRight");
-            setReset(true);
-            observationRef.current.value = "";
-            setInfoClass2("closeInfo");
-            setNameOnInputFiles("");
-            setNameOnDropFiles("");
-            setFileSizeNotify(false);
-            setTimeout(() => {
-              setInfo(false);
-            }, 6000);
-          } else if (Status === 320) {
-            setMessage(true);
-            setTypeError("Dados Inválidos");
-            setMessageError("Arquivo Anexado Inválido");
-            return window.scrollTo({
-              top: 0,
-              behavior: "smooth",
-            });
+            try {
+              setObservation("");
+              setInfoID(data.id);
+              setInfo(true);
+              setInfoClass("animate__lightSpeedInRight");
+              setReset(true);
+              observationRef.current.value = "";
+              setInfoClass2("closeInfo");
+              setNameOnInputFiles("");
+              setNameOnDropFiles("");
+              setFileSizeNotify(false);
+              setFileImg([]);
+              setFileName([]);
+              file_name = [];
+              setArrayInput([]);
+              if (data.denied_files.length > 0) {
+                setTypeError("Tipo de Arquivo");
+                const messageError = "Arquivos Negados: " + data.denied_files;
+                setMessageError(messageError);
+                setMessage(true);
+              }
+              setTimeout(() => {
+                setInfo(false);
+              }, 6000);
+              return;
+            } catch (err) {
+              return console.log(err);
+            }
           }
         })
         .catch((err) => {

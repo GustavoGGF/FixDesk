@@ -51,13 +51,29 @@ export default function FilterTickets({
 
   const skyBlue = "#00B4D8";
 
-  const { setLoadingDash, setCardOrList, setTicketData, totalTickets } =
-    useContext(TicketContext);
+  const {
+    setLoadingDash,
+    setCardOrList,
+    setTicketData,
+    totalTickets,
+    reloadFilter,
+    setReloadFilter,
+    setFilterHistory,
+  } = useContext(TicketContext);
 
   const { setMessage, setMessageError, setTypeError } =
     useContext(MessageContext);
 
   useEffect(() => {
+    if (reloadFilter) {
+      setReloadFilter(false);
+      return GetTicketFilter({
+        id: "null",
+        quantity: "null",
+        statusTicket: "null",
+        search_query: "null",
+      });
+    }
     if (totalTickets) {
       return GetTicketFilter({
         id: "null",
@@ -67,7 +83,7 @@ export default function FilterTickets({
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [totalTickets]);
+  }, [totalTickets, reloadFilter]);
 
   useEffect(() => {
     if (moreTickets > 0) {
@@ -284,6 +300,7 @@ export default function FilterTickets({
             localStorage.setItem("quantity", quantity);
             localStorage.setItem("status", statusTicket);
             localStorage.setItem("order", orderTicket);
+            setFilterHistory(true);
             return setTicketData(data.tickets);
           }
         })

@@ -133,6 +133,8 @@ export default function History() {
     setTicketWindowAtt,
     cardOrList,
     setCardOrList,
+    filterHistory,
+    setFilterHistory,
   } = useContext(TicketContext);
   const { setTypeError, setMessageError, setMessage, message } =
     useContext(MessageContext);
@@ -311,118 +313,122 @@ export default function History() {
         return response.json();
       })
       .then((dataBack) => {
-        /**
-         * Este trecho de código é executado quando a resposta da requisição para buscar o ticket de chamado é recebida com sucesso.
-         * Ele realiza várias ações, incluindo adicionar um efeito de desfoque ao fundo, obter a data do ticket de chamado e calcular a sua vida útil.
-         * Também redefine algumas variáveis relacionadas ao chat.
-         *
-         * @param {Object} dataBack - O objeto de resposta retornado pela requisição para buscar o ticket de chamado.
-         * @param {boolean} setMessageChat - Uma função para definir o estado de exibição da mensagem do chat.
-         * @param {Array} setMountChat - Uma função para definir o estado do chat.
-         * @returns {void} - Esta função não retorna nada diretamente, mas realiza várias operações conforme descrito acima.
-         */
-        setBlurNav("addBlur");
-        dashBoard.current.style.filter = "blur(3px)";
-        // Oculta a mensagem do chat
-        setMessage(false);
-        // Extrai a data do primeiro ticket de chamado
-        const data = dataBack.data;
+        try {
+          /**
+           * Este trecho de código é executado quando a resposta da requisição para buscar o ticket de chamado é recebida com sucesso.
+           * Ele realiza várias ações, incluindo adicionar um efeito de desfoque ao fundo, obter a data do ticket de chamado e calcular a sua vida útil.
+           * Também redefine algumas variáveis relacionadas ao chat.
+           *
+           * @param {Object} dataBack - O objeto de resposta retornado pela requisição para buscar o ticket de chamado.
+           * @param {boolean} setMessageChat - Uma função para definir o estado de exibição da mensagem do chat.
+           * @param {Array} setMountChat - Uma função para definir o estado do chat.
+           * @returns {void} - Esta função não retorna nada diretamente, mas realiza várias operações conforme descrito acima.
+           */
+          setBlurNav("addBlur");
+          dashBoard.current.style.filter = "blur(3px)";
+          // Oculta a mensagem do chat
+          setMessage(false);
+          // Extrai a data do primeiro ticket de chamado
+          const data = dataBack.data;
 
-        // Chama a função de forma assíncrona sem bloquear o restante do código
-        if (data.responsible_technician !== null) {
-          const callAsyncFunction = async () => {
-            await ChangeLastVW({ id: id, tech: data.responsible_technician });
-          };
-          callAsyncFunction();
-        }
-
-        const CalculateDiference = (dataStr) => {
-          const data = new Date(dataStr);
-          const agora = new Date();
-
-          // Diferença em milissegundos
-          const diffMs = agora - data;
-
-          // Se a data for no futuro, diffMs será negativo
-          const diffAbs = Math.abs(diffMs);
-
-          // Diferença em dias
-          const diffDias = Math.floor(diffAbs / (1000 * 60 * 60 * 24));
-
-          // Diferença em horas e minutos
-          const diffHorasTotal = Math.floor(diffAbs / (1000 * 60 * 60));
-          const diffMinutosTotal = Math.floor(diffAbs / (1000 * 60));
-          const diffHoras = diffHorasTotal % 24;
-          const diffMinutos = diffMinutosTotal % 60;
-
-          // Formatar hora da data original
-          const hora = data.toLocaleTimeString("pt-BR", {
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: false,
-          });
-
-          // Formatar data da data original
-          const dataFormatada = data.toLocaleDateString("pt-BR");
-
-          return {
-            hora,
-            dataFormatada,
-            diffDias,
-            diffHoras,
-            diffMinutos,
-            noFuturo: diffMs < 0,
-          };
-        };
-
-        const resultado = CalculateDiference(data.start_date);
-
-        const lifetime = `${resultado.diffDias} Dias e ${resultado.diffHoras}:${resultado.diffMinutos} Horas`;
-
-        setTicketNAME(data.ticketRequester);
-        setTicketDEPARTMENT(data.department);
-        setTicketMAIL(data.mail);
-        setTicketCOMPANY(data.company);
-        setTicketSECTOR(data.sector);
-        setTicketOCCURRENCE(data.occurrence);
-        setTicketPROBLEMN(data.problemn);
-        if (data.equipament && data.equipament.length !== 0) {
-          setShowEquipament(true);
-          setEquipament(data.equipament);
-          setDateAlocate(data.date_alocate);
-        }
-        if (data.observation && data.observation.length !== 0) {
-          setObservation(data.observation);
-        }
-        setLifetime(lifetime);
-        if (
-          data.responsible_technician &&
-          data.responsible_technician.length !== 0
-        ) {
-          setTicketResponsible_Technician(data.responsible_technician);
-          if (data.open) {
-            setChat(true);
+          // Chama a função de forma assíncrona sem bloquear o restante do código
+          if (data.responsible_technician !== null) {
+            const callAsyncFunction = async () => {
+              await ChangeLastVW({ id: id, tech: data.responsible_technician });
+            };
+            callAsyncFunction();
           }
-        }
 
-        setTicketID(data.id);
-        if (data.file !== null && data.file.length >= 1) {
-          setInitialFileData(data.file);
-          setInitialFileName(data.name_file);
-          setInitialContentFile(data.content_file);
-          setInitialFileTicket(true);
+          const CalculateDiference = (dataStr) => {
+            const data = new Date(dataStr);
+            const agora = new Date();
+
+            // Diferença em milissegundos
+            const diffMs = agora - data;
+
+            // Se a data for no futuro, diffMs será negativo
+            const diffAbs = Math.abs(diffMs);
+
+            // Diferença em dias
+            const diffDias = Math.floor(diffAbs / (1000 * 60 * 60 * 24));
+
+            // Diferença em horas e minutos
+            const diffHorasTotal = Math.floor(diffAbs / (1000 * 60 * 60));
+            const diffMinutosTotal = Math.floor(diffAbs / (1000 * 60));
+            const diffHoras = diffHorasTotal % 24;
+            const diffMinutos = diffMinutosTotal % 60;
+
+            // Formatar hora da data original
+            const hora = data.toLocaleTimeString("pt-BR", {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false,
+            });
+
+            // Formatar data da data original
+            const dataFormatada = data.toLocaleDateString("pt-BR");
+
+            return {
+              hora,
+              dataFormatada,
+              diffDias,
+              diffHoras,
+              diffMinutos,
+              noFuturo: diffMs < 0,
+            };
+          };
+
+          const resultado = CalculateDiference(data.start_date);
+
+          const lifetime = `${resultado.diffDias} Dias e ${resultado.diffHoras}:${resultado.diffMinutos} Horas`;
+
+          setTicketNAME(data.ticketRequester);
+          setTicketDEPARTMENT(data.department);
+          setTicketMAIL(data.mail);
+          setTicketCOMPANY(data.company);
+          setTicketSECTOR(data.sector);
+          setTicketOCCURRENCE(data.occurrence);
+          setTicketPROBLEMN(data.problemn);
+          if (data.equipament && data.equipament.length !== 0) {
+            setShowEquipament(true);
+            setEquipament(data.equipament);
+            setDateAlocate(data.date_alocate);
+          }
+          if (data.observation && data.observation.length !== 0) {
+            setObservation(data.observation);
+          }
+          setLifetime(lifetime);
+          if (
+            data.responsible_technician &&
+            data.responsible_technician.length !== 0
+          ) {
+            setTicketResponsible_Technician(data.responsible_technician);
+            if (data.open) {
+              setChat(true);
+            }
+          }
+
+          setTicketID(data.id);
+          if (data.file !== null && data.file.length >= 1) {
+            setInitialFileData(data.file);
+            setInitialFileName(data.name_file);
+            setInitialContentFile(data.content_file);
+            setInitialFileTicket(true);
+          }
+          if (
+            data.chat !== null &&
+            data.chat !== undefined &&
+            data.chat !== "undefined"
+          ) {
+            setFetchChat(true);
+            setMountDataChat(true);
+            setMountInitialChat(data.chat);
+          }
+          setTicketWindow(true);
+          setTicketWindowAtt(false);
+        } catch (err) {
+          return console.log(err);
         }
-        if (
-          data.chat !== null &&
-          data.chat !== undefined &&
-          data.chat !== "undefined"
-        ) {
-          setFetchChat(true);
-          setMountDataChat(true);
-          setMountInitialChat(data.chat);
-        }
-        setTicketWindow(true);
-        setTicketWindowAtt(false);
       })
       .catch((err) => {
         setMessageError(err);
@@ -434,6 +440,7 @@ export default function History() {
 
   useEffect(() => {
     if (ticketData && Object.keys(ticketData).length > 0) {
+      setTickets([]);
       const selectView = localStorage.getItem("selectView");
       if (selectView === null || selectView === "card") {
         return ViewCard();
@@ -452,203 +459,235 @@ export default function History() {
   }
 
   function ViewCard() {
-    setTickets([]);
-    setNavbar(true);
-    setInCard(true);
-    setInList(false);
+    try {
+      setTickets([]);
+      setNavbar(true);
+      setInCard(true);
+      setInList(false);
 
-    localStorage.setItem("selectView", "card");
+      localStorage.setItem("selectView", "card");
 
-    const btn = document.getElementById("select-view-card");
-    btn.style.backgroundColor = "#00B4D8";
+      const btn = document.getElementById("select-view-card");
+      btn.style.backgroundColor = "#00B4D8";
 
-    const btn2 = document.getElementById("select-view-list");
-    btn2.style.backgroundColor = "transparent";
+      const btn2 = document.getElementById("select-view-list");
+      btn2.style.backgroundColor = "transparent";
 
-    ticketData.forEach((ticket) => {
-      var date = new Date(ticket["start_date"]);
+      ticketData.forEach((ticket) => {
+        var date = new Date(ticket["start_date"]);
 
-      var day = date.getDate();
-      var month = date.getMonth() + 1;
-      var year = date.getFullYear();
+        var day = date.getDate();
+        var month = date.getMonth() + 1;
+        var year = date.getFullYear();
 
-      var dataFormatada = AddZero(day) + "/" + AddZero(month) + "/" + year;
-      var horaFormatada =
-        AddZero(date.getHours()) + ":" + AddZero(date.getMinutes());
+        var dataFormatada = AddZero(day) + "/" + AddZero(month) + "/" + year;
+        var horaFormatada =
+          AddZero(date.getHours()) + ":" + AddZero(date.getMinutes());
 
-      var newDate = dataFormatada + " " + horaFormatada;
+        var newDate = dataFormatada + " " + horaFormatada;
 
-      if (ticket["open"] === false) {
-        colorBorder = "ticket-close";
-      } else if (
-        ticket["open"] === true &&
-        ticket["responsible_technician"] === null
-      ) {
-        const currentDate = new Date();
+        if (ticket["open"] === false) {
+          colorBorder = "ticket-close";
+        } else if (
+          ticket["open"] === true &&
+          ticket["responsible_technician"] === null
+        ) {
+          const currentDate = new Date();
 
-        const diferenceMilisecond = currentDate - date;
+          const diferenceMilisecond = currentDate - date;
 
-        const diferenceDays = diferenceMilisecond / (1000 * 60 * 60 * 24);
+          const diferenceDays = diferenceMilisecond / (1000 * 60 * 60 * 24);
 
-        if (diferenceDays >= 7) {
-          colorBorder = "ticket-urgent";
-        } else {
-          colorBorder = "ticket-open-not-view";
+          if (diferenceDays >= 7) {
+            colorBorder = "ticket-urgent";
+          } else {
+            colorBorder = "ticket-open-not-view";
+          }
+        } else if (
+          ticket["open"] === true &&
+          ticket["responsible_technician"] !== null
+        ) {
+          colorBorder = "ticket-open-in-view";
+        } else if (ticket["open"] === null) {
+          colorBorder = "ticket-stop";
         }
-      } else if (
-        ticket["open"] === true &&
-        ticket["responsible_technician"] !== null
-      ) {
-        colorBorder = "ticket-open-in-view";
-      } else if (ticket["open"] === null) {
-        colorBorder = "ticket-stop";
-      }
 
-      const Div = (
-        <DivCard
-          className={`animate__animated animate__zoomInDown no-border ${colorBorder} ${themeCard} tickets_method`}
-          onClick={() => {
-            HelpdeskPage({ id: ticket["id"] });
-          }}
-        >
-          <H5Card>chamado {ticket["id"]}</H5Card>
-          <SpanCard>{ticket["ticketRequester"]}</SpanCard>
-          <SpanCard>Ocorrência: {ticket["occurrence"]}</SpanCard>
-          <SpanCard>Problema: {ticket["problemn"]}</SpanCard>
-          <SpanCard>{newDate}</SpanCard>
-        </DivCard>
-      );
+        const Div = (
+          <DivCard
+            className={`animate__animated animate__zoomInDown no-border ${colorBorder} ${themeCard} tickets_method`}
+            onClick={() => {
+              HelpdeskPage({ id: ticket["id"] });
+            }}
+          >
+            <H5Card>chamado {ticket["id"]}</H5Card>
+            <SpanCard>{ticket["ticketRequester"]}</SpanCard>
+            <SpanCard>Ocorrência: {ticket["occurrence"]}</SpanCard>
+            <SpanCard>Problema: {ticket["problemn"]}</SpanCard>
+            <SpanCard>{newDate}</SpanCard>
+          </DivCard>
+        );
 
-      setTickets((ticketsDash) => [...ticketsDash, Div]);
-      const dash = document.getElementById("dashboard");
-      dash.classList.add("dash-card");
+        setTickets((ticketsDash) => [...ticketsDash, Div]);
+        const dash = document.getElementById("dashboard");
+        dash.classList.add("dash-card");
 
-      if (localStorage.getItem("quantity") > 5) {
-        setBtnMore(true);
-      }
+        if (localStorage.getItem("quantity") > 5) {
+          setBtnMore(true);
+        }
 
-      return ticketData;
-    });
+        return ticketData;
+      });
+    } catch (err) {
+      return console.log(err);
+    }
   }
 
   function ViewList() {
-    setTickets([]);
-    setNavbar(true);
-    setInList(true);
-    setInCard(false);
+    try {
+      setTickets([]);
+      setNavbar(true);
+      setInList(true);
+      setInCard(false);
 
-    localStorage.setItem("selectView", "list");
+      localStorage.setItem("selectView", "list");
 
-    const btn = document.getElementById("select-view-list");
-    btn.style.backgroundColor = "#00B4D8";
+      const btn = document.getElementById("select-view-list");
+      btn.style.backgroundColor = "#00B4D8";
 
-    const btn2 = document.getElementById("select-view-card");
-    btn2.style.backgroundColor = "transparent";
+      const btn2 = document.getElementById("select-view-card");
+      btn2.style.backgroundColor = "transparent";
 
-    ticketData.forEach((ticket) => {
-      var date = new Date(ticket["start_date"]);
+      ticketData.forEach((ticket) => {
+        var date = new Date(ticket["start_date"]);
 
-      var day = date.getDate();
-      var month = date.getMonth() + 1;
-      var year = date.getFullYear();
+        var day = date.getDate();
+        var month = date.getMonth() + 1;
+        var year = date.getFullYear();
 
-      var dataFormatada = AddZero(day) + "/" + AddZero(month) + "/" + year;
-      var horaFormatada =
-        AddZero(date.getHours()) + ":" + AddZero(date.getMinutes());
+        var dataFormatada = AddZero(day) + "/" + AddZero(month) + "/" + year;
+        var horaFormatada =
+          AddZero(date.getHours()) + ":" + AddZero(date.getMinutes());
 
-      const newDate = dataFormatada + " " + horaFormatada;
+        const newDate = dataFormatada + " " + horaFormatada;
 
-      if (ticket["open"] === false) {
-        colorBorder = "ticket-close-list";
-      } else if (
-        ticket["open"] === true &&
-        ticket["responsible_technician"] === null
-      ) {
-        const currentDate = new Date();
+        if (ticket["open"] === false) {
+          colorBorder = "ticket-close-list";
+        } else if (
+          ticket["open"] === true &&
+          ticket["responsible_technician"] === null
+        ) {
+          const currentDate = new Date();
 
-        const diferenceMilisecond = currentDate - date;
+          const diferenceMilisecond = currentDate - date;
 
-        const diferenceDays = diferenceMilisecond / (1000 * 60 * 60 * 24);
+          const diferenceDays = diferenceMilisecond / (1000 * 60 * 60 * 24);
 
-        if (diferenceDays >= 7) {
-          colorBorder = "ticket-urgent-list";
-        } else {
-          colorBorder = "ticket-open-not-view-list";
+          if (diferenceDays >= 7) {
+            colorBorder = "ticket-urgent-list";
+          } else {
+            colorBorder = "ticket-open-not-view-list";
+          }
+        } else if (
+          ticket["open"] === true &&
+          ticket["responsible_technician"] !== null
+        ) {
+          colorBorder = "ticket-open-in-view-list";
+        } else if (ticket["open"] === null) {
+          colorBorder = "ticket-stop-list";
         }
-      } else if (
-        ticket["open"] === true &&
-        ticket["responsible_technician"] !== null
-      ) {
-        colorBorder = "ticket-open-in-view-list";
-      } else if (ticket["open"] === null) {
-        colorBorder = "ticket-stop-list";
-      }
-      const Div = (
-        <TR
-          key={ticket["id"]}
-          className={`animate__animated animate__backInUp no-border ${colorBorder} tickets_method`}
-          onClick={() => {
-            HelpdeskPage({ id: ticket["id"] });
-          }}
-        >
-          <TD>{ticket["id"]}</TD>
-          <TD>{ticket["ticketRequester"]}</TD>
-          <TD>{ticket["occurrence"]}</TD>
-          <TD>{ticket["problemn"]}</TD>
-          <TD>{newDate}</TD>
-        </TR>
-      );
+        const Div = (
+          <TR
+            key={ticket["id"]}
+            className={`animate__animated animate__backInUp no-border ${colorBorder} tickets_method`}
+            onClick={() => {
+              HelpdeskPage({ id: ticket["id"] });
+            }}
+          >
+            <TD>{ticket["id"]}</TD>
+            <TD>{ticket["ticketRequester"]}</TD>
+            <TD>{ticket["occurrence"]}</TD>
+            <TD>{ticket["problemn"]}</TD>
+            <TD>{newDate}</TD>
+          </TR>
+        );
 
-      const Space = <TRSPACE></TRSPACE>;
+        const Space = <TRSPACE></TRSPACE>;
 
-      setTickets((ticketsDash) => [...ticketsDash, Div]); // Adiciona o cartão ao array de chamados.
-      setTickets((ticketsDash) => [...ticketsDash, Space]);
-      const dash = document.getElementById("dashboard");
-      dash.classList.remove("dash-card");
+        setTickets((ticketsDash) => [...ticketsDash, Div]); // Adiciona o cartão ao array de chamados.
+        setTickets((ticketsDash) => [...ticketsDash, Space]);
+        const dash = document.getElementById("dashboard");
+        dash.classList.remove("dash-card");
 
-      if (localStorage.getItem("quantity") > 5) {
-        setBtnMore(true);
-      }
+        if (localStorage.getItem("quantity") > 5) {
+          setBtnMore(true);
+        }
 
-      return ticketData;
-    });
+        return ticketData;
+      });
+    } catch (err) {
+      return console.log();
+    }
   }
 
   const handleAnimationEnd = useCallback((event) => {
-    // Aplicando a classe diretamente no elemento que terminou a animação
-    event.target.classList.remove("no-border");
-    event.target.classList.add("ticket-hover");
+    try {
+      // Aplicando a classe diretamente no elemento que terminou a animação
+      event.target.classList.remove("no-border");
+      event.target.classList.add("ticket-hover");
+    } catch (err) {
+      return console.log(err);
+    }
   }, []);
 
   useEffect(() => {
-    if (!tickets || tickets.length === 0) return;
+    try {
+      if (!tickets || tickets.length === 0) return;
 
-    const ticketsInCard = document.querySelectorAll(".tickets_method");
+      const ticketsInCard = document.querySelectorAll(".tickets_method");
 
-    ticketsInCard.forEach((ticket) => {
-      ticket.addEventListener("animationend", handleAnimationEnd);
-    });
-
-    return () => {
+      if (filterHistory) {
+        ticketsInCard.forEach((ticket) => {
+          if (ticket.classList.contains("no-border")) {
+            ticket.classList.remove("no-border");
+          }
+          if (!ticket.classList.contains("ticket-hover")) {
+            ticket.classList.add("ticket-hover");
+          }
+        });
+        return setFilterHistory(false);
+      }
       ticketsInCard.forEach((ticket) => {
-        ticket.removeEventListener("animationend", handleAnimationEnd);
+        ticket.addEventListener("animationend", handleAnimationEnd);
       });
-    };
+
+      return () => {
+        ticketsInCard.forEach((ticket) => {
+          ticket.removeEventListener("animationend", handleAnimationEnd);
+        });
+      };
+    } catch (err) {
+      return console.log(err);
+    }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tickets]);
 
   async function CloseTicket() {
-    const dash = document.getElementById("dashboard");
-    dash.style.filter = "blur(0)";
-    setBlurNav("");
-    setTicketWindow(false);
-    setEquipament("");
-    setObservation("");
-    setTicketResponsible_Technician("");
-    setChat(false);
-    setShowEquipament(false);
-    setMountInitialChat([]);
-    return;
+    try {
+      const dash = document.getElementById("dashboard");
+      dash.style.filter = "blur(0)";
+      setBlurNav("");
+      setTicketWindow(false);
+      setEquipament("");
+      setObservation("");
+      setTicketResponsible_Technician("");
+      setChat(false);
+      setShowEquipament(false);
+      setMountInitialChat([]);
+      return;
+    } catch (err) {
+      return console.log(err);
+    }
   }
 
   return (

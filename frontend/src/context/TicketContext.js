@@ -8,6 +8,9 @@ export const TicketProvider = ({ children }) => {
   // Define variáveis de estado
   const [loadingDash, setLoadingDash] = useState(false);
   const [ticketWindowAtt, setTicketWindowAtt] = useState(false);
+  const [reloadFilter, setReloadFilter] = useState(false);
+  const [forcedLoad, setForcedLoad] = useState(false);
+  const [filterHistory, setFilterHistory] = useState(false);
 
   const [changeTech, setChangeTech] = useState("");
   const [cardOrList, setCardOrList] = useState("");
@@ -31,6 +34,12 @@ export const TicketProvider = ({ children }) => {
         setCardOrList,
         totalTickets,
         setTotalTickets,
+        reloadFilter,
+        setReloadFilter,
+        forcedLoad,
+        setForcedLoad,
+        filterHistory,
+        setFilterHistory,
       }}
     >
       {children}

@@ -123,6 +123,8 @@ export default function DashboardTI() {
     setChangeTech,
     cardOrList,
     setCardOrList,
+    forcedLoad,
+    setForcedLoad,
   } = useContext(TicketContext);
 
   const { setTypeError, setMessageError, setMessage, message } =
@@ -304,10 +306,10 @@ export default function DashboardTI() {
         (selectView === "card" && selectView !== "list")
       ) {
         // Se não estiver definido ou se for um valor inválido, definir como "card"
-        CardView();
+        return CardView();
       } else if (selectView === "list") {
         // Se for "list", ativar a função de lista
-        ListView();
+        return ListView();
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -531,6 +533,18 @@ export default function DashboardTI() {
     try {
       const ticketsInCard = document.querySelectorAll(".tickets-method");
 
+      if (forcedLoad) {
+        ticketsInCard.forEach((ticket) => {
+          if (ticket.classList.contains("no-border")) {
+            ticket.classList.remove("no-border");
+          }
+          if (!ticket.classList.contains("ticket-hover")) {
+            ticket.classList.add("ticket-hover");
+          }
+        });
+        return setForcedLoad(false);
+      }
+
       ticketsInCard.forEach((ticket) => {
         ticket.addEventListener("animationend", handleAnimationEnd);
       });
@@ -592,7 +606,9 @@ export default function DashboardTI() {
         })
         .then((dataBack) => {
           setBlurNav("addBlur");
-          sectionTicket.current.style.filter = "blur(3px)";
+          if (sectionTicket && sectionTicket.current) {
+            sectionTicket.current.style.filter = "blur(3px)";
+          }
           const data = dataBack.data;
           // Chama a função de forma assíncrona sem bloquear o restante do código
           if (data.responsible_technician !== null) {
@@ -793,7 +809,7 @@ export default function DashboardTI() {
           <DashboardBar />
         </div>
       </div>
-      <div className="mt6 position-relative">
+      <div className="mt7 position-relative">
         <FilterTickets
           url={"dashboards"}
           blurNav={""}

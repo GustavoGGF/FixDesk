@@ -62,7 +62,6 @@ export const H5 = styled.h5`
 `;
 
 export const DropDown = styled.div`
-  width: 100%;
   position: relative;
   display: inline-block;
   text-align: center;

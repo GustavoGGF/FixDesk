@@ -260,7 +260,7 @@ export default function NavBar({ Name, JobTitle }) {
                   </a>
                 </li>
                 <li className="nav-item d-flex justify-content-center w-100">
-                  <DropDown>
+                  <DropDown className="w-100">
                     <DropBTN
                       className="btn btn-light"
                       onClick={DropD}
@@ -274,7 +274,7 @@ export default function NavBar({ Name, JobTitle }) {
                       />
                     </DropBTN>
                     <DropContent className="visually-hidden" ref={dropContent}>
-                      <DropDown id="drop-dwn-2">
+                      <DropDown id="drop-dwn-2" className="w-100">
                         <DropBTN
                           className="btn btn-light"
                           id="btn1"

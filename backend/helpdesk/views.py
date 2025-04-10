@@ -206,10 +206,10 @@ def submit_ticket(request):
 
     valid = False  # Flag para verificar se houve processamento válido
     id = None  # Inicializa a variável de ID do chamado
-
+    denied_files = []
     # Verifica se há imagens anexadas no formulário
     if "image" in request.FILES:
-        id, status = process_files(request, form_data)  # Processa imagens enviadas
+        id, status, denied_files = process_files(request, form_data)  # Processa imagens enviadas
         if status == 300:
             return JsonResponse(
                 {"error": f"Erro no processamento da imagem: {id}"},
@@ -248,9 +248,9 @@ def submit_ticket(request):
         ticket.save()  # Salva o chamado no banco de dados
 
         id = ticket.id  # Obtém o ID do chamado salvo
-
+    
     return JsonResponse(
-        {"id": id}, status=200, safe=True
+        {"id": id, "denied_files": denied_files}, status=200, safe=True
     )  # Retorna o ID do chamado criado com sucesso
 
 @transaction.atomic
@@ -266,7 +266,7 @@ def process_files(request: WSGIRequest, form_data: dict):
     :param form_data: Dicionário com os dados do chamado.
     :return: ID do chamado e status HTTP (200 para sucesso, 400 para erro de arquivo, 300 para erro interno).
     """
-
+    denied_files = []
     try:
         # Cria um novo chamado de suporte com os dados fornecidos
         ticket = SupportTicket(
@@ -294,11 +294,9 @@ def process_files(request: WSGIRequest, form_data: dict):
             file_type = mime.from_buffer(image_bytes)  # Determina o tipo de arquivo
 
             # Verifica se o arquivo enviado é válido
-            if not is_valid_file(file, file_type):
-                return (
-                    "Invalid image type",
-                    400,
-                )  # Retorna erro se o arquivo for inválido
+            verify_valid_files =  is_valid_file(file, file_type)
+            if not verify_valid_files:
+                denied_files.append(file_type)
 
             ticket.save()  # Salva o chamado no banco de dados
 
@@ -311,32 +309,37 @@ def process_files(request: WSGIRequest, form_data: dict):
 
             id = ticket.id  # Obtém o ID do chamado salvo
 
-        return id, 200  # Retorna o ID do chamado e status de sucesso
+        return id, 200, denied_files  # Retorna o ID do chamado e status de sucesso
 
     except Exception as e:
         logger.error(f"Erro no processamento de imagem: {e}")  # Registra erro no log
-        return e, 300  # Retorna erro interno no processamento
+        return e, 300, denied_files  # Retorna erro interno no processamento
 
 
 def is_valid_file(file: InMemoryUploadedFile, file_type: str) -> bool:
     """Valida se um arquivo enviado pertence a uma lista de tipos aceitos."""
+    try:
+        # Extrai apenas a parte relevante do tipo do arquivo
+        file_type_clean = plt(r",|\(", file_type)[0].strip().lower()
+        # Verifica se algum dos tipos permitidos está no tipo detectado
+        # Remove colchetes e divide por vírgula
+        items = types_str.strip("[]").split(',')
 
-    # Extrai apenas a parte relevante do tipo do arquivo
-    file_type_clean = plt(r",|\(", file_type)[0].strip().lower()
+        # Remove espaços extras e adiciona em uma lista
+        array_data = [item.strip() for item in items]
+        if any(ext.lower() in file_type_clean for ext in array_data):
+            return True
 
-    # Verifica se algum dos tipos permitidos está no tipo detectado
-    if any(ext.lower() in file_type_clean for ext in types_str):
-        return True
-
-    # Comparar pelo mimetypes padrão do Python
-    guessed_type = mimetypes.guess_type(str(file))[0]
-
-    # Verifica se o tipo detectado pelo mimetypes está na lista de tipos permitidos
-    return (
-        guessed_type.lower() in (ext.lower() for ext in types_str)
-        if guessed_type
-        else False
-    )
+        # Comparar pelo mimetypes padrão do Python
+        guessed_type = mimetypes.guess_type(str(file))[0]
+        # Verifica se o tipo detectado pelo mimetypes está na lista de tipos permitidos
+        return (
+            guessed_type.lower() in (ext.lower() for ext in array_data)
+            if guessed_type
+            else False
+        )
+    except Exception as e:
+        print(e)
 
 
 @csrf_exempt
@@ -467,11 +470,13 @@ def ticket(
                 if status == 400:
                     return JsonResponse({"error": f"{chat}"}, status=400, safe=True)
 
+                tickets_data = SupportTicket.objects.filter(
+                    respective_area="TI"
+                )
+                total_tickets = tickets_data.count()
                 return JsonResponse(
                     {
-                        "chat": chat,
-                        "technician": technician,
-                        "id": id,
+                        "total": total_tickets
                     },
                     status=200,
                     safe=True,
@@ -570,9 +575,13 @@ def ticket(
                     # Se o status for 303, retorna a mensagem de erro associada
                     elif status_def == 303:
                         return JsonResponse({"Error": f"{msg}"}, status=303, safe=True)
-
+                    
+                tickets_data = SupportTicket.objects.filter(
+                    respective_area="TI"
+                )
+                total_tickets = tickets_data.count()
                 # Retorna uma resposta de sucesso (status 200) caso o status tenha sido atualizado corretamente
-                return JsonResponse({"status": "ok"}, status=200, safe=True)
+                return JsonResponse({"total": total_tickets}, status=200, safe=True)
 
             # Verifica se a opção de download do ticket foi solicitada
             if "HTTP_DOWNLOAD_TICKET" in request.META:
@@ -1046,7 +1055,7 @@ def ticket_close(id: int, technician: str, date: str, hours: str, mail: str):
             args=(mail, msg, msg2),
         )
         task.start()
-
+            
         return 200, "success"
 
     # Retorna erro caso o técnico não seja o responsável pelo ticket
@@ -1178,7 +1187,6 @@ def updating_chat_change_sender(
     :param user: Nome do usuário envolvido na conversa.
     :return: Código de status HTTP e o histórico atualizado do chat.
     """
-
     # Obtém o ticket de suporte pelo ID fornecido
     ticket = SupportTicket.objects.get(id=id)
     if helpdesk == "helpdesk":
@@ -1192,6 +1200,8 @@ def updating_chat_change_sender(
 
     # Salva as alterações no banco de dados
     ticket.save()
+    
+    print(ticket.chat)
 
     # Inicia uma nova thread para verificar notificações de chamada
     Thread(target=verify_notificationcall, args=(id,)).start()
@@ -1942,20 +1952,3 @@ def get_image(request, mac):
     except connector.Error as e:
         logger.error(f"Erro na consulta ao banco de dados: {e}")
         return JsonResponse({"error": "Erro na consulta ao banco de dados"}, status=500)
-
-
-@require_GET
-def download_word(request, method):
-    base_dir = path.dirname(
-        path.dirname(path.abspath(__file__))
-    )  # Obtém o diretório base do projeto
-    if method == "create":
-        file_path = path.join(
-            base_dir, "files", "Formulário de Criação de Usuário de Rede - v2.0.docx"
-        )
-    elif method == "delete":
-        file_path = path.join(base_dir, "files", "FORMULÁRIO EXCLUSÃO USUÁRIO.docx")
-
-    return FileResponse(
-        open(file_path, "rb"), as_attachment=True, filename="documento.docx"
-    )

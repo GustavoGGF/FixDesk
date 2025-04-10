@@ -40,9 +40,4 @@ urlpatterns = [
         name="central-change-last-viewer",
     ),
     path("get-image/<str:mac>", views.get_image, name="central-get-image"),
-    path(
-        "download-word/<str:method>",
-        views.download_word,
-        name="central-download-word",
-    ),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

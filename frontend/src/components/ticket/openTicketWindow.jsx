@@ -116,7 +116,8 @@ export default function OpenTicketWindow({
   const dropCont = useRef(null);
   const inputRef = useRef(null);
 
-  const { setTicketWindowAtt, setChangeTech } = useContext(TicketContext);
+  const { setTicketWindowAtt, setChangeTech, setReloadFilter, setForcedLoad } =
+    useContext(TicketContext);
   const { setMessageError, setMessage, setTypeError } =
     useContext(MessageContext);
 
@@ -517,7 +518,9 @@ export default function OpenTicketWindow({
                           className={`d-flex ${justifyContetUser} w-100 text-break position-relative`}
                         >
                           <div className={`${userClass} position-relative`}>
-                            <p>{userOrTech}</p>
+                            <p style={{ whiteSpace: "pre-wrap" }}>
+                              {userOrTech}
+                            </p>
                             <PChatHourR className="position-absolute bottom-0 end-0">
                               {time}
                             </PChatHourR>
@@ -533,7 +536,9 @@ export default function OpenTicketWindow({
                           className={`d-flex ${justifyContetTech} w-100 text-break position-relative`}
                         >
                           <div className={`${techClass} position-relative`}>
-                            <p>{userOrTech}</p>
+                            <p style={{ whiteSpace: "pre-wrap" }}>
+                              {userOrTech}
+                            </p>
                             <PChatHourL className="position-absolute bottom-0 start-0">
                               {time}
                             </PChatHourL>
@@ -588,7 +593,11 @@ export default function OpenTicketWindow({
 
   function NewChat(event) {
     if (event.key === "Enter") {
-      setTextChat(event.target.value);
+      if (event.shiftKey) {
+        event.preventDefault();
+        setTextChat(event.target.value);
+        return;
+      }
       SendChat();
       event.preventDefault();
       return;
@@ -733,240 +742,190 @@ export default function OpenTicketWindow({
   function ReloadFiles({ files, name_file, content_file }) {
     for (let i = 0; i < files.length; i++) {
       var file = files[i];
-      if (file === "mail") {
-        try {
-          const contentFileMail = content_file[i];
-          const nameFileMail = name_file[i];
-          const Div = (
-            <DivOnBoardFile className="position-relative">
-              <IMGFiles src={mailImage} alt="Ícone de um arquivo de E-mail" />
-              <ImageFile
-                className="position-absolute bottom-0 start-50 translate-middle-x"
-                src={downloadImage}
-                alt="Baixar"
-                onClick={() => {
-                  const blob = DownloadFile({
-                    data: "message/rfc822",
-                    content: contentFileMail,
-                  });
+      var imageSrc = "";
+      var altImage = "";
+      let blob;
+      let handleShowImage;
+      let handleDonwloadFile;
+      var isImage = false;
+      const contentFile = content_file[i];
+      const nameFile = name_file[i];
+      const image = file.image;
 
-                  const url = window.URL.createObjectURL(blob);
-                  const a = document.createElement("a");
-                  a.href = url;
-                  a.download = nameFileMail;
-                  document.body.appendChild(a);
-                  a.click();
-                  document.body.removeChild(a);
-                }}
-              />
-              <p className="text-center text-break">{nameFileMail}</p>
-            </DivOnBoardFile>
-          );
-          setFileTicket((fileticket) => [...fileticket, Div]);
-        } catch (err) {
-          return console.log(err);
+      if (typeof file === "object") {
+        const extension = nameFile.split(".")[-1];
+        handleShowImage = () => {
+          setImageUrl(`data:image/${extension};base64,${image}`);
+          ticketRef.current.style.filter = "blur(4px)";
+          ticketRef.current.style.background = "rgba(0, 0, 0, 0.4)";
+          ticketOpen.current.style.overflowY = "hidden";
+          setImageOpen(true);
+        };
+        imageSrc = `data:image/${extension};base64,${file.image}`;
+        altImage = "imagem: " + name_file;
+        handleDonwloadFile = () => {
+          const link = document.createElement("a");
+          link.href = `data:image/${extension};base64,${image}`;
+          link.download = nameFile;
+          link.click();
+          link.remove();
+          return;
+        };
+        isImage = true;
+      } else {
+        isImage = false;
+      }
+      if (!isImage) {
+        switch (file) {
+          default:
+            break;
+          case "mail":
+            imageSrc = mailImage;
+            altImage = "Ícone de um arquivo de E-mail";
+            blob = DownloadFile({
+              data: "message/rfc822",
+              content: contentFile,
+            });
+            handleShowImage = () => {
+              return;
+            };
+            handleDonwloadFile = () => {
+              const url = window.URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = nameFile;
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+              return;
+            };
+            break;
+          case "excel":
+            imageSrc = XLSImage;
+            altImage = "Ícone de um arquivo Excell";
+            blob = DownloadFile({
+              data: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+              content: contentFile,
+            });
+            handleShowImage = () => {
+              return;
+            };
+            handleDonwloadFile = () => {
+              const url = window.URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = nameFile;
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+              return;
+            };
+            break;
+          case "zip":
+            imageSrc = ZIPImage;
+            altImage = "ìcone de um arquivo ZIP";
+            blob = DownloadFile({
+              data: "application/zip",
+              content: contentFile,
+            });
+            handleShowImage = () => {
+              return;
+            };
+            handleDonwloadFile = () => {
+              const url = window.URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = nameFile;
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+              return;
+            };
+            break;
+          case "txt":
+            imageSrc = TXTImage;
+            altImage = "Ícone de um arquivo TXT";
+            blob = DownloadFile({
+              data: "text/plain",
+              content: contentFile,
+            });
+            handleShowImage = () => {
+              return;
+            };
+            handleDonwloadFile = () => {
+              const url = window.URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = nameFile;
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+              return;
+            };
+            break;
+          case "word":
+            imageSrc = wordImage;
+            altImage = "Ícone de um Arquivo Word";
+            blob = DownloadFile({
+              data: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+              content: contentFile,
+            });
+            handleShowImage = () => {
+              return;
+            };
+            handleDonwloadFile = () => {
+              const url = window.URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = nameFile;
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+              return;
+            };
+            break;
+          case "pdf":
+            imageSrc = PDFImage;
+            altImage = "Ícone de um Arquivo PDF";
+            blob = DownloadFile({
+              data: "application/pdf",
+              content: contentFile,
+            });
+            handleShowImage = () => {
+              return;
+            };
+            handleDonwloadFile = () => {
+              const url = window.URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = nameFile;
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+              return;
+            };
+            break;
         }
-      } else if (file === "excel") {
-        try {
-          const ContentFileExcel = content_file[i];
-          const NameFileExcel = name_file[i];
-          const Div = (
-            <DivOnBoardFile className="position-relative">
-              <IMGFiles src={XLSImage} alt="Ícone de um arquivo Excell" />
-              <ImageFile
-                className="position-absolute bottom-0 start-50 translate-middle-x"
-                src={downloadImage}
-                alt="Baixar"
-                onClick={() => {
-                  const blob = DownloadFile({
-                    data: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                    content: ContentFileExcel,
-                  });
+      }
 
-                  const url = window.URL.createObjectURL(blob);
-                  const a = document.createElement("a");
-                  a.href = url;
-                  a.download = NameFileExcel;
-                  document.body.appendChild(a);
-                  a.click();
-                  document.body.removeChild(a);
-                }}
-              />
-              <p className="text-center text-break">{NameFileExcel}</p>
-            </DivOnBoardFile>
-          );
-          setFileTicket((fileticket) => [...fileticket, Div]);
-        } catch (err) {
-          return console.log(err);
-        }
-      } else if (file === "zip") {
-        try {
-          const ContentFileZip = content_file[i];
-          const NameFileZip = name_file[i];
-          const Div = (
-            <DivOnBoardFile className="position-relative">
-              <IMGFiles src={ZIPImage} alt="ìcone de um arquivo ZIP" />
-              <ImageFile
-                className="position-absolute bottom-0 start-50 translate-middle-x"
-                src={downloadImage}
-                alt="Baixar"
-                onClick={() => {
-                  const blob = DownloadFile({
-                    data: "application/zip",
-                    content: ContentFileZip,
-                  });
+      try {
+        console.log(blob);
 
-                  const url = window.URL.createObjectURL(blob);
-                  const a = document.createElement("a");
-                  a.href = url;
-                  a.download = NameFileZip;
-                  document.body.appendChild(a);
-                  a.click();
-                  document.body.removeChild(a);
-                }}
-              />
-              <p className="text-center text-break">{NameFileZip}</p>
-            </DivOnBoardFile>
-          );
-          setFileTicket((fileticket) => [...fileticket, Div]);
-        } catch (err) {
-          return console.log(err);
-        }
-      } else if (file === "txt") {
-        try {
-        } catch (err) {
-          const ContentFileTXT = content_file[i];
-          const NameFileTXT = name_file[i];
-          const Div = (
-            <DivOnBoardFile className="position-relative">
-              <IMGFiles src={TXTImage} alt=" Ícone de um arquivo TXT" />
-              <ImageFile
-                className="position-absolute bottom-0 start-50 translate-middle-x"
-                src={downloadImage}
-                alt="Baixar"
-                onClick={() => {
-                  const blob = DownloadFile({
-                    data: "text/plain",
-                    content: ContentFileTXT,
-                  });
-
-                  const url = window.URL.createObjectURL(blob);
-                  const a = document.createElement("a");
-                  a.href = url;
-                  a.download = NameFileTXT;
-                  document.body.appendChild(a);
-                  a.click();
-                  document.body.removeChild(a);
-                }}
-              />
-              <p className="text-center text-break">{NameFileTXT}</p>
-            </DivOnBoardFile>
-          );
-          setFileTicket((fileticket) => [...fileticket, Div]);
-          return console.log(err);
-        }
-      } else if (file === "word") {
-        try {
-          const ContentFileWord = content_file[i];
-          const NameFileWord = name_file[i];
-          const Div = (
-            <DivOnBoardFile className="position-relative">
-              <IMGFiles src={wordImage} alt="Ícone de um Arquivo Word" />
-              <ImageFile
-                className="position-absolute bottom-0 start-50 translate-middle-x"
-                src={downloadImage}
-                alt="Baixar"
-                onClick={() => {
-                  const blob = DownloadFile({
-                    data: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                    content: ContentFileWord,
-                  });
-
-                  const url = window.URL.createObjectURL(blob);
-                  const a = document.createElement("a");
-                  a.href = url;
-                  a.download = NameFileWord;
-                  document.body.appendChild(a);
-                  a.click();
-                  document.body.removeChild(a);
-                }}
-              />
-              <p className="text-center text-break">{NameFileWord}</p>
-            </DivOnBoardFile>
-          );
-          setFileTicket((fileticket) => [...fileticket, Div]);
-        } catch (err) {
-          return console.log(err);
-        }
-      } else if (file === "pdf") {
-        try {
-          const ContentFilePDF = content_file[i];
-          const NameFilePDF = name_file[i];
-          const Div = (
-            <DivOnBoardFile className="position-relative">
-              <IMGFiles src={PDFImage} alt="Ícone de um Arquivo PDF" />
-              <ImageFile
-                className="position-absolute bottom-0 start-50 translate-middle-x"
-                src={downloadImage}
-                alt="Baixar"
-                onClick={() => {
-                  const blob = DownloadFile({
-                    data: "application/pdf",
-                    content: ContentFilePDF,
-                  });
-
-                  const url = window.URL.createObjectURL(blob);
-                  const a = document.createElement("a");
-                  a.href = url;
-                  a.download = NameFilePDF;
-                  document.body.appendChild(a);
-                  a.click();
-                  document.body.removeChild(a);
-                }}
-              />
-              <p className="text-center text-break">{NameFilePDF}</p>
-            </DivOnBoardFile>
-          );
-          setFileTicket((fileticket) => [...fileticket, Div]);
-        } catch (err) {
-          return console.log(err);
-        }
-      } else if (typeof file === "object") {
-        try {
-          const image = file.image;
-          const nameFile = name_file[i];
-          const Div = (
-            <DivOnBoardFile className="position-relative">
-              <IMGFiles
-                src={`data:image/jpeg;base64,${file.image}`}
-                onClick={() => {
-                  setImageUrl(`data:image/jpeg;base64,${image}`);
-                  ticketRef.current.style.filter = "blur(4px)";
-                  ticketRef.current.style.background = "rgba(0, 0, 0, 0.4)";
-                  ticketOpen.current.style.overflowY = "hidden";
-                  setImageOpen(true);
-                }}
-                alt={"imagem:" + name_file}
-              />
-              <ImageFile
-                className="position-absolute bottom-0 start-50 translate-middle-x"
-                src={downloadImage}
-                alt="Baixar"
-                onClick={() => {
-                  const link = document.createElement("a");
-                  link.href = `data:image/jpeg;base64,${image}`;
-                  link.download = nameFile;
-                  link.click();
-                  link.remove();
-                }}
-              />
-              <p className="text-center text-break">{nameFile}</p>
-            </DivOnBoardFile>
-          );
-          setFileTicket((fileticket) => [...fileticket, Div]);
-        } catch (err) {
-          return console.log(err);
-        }
+        const Div = (
+          <DivOnBoardFile className="position-relative">
+            <IMGFiles onClick={handleShowImage} src={imageSrc} alt={altImage} />
+            <ImageFile
+              className="position-absolute bottom-0 start-50 translate-middle-x"
+              src={downloadImage}
+              alt="Baixar"
+              onClick={handleDonwloadFile}
+            />
+            <p className="text-center text-break">{nameFile}</p>
+          </DivOnBoardFile>
+        );
+        setFileTicket((fileticket) => [...fileticket, Div]);
+      } catch (err) {
+        return console.log(err);
       }
     }
   }
@@ -1130,6 +1089,8 @@ export default function OpenTicketWindow({
             return;
           } else if (response.status === 200) {
             setChangeTech(ticketID);
+            setReloadFilter(true);
+            setForcedLoad(true);
             return;
           } else if (response.status === 204) {
             setMessageError("Ticket Já está em aguardo");
@@ -1164,7 +1125,7 @@ export default function OpenTicketWindow({
   }
 
   function TechDetails() {
-    fetch("/dashboard_TI/details/" + ticketID, {
+    fetch("/dashboard-ti/details/" + ticketID, {
       method: "GET",
       headers: { Accept: "application/json" },
     })
@@ -1347,6 +1308,8 @@ export default function OpenTicketWindow({
           })
           .then((data) => {
             if (data) {
+              setReloadFilter(true);
+              setForcedLoad(true);
               setChangeTech(ticketID);
               return;
             }
@@ -1537,25 +1500,25 @@ export default function OpenTicketWindow({
         <DivChat ref={chatDiv}>{mountChat}</DivChat>
         {chat && (
           <div className="w-100 d-flex">
-            <div className="w-100">
-              <input
-                className="form-control h-100 fs-5"
-                type="text"
+            <div className="w-100 div-chat">
+              <textarea
+                style={{ whiteSpace: "pre-wrap" }}
+                className="form-control h-100 fs-5 text-chat"
                 onKeyUp={NewChat}
                 ref={inputChat}
               />
             </div>
-            <BtnChat2>
-              <InputFile
-                className="w-100 cursor"
-                type="file"
-                multiple
-                onInput={UploadNewFiles}
-              />
-            </BtnChat2>
-            <div>
+            <div className="d-flex">
+              <BtnChat2 className="transform-y-25 ">
+                <InputFile
+                  className="w-100 cursor"
+                  type="file"
+                  multiple
+                  onInput={UploadNewFiles}
+                />
+              </BtnChat2>
               <BtnChat
-                className="btn"
+                className="btn transform-y-25 "
                 type="submit"
                 onClick={SendChat}
               ></BtnChat>

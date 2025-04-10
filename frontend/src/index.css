@@ -542,3 +542,20 @@
   border-radius: 0 !important;
   opacity: 1;
 }
+
+.text-chat {
+  overflow-y: auto;
+  resize: none;
+}
+
+.div-chat {
+  height: 4em;
+}
+
+.transform-y-25 {
+  transform: translateY(25%);
+}
+
+.mt7 {
+  margin-top: 7em;
+}

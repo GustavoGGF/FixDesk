@@ -8,18 +8,8 @@
       "backend": "python/django",
       "DB": "mysql"
     },
-    "Upgrades": {
-      "4": "adicioanr o email do fixdesk como seguro",
-      "23": "Implementar @retry",
-      "27": "Implementar @measure_time: Para medir o tempo de execução da função.",
-      "50": "mudar sappp01 para fixdesk"
-    },
-    "HotFix's": {
-      "2": "Apos ficar logado por um tempo da um erro te dereciona pra uma tela (quando expira o token)",
-      "46": "verificar as rotas e tratamento para quando o token expira",
-      "51": "verificar melhores paletas de cores para modo claro",
-      "52": "Revisar todos os useEffect"
-    },
+    "Upgrades": {},
+    "HotFix's": { "2": "Verificar arquivo .env" },
     "Study Possibility": {}
   },
   "Login": {
@@ -42,9 +32,6 @@
   },
   "Chat": {},
   "Tickets": {
-    "45": "Atualizar o ticket de tempos e tempos",
-    "47": "ao clicar fora da engranagem (ticket dashboard) deve fechar a tela de opções",
-    "48": "a data de locação não aparece",
-    "49": "filtro de escrita dando problema"
+    "1": "fazer um call de 1 minuto para atualizar os chamados(card/list)"
   }
 }
