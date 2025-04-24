@@ -18,7 +18,6 @@ dominio = getenv("DOMAIN_NAME_HELPDESK")
 server = getenv("SERVER1")
 tech_user = getenv("TECH_USER")
 tech_ti = getenv("TECH_TECH_TI")
-tech_leader = getenv("TECH_LEADER")
 
 basicConfig(level=INFO)
 logger = getLogger(__name__)
@@ -284,9 +283,6 @@ def create_class_user(extractor: dict):
                 break
             elif tech_ti in item:
                 helpdesk = "Tecnico TI"
-                break
-            elif tech_leader in item:
-                helpdesk = "Gestor"
                 break
 
         # Criação da instância do usuário com os dados extraídos

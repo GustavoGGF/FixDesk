@@ -52,9 +52,8 @@ load_dotenv()
 smtp_host = getenv("SERVER_SMTP")
 smtp_port = getenv("SMPT_PORT")
 mail_address = getenv("MAIL_FIXDESK")
-Back_User = getenv("DJANGO_GROUP_USER")
-Back_Tech = getenv("DJANGO_GROUP_TECH")
-Back_Leader = getenv("DJANGO_GROUP_LEADER")
+user_group = getenv("DJANGO_GROUP_USER")
+group_tech = getenv("DJANGO_GROUP_TECH")
 types_str = getenv("VALID_TYPES")
 mail_password = getenv("MAIL_PWD")
 
@@ -87,13 +86,16 @@ def send_mail(mail: str, msgm1: str, msgm2: str):
 
         # Enviar e-mail
         text_mail = msg.as_string()
-        server_smtp.sendmail(mail_address, mail, text_mail)
+        return server_smtp.sendmail(mail_address, mail, text_mail)
 
     except Exception as e:
-        logger.error(e)  # Registrar erro no log
+        return logger.error(e)  # Registrar erro no log
     finally:
         # Fechar conexão SMTP
-        server_smtp.quit()
+        if server_smtp:
+            return server_smtp.quit()
+        else:
+            return
 
 @csrf_exempt
 @require_GET
@@ -101,7 +103,7 @@ def get_new_token(request):
     try:
         user = request.user
         if user.groups.filter(
-            name__in=[Back_User, Back_Tech, Back_Leader]
+            name__in=[user_group, group_tech]
         ).exists():
             csrf = get_token(request)
         else:
@@ -124,7 +126,7 @@ def first_view(request: WSGIRequest):
         try:
             user = request.user
             if user.groups.filter(
-                name__in=[Back_User, Back_Tech, Back_Leader]
+                name__in=[user_group, group_tech]
             ).exists():
                 return render(request, "index.html", {})
             else:
@@ -354,9 +356,8 @@ def history(request: WSGIRequest):
     """
     user = request.user  # Obtém o usuário autenticado
     valid_groups = [
-        Back_User,
-        Back_Tech,
-        Back_Leader,
+        user_group,
+        group_tech,
     ]  # Define os grupos autorizados
 
     # Verifica se o usuário pertence a um dos grupos autorizados
@@ -375,9 +376,8 @@ def history_get_ticket(request, quantity: int, usr: str, status: str, order: str
         csrf = get_token(request)  # Obtém o token CSRF
         user = request.user  # Obtém o usuário autenticado
         valid_groups = [
-            Back_User,
-            Back_Tech,
-            Back_Leader,
+            user_group,
+            group_tech,
         ]  # Define os grupos autorizados
 
         # Verifica se o usuário pertence a um dos grupos autorizados
@@ -615,17 +615,19 @@ def ticket(
 
             user = request.user
             # Verifica se o usuário pertence ao grupo "Back_User"
-            if not user.groups.filter(name=Back_User).exists():
-                if not user.groups.filter(name=Back_Tech).exists():
+            if not user.groups.filter(name=user_group).exists():
+                if not user.groups.filter(name=group_tech).exists():
                     return redirect("/helpdesk")
             else:
                 if ticket.PID != request.user.id:
                     return JsonResponse(
                         {"Error": "Chamado não pertence a você"}, status=403, safe=True
                     )
-
             # Processamento de arquivos do ticket (imagens ou outros arquivos)
             image_data, content_file, name_file = process_ticket_files(id)
+            logger.info(content_file)
+            logger.info(content_file)
+            logger.info(name_file)
 
             # Serializa as informações do ticket
             serialized_ticket = {
@@ -866,7 +868,6 @@ def add_machine_info_to_pdf(ticket: SupportTicket, pdf: FPDF):
         pdf.cell(200, 10, txt=f"Modelo: {model_adjust}", ln=True, align="L")
         y_atual = pdf.get_y()
         url = f"http://sappp01:3000/home/computers/get-image/{model_adjust2}"
-        print(url)
 
         # Faz a requisição GET para obter a imagem
         response = getUrl(url)
@@ -904,7 +905,6 @@ def add_chat_to_pdf(chat: str, pdf: FPDF):
     pdf.cell(200, 10, txt="CHAT", ln=True, align="C")
 
     current_date = None
-    print(chat_dicts)
     # Itera sobre cada entrada no histórico de chat
     for entry in chat_dicts:
         # Extrai as informações de data, sistema, técnico, usuário e hora da entrada
@@ -1201,8 +1201,6 @@ def updating_chat_change_sender(
     # Salva as alterações no banco de dados
     ticket.save()
     
-    print(ticket.chat)
-
     # Inicia uma nova thread para verificar notificações de chamada
     Thread(target=verify_notificationcall, args=(id,)).start()
 
@@ -1252,6 +1250,7 @@ def process_ticket_files(ticket_id):
         return image_data, content_file, name_file
 
     ticket_files = TicketFile.objects.filter(ticket_id=ticket_id)
+    logger.info(ticket_files)
     mime = Magic()
 
     for file in ticket_files:
@@ -1359,7 +1358,7 @@ def get_ticket_filter(
 
         if url == "dashboards":
             # Inicializa o filtro principal vazio caso seja algum tecnico
-            if request.user.groups.filter(name__in=[Back_Tech, Back_Leader]).exists():
+            if request.user.groups.filter(name__in=[group_tech]).exists():
                 filters = Q()
         elif url == "history":
             # Inicializa o filtro principal obrigando a busca pelo "ticketRequester"

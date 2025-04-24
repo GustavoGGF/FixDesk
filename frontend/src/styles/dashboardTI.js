@@ -94,7 +94,7 @@ export const TextObersavation = styled.textarea`
   background-color: #e9ecef;
   color: #212529;
   padding: 0.375rem 0.75rem;
-  height: 7em !important;
+  min-height: 3em;
   border-left: 0;
   border-right: 0;
 `;

@@ -346,24 +346,18 @@ export default function OpenTicketWindow({
     // Verifica se a referência do textarea está definida e se o valor não está vazio
     if (
       textareaRef.current &&
-      textareaRef.current.value !== undefined &&
-      textareaRef.current.value !== ""
+      observation !== undefined &&
+      observation !== ""
     ) {
       // Redimensiona o textarea com base no valor atual
       ResizeTextarea(textareaRef.current);
     }
     // A lista de dependências inclui ticketWindow para executar o efeito quando ticketWindow mudar
-  }, []); // Inclua aqui todas as dependências necessárias
+  }, [observation]); // Inclua aqui todas as dependências necessárias
 
   function ResizeTextarea(textarea) {
-    // Obtém o estilo de altura da linha do textarea, assumindo que esteja definido em pixels
-    const lineHeight = parseFloat(window.getComputedStyle(textarea).lineHeight);
-
-    // Conta o número de linhas no textarea
-    const lines = textarea.value.split("\n").length;
-
-    // Ajusta a altura do textarea com base no número de linhas
-    textarea.style.height = `${lineHeight * lines}px`;
+    textarea.style.height = "auto"; // reset para pegar o scrollHeight correto
+    textarea.style.height = `${textarea.scrollHeight}px`;
   }
 
   function DownloadFile({ content, data, sliceSize = 512 }) {
@@ -909,8 +903,6 @@ export default function OpenTicketWindow({
       }
 
       try {
-        console.log(blob);
-
         const Div = (
           <DivOnBoardFile className="position-relative">
             <IMGFiles onClick={handleShowImage} src={imageSrc} alt={altImage} />
@@ -1527,24 +1519,20 @@ export default function OpenTicketWindow({
         )}
       </div>
       {imageopen && (
-        <div className="position-relative w-100 h-100">
-          <DivImageOpen className="position-fixed top-50 start-50 translate-middle">
-            <div className="w-100 position-relative">
-              <BtnOpen
-                onClick={() => {
-                  ticketRef.current.style.filter = "blur(0)";
-                  ticketRef.current.style.background = "var(--pure-white)";
-                  ticketOpen.current.style.overflowY = "auto";
-                  setImageOpen(false);
-                }}
-                className="position-absolute top-0 end-0"
-              >
-                <Close src={closeIMG} alt="Fechar" />
-              </BtnOpen>
-            </div>
-            <ImageOpen src={imageUrl} alt="" />
-          </DivImageOpen>
-        </div>
+        <DivImageOpen className="position-fixed top-50 start-50 translate-middle d-flex justify-content-center align-items-center">
+          <ImageOpen src={imageUrl} alt="" />
+          <BtnOpen
+            onClick={() => {
+              ticketRef.current.style.filter = "blur(0)";
+              ticketRef.current.style.background = "var(--pure-white)";
+              ticketOpen.current.style.overflowY = "auto";
+              setImageOpen(false);
+            }}
+            className="position-absolute top-0 end-0"
+          >
+            <Close src={closeIMG} alt="Fechar" />
+          </BtnOpen>
+        </DivImageOpen>
       )}
       {newFiles && (
         <DivNewFiles className="position-absolute top-50 start-50 translate-middle d-flex flex-column">

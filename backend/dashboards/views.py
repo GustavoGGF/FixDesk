@@ -34,7 +34,6 @@ basicConfig(level=WARNING)
 logger = getLogger(__name__)
 
 tech_group = getenv("DJANGO_GROUP_TECH")
-leader_group = getenv("DJANGO_GROUP_LEADER")
 status_mapping = {"open": True, "close": False, "stop": None, "all": "All"}
 types_str = getenv("VALID_TYPES")
 
@@ -52,9 +51,9 @@ def dashboard_ti(request: WSGIRequest):
         # Obtém o usuário autenticado da requisição.
         user = request.user
 
-        # Verifica se o usuário pertence aos grupos de 'tech_group' ou 'leader_group'.
+        # Verifica se o usuário pertence aos grupos de 'tech_group''.
         # Caso contrário, ele não terá permissão para acessar o dashboard.
-        if not user.groups.filter(name__in=[tech_group, leader_group]).exists():
+        if not user.groups.filter(name__in=[tech_group]).exists():
             # Registra um alerta no log informando que o usuário não tem permissão para acessar.
             logger.warning(
                 f"Usuário {user.username} não tem permissão para acessar o dashboard TI."
@@ -635,7 +634,7 @@ def details_chat(request: WSGIRequest, id: int):
         user = request.user  # Obtém o usuário autenticado na requisição.
 
         # Verifica se o usuário pertence a um dos grupos autorizados.
-        if not user.groups.filter(name__in=[tech_group, leader_group]).exists():
+        if not user.groups.filter(name__in=[tech_group]).exists():
             return redirect(
                 "/helpdesk"
             )  # Redireciona para a página do helpdesk caso não autorizado.

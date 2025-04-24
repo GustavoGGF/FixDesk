@@ -222,8 +222,7 @@ export const BtnOpen = styled.button`
 `;
 
 export const ImageOpen = styled.img`
-  width: 100%;
-  -webkit-width: 100%; /* Adicionado para compatibilidade com navegadores baseados em WebKit */
+  max-width: 70% !important;
 `;
 
 export const DivChat = styled.div`
