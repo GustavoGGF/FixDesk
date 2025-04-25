@@ -1,11 +1,6 @@
 from django.db import models
 from os.path import join
 
-
-def support_ticket_file_path(instance, filename):
-    return join("uploads", str(instance.ticket.id), filename)
-
-
 class SupportTicket(models.Model):
     ticketRequester = models.CharField(max_length=31, blank=False)
     department = models.CharField(max_length=10, null=True, blank=True)
@@ -47,18 +42,17 @@ class SupportTicket(models.Model):
 
 
 class TicketFile(models.Model):
-    ticket = models.ForeignKey(SupportTicket, on_delete=models.PROTECT)
-    file = models.FileField(upload_to=support_ticket_file_path)
+    # Definir `ticket` como chave primária e foreign key ao mesmo tempo
+    ticket = models.ForeignKey(
+        SupportTicket,
+        on_delete=models.PROTECT,
+        db_column='ticket_id',
+        related_name='files',
+    )
+    file_name = models.CharField(max_length=255, null=True, blank=True)
+    file_type = models.CharField(max_length=255, null=True, blank=True)
+    data = models.BinaryField(null=True, blank=True)  # Usando BinaryField para armazenar binários (longblob no MySQL)
 
-    def __str__(self):
-        return str(self.id)
-
-    def save(self, *args, **kwargs):
-        if not self.id:
-            last_ticket = TicketFile.objects.order_by("-id").first()
-            if last_ticket:
-                self.id = last_ticket.id + 1
-            else:
-                self.id = 1
-
-        super().save(*args, **kwargs)
+    class Meta:
+        db_table = 'helpdesk_ticketfile'
+        managed = False
