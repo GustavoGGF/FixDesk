@@ -2,28 +2,25 @@
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from smtplib import SMTP
-from threading import Thread, Timer
+from threading import Thread
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.decorators.csrf import csrf_exempt, requires_csrf_token
-from django.http import JsonResponse, FileResponse
+from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from os import getenv, path
 from json import loads
 from django.middleware.csrf import get_token
 from datetime import datetime
-from .models import SupportTicket, TicketFile
+from .models import SupportTicket, TicketFile, TicketMail
 from django.core.serializers import serialize
 from django.contrib.auth import logout
-from dashboards.models import Equipaments
 from base64 import b64encode
 from PIL import Image, UnidentifiedImageError
 from io import BytesIO
 from magic import Magic
 from os import getcwd
-from os.path import exists, isdir
 from django.db.models import Q
 import mimetypes
-from django.core.files.base import ContentFile
 from fpdf import FPDF
 from re import findall, split as plt
 from logging import basicConfig, getLogger, WARNING
@@ -34,8 +31,6 @@ from mysql import connector
 from decouple import config
 from django.views.decorators.http import require_POST, require_GET
 from django.utils.timezone import make_aware
-from time import time
-from threading import Lock
 from dotenv import load_dotenv
 from django.core.handlers.wsgi import WSGIRequest
 from django.core.files.uploadedfile import InMemoryUploadedFile
@@ -312,7 +307,6 @@ def process_files(request: WSGIRequest, form_data: dict):
         logger.error(f"Erro no processamento de imagem: {e}")  # Registra erro no log
         return e, 300, denied_files  # Retorna erro interno no processamento
 
-
 def is_valid_file(file: InMemoryUploadedFile, file_type: str) -> bool:
     """Valida se um arquivo enviado pertence a uma lista de tipos aceitos."""
     try:
@@ -338,7 +332,6 @@ def is_valid_file(file: InMemoryUploadedFile, file_type: str) -> bool:
     except Exception as e:
         return logger.error(e)
 
-
 @csrf_exempt
 @login_required(login_url="/login")
 @require_GET
@@ -359,7 +352,6 @@ def history(request: WSGIRequest):
     if not user.groups.filter(name__in=valid_groups).exists():
         return redirect("/login")
     return render(request, "index.html", {})  # Renderiza a página de histórico
-
 
 @login_required(login_url="/login")
 @never_cache
@@ -403,7 +395,6 @@ def history_get_ticket(request, quantity: int, usr: str, status: str, order: str
         logger.error(e)  # Exibe o erro no console (melhor utilizar logger)
         return JsonResponse({"status": "Invalid Credentials"}, status=402, safe=True)
 
-
 @csrf_exempt
 @require_GET
 def exit(request: WSGIRequest):
@@ -421,7 +412,6 @@ def exit(request: WSGIRequest):
             "Erro inesperado ao fazer logout"
         )  # `logger.exception` já inclui traceback
         return JsonResponse({"Error": f"Erro inesperado {e}"}, status=303)
-
 
 @login_required(
     login_url="/login"
@@ -444,7 +434,7 @@ def ticket(
             techMail = body.get("techMail")  # E-mail do novo técnico responsável
             mail = body.get("mail")  # E-mail do usuário associado ao chamado
             chat = body.get("chat")  # Chat com menssagem
-            user = body.get("User")  # usuario
+            user = body.get("user")  # usuario
             helpdesk = body.get("helpdesk")
             if "responsible_technician" in body:
                 # Esta condição verifica se a requisição contém a chave 'responsible_technician'.
@@ -509,7 +499,7 @@ def ticket(
                 # Se o status retornado for 400, um erro é enviado na resposta.
                 # Caso contrário, a resposta retorna o chat atualizado.
                 status, chat = updating_chat_change_sender(
-                    body, id, chat, date, hours, user, helpdesk
+                    id, chat, date, hours, user, helpdesk
                 )
 
                 if status == 400:
@@ -1080,7 +1070,6 @@ def ticket_open(
 
         # Adiciona uma mensagem ao histórico do chat informando que o técnico reabriu o ticket
         ticket.chat += f",[[Date:{date}],[System: {technician} Reabriu e atendeu o Chamado],[Hours:{hours}]]"
-
         # Atualiza o e-mail do técnico responsável
         ticket.technician_mail = techMail
 
@@ -1132,7 +1121,7 @@ def change_responsible_technician(
         # Verifica se o chat do chamado já possui mensagens registradas
         if not ticket.chat:
             # Caso não haja mensagens no chat, cria o primeiro registro de atendimento
-            ticket.chat = f"[[Date:{date}],[System: {responsible_technician} atendeu ao Chamado],[Hours:{hours}]]"
+            ticket.chat = f"[[Date:{date}],[System: {responsible_technician} atendeu ao Chamado],[Hours:{hours}]],"
 
             # Se um e-mail de usuário estiver disponível, envia uma notificação por e-mail
             if mail:
@@ -1158,7 +1147,6 @@ def change_responsible_technician(
 
 @transaction.atomic
 def updating_chat_change_sender(
-    body: dict,
     id: int,
     chat: str,
     date: str,
@@ -1193,7 +1181,7 @@ def updating_chat_change_sender(
     ticket.save()
     
     # Inicia uma nova thread para verificar notificações de chamada
-    Thread(target=verify_notificationcall, args=(id,)).start()
+    Thread(target=verify_notification_call, args=(ticket,)).start()
 
     return 200, ticket.chat
 
@@ -1638,12 +1626,6 @@ def change_last_viewer(request: WSGIRequest, id: int):
         ticket_data.last_viewer = last_vw
         ticket_data.save()
 
-        # Inicia uma thread para verificar a notificação do chamado
-        Thread(
-            target=verify_notificationcall,
-            args=(id,),
-        ).start()
-
         # Retorna um status indicando que o último visualizador foi alterado com sucesso
         return JsonResponse({"status": "Last Viewer Alterado"}, safe=True, status=200)
 
@@ -1680,248 +1662,21 @@ def verify_names(name_verify, responsible_technician):
     # Retorna False caso não haja nome a ser verificado ou nome do técnico responsável
     return False
 
-
-active_timers = {}
-timers_lock = Lock()
-
-
-class CountdownTimer:
-    """
-    Classe que representa um temporizador regressivo associado a um ID e uma função de callback.
-
-    Essa classe permite iniciar e parar um temporizador que executará a função de callback após um período determinado.
-
-    :param duration: Duração do temporizador em segundos.
-    :param callback: Função a ser chamada ao término do temporizador.
-    :param id: Identificador único para o temporizador.
-    """
-
-    def __init__(self, duration, callback, id):
-        self.duration = duration  # Define a duração do temporizador em segundos
-        self.callback = (
-            callback  # Define a função de callback a ser executada ao final do tempo
-        )
-        self.id = id  # Atribui um identificador único ao temporizador
-        self.timer = None  # Inicializa o temporizador como None
-        self.start_time = (
-            None  # Inicializa a variável que armazenará o momento de início
-        )
-
-    def start(self):
-        """
-        Inicia o temporizador, registrando o momento de início e agendando a execução da callback.
-        """
-        self.start_time = (
-            time()
-        )  # Registra o momento em que o temporizador foi iniciado
-        self.timer = Timer(
-            self.duration, self.callback
-        )  # Cria um temporizador com a duração especificada
-        self.timer.start()  # Inicia o temporizador
-
-    def stop(self):
-        """
-        Cancela o temporizador caso ele esteja em execução.
-        """
-        if self.timer:  # Verifica se há um temporizador ativo
-            self.timer.cancel()  # Cancela a execução do temporizador
-
-
-def notify(id):
-    """
-    Envia uma notificação por e-mail quando uma mensagem em um chamado não é visualizada.
-
-    A função realiza uma série de verificações, como:
-    - Se o técnico possui um e-mail registrado.
-    - Se o chamado está aberto.
-    - Identifica o último remetente da mensagem.
-    - Envia um e-mail para o destinatário adequado (técnico ou usuário) com as últimas mensagens não visualizadas.
-
-    :param id: ID do chamado no sistema.
-    """
-    mail_tech = None
+def verify_notification_call(ticket):
     try:
-        # Obtém o ticket correspondente ao ID fornecido.
-        ticket = SupportTicket.objects.get(id=id)
-
-        # Mensagem que será enviada informando que a mensagem não foi visualizada.
-        msg2 = f"Chamado {id}: Menssagem não Visualizada!"
-
-        # Extrai o último remetente e as informações do chat.
-        last_sender, _ = ticket.last_sender.split(", ")
-        chat = ticket.chat
-        status = ticket.open
-        mail_tech = ticket.technician_mail
-        mail_user = ticket.mail
-
-        # Verifica se o e-mail do técnico está presente.
-        if not mail_tech or mail_tech == None:
-            logger.error("email do tecnico não existe")
-            return stop_timer(id)
-
-        # Verifica se o e-mail do técnico está presente.
-        if not mail_user or mail_user == None:
-            logger.error("email do tecnico não existe")
-            return stop_timer(id)
-
-        # Verifica se o status do chamado está aberto.
-        if not status or status == None or status == False:
-            return stop_timer(id)
-
-        # Divide o chat em seções para processar as mensagens.
-        sections = chat.split("],[")
-
-        # Ajusta a formatação da primeira e última seção do chat.
-        sections[0] = "[" + sections[0]
-        sections[-1] = sections[-1] + "]"
-
-        # Agrupa as seções em pacotes de três elementos.
-        result = [sections[i : i + 3] for i in range(0, len(sections), 3)]
-        message_ux = result[-1][1]  # Pega a última mensagem.
-
-        # Separa a mensagem para identificar quem foi o remetente.
-        split_item = message_ux.split(":")
-
-        # Define o destinatário com base no remetente da mensagem.
-        if split_item[0] == "Technician":
-            primary = "Technician"
-            mailTo = mail_user  # Envia para o usuário.
-        elif split_item[0] == "User":
-            primary = "User"
-            mailTo = mail_tech  # Envia para o técnico.
-        else:
-            logger.error("Erro ao detectar quem enviou a menssagem")
-            # Para o temporizador ativo e remove da lista de timers.
-            active_timers[id].stop()
-            del active_timers[id]
-            return
-
-        # Pega as últimas cinco mensagens do chat.
-        last_three = result[-5:]
-
-        # Armazena as mensagens a serem enviadas no e-mail.
-        messages = []
-        for item in last_three:
-            second_value = item[1]
-            split_value = second_value.split(":")
-
-            # Verifica se a mensagem pertence ao remetente identificado (técnico ou usuário).
-            if split_value[0].strip() == primary:
-                messages.append(split_value[1].strip())
-
-        # Formata o corpo do e-mail com as mensagens.
-        msg = f"{last_sender} enviou uma mensagem.\n{chr(10).join(messages)}"
-
-        # Verifica se o temporizador ainda está ativo.
-        if id not in active_timers:
-            return
-
-        # Inicia a thread para enviar o e-mail.
-        task = Thread(
-            target=send_mail,
-            args=(mailTo, msg, msg2),
-        )
-
-        task.start()
-
-        # Retorna finalizando o time do ID especificado
-        return stop_timer(id)
-    except Exception as e:
-        logger.error(e)
-        # Retorna finalizando o time do ID especificado
-        return stop_timer(id)
-    finally:
-        # Retorna finalizando o time do ID especificado
-        return stop_timer(id)
-
-
-def stop_timer(id):
-    """
-    Remove o temporizador associado a um ID do dicionário `active_timers`.
-
-    A função verifica se o ID está presente no dicionário `active_timers`,
-    para então parar o temporizador e removê-lo da lista.
-
-    :param id: ID do temporizador a ser removido.
-    """
-    # Verifica se o ID existe no dicionário de temporizadores ativos.
-    if id in active_timers:
-        # Para o temporizador associado ao ID.
-        active_timers[id].stop()
-        # Remove o temporizador do dicionário.
-        del active_timers[id]
-
-
-def call_timer(id, status):
-    """
-    Inicia ou para a chamada de e-mail de um chamado específico baseado no status fornecido.
-
-    A função verifica o status ("start" ou "stop") e realiza a ação apropriada para iniciar
-    ou parar o temporizador associado ao chamado identificado pelo ID.
-
-    :param id: ID do chamado para o qual o temporizador será iniciado ou parado.
-    :param status: O status que determina se o temporizador deve ser iniciado ("start") ou parado ("stop").
-    """
-    global active_timers  # Define que a variável global active_timers será usada.
-
-    with (
-        timers_lock
-    ):  # Utiliza um lock para garantir que o código seja executado de maneira thread-safe.
-        try:
-            if status == "start":  # Se o status for "start", iniciar o temporizador.
-                if (
-                    id not in active_timers
-                ):  # Verifica se já existe um temporizador para o ID.
-                    # Cria um novo temporizador com 10800 segundos (3 horas) e uma callback para a função 'notify'.
-                    timer = CountdownTimer(10800, lambda: notify(id), id)
-                    timer.start()  # Inicia o temporizador.
-                    active_timers[id] = (
-                        timer  # Armazena o temporizador no dicionário `active_timers`.
-                    )
-                    return
-            elif status == "stop":  # Se o status for "stop", parar o temporizador.
-                if id in active_timers:  # Verifica se o ID tem um temporizador ativo.
-                    # Chama a função `stop_timer` para interromper o temporizador.
-                    return stop_timer(id)
-        except Exception as e:
-            # Caso ocorra algum erro, registra o erro no log.
-            logger.error(f"Erro ao tentar {status} o timer para o chamado {id}: {e}")
-
-
-def verify_notificationcall(id):
-    """
-    Verifica se é válido iniciar o temporizador para enviar a notificação por e-mail, com base
-    nos dados do chamado. A função compara os campos 'last_sender' e 'last_viewer' e decide
-    se o temporizador deve ser iniciado ou parado.
-
-    :param id: ID do chamado que será verificado.
-    """
-    try:
-        # Obtém o ticket do banco de dados utilizando o ID fornecido.
-        ticket = SupportTicket.objects.get(id=id)
-
-        # Recupera os valores de 'last_sender' e 'last_viewer' do ticket.
-        last_sender = ticket.last_sender
-        last_viewer = ticket.last_viewer
-
-        # Verifica se ambos os campos possuem valores válidos.
-        if not last_sender or not last_viewer:
-            return  # Se faltar dados, a função retorna sem fazer mais verificações.
-
-        # Ajusta o formato do nome do último remetente e do último visualizador para comparações.
-        last_sender_adjusted = last_sender.split(", ")[0].replace(" ", "")
-        last_viewer_adjusted = last_viewer.replace(" ", "")
-
-        # Se o último remetente e o último visualizador forem iguais, inicia o temporizador.
-        if last_sender_adjusted == last_viewer_adjusted:
-            return call_timer(id, "start")
-        else:
-            # Caso contrário, para o temporizador.
-            return call_timer(id, "stop")
+        if not TicketMail.objects.filter(ticket=ticket).exists():
+            new_ticket = TicketMail(
+                ticket=ticket,
+                send_date=datetime.now()
+            )
+            new_ticket.save()  # Salva o chamado no banco de dados
+            logger.info("criado novo")
+        return
 
     except Exception as e:
         # Caso ocorra algum erro, loga a exceção.
-        return logger.error(f"Erro ao verificar o chamado {id}: {e}")
+        # return logger.error(f"Erro ao verificar o chamado {id}: {e}")
+        return logger.error(e)
 
 
 @require_GET

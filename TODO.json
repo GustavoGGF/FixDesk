@@ -32,6 +32,9 @@
   },
   "Chat": {},
   "Tickets": {
-    "1": "fazer um call de 1 minuto para atualizar os chamados(card/list)"
+    "1": "fazer um call de 1 minuto para atualizar os chamados(card/list) atualmente ele deve atualizar junto com o dashbaord PIE",
+    "1.1": "fazer o msm esquema de atualização que vai matando processo anterior para não ter varios",
+    "1.2": "ao fechar um chamdo forçar atualização dos chamados tambem",
+    "2": "Liberar copiar texto de observation e email"
   }
 }

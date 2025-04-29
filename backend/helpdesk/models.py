@@ -56,3 +56,15 @@ class TicketFile(models.Model):
     class Meta:
         db_table = 'helpdesk_ticketfile'
         managed = False
+
+class TicketMail(models.Model):
+    ticket = models.ForeignKey(
+        SupportTicket,
+        on_delete=models.PROTECT,
+        db_column='ticket_id',
+    )
+    send_date  = models.DateField(null=False, blank=False)
+    
+    class Meta:
+        db_table = 'helpdesk_ticketmail'
+        managed = True

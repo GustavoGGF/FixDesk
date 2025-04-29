@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",  # Gerenciamento de sessões.
     "django.contrib.messages",  # Framework de mensagens para usuários.
     "django.contrib.staticfiles",  # Gerenciamento de arquivos estáticos (CSS, JS, etc.).
+    "services", #Aplicativo personalizado do projeto
     "fixdesk",  # Aplicativo personalizado do projeto.
     "helpdesk",  # Aplicativo personalizado do projeto.
     "dashboards",  # Aplicativo personalizado do projeto.

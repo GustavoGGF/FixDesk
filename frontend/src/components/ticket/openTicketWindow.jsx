@@ -633,7 +633,6 @@ export default function OpenTicketWindow({
       if (textChat.length === 0) {
         return;
       }
-
       // Envia a mensagem do chat para o servidor
       fetch("/helpdesk/ticket/" + ticketID, {
         method: "POST",
