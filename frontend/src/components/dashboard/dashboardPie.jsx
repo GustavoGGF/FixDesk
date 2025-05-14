@@ -139,6 +139,9 @@ export default function DashBoardPie({ sector, clss }) {
         CallNewBar();
         return;
       } catch (err) {
+        if (err instanceof TypeError && error.message === "Failed to fetch") {
+          return window.location.reload();
+        }
         if (err instanceof SyntaxError) {
           return (window.location.href = "/login");
         }
