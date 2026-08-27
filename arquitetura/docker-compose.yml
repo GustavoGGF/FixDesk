@@ -1,0 +1,92 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: fixdesk-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-fixdesk_database}
+      MYSQL_USER: ${MYSQL_USER:-fixdesk}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-fixdesk}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+    networks:
+      - fixdesk-network
+
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    container_name: fixdesk-backend
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      USER_DB: ${MYSQL_USER:-fixdesk}
+      USER_PWD_DB: ${MYSQL_PASSWORD:-fixdesk}
+      DB_HOST: mysql
+      DB_PORT: "3306"
+      DB_NAME: ${MYSQL_DATABASE:-fixdesk_database}
+      DB_POOL_ENABLED: "true"
+      DB_POOL_MIN: "2"
+      DB_POOL_MAX: "5"
+      DB_POOL_MAX_OVERFLOW: "10"
+      DB_POOL_IDLE_TIME: "3600"
+      DB_POOL_RECYCLE: "3600"
+      DB_POOL_PRE_PING: "true"
+      DB_POOL_ECHO: "false"
+      DB_POOL_HEALTH_CHECK_INTERVAL: "300"
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-change-me-in-production}
+      DJANGO_DEBUG: ${DJANGO_DEBUG:-True}
+    ports:
+      - "8000:8000"
+    volumes:
+      - static-files:/app/staticfiles
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+    networks:
+      - fixdesk-network
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    container_name: fixdesk-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+    networks:
+      - fixdesk-network
+
+volumes:
+  mysql-data:
+    driver: local
+  static-files:
+    driver: local
+
+networks:
+  fixdesk-network:
+    driver: bridge
