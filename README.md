@@ -241,16 +241,25 @@ cp -r build/* ../backend/build/
 ### Setup via Docker Compose
 
 O ambiente completo deve ser montado usando o Compose disponível em
-`arquitetura/docker-compose.yml`. Na primeira execução, defina as três variáveis
-obrigatórias e deixe o Compose construir as imagens:
+`arquitetura/docker-compose.yml`. Na primeira execução, crie o arquivo
+`arquitetura/.env` com as três variáveis obrigatórias:
+
+```env
+# arquitetura/.env
+MYSQL_ROOT_PASSWORD=uma_senha_segura
+MYSQL_PASSWORD=uma_senha_da_aplicacao
+SECRET_KEY=uma-chave-secreta-do-django
+```
+
+Depois, execute o Compose a partir da pasta `arquitetura`:
 
 ```bash
 cd arquitetura
-MYSQL_ROOT_PASSWORD=uma_senha_segura \
-MYSQL_PASSWORD=uma_senha_da_aplicacao \
-SECRET_KEY=uma-chave-secreta-do-django \
 docker compose up -d --build
 ```
+
+O arquivo `.env` contém credenciais e já está ignorado pelo Git. Não o
+versione nem compartilhe suas senhas.
 
 O frontend ficará disponível em http://localhost e o backend em
 http://localhost:8000. Para acompanhar os logs ou desligar o ambiente:

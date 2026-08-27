@@ -285,13 +285,22 @@ A migração `helpdesk/migrations/0003_add_area_model.py` cria a tabela `helpdes
 
 Para montar o ambiente completo, execute a partir da raiz do projeto:
 
+Crie primeiro `arquitetura/.env`:
+
+```env
+MYSQL_ROOT_PASSWORD=uma_senha_segura
+MYSQL_PASSWORD=uma_senha_da_aplicacao
+SECRET_KEY=uma-chave-secreta-do-django
+```
+
+Em seguida, inicie os serviços:
+
 ```bash
 cd arquitetura
-MYSQL_ROOT_PASSWORD=uma_senha_segura \
-MYSQL_PASSWORD=uma_senha_da_aplicacao \
-SECRET_KEY=uma-chave-secreta-do-django \
 docker compose up -d --build
 ```
+
+O arquivo `arquitetura/.env` não deve ser versionado, pois contém credenciais.
 
 ## 10. Troubleshooting e FAQ
 

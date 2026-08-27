@@ -121,14 +121,22 @@ npm start
 O ambiente completo deve ser montado a partir do arquivo
 `../arquitetura/docker-compose.yml`:
 
+Crie o arquivo `../arquitetura/.env`:
+
+```env
+MYSQL_ROOT_PASSWORD=uma_senha_segura
+MYSQL_PASSWORD=uma_senha_da_aplicacao
+SECRET_KEY=uma-chave-secreta-do-django
+```
+
+Depois, execute a partir da pasta `arquitetura`:
+
 ```bash
-# Execute a partir da pasta arquitetura
 cd ../arquitetura
-MYSQL_ROOT_PASSWORD=uma_senha_segura \
-MYSQL_PASSWORD=uma_senha_da_aplicacao \
-SECRET_KEY=uma-chave-secreta-do-django \
 docker compose up -d --build
 ```
+
+Esse arquivo contém credenciais e não deve ser versionado.
 > O frontend rodará no contêiner `fixdesk-frontend` (Nginx, porta 80). Acesse o sistema em http://localhost.
 
 ## 7. Scripts, Testes e Qualidade
