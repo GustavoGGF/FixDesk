@@ -1,0 +1,307 @@
+import sys
+from pathlib import Path
+import os
+from os import path, getenv
+from dotenv import load_dotenv
+from django.core.management.utils import get_random_secret_key
+
+# Define o diretório base do projeto.
+# BASE_DIR aponta para o diretório pai do arquivo atual (settings.py),
+# permitindo caminhos relativos confiáveis para outros arquivos do projeto.
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Carrega as variáveis de ambiente
+load_dotenv(BASE_DIR / ".env")
+
+# Chave secreta usada para fornecer assinatura criptográfica no Django.
+# Em desenvolvimento sem .env, use uma chave efêmera; em produção, SECRET_KEY
+# deve ser fornecida pelo ambiente (o Docker Compose a exige explicitamente).
+SECRET_KEY = os.environ.get("SECRET_KEY") or get_random_secret_key()
+
+# a exposição de informações sensíveis e erros detalhados.
+DEBUG = getenv("DEBUG", "").lower() == "true"
+
+# Configura a política de segurança para o cabeçalho X-Frame-Options.
+# "SAMEORIGIN" permite que o conteúdo seja exibido em frames apenas no mesmo domínio,
+# prevenindo ataques de clickjacking.
+X_FRAME_OPTIONS = "SAMEORIGIN"
+
+
+# Habilita o cabeçalho X-Content-Type-Options: nosniff.
+# Impede que navegadores tentem adivinhar o tipo MIME de um recurso,
+# reduzindo riscos de execução de scripts maliciosos.
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# Lista de hosts/domínios permitidos para servir a aplicação.
+# Em produção, especifique apenas os domínios válidos para evitar
+# ataques de Host Header Injection.
+ALLOWED_HOSTS = ["localhost", "localhost:8080", "sappp01.lupatech.com.br", "sappp01", "10.1.1.73", "www.sappp01.lupatech.com.br", "10.244.0.133"]
+
+# Lista de origens confiáveis para proteção CSRF (Cross-Site Request Forgery).
+# Define quais domínios podem enviar requisições POST seguras para a aplicação.
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:8080",
+    "https://sappp01.lupatech.com.br",
+    "https://10.1.1.1.73",
+    "https://10.1.1.73:30443",
+    "https://127.0.0.1",
+    "https://127.0.0.1:30443"
+]
+
+# Lista de aplicativos instalados no projeto Django.
+# Inclui aplicativos padrão do Django (como admin, autenticação, sessões, etc.)
+# e aplicativos personalizados do projeto (fixdesk, helpdesk, dashboards).
+INSTALLED_APPS = [
+    "django.contrib.admin",  # Interface de administração do Django.
+    "django.contrib.auth",  # Sistema de autenticação de usuários.
+    "django.contrib.contenttypes",  # Framework para tipos de conteúdo.
+    "django.contrib.sessions",  # Gerenciamento de sessões.
+    "django.contrib.messages",  # Framework de mensagens para usuários.
+    "django.contrib.staticfiles",  # Gerenciamento de arquivos estáticos (CSS, JS, etc.).
+
+    # Third-party apps
+    "rest_framework",
+    "drf_spectacular",
+
+    "database_pool",  # Gerenciador de pool de conexões do banco de dados
+    "services", #Aplicativo personalizado do projeto
+    "fixdesk",  # Aplicativo personalizado do projeto.
+    "helpdesk",  # Aplicativo personalizado do projeto.
+    "dashboards",  # Aplicativo personalizado do projeto.
+]
+
+# Configuração do Django REST Framework para usar o Spectacular
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+# Configurações do drf-spectacular
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'FixDesk API',
+    'DESCRIPTION': 'Documentação automática da API do projeto FixDesk',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    # Você pode adicionar outras configurações de segurança aqui (JWT/Token)
+}
+
+# Lista de middlewares aplicados globalmente no projeto.
+# Middlewares são camadas que processam requisições e respostas.
+# A ordem é importante, pois define a sequência de execução.
+MIDDLEWARE = [
+    "django.middleware.security.SecurityMiddleware",  # Segurança
+    "django.contrib.sessions.middleware.SessionMiddleware",  # Gerencia sessões
+    "django.middleware.common.CommonMiddleware",  # Normalização de URLs
+    "django.middleware.csrf.CsrfViewMiddleware",  # Proteção contra CSRF
+    "django.contrib.auth.middleware.AuthenticationMiddleware",  # Autenticação de usuários (DEVE ESTAR ANTES)
+    "fixdesk.middleware_permition.CustomCsrfMiddleware",  # Middleware personalizado CSRF
+    "fixdesk.middleware_expire.CsrfRedirectMiddleware",  # Middleware para redirecionamento CSRF
+    "database_pool.middleware.DatabasePoolMonitoringMiddleware",  # Monitoramento do pool de conexões
+    "django.contrib.messages.middleware.MessageMiddleware",  # Gerencia mensagens para usuários
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",  # Proteção contra clickjacking
+]
+
+# Define o módulo de configuração de URLs principal do projeto.
+# Este arquivo contém as rotas (URL patterns) que mapeiam requisições para views.
+ROOT_URLCONF = "fixdesk.urls"
+
+# Configurações dos templates (modelos de renderização de HTML).
+# Define como o Django deve carregar e processar templates.
+TEMPLATES = [
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",  # Usa o sistema de templates do Django.
+        "DIRS": [BASE_DIR / "build", BASE_DIR / "templates"],  # Diretórios adicionais para procurar templates.
+        "APP_DIRS": True,  # Habilita a busca de templates dentro de diretórios de aplicativos.
+        "OPTIONS": {
+            "context_processors": [
+                # Processadores de contexto que adicionam variáveis globais aos templates.
+                "django.template.context_processors.debug",  # Adiciona informações de debug.
+                "django.template.context_processors.request",  # Adiciona o objeto 'request'.
+                "django.contrib.auth.context_processors.auth",  # Adiciona informações de autenticação.
+                "django.contrib.messages.context_processors.messages",  # Adiciona mensagens para o usuário.
+            ],
+        },
+    },
+]
+
+# Define a aplicação WSGI (Web Server Gateway Interface) para o projeto.
+# WSGI é a interface entre o servidor web e o Django.
+WSGI_APPLICATION = "fixdesk.wsgi.application"
+
+# Configurações do banco de dados do projeto.
+# Define o banco de dados padrão como SQLite3, com o arquivo de banco de dados localizado
+# no diretório base do projeto (BASE_DIR) com o nome 'db.sqlite3'.
+# SQLite é ideal para desenvolvimento, mas em produção, considere usar PostgreSQL, MySQL ou outro SGBD robusto.
+user = getenv("USER_DB", "")
+pwd = getenv("USER_PWD_DB", "")
+host = getenv("DB_HOST", "")
+port = getenv("DB_PORT", "")
+db = getenv("DB_NAME", "")
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.mysql",  # Usa o backend do SQLite3.
+        "NAME": db,  # Caminho para o arquivo do banco de dados.
+        "USER": user,
+        "PASSWORD": pwd,
+        "HOST": host,
+        "PORT": port,
+        "OPTIONS": {
+            "charset": "utf8mb4",  # Defina o charset para utf8mb4
+        },
+    }
+}
+
+# Validadores de senha para garantir a segurança das senhas dos usuários.
+# Cada validador verifica uma condição específica para aumentar a robustez das senhas.
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        # Verifica se a senha é muito similar a atributos do usuário (ex: nome, email).
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+    },
+    {
+        # Define um comprimento mínimo para a senha (o padrão é 8 caracteres).
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+    },
+    {
+        # Verifica se a senha está entre as senhas mais comuns (evita senhas fracas).
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+    },
+    {
+        # Verifica se a senha não é composta apenas por números.
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+    },
+]
+
+# Define o código de idioma padrão do projeto.
+# "pt-br" configura o Django para usar português brasileiro como idioma padrão.
+LANGUAGE_CODE = "pt-br"
+
+# Define o fuso horário padrão do projeto.
+# "Brazil/East" refere-se ao fuso horário do Brasil (Horário de Brasília, UTC-3).
+TIME_ZONE = 'America/Sao_Paulo'
+
+# Habilita a internacionalização (i18n) do projeto.
+# Permite a tradução do projeto para múltiplos idiomas.
+USE_I18N = True
+
+# Habilita o suporte a fusos horários (timezone awareness).
+# Armazena datas e horas no banco de dados em UTC e converte para o fuso horário definido em TIME_ZONE.
+USE_TZ = True
+
+# URL base para servir arquivos estáticos (CSS, JavaScript, imagens, etc.).
+# Durante o desenvolvimento, o Django usa essa URL para servir arquivos estáticos diretamente.
+# Em produção, configure o servidor web (ex: Nginx, Apache) para servir arquivos estáticos.
+STATIC_URL = "/static/"
+
+# Lista de diretórios adicionais onde o Django deve procurar por arquivos estáticos.
+# Esses diretórios são usados durante o desenvolvimento e coletados no `STATIC_ROOT` durante o deploy.
+# Aqui, o diretório "build/static" é incluído, o que sugere o uso de uma ferramenta de build (ex: Webpack).
+STATICFILES_DIRS = (path.join(BASE_DIR, "build", "static"),)
+
+# Diretório onde os arquivos estáticos serão coletados durante o comando `collectstatic`.
+# Esse diretório é usado em produção para servir todos os arquivos estáticos de um único local.
+# Certifique-se de que o servidor web tenha permissão para acessar esse diretório.
+STATIC_ROOT = path.join(BASE_DIR, "static")
+
+# Define o tipo de campo automático padrão para modelos (models) que não especificam um campo primário.
+# "django.db.models.BigAutoField" é um campo de auto-incremento de 64 bits, adequado para projetos
+# que podem exigir um grande número de registros.
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Habilita a flag "Secure" no cookie CSRF (Cross-Site Request Forgery).
+# Isso garante que o cookie CSRF só seja enviado em conexões HTTPS, aumentando a segurança.
+CSRF_COOKIE_SECURE = True
+
+# Habilita a flag "Secure" no cookie de sessão.
+# Isso garante que o cookie de sessão só seja enviado em conexões HTTPS, prevenindo interceptação em conexões inseguras.
+SESSION_COOKIE_SECURE = True
+
+# Define o mecanismo de armazenamento de sessões.
+# "django.contrib.sessions.backends.db" armazena as sessões no banco de dados,
+# o que é seguro e escalável, mas pode exigir manutenção periódica para limpar sessões expiradas.
+SESSION_ENGINE = "django.contrib.sessions.backends.db"
+
+# Define o nome do cookie de sessão.
+# O valor padrão é "sessionid", mas pode ser personalizado se necessário.
+SESSION_COOKIE_NAME = "sessionid"
+
+# Define o tempo de vida (em segundos) do cookie de sessão.
+# Aqui, o cookie expira após 14.400 segundos (4 horas).
+# Após esse período, o usuário precisará fazer login novamente.
+SESSION_COOKIE_AGE = 14400
+CSRF_FAILURE_VIEW = "fixdesk.views.csrf_failure"
+
+# Define se a sessão deve ser salva no banco de dados a cada requisição.
+# Quando False, a sessão só é salva quando modificada, o que melhora o desempenho.
+# Quando True, a sessão é salva a cada requisição, o que pode ser útil para aplicações
+# que exigem alta precisão no tempo de expiração da sessão.
+SESSION_SAVE_EVERY_REQUEST = False
+
+# Habilita o cabeçalho HTTP Strict Transport Security (HSTS).
+# HSTS força o navegador a se conectar apenas via HTTPS, prevenindo ataques de downgrade.
+# O valor define o tempo (em segundos) que o navegador deve lembrar de usar HTTPS (aqui, 4 horas).
+SECURE_HSTS_SECONDS = 14400
+
+# Inclui subdomínios na política HSTS.
+# Isso garante que todos os subdomínios também sejam acessados apenas via HTTPS.
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+
+# Habilita o pré-carregamento (preload) da política HSTS.
+# Isso permite que o site seja incluído na lista de pré-carregamento HSTS dos navegadores,
+# garantindo que a política seja aplicada mesmo antes do primeiro acesso.
+SECURE_HSTS_PRELOAD = True
+
+# Habilita o filtro de proteção contra ataques XSS (Cross-Site Scripting) no navegador.
+# Isso adiciona o cabeçalho "X-XSS-Protection: 1; mode=block" às respostas,
+# instruindo o navegador a bloquear scripts maliciosos.
+SECURE_BROWSER_XSS_FILTER = True
+
+# Habilita o cabeçalho "X-Content-Type-Options: nosniff".
+# Impede que o navegador tente adivinhar o tipo MIME de um recurso,
+# reduzindo riscos de execução de scripts maliciosos.
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# ================================================================================
+# DATABASE CONNECTION POOLING (Django ORM native pool solution)
+# ================================================================================
+DATABASE_POOL_CONFIG = {
+    'ENABLED': True,
+    'MIN_POOL_SIZE': int(getenv('DB_POOL_MIN', '2')),
+    'MAX_POOL_SIZE': int(getenv('DB_POOL_MAX', '5')),
+    'MAX_OVERFLOW': int(getenv('DB_POOL_MAX_OVERFLOW', '10')),
+    'MAX_IDLE_TIME': int(getenv('DB_POOL_IDLE_TIME', '3600')),
+    'POOL_RECYCLE': int(getenv('DB_POOL_RECYCLE', '3600')),
+    'POOL_PRE_PING': getenv('DB_POOL_PRE_PING', 'true').lower() == 'true',
+    'ECHO': getenv('DB_POOL_ECHO', 'false').lower() == 'true',
+    'MONITORED_DATABASES': ['default'],
+    'HEALTH_CHECK_INTERVAL': int(getenv('DB_POOL_HEALTH_CHECK_INTERVAL', '300')),
+}
+
+LOGGING = {
+    'version':1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '[{asctime}] {levelname} [{name}]: {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'stream': sys.stdout,
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'backend_erros': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'frontend_erros': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+    },
+}
