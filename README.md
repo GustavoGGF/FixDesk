@@ -73,14 +73,8 @@ FixDesk/
 │   │   └── utils/             # Utilitários (downloadFile, errorLogger)
 │   ├── tailwind.config.js     # TailwindCSS (prefixo `tw-`, preflight off)
 │   └── package.json           # Dependências e scripts npm
-├── create-fixdesk/             # Manifesto Docker Compose, Kubernetes, Dockerfiles e Nginx
-│   ├── docker-compose-fixdesk.yml
-│   ├── fixdesk-deployment.yaml
-│   ├── build-and-import-images.sh
-│   ├── Dockerfile.fixdesk
-│   ├── Dockerfile.nginx
-│   ├── fixdesk.conf
-│   └── nginx.conf
+├── arquitetura/               # Orquestração local via Docker Compose
+│   └── docker-compose.yml      # MySQL, backend Django e frontend Nginx
 ├── linux_start.sh             # Script de build + start (Linux)
 ├── start_project.ps1          # Script de build + start (Windows/PowerShell)
 ├── biome.json                 # Configuração do Biome (linter/formatter)
@@ -246,9 +240,24 @@ cp -r build/* ../backend/build/
 
 ### Setup via Docker Compose
 
+O ambiente completo deve ser montado usando o Compose disponível em
+`arquitetura/docker-compose.yml`. Na primeira execução, defina as três variáveis
+obrigatórias e deixe o Compose construir as imagens:
+
 ```bash
-cd create-fixdesk
-docker compose -f docker-compose-fixdesk.yml up -d
+cd arquitetura
+MYSQL_ROOT_PASSWORD=uma_senha_segura \
+MYSQL_PASSWORD=uma_senha_da_aplicacao \
+SECRET_KEY=uma-chave-secreta-do-django \
+docker compose up -d --build
+```
+
+O frontend ficará disponível em http://localhost e o backend em
+http://localhost:8000. Para acompanhar os logs ou desligar o ambiente:
+
+```bash
+docker compose logs -f
+docker compose down
 ```
 
 ## 7. Scripts, Testes e Qualidade
@@ -330,7 +339,7 @@ O frontend consome a API do backend Django via rotas relativas. A camada HTTP ut
 
 ## 9. CI/CD e Deploy
 
-- **Containerização:** Docker com Docker Compose (`create-fixdesk/docker-compose-fixdesk.yml`) orquestrando dois serviços — `fixdesk` (Gunicorn) e `nginx` (proxy reverso + TLS).
+- **Containerização:** Docker Compose (`arquitetura/docker-compose.yml`) orquestrando MySQL, backend Django/Gunicorn e frontend servido por Nginx.
 - **Imagem Docker:** `python:3.12-slim` com venv isolada, execução com usuário não-root (`appuser`), healthcheck integrado.
 - **Proxy Reverso:** Nginx com TLS (TLSv1.2/1.3), headers de segurança (CSP, X-Frame-Options, X-XSS-Protection, X-Content-Type-Options), limite de upload de 50MB.
 - **Deploy:** Realizado via Docker Compose no servidor de produção (`sappp01.lupatech.com.br`). O Nginx serve os arquivos estáticos do React e faz proxy reverso para a API Django na porta 8000.

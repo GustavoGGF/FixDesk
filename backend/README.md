@@ -280,8 +280,18 @@ A migração `helpdesk/migrations/0003_add_area_model.py` cria a tabela `helpdes
 ## 9. CI/CD e Deploy
 
 - **Servidor de Produção:** Gunicorn como servidor WSGI, com Nginx como proxy reverso e terminação TLS.
-- **Containerização:** Docker com Docker Compose para orquestração dos serviços (backend, banco de dados, proxy).
+- **Containerização:** Docker Compose (`arquitetura/docker-compose.yml`) para orquestração do backend, banco de dados MySQL e frontend/Nginx.
 - **Deploy:** Realizado via Docker Compose no servidor de produção (`sappp01.lupatech.com.br`).
+
+Para montar o ambiente completo, execute a partir da raiz do projeto:
+
+```bash
+cd arquitetura
+MYSQL_ROOT_PASSWORD=uma_senha_segura \
+MYSQL_PASSWORD=uma_senha_da_aplicacao \
+SECRET_KEY=uma-chave-secreta-do-django \
+docker compose up -d --build
+```
 
 ## 10. Troubleshooting e FAQ
 

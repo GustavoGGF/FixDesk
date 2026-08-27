@@ -117,11 +117,19 @@ npm start
 ```
 
 **Execução Completa via Docker Compose**
+
+O ambiente completo deve ser montado a partir do arquivo
+`../arquitetura/docker-compose.yml`:
+
 ```bash
-# Sobe todo o ambiente (frontend, backend e banco de dados) via docker-compose
-docker-compose up -d --build
+# Execute a partir da pasta arquitetura
+cd ../arquitetura
+MYSQL_ROOT_PASSWORD=uma_senha_segura \
+MYSQL_PASSWORD=uma_senha_da_aplicacao \
+SECRET_KEY=uma-chave-secreta-do-django \
+docker compose up -d --build
 ```
-> O frontend rodará no contêiner `fixdesk-frontend` (Nginx, porta 80).
+> O frontend rodará no contêiner `fixdesk-frontend` (Nginx, porta 80). Acesse o sistema em http://localhost.
 
 ## 7. Scripts, Testes e Qualidade
 
@@ -141,7 +149,7 @@ Consulte a seção **8. Documentação da API e Contratos** do [README do Backen
 
 - **Build:** Realizado através de um build multi-stage no `Dockerfile` (`node:20-alpine` para gerar os artefatos estáticos e `nginx:1.27-alpine` para os hospedar).
 - **Containerização:** O frontend possui um contêiner próprio orquestrado via Docker Compose (`fixdesk-frontend`).
-- **Deploy:** O deploy é realizado via Docker Compose (arquivo `create-fixdesk/docker-compose-fixdesk.yml`), interligando os serviços do FixDesk em rede isolada. O Nginx expõe a porta 443/8000 e encaminha as requisições ao backend.
+- **Deploy:** O deploy é realizado via Docker Compose (arquivo `arquitetura/docker-compose.yml`), interligando MySQL, backend e frontend em uma rede isolada. O Nginx expõe a porta 80 e encaminha as requisições ao backend.
 
 ## 10. Troubleshooting e FAQ
 
