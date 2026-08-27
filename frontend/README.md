@@ -79,7 +79,7 @@ frontend/
 │   └── utils/
 │       ├── downloadFile.js        # Utilitário para download de arquivos
 │       └── downloadFile.test.js   # Testes unitários do utilitário
-├── Dockerfile                 # Dockerfile multi-stage build (Node + Nginx)
+├── Dockerfile                 # Dockerfile legado do frontend (o Compose usa o backend/Dockerfile)
 ├── tailwind.config.js         # Configuração TailwindCSS (prefixo `tw-`, preflight desativado)
 ├── postcss.config.js          # Configuração PostCSS
 └── package.json               # Dependências e scripts npm
@@ -90,8 +90,8 @@ frontend/
 - **Runtime:** Node.js 18+ (Dev) / Node 20 (Build)
 - **Build Tool:** Create React App (`react-scripts 5`) com CRACO para sobrescrever configurações do Webpack
 - **Linter/Formatter:** Biome 2.5
-- **Backend:** O frontend possui contêiner próprio em produção, sendo servido via Nginx (imagem alpine), que atua como proxy reverso para os endpoints da API no backend
-- **Infra/DevOps:** Docker, Nginx, Docker Compose
+- **Backend:** Em produção, o build do frontend é incorporado à imagem do backend e servido pelo Django/Gunicorn
+- **Infra/DevOps:** Docker e Docker Compose
 
 ## 5. Configuração de Variáveis de Ambiente (.env)
 
@@ -132,18 +132,15 @@ SECRET_KEY=uma-chave-secreta-do-django
 Depois, execute a partir da pasta `arquitetura`:
 
 ```bash
-cd /mnt/codes/FixDesk/frontend
-npm ci
-
 cd /mnt/codes/FixDesk/arquitetura
 docker compose up -d --build
 ```
 
-Execute `npm ci` antes do build do Docker para instalar exatamente as
-dependências registradas no `package-lock.json`.
+As dependências e o build do frontend são instalados e executados
+automaticamente no estágio Node do `backend/Dockerfile`.
 
 Esse arquivo contém credenciais e não deve ser versionado.
-> O frontend rodará no contêiner `fixdesk-frontend` (Nginx, porta 80). Acesse o sistema em http://localhost.
+> O frontend será servido pelo contêiner `fixdesk-backend` na porta 8000. Acesse o sistema em http://localhost:8000.
 
 ## 7. Scripts, Testes e Qualidade
 
@@ -161,9 +158,9 @@ Consulte a seção **8. Documentação da API e Contratos** do [README do Backen
 
 ## 9. CI/CD e Deploy
 
-- **Build:** Realizado através de um build multi-stage no `Dockerfile` (`node:20-alpine` para gerar os artefatos estáticos e `nginx:1.27-alpine` para os hospedar).
-- **Containerização:** O frontend possui um contêiner próprio orquestrado via Docker Compose (`fixdesk-frontend`).
-- **Deploy:** O deploy é realizado via Docker Compose (arquivo `arquitetura/docker-compose.yml`), interligando MySQL, backend e frontend em uma rede isolada. O Nginx expõe a porta 80 e encaminha as requisições ao backend.
+- **Build:** Realizado no estágio `node:20-alpine` do `backend/Dockerfile`; o resultado é copiado para `backend/build/`.
+- **Containerização:** O frontend não possui contêiner próprio; seus arquivos são incorporados ao contêiner `fixdesk-backend`.
+- **Deploy:** O deploy é realizado via Docker Compose (arquivo `arquitetura/docker-compose.yml`), interligando MySQL e backend Django/Gunicorn.
 
 ## 10. Troubleshooting e FAQ
 

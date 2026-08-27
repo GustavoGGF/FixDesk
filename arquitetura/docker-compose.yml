@@ -27,8 +27,10 @@ services:
 
   backend:
     build:
-      context: ../backend
-      dockerfile: Dockerfile
+      context: ..
+      # O Dockerfile fica em backend/, mas o contexto precisa incluir também
+      # o código-fonte do frontend para compilar a SPA.
+      dockerfile: backend/Dockerfile
     container_name: fixdesk-backend
     restart: unless-stopped
     depends_on:
@@ -53,8 +55,6 @@ services:
       DEBUG: ${DEBUG:-false}
     ports:
       - "8000:8000"
-    volumes:
-      - static-files:/app/staticfiles
     deploy:
       resources:
         limits:
@@ -63,28 +63,8 @@ services:
     networks:
       - fixdesk-network
 
-  frontend:
-    build:
-      context: ../frontend
-      dockerfile: Dockerfile
-    container_name: fixdesk-frontend
-    restart: unless-stopped
-    depends_on:
-      - backend
-    ports:
-      - "80:80"
-    deploy:
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: 256M
-    networks:
-      - fixdesk-network
-
 volumes:
   mysql-data:
-    driver: local
-  static-files:
     driver: local
 
 networks:

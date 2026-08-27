@@ -48,6 +48,6 @@ urlpatterns += [
     re_path(
         r"^static/(?P<path>.*)$",
         serve,
-        {"document_root": Path(settings.STATICFILES_DIRS[0])},
+        {"document_root": Path(settings.STATIC_ROOT)},
     ),
 ]

@@ -122,7 +122,7 @@ backend/
 - **Banco de Dados:** MySQL 8+ (charset `utf8mb4`)
 - **LDAP:** Servidor Active Directory para autenticação de usuários (protocolo LDAP via `ldap3`)
 - **SMTP:** Servidor de e-mail para envio de notificações (porta 25, TLS)
-- **Infra/DevOps:** Docker, Nginx (proxy reverso)
+- **Infra/DevOps:** Docker e Docker Compose
 
 ## 5. Configuração de Variáveis de Ambiente (.env)
 
@@ -279,8 +279,8 @@ A migração `helpdesk/migrations/0003_add_area_model.py` cria a tabela `helpdes
 
 ## 9. CI/CD e Deploy
 
-- **Servidor de Produção:** Gunicorn como servidor WSGI, com Nginx como proxy reverso e terminação TLS.
-- **Containerização:** Docker Compose (`arquitetura/docker-compose.yml`) para orquestração do backend, banco de dados MySQL e frontend/Nginx.
+- **Servidor de Produção:** Gunicorn como servidor WSGI, servindo a aplicação Django e os arquivos estáticos do build React.
+- **Containerização:** Docker Compose (`arquitetura/docker-compose.yml`) para orquestração do backend e banco de dados MySQL. O build do frontend é feito em um estágio da imagem do backend.
 - **Deploy:** Realizado via Docker Compose no servidor de produção (`sappp01.lupatech.com.br`).
 
 Para montar o ambiente completo, execute a partir da raiz do projeto:
@@ -317,7 +317,7 @@ O arquivo `arquitetura/.env` não deve ser versionado, pois contém credenciais.
   **Solução:** Verifique se a origem está listada em `CSRF_TRUSTED_ORIGINS` no `settings.py`. Os middlewares `CustomCsrfMiddleware` e `CsrfRedirectMiddleware` redirecionam automaticamente para `/login` em caso de falha CSRF.
 
 - **Problema:** Arquivos estáticos do frontend não são servidos em produção.
-  **Solução:** Execute `python manage.py collectstatic` e configure o Nginx para servir o diretório `static/`. O build do React deve estar em `build/`.
+  **Solução:** Recompile a imagem do backend com `docker compose build --no-cache backend`. O Dockerfile compila o React, copia o resultado para `build/` e executa `collectstatic`.
 
 - **Problema:** `DBUtils` não instalado — erro `ImportError` ao inicializar o pool.
   **Solução:** Execute `pip install DBUtils==3.1.0` ou verifique se `requirements.txt` está atualizado. O pool será desabilitado graciosamente se a lib não estiver disponível.

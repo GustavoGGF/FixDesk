@@ -4,7 +4,7 @@
 
 ## 1. Visão Geral e Arquitetura
 
-- **Stack Tecnológica:** Python 3.11+ / Django 4.2 / Django REST Framework (DRF) (backend), React 18 / Material UI 7 / Chart.js 4 / TailwindCSS 3 (prefixado com `tw-`) / Axios (frontend), MySQL 8 (banco de dados), Gunicorn 22 (WSGI), DBUtils 3.1 (connection pooling), Nginx (proxy reverso + TLS), Docker Compose (orquestração)
+- **Stack Tecnológica:** Python 3.11+ / Django 4.2 / Django REST Framework (DRF) (backend), React 18 / Material UI 7 / Chart.js 4 / TailwindCSS 3 (prefixado com `tw-`) / Axios (frontend), MySQL 8 (banco de dados), Gunicorn 22 (WSGI), DBUtils 3.1 (connection pooling), Docker Compose (orquestração)
 - **Padrão Arquitetural:** MTV (Model–Template–View) no backend com camada de serviços desacoplada (Service Layer) para lógica de negócio e tarefas em background; Component-Based Architecture com separação por feature no frontend
 - **Design Patterns Principais:** Service Layer (separação views ↔ regras de negócio), Singleton (PoolManager — pool de conexões thread-safe), Middleware Chain (CSRF, permissão e monitoramento de queries), Thread Manager (tarefas periódicas em daemon thread), Data Classes / TypedDicts (mapeamento de dados tipados), Context API + Provider Composition (estado global React), Compound Components (janelas de ticket)
 
@@ -74,7 +74,7 @@ FixDesk/
 │   ├── tailwind.config.js     # TailwindCSS (prefixo `tw-`, preflight off)
 │   └── package.json           # Dependências e scripts npm
 ├── arquitetura/               # Orquestração local via Docker Compose
-│   └── docker-compose.yml      # MySQL, backend Django e frontend Nginx
+│   └── docker-compose.yml      # MySQL e backend Django (inclui o build do frontend)
 ├── linux_start.sh             # Script de build + start (Linux)
 ├── start_project.ps1          # Script de build + start (Windows/PowerShell)
 ├── biome.json                 # Configuração do Biome (linter/formatter)
@@ -91,7 +91,7 @@ FixDesk/
 - **SMTP:** Servidor de e-mail para notificações (porta 25, TLS)
 - **Build Tool Frontend:** Create React App (`react-scripts 5`) com CRACO
 - **Linter/Formatter:** Biome 2.5
-- **Infra/DevOps:** Docker, Docker Compose, Nginx (proxy reverso + terminação TLS)
+- **Infra/DevOps:** Docker e Docker Compose
 
 ### Autenticação, Grupos Django e Matriz de Acesso
 
@@ -254,21 +254,18 @@ SECRET_KEY=uma-chave-secreta-do-django
 Depois, execute o Compose a partir da pasta `arquitetura`:
 
 ```bash
-cd /mnt/codes/FixDesk/frontend
-npm ci
-
 cd /mnt/codes/FixDesk/arquitetura
 docker compose up -d --build
 ```
 
-O comando `npm ci` deve ser executado antes do build para instalar exatamente
-as dependências registradas no `package-lock.json`.
+As dependências e o build do frontend são instalados e executados
+automaticamente no estágio Node do `backend/Dockerfile`.
 
 O arquivo `.env` contém credenciais e já está ignorado pelo Git. Não o
 versione nem compartilhe suas senhas.
 
-O frontend ficará disponível em http://localhost e o backend em
-http://localhost:8000. Para acompanhar os logs ou desligar o ambiente:
+O Django/Gunicorn ficará disponível em http://localhost:8000 e servirá tanto a
+SPA React quanto a API. Para acompanhar os logs ou desligar o ambiente:
 
 ```bash
 docker compose logs -f
@@ -354,10 +351,9 @@ O frontend consome a API do backend Django via rotas relativas. A camada HTTP ut
 
 ## 9. CI/CD e Deploy
 
-- **Containerização:** Docker Compose (`arquitetura/docker-compose.yml`) orquestrando MySQL, backend Django/Gunicorn e frontend servido por Nginx.
-- **Imagem Docker:** `python:3.12-slim` com venv isolada, execução com usuário não-root (`appuser`), healthcheck integrado.
-- **Proxy Reverso:** Nginx com TLS (TLSv1.2/1.3), headers de segurança (CSP, X-Frame-Options, X-XSS-Protection, X-Content-Type-Options), limite de upload de 50MB.
-- **Deploy:** Realizado via Docker Compose no servidor de produção (`sappp01.lupatech.com.br`). O Nginx serve os arquivos estáticos do React e faz proxy reverso para a API Django na porta 8000.
+- **Containerização:** Docker Compose (`arquitetura/docker-compose.yml`) orquestrando MySQL e backend Django/Gunicorn.
+- **Imagem Docker:** build multi-stage com `node:20-alpine` para compilar o React e `python:3.12-slim` para executar o Django.
+- **Deploy:** O build do React é copiado para `backend/build/`, coletado pelo Django e servido pelo próprio backend na porta 8000.
 
 ## 10. Troubleshooting e FAQ
 
@@ -374,7 +370,7 @@ O frontend consome a API do backend Django via rotas relativas. A camada HTTP ut
   **Solução:** Verifique se a origem está listada em `CSRF_TRUSTED_ORIGINS` no `settings.py`. Os middlewares customizados redirecionam para `/login` em caso de falha CSRF.
 
 - **Problema:** Arquivos estáticos do frontend não são servidos em produção.
-  **Solução:** Execute `python manage.py collectstatic` e configure o Nginx para servir o diretório `static/`. O build do React deve estar em `backend/build/`.
+  **Solução:** Recompile a imagem com `docker compose build --no-cache backend`; o Dockerfile compila o React, copia o resultado para `backend/build/` e executa `collectstatic`.
 
 - **Problema:** `npm start` falha com erro de porta já em uso.
   **Solução:** Altere a porta com `PORT=3001 npm start` ou encerre o processo que ocupa a porta 3000.
