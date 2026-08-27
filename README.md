@@ -254,9 +254,15 @@ SECRET_KEY=uma-chave-secreta-do-django
 Depois, execute o Compose a partir da pasta `arquitetura`:
 
 ```bash
-cd arquitetura
+cd /mnt/codes/FixDesk/frontend
+npm ci
+
+cd /mnt/codes/FixDesk/arquitetura
 docker compose up -d --build
 ```
+
+O comando `npm ci` deve ser executado antes do build para instalar exatamente
+as dependências registradas no `package-lock.json`.
 
 O arquivo `.env` contém credenciais e já está ignorado pelo Git. Não o
 versione nem compartilhe suas senhas.
@@ -376,8 +382,8 @@ O frontend consome a API do backend Django via rotas relativas. A camada HTTP ut
 - **Problema:** Conflito de estilos entre TailwindCSS e estilos existentes.
   **Solução:** O TailwindCSS está configurado com prefixo `tw-` e `preflight: false`. Use sempre `tw-` ao aplicar classes Tailwind.
 
-- **Problema:** Build falha com `Cannot find module '@craco/craco'`.
-  **Solução:** Verifique se o `@craco/craco` está nas dependências e execute `npm install`.
+- **Problema:** Build falha com `Cannot find module '@craco/craco'` ou `react-scripts: not found`.
+  **Solução:** A partir da raiz do projeto, execute `cd /mnt/codes/FixDesk/frontend && npm ci` e depois refaça o build do Docker.
 
 - **Problema:** Arquivos estáticos (imagens, logos) não carregam após o build.
   **Solução:** Importe assets via `import` estático no código — o CRA transforma em URLs com hash para cache busting.

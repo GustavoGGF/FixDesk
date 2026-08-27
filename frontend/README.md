@@ -132,9 +132,15 @@ SECRET_KEY=uma-chave-secreta-do-django
 Depois, execute a partir da pasta `arquitetura`:
 
 ```bash
-cd ../arquitetura
+cd /mnt/codes/FixDesk/frontend
+npm ci
+
+cd /mnt/codes/FixDesk/arquitetura
 docker compose up -d --build
 ```
+
+Execute `npm ci` antes do build do Docker para instalar exatamente as
+dependências registradas no `package-lock.json`.
 
 Esse arquivo contém credenciais e não deve ser versionado.
 > O frontend rodará no contêiner `fixdesk-frontend` (Nginx, porta 80). Acesse o sistema em http://localhost.
@@ -170,8 +176,8 @@ Consulte a seção **8. Documentação da API e Contratos** do [README do Backen
 - **Problema:** Conflito de estilos entre TailwindCSS e os estilos existentes.
   **Solução:** O TailwindCSS está configurado com prefixo `tw-` e com `preflight: false` para não interferir nos estilos globais existentes. Use sempre o prefixo `tw-` ao aplicar classes Tailwind (ex: `tw-flex`, `tw-mt-4`).
 
-- **Problema:** Build falha com erro `Cannot find module '@craco/craco'`.
-  **Solução:** Verifique se o `@craco/craco` está listado nas dependências e execute `npm install` novamente. O script `start` e `test` dependem do CRACO.
+- **Problema:** Build falha com erro `Cannot find module '@craco/craco'` ou `react-scripts: not found`.
+  **Solução:** Execute `cd /mnt/codes/FixDesk/frontend && npm ci` antes de iniciar o build do Docker. O script `start` e os testes dependem dessas dependências.
 
 - **Problema:** Arquivos estáticos (imagens, logos) não carregam após o build.
   **Solução:** Confirme que os assets em `src/images/` estão sendo importados via `import` estático no código — o CRA transforma esses imports em URLs com hash para cache busting. Não referencie arquivos de `src/` diretamente via string de caminho.
