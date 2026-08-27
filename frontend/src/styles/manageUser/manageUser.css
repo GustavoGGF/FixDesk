@@ -1,0 +1,13 @@
+.tr-dashboard:hover {
+	background-color: var(--aqua-mist);
+}
+
+.cl-hv-crimson-red:hover {
+	color: var(--crimson-red);
+}
+
+.bd-cls {
+	margin-left: -7em;
+	padding: 0.8em;
+	border-radius: 1em;
+}

@@ -1,0 +1,3 @@
+module.exports = {
+  // Craco configuration
+};

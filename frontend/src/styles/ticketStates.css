@@ -1,0 +1,41 @@
+.ticket-close {
+	background-color: forestgreen;
+}
+
+.ticket-open-not-view {
+	background: #00b4d8;
+}
+
+.ticket-open-in-view {
+	background-color: #ddce15;
+}
+
+.ticket-open-in-view-list {
+	background-color: #ddce15;
+	border-top: 5px solid #fff700;
+	border-bottom: 5px solid #fff700;
+	border-left: 3px solid #fff700;
+	border-right: 3px solid #fff700;
+}
+
+.ticket-stop {
+	background-color: #d2d6d9;
+}
+
+.ticket-urgent {
+	background-color: #e33958;
+}
+
+.ticket-hover {
+	transform: scale(1);
+	-webkit-transform: scale(
+		1
+	); /* Adicionado para compatibilidade com navegadores baseados em WebKit */
+}
+
+.ticket-hover:hover {
+	transform: scale(1.1);
+	-webkit-transform: scale(
+		1.1
+	); /* Adicionado para compatibilidade com navegadores baseados em WebKit */
+}
