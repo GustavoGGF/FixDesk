@@ -53,6 +53,16 @@ services:
       DB_POOL_HEALTH_CHECK_INTERVAL: "300"
       SECRET_KEY: ${SECRET_KEY:?Defina SECRET_KEY no ambiente ou em um arquivo .env}
       DEBUG: ${DEBUG:-false}
+    command:
+      - /bin/sh
+      - -c
+      - >-
+        python manage.py migrate --noinput &&
+        exec gunicorn fixdesk.wsgi:application
+        --bind 0.0.0.0:8000
+        --workers 4
+        --threads 2
+        --timeout 120
     ports:
       - "8000:8000"
     deploy:

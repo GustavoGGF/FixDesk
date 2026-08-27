@@ -5,7 +5,6 @@ import "../styles/bootstrap/css/bootstrap.css";
 import Loading from "../components/loading/loading";
 import Message from "../components/utility/message";
 import { MessageContext } from "../context/MessageContext";
-import { logErrorFrontend } from "../services/errorLogger";
 import api from "../services/api";
 
 export default function Login() {
@@ -65,7 +64,6 @@ export default function Login() {
 
 	// Constantes Boolean
 	const [awaitValidation, setAwaitValidation] = useState(false);
-	const [passlimit, setPassLimit] = useState(false);
 	// Constantes String
 
 	const [theme, setTheme] = useState("");
@@ -103,8 +101,6 @@ export default function Login() {
 		const user = userRef.current.value;
 		const pass = passRef.current.value;
 
-		// Reseta estado de erro visual de tamanho de senha e ativa indicador de carregamento
-		setPassLimit(false);
 		setAwaitValidation(true);
 
 		// Envia credenciais para validação via requisição HTTP POST usando o serviço customizado
@@ -190,7 +186,6 @@ export default function Login() {
 		setMessage(true);
 		typeError.current = "Credencial Inválida";
 		messageError.current = "Usuário e/ou Senha Inválido(s)";
-		setPassLimit(true);
 		animation.current = "";
 		setAwaitValidation(false);
 	}
@@ -200,47 +195,9 @@ export default function Login() {
 		setMessage(true);
 		typeError.current = "Acesso Restrito";
 		messageError.current = "Você não possui permissão para essa Ferramenta";
-		setPassLimit(true);
 		animation.current = "";
 		setAwaitValidation(false);
 	}
-
-	function VerifyPass() {
-		try {
-			const pass = passRef.current.value;
-
-			if (pass.length > 10) {
-				setPassLimit(true);
-				animation.current = "animate__bounceIn";
-			} else {
-				animation.current = "animate__bounceOut";
-			}
-		} catch (err) {
-			logErrorFrontend(err.message, err.stack);
-		}
-	}
-
-	useEffect(() => {
-		if (animation.current === "animate__bounceOut") {
-			setTimeout(() => {
-				setPassLimit(false);
-			}, 500);
-		}
-	}, [animation]);
-
-	useEffect(() => {
-		const handleEnterPress = (event) => {
-			if (event.key === "Enter" && passlimit) {
-				Verifylogin(event);
-			}
-		};
-
-		document.addEventListener("keydown", handleEnterPress);
-		return () => {
-			document.removeEventListener("keydown", handleEnterPress);
-		};
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [passlimit]);
 
 	return (
 		<div className={`${theme} tw-h-screen tw-w-screen tw-absolute`}>
@@ -272,18 +229,15 @@ export default function Login() {
 							type="password"
 							className="tw-block tw-w-full tw-px-3 tw-py-1.5 tw-text-base tw-font-normal tw-bg-white tw-border tw-border-solid tw-border-gray-300 tw-rounded tw-transition tw-duration-150 tw-ease-in-out focus:tw-outline-none tw-mb-12"
 							name="pass"
-							onKeyUp={VerifyPass}
 						/>
 
-						{passlimit && (
-							<button
-								type="button"
-								className={`tw-inline-block tw-font-normal tw-text-center tw-align-middle tw-cursor-pointer tw-select-none tw-border tw-border-transparent tw-px-3 tw-py-1.5 tw-text-base tw-rounded tw-transition tw-duration-150 tw-ease-in-out tw-bg-green-600 tw-text-white hover:tw-bg-green-700 active:tw-bg-green-800 tw-w-full ${animation.current}`}
-								onClick={Verifylogin}
-							>
-								Logar
-							</button>
-						)}
+						<button
+							type="button"
+							className={`tw-inline-block tw-font-normal tw-text-center tw-align-middle tw-cursor-pointer tw-select-none tw-border tw-border-transparent tw-px-3 tw-py-1.5 tw-text-base tw-rounded tw-transition tw-duration-150 tw-ease-in-out tw-bg-green-600 tw-text-white hover:tw-bg-green-700 active:tw-bg-green-800 tw-w-full ${animation.current}`}
+							onClick={Verifylogin}
+						>
+							Logar
+						</button>
 					</form>
 				</div>
 			)}
