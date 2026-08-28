@@ -10,7 +10,7 @@
 
 ## 2. Módulos e Componentes Principais
 
-- **fixdesk (core):** Módulo raiz do Django — contém `settings.py`, roteamento principal (`urls.py`), view de autenticação LDAP (`validation`), centralização de controle de permissões multi-área (`fixdesk.permissions`), renovação dinâmica de sessão (`SessionExtensionMiddleware`), middlewares customizados (`CustomCsrfMiddleware`, `CsrfRedirectMiddleware`) e o WSGI entrypoint.
+- **fixdesk (core):** Módulo raiz do Django — contém `settings.py`, roteamento principal (`urls.py`), view de autenticação LDAP (`validation`), política de autenticação e fallback configurável para superusuários locais (`auth_policy.py`), centralização de controle de permissões multi-área (`fixdesk.permissions`), renovação dinâmica de sessão (`SessionExtensionMiddleware`), middlewares customizados (`CustomCsrfMiddleware`, `CsrfRedirectMiddleware`) e o WSGI entrypoint.
 - **helpdesk:** Módulo de domínio principal — gerencia o ciclo de vida dos chamados de suporte (`SupportTicket`), upload/download de arquivos anexos (`TicketFile`), histórico, chat entre usuário e técnico, alocação de equipamentos e geração de PDF. As áreas responsáveis são catalogadas pela entidade `Area` (`TI` e `Fiscal` inicialmente), e `SupportTicket.respective_area` mantém uma ForeignKey protegida para esse catálogo. A abertura aceita o ID ou código de uma área ativa, e o endpoint `GET /helpdesk/active-areas/` lista as opções disponíveis. Também contém o comando `create_fiscal_group` e o endpoint seguro de filtragem `GET /helpdesk/tickets/`. Integra envio de e-mails transacionais via SMTP.
 - **dashboards:** Módulo de painéis analíticos para técnicos autorizados (`TI` e `Fiscal`) — fornece dados de gráficos de pizza (por setor/área), histogramas (por intervalo de dias), listagem de tickets filtrados pelas áreas permitidas do usuário, upload de arquivos adicionais e gerenciamento de usuários do sistema.
 - **database_pool:** Módulo de gerenciamento de pool de conexões com o banco de dados MySQL. Implementa pooling via `DBUtils.PersistentDB` com Singleton thread-safe (`PoolManager`), health check periódico (`DatabaseHealthCheck`), middleware de monitoramento de queries (`DatabasePoolMonitoringMiddleware`), endpoints REST para status, saúde e reset do pool, painel no Django Admin (`PoolMetricsAdmin`, `PoolStatusAdmin`) e management command CLI (`pool_monitor`). Configurável via variáveis de ambiente (`DB_POOL_*`).
@@ -26,12 +26,15 @@
   - `mapping/` — `ChatLogEntryConversation`, `ChatLogEntryFile` (dataclasses para entradas de log do chat), `StatusMap` (mapeamento tipado de status de ticket), `HistogramData` (estrutura de dados de histograma).
   - `exceptions/` — `AuthenticationError`, `CreateClassError` (exceções customizadas).
 
-### Autenticação Django Auth e Integração LDAP
+### Autenticação Django Auth, Integração LDAP e Política de Superusuário
 
 - **Mapeamento de Grupos e Perfis:**
   - A autenticação via LDAP (`validation`) varre todos os grupos atribuídos ao usuário no Active Directory (`memberOf`).
   - Se o grupo LDAP `CN=CH - Technician_Fiscal` (configurável via `TECH_TECH_FISCAL`) for detectado, o grupo Django `Helpdesk_Technician_Fiscal` (configurável via `DJANGO_GROUP_TECH_FISCAL`) é associado ao usuário.
   - O provisionamento (`create_or_verify_user`) opera de forma idempotente utilizando `user.groups.add(...)`, preservando grupos previamente atribuídos. Isso permite suporte a acessos multi-grupo (ex: um técnico com perfil `TI` + `Fiscal`).
+- **Política de Autenticação e Fallback Local (`fixdesk.auth_policy`):**
+  - Configurada via `AUTHENTICATION_MODE` (`ldap`, `ldap_or_local_superuser`, `django_superuser` — padrão: `ldap`) e `ALLOW_LOCAL_SUPERUSER_LOGIN` (booleano — padrão: `false`).
+  - Em modo `ldap_or_local_superuser`, permite fallback de autenticação local exclusivamente para instâncias de `User` ativas com `is_superuser=True`. Usuários comuns (`is_superuser=False`), inativos ou anônimos são sempre rejeitados para autenticação local.
 - **Módulo Central de Permissões (`fixdesk.permissions`):**
   - `get_user_allowed_areas(user)`: Retorna as áreas autorizadas (`["TI"]`, `["Fiscal"]`, `["TI", "Fiscal"]` ou `[]`).
   - `is_technician(user)`: Retorna `True` se o usuário é técnico em pelo menos uma área.
@@ -86,12 +89,15 @@ backend/
 │   └── README.md              #   Documentação técnica detalhada do módulo
 ├── files/                     # Assets estáticos do sistema (logos, imagens)
 ├── fixdesk/                   # App Django — Core / Configuração
+│   ├── auth_policy.py         #   Política de autenticação e fallback de superusuário
 │   ├── settings.py
 │   ├── urls.py
 │   ├── views.py
 │   ├── wsgi.py
 │   ├── middleware_expire.py
-│   └── middleware_permition.py
+│   ├── middleware_permition.py
+│   └── tests/
+│       └── test_auth_policy.py #  Testes da política de autenticação
 ├── helpdesk/                  # App Django — Gestão de chamados
 │   ├── apps.py
 │   ├── models.py
@@ -137,6 +143,8 @@ backend/
 | DJANGO_GROUP_USER | Nome do grupo Django para usuários | `Helpdesk_User` |
 | DJANGO_GROUP_TECH | Nome do grupo Django para técnicos TI | `Helpdesk_Technician_TI` |
 | DJANGO_GROUP_TECH_FISCAL | Nome do grupo Django para técnicos Fiscal | `Helpdesk_Technician_Fiscal` |
+| AUTHENTICATION_MODE | Modo de autenticação (`ldap`, `ldap_or_local_superuser`, `django_superuser`) | `ldap` |
+| ALLOW_LOCAL_SUPERUSER_LOGIN | Habilita fallback de login local exclusivo para superusuários Django (`true` / `false`) | `false` |
 | VALID_TYPES | Lista de MIME types permitidos para upload de arquivos | `[image/png, image/jpeg, ...]` |
 | SERVER_SMTP | Host do servidor SMTP | `lupatech-com-br.mail.protection.outlook.com` |
 | SMPT_PORT | Porta do servidor SMTP | `25` |
@@ -216,7 +224,7 @@ python manage.py pool_monitor --db default
 - `python manage.py create_fiscal_group` — Cria o grupo Django `Helpdesk_Technician_Fiscal` de forma idempotente via CLI.
 - `python manage.py collectstatic` — Coleta arquivos estáticos para servir em produção.
 - `python manage.py pool_monitor` — Monitora o status do pool de conexões via CLI.
-- `PYTHONPATH=. pytest` — Roda a suíte de testes via Pytest (incluindo `services/tests/`, `helpdesk/tests/test_first_view_authentication.py` e `helpdesk/tests/test_change_last_viewer.py`). O `ThreadManager` é automaticamente desabilitado durante os testes via detecção no `ServicesConfig.ready()`.
+- `PYTHONPATH=. pytest` — Roda a suíte de testes via Pytest (incluindo `fixdesk/tests/test_auth_policy.py`, `services/tests/`, `helpdesk/tests/test_first_view_authentication.py` e `helpdesk/tests/test_change_last_viewer.py`). O `ThreadManager` é automaticamente desabilitado durante os testes via detecção no `ServicesConfig.ready()`.
 - `PYTHONPATH=. pytest --cov` — Roda os testes com relatório de cobertura.
 - Verificação de tipos estáticos compatível com Pylance/Pyright (modo `strict`) e validação via Pyrefly Specialist Agent para garantir anotações de tipos estritos em todo o código backend Python.
 

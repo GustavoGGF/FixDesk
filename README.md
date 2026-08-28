@@ -12,7 +12,7 @@
 
 ### Backend (Django)
 
-- **fixdesk (core):** Módulo raiz — `settings.py`, roteamento principal, autenticação LDAP (`validation`), controle centralizado de permissões multi-área (`fixdesk.permissions`), renovação dinâmica de sessão/cookies (`SessionExtensionMiddleware`), middlewares customizados (`CustomCsrfMiddleware`, `CsrfRedirectMiddleware`) e WSGI entrypoint.
+- **fixdesk (core):** Módulo raiz — `settings.py`, roteamento principal, autenticação LDAP (`validation`), política de autenticação e fallback configurável para superusuários locais (`auth_policy.py`), controle centralizado de permissões multi-área (`fixdesk.permissions`), renovação dinâmica de sessão/cookies (`SessionExtensionMiddleware`), middlewares customizados (`CustomCsrfMiddleware`, `CsrfRedirectMiddleware`) e WSGI entrypoint.
 - **helpdesk:** Ciclo de vida dos chamados (`SupportTicket`), upload/download de arquivos (`TicketFile`), histórico, chat entre usuário e técnico, alocação de equipamentos e geração de PDF. As áreas responsáveis são catalogadas pela entidade `Area` (`TI` e `Fiscal` inicialmente), relacionada a `SupportTicket.respective_area` por ForeignKey protegida. A abertura aceita apenas áreas ativas, listadas por `GET /helpdesk/active-areas/`, além do endpoint seguro de filtragem por query params (`GET /helpdesk/tickets/`). Integra envio de e-mails transacionais via SMTP.
 - **dashboards:** Painéis analíticos para técnicos autorizados (`TI` e `Fiscal`) — gráficos de pizza (por setor/área), histogramas (por intervalo de dias), listagem de tickets com filtros avançados por área autorizada, upload de arquivos e gerenciamento de usuários.
 - **database_pool:** Gerenciamento de pool de conexões com o banco de dados MySQL. Implementa pooling via `DBUtils.PersistentDB` com Singleton thread-safe (`PoolManager`), health check periódico (`DatabaseHealthCheck`), middleware de monitoramento de queries (`DatabasePoolMonitoringMiddleware`) e endpoints REST para status, saúde e reset do pool. Configurável via variáveis de ambiente (`DB_POOL_*`).
@@ -53,6 +53,9 @@ FixDesk/
 │   ├── database_pool/         # App Django — Pool de conexões e monitoramento
 │   ├── files/                 # Assets estáticos (logos, imagens)
 │   ├── fixdesk/               # App Django — Core / Configuração
+│   │   ├── auth_policy.py     # Política de autenticação e fallback de superusuário
+│   │   ├── settings.py
+│   │   └── tests/             # Testes da política de autenticação
 │   ├── helpdesk/              # App Django — Gestão de chamados
 │   ├── services/              # App Django — Serviços e camada de negócio
 │   │   ├── database_utils.py
@@ -103,6 +106,10 @@ O sistema utiliza a biblioteca `ldap3` para validar credenciais no Active Direct
   - `Helpdesk_Technician_Fiscal`: Perfil técnico para atendimento de chamados e visualização do dashboard da área Fiscal.
   - `Helpdesk_Leader_TI`: Perfil de gestão da equipe de TI.
 
+- **Política de Autenticação e Fallback Local:**
+  - Controlada por `AUTHENTICATION_MODE` (`ldap`, `ldap_or_local_superuser`, `django_superuser` — padrão: `ldap`) e `ALLOW_LOCAL_SUPERUSER_LOGIN` (booleano — padrão: `false`).
+  - Em modo `ldap_or_local_superuser`, permite fallback local estritamente para contas ativas com `is_superuser=True`.
+
 - **Acesso Técnico Multi-Grupo (Multi-Area Technical Access):**
   - O provisionamento mapeia os grupos corporativos LDAP para os grupos correspondentes no Django.
   - Um técnico pode pertencer simultaneamente aos grupos `Helpdesk_Technician_TI` e `Helpdesk_Technician_Fiscal` (atribuição multi-grupo), permitindo visualizar, gerenciar e atender chamados de ambas as áreas (`TI` e `Fiscal`).
@@ -133,6 +140,8 @@ As variáveis de ambiente são configuradas no arquivo `backend/.env`. O fronten
 | DJANGO_GROUP_USER | Nome do grupo Django para usuários | `Helpdesk_User` |
 | DJANGO_GROUP_TECH | Nome do grupo Django para técnicos TI | `Helpdesk_Technician_TI` |
 | DJANGO_GROUP_TECH_FISCAL | Nome do grupo Django para técnicos Fiscal | `Helpdesk_Technician_Fiscal` |
+| AUTHENTICATION_MODE | Modo de autenticação (`ldap`, `ldap_or_local_superuser`, `django_superuser`) | `ldap` |
+| ALLOW_LOCAL_SUPERUSER_LOGIN | Habilita fallback de login local exclusivo para superusuários Django (`true` / `false`) | `false` |
 | VALID_TYPES | Lista de MIME types permitidos para upload | `[image/png, image/jpeg, ...]` |
 | SERVER_SMTP | Host do servidor SMTP | `lupatech-com-br.mail.protection.outlook.com` |
 | SMPT_PORT | Porta do servidor SMTP | `25` |

@@ -1,8 +1,9 @@
 # Especificação de Domínio (DDD) - FixDesk
 
 ## 0. Metadados e Changelog
-* **Última atualização:** 2026-08-13
+* **Última atualização:** 2026-08-28
 * **Histórico:**
+    * 2026-08-28 — Lançamento da versão v5.1.0 (MINOR): implementação da política de autenticação e fallback configurável para superusuários locais (`auth_policy.py`, `AUTHENTICATION_MODE`, `ALLOW_LOCAL_SUPERUSER_LOGIN`), unificação do build do frontend na imagem Docker do backend, execução automática de migrações no Compose e melhoria no fluxo de submissão do login.
     * 2026-08-13 — Lançamento da versão v5.0.3 (PATCH): inclusão de template baseline de fallback (`templates/index.html`), adequação do carregamento de templates em `settings.py` para ambientes headless/CI e alinhamento das variáveis de ambiente LDAP nos fluxos de integração contínua.
     * 2026-08-13 — Lançamento da versão v5.0.2: restrição estrita da listagem no histórico de chamados aos registros de autoria do próprio solicitante autenticado (`PID` ou `ticketRequester`).
     * 2026-08-13 — Lançamento da versão v5.0.1: autenticação e controle de acesso via `first_view`, desacoplamento de handlers e resiliência em hooks de histórico e dashboard.
@@ -126,6 +127,13 @@
     * `connect_ldap` — estabelece conexão LDAP, executa busca por `sAMAccountName` e retorna atributos.
     * `create_class_user` — constrói `UserHelpDesk` a partir dos atributos LDAP, determinando o perfil de acesso pelo parsing de todos os grupos em `memberOf` (incluindo `TECH_TECH_FISCAL`).
     * `create_or_verify_user` — cria ou atualiza User Django e seus grupos conforme o perfil LDAP de forma idempotente, preservando atribuições multi-grupo.
+    * `auth_policy` (`get_authentication_mode`, `is_local_superuser_login_allowed`, `should_try_ldap`, `should_try_local_fallback`, `is_user_eligible_for_local_auth`) — serviço de regras e políticas de autenticação que controla os modos `ldap`, `ldap_or_local_superuser` e `django_superuser`, garantindo que o fallback local seja restrito estritamente a superusuários Django ativos (`is_superuser=True`).
+* **Política de Autenticação e Contingência:**
+    * **Modos de Autenticação:**
+        * `ldap` (padrão): autenticação estrita corporativa via Active Directory/LDAP.
+        * `ldap_or_local_superuser`: tenta autenticação LDAP primária e, em caso de falha/indisponibilidade, permite autenticação local exclusivamente para superusuários Django cadastrados e ativos quando `ALLOW_LOCAL_SUPERUSER_LOGIN=true`.
+        * `django_superuser`: contingência/desenvolvimento onde apenas superusuários Django realizam login localmente.
+    * **Elegibilidade Estrita de Superusuário:** Usuários comuns (`is_superuser=False`), inativos ou anônimos são sempre rejeitados no fallback local, preservando o LDAP corporativo como única fonte de autoridade para colaboradores.
 * **Matriz de Acesso e Suporte Multi-Grupo:**
     * Atribuição M:N de grupos permite que um técnico seja associado a `Helpdesk_Technician_TI` e `Helpdesk_Technician_Fiscal` simultaneamente.
     * O módulo centralizado `fixdesk.permissions` calcula as áreas permitidas via `get_user_allowed_areas(user)`.

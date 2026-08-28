@@ -4,7 +4,7 @@
 
 ## 1. Visão Geral e Arquitetura
 
-- **Stack Tecnológica:** React 18, React Router DOM 6, Material UI 7, Chart.js 4, TailwindCSS 3 (prefixado com `tw-`), Styled Components 5, Emotion, Axios, YAML, Biome (linter/formatter) — v5.0.3
+- **Stack Tecnológica:** React 18, React Router DOM 6, Material UI 7, Chart.js 4, TailwindCSS 3 (prefixado com `tw-`), Styled Components 5, Emotion, Axios, YAML, Biome (linter/formatter) — v5.1.0
 - **Padrão Arquitetural:** Component-Based Architecture com separação por domínio de feature — pages, components e contexts isolados por responsabilidade
 - **Design Patterns Principais:** Context API (compartilhamento de estado global por escopo de rota), Provider Composition (layouts específicos por rota), Compound Components (janelas de ticket com subcomponentes de chat, filtro e upload)
 
