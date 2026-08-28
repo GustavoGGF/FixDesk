@@ -109,6 +109,10 @@ O sistema utiliza a biblioteca `ldap3` para validar credenciais no Active Direct
 - **Política de Autenticação e Fallback Local:**
   - Controlada por `AUTHENTICATION_MODE` (`ldap`, `ldap_or_local_superuser`, `django_superuser` — padrão: `ldap`) e `ALLOW_LOCAL_SUPERUSER_LOGIN` (booleano — padrão: `false`).
   - Em modo `ldap_or_local_superuser`, permite fallback local estritamente para contas ativas com `is_superuser=True`.
+  - O fallback local utiliza o backend de autenticação do Django, cria a sessão normalmente e retorna os grupos Django associados à conta. A resposta identifica o usuário com a role `Local Superuser`.
+
+- **Provisionamento do grupo padrão:**
+  - Após `migrate`, o app `helpdesk` garante que o grupo configurado em `DJANGO_GROUP_USER` exista; se a variável estiver ausente ou vazia, utiliza `Helpdesk_User`.
 
 - **Acesso Técnico Multi-Grupo (Multi-Area Technical Access):**
   - O provisionamento mapeia os grupos corporativos LDAP para os grupos correspondentes no Django.
@@ -142,6 +146,7 @@ As variáveis de ambiente são configuradas no arquivo `backend/.env`. O fronten
 | DJANGO_GROUP_TECH_FISCAL | Nome do grupo Django para técnicos Fiscal | `Helpdesk_Technician_Fiscal` |
 | AUTHENTICATION_MODE | Modo de autenticação (`ldap`, `ldap_or_local_superuser`, `django_superuser`) | `ldap` |
 | ALLOW_LOCAL_SUPERUSER_LOGIN | Habilita fallback de login local exclusivo para superusuários Django (`true` / `false`) | `false` |
+| SECURE_SSL_REDIRECT | Redireciona requisições HTTP para HTTPS em produção (`true` / `false`) | `true` no Compose |
 | VALID_TYPES | Lista de MIME types permitidos para upload | `[image/png, image/jpeg, ...]` |
 | SERVER_SMTP | Host do servidor SMTP | `lupatech-com-br.mail.protection.outlook.com` |
 | SMPT_PORT | Porta do servidor SMTP | `25` |
@@ -165,6 +170,29 @@ As variáveis de ambiente são configuradas no arquivo `backend/.env`. O fronten
 | DB_POOL_HEALTH_CHECK_INTERVAL | Intervalo (s) de verificação de saúde do pool | `300` |
 
 > Consulte o arquivo `backend/.env.pool.example` para recomendações de valores por ambiente (dev, staging, produção, alta concorrência).
+
+Em produção, mantenha `SECURE_SSL_REDIRECT=true`. O proxy reverso deve preservar
+`X-Forwarded-Proto: https`; o backend está configurado para reconhecer esse
+cabeçalho. `SESSION_COOKIE_SECURE` e `CSRF_COOKIE_SECURE` permanecem sempre
+habilitados, e `ALLOW_LOCAL_SUPERUSER_LOGIN` permanece desabilitado por padrão.
+
+No Docker Compose, as credenciais e configurações mínimas são definidas em
+`arquitetura/.env`:
+
+| Variável | Descrição | Exemplo |
+|---|---|---|
+| MYSQL_ROOT_PASSWORD | Senha do usuário root do MySQL | `uma_senha_segura` |
+| MYSQL_DATABASE | Banco criado pelo MySQL | `fixdesk_database` |
+| MYSQL_USER | Usuário da aplicação no MySQL | `fixdesk` |
+| MYSQL_PASSWORD | Senha do usuário da aplicação | `uma_senha_da_aplicacao` |
+| SECRET_KEY | Chave secreta do Django | `uma-chave-secreta-do-django` |
+| DEBUG | Habilita debug no backend | `false` |
+| AUTHENTICATION_MODE | Modo de autenticação usado pelo Compose | `ldap` |
+| ALLOW_LOCAL_SUPERUSER_LOGIN | Habilita fallback local para superusuário | `false` |
+| SECURE_SSL_REDIRECT | Redireciona HTTP para HTTPS | `true` |
+
+`MYSQL_DATABASE` e `MYSQL_USER` possuem valores padrão no Compose; as demais
+variáveis mínimas sem valor padrão devem ser preenchidas antes da inicialização.
 
 ## 6. Setup e Execução
 
@@ -311,7 +339,7 @@ O frontend consome a API do backend Django via rotas relativas. A camada HTTP ut
 |---|---|---|
 | GET | `/` | Página de login (SPA React) |
 | GET | `/login/` | Alias da página de login |
-| POST | `/validation/` | Autenticação LDAP — retorna dados do usuário e permissões em JSON |
+| POST | `/validation/` | Autenticação conforme `AUTHENTICATION_MODE`; pode usar LDAP ou fallback local exclusivo para superusuários Django e retorna dados do usuário e permissões em JSON |
 | GET | `/admin/` | Painel administrativo Django |
 
 ### Rotas — helpdesk
@@ -369,6 +397,12 @@ O frontend consome a API do backend Django via rotas relativas. A camada HTTP ut
 - **Problema:** Erro `ldap3.core.exceptions.LDAPBindError` ao tentar login.
   **Solução:** Verifique se o servidor LDAP (`SERVER1`) está acessível na rede e se as credenciais do domínio (`DOMAIN_NAME_HELPDESK`) estão corretas no `.env`.
 
+- **Problema:** O superusuário local não consegue entrar quando o LDAP está indisponível.
+  **Solução:** Use `AUTHENTICATION_MODE=ldap_or_local_superuser` e `ALLOW_LOCAL_SUPERUSER_LOGIN=true`. A conta precisa estar ativa e possuir `is_superuser=True`; o fallback nunca habilita login local para usuários comuns.
+
+- **Problema:** O grupo `Helpdesk_User` não aparece após configurar o ambiente.
+  **Solução:** Execute `python manage.py migrate` ou reinicie o container para disparar o provisionamento automático do grupo configurado em `DJANGO_GROUP_USER`.
+
 - **Problema:** `mysqlclient` falha ao instalar no Linux.
   **Solução:** Instale as dependências de sistema: `sudo apt install python3-dev default-libmysqlclient-dev build-essential`.
 
@@ -377,6 +411,9 @@ O frontend consome a API do backend Django via rotas relativas. A camada HTTP ut
 
 - **Problema:** Erro 403 CSRF ao submeter formulários.
   **Solução:** Verifique se a origem está listada em `CSRF_TRUSTED_ORIGINS` no `settings.py`. Os middlewares customizados redirecionam para `/login` em caso de falha CSRF.
+
+- **Problema:** O Compose redireciona requisições HTTP para HTTPS durante o desenvolvimento local.
+  **Solução:** Defina `SECURE_SSL_REDIRECT=false` em `arquitetura/.env` quando não houver TLS local. Em produção, mantenha `true` e configure o proxy reverso para enviar `X-Forwarded-Proto: https`.
 
 - **Problema:** Arquivos estáticos do frontend não são servidos em produção.
   **Solução:** Recompile a imagem com `docker compose build --no-cache backend`; o Dockerfile compila o React, copia o resultado para `backend/build/` e executa `collectstatic`.
