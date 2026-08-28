@@ -117,67 +117,67 @@ export default function Login() {
 			)
 			.then((response) => {
 				const data = response.data;
-				if (data) {
-					// Salva informações do usuário logado na sessão local
-					localStorage.setItem("dataInfo", JSON.stringify(data));
-					const clientData = data.data || data;
-					const roles = clientData.roles || [];
-					const groups = clientData.groups || [];
-
-					// Armazena roles e grupos no localStorage e sessionStorage
-					localStorage.setItem("roles", JSON.stringify(roles));
-					localStorage.setItem("groups", JSON.stringify(groups));
-					sessionStorage.setItem("roles", JSON.stringify(roles));
-					sessionStorage.setItem("groups", JSON.stringify(groups));
-
-					// Todos os usuários (técnicos e comuns) são direcionados para "/helpdesk" por padrão após a autenticação
-					const defaultRoute = "/helpdesk";
-
-					const urlParams = new URLSearchParams(window.location.search);
-					const nextPath = urlParams.get("next");
-
-					// Whitelist de rotas permitidas para mitigar falhas de Open Redirect
-					const allowedRoutes = [
-						"/helpdesk",
-						"/helpdesk/history",
-						"/dashboard",
-						"/dashboard/ti",
-						"/dashboard/fiscal",
-						"/dashboard-ti",
-						"/login",
-						"/",
-					];
-
-					const isLoginOrRoot =
-						!nextPath || nextPath === "/" || nextPath === "/login";
-
-					// Valida e redireciona de forma segura para o destino correto
-					if (
-						!isLoginOrRoot &&
-						nextPath?.startsWith("/") &&
-						!nextPath?.startsWith("//") &&
-						allowedRoutes.includes(nextPath)
-					) {
-						window.location.href = nextPath;
-						return;
-					}
-					// Redireciona todos os usuários para /helpdesk
-					window.location.href = defaultRoute;
+				if (!data || typeof data !== "object") {
+					InvalidCredentials();
 					return;
 				}
+
+				// Salva informações do usuário logado na sessão local
+				localStorage.setItem("dataInfo", JSON.stringify(data));
+				const clientData = data.data || data;
+				const roles = clientData.roles || [];
+				const groups = clientData.groups || [];
+
+				// Armazena roles e grupos no localStorage e sessionStorage
+				localStorage.setItem("roles", JSON.stringify(roles));
+				localStorage.setItem("groups", JSON.stringify(groups));
+				sessionStorage.setItem("roles", JSON.stringify(roles));
+				sessionStorage.setItem("groups", JSON.stringify(groups));
+
+				// Todos os usuários (técnicos e comuns) são direcionados para "/helpdesk" por padrão após a autenticação
+				const defaultRoute = "/helpdesk";
+
+				const urlParams = new URLSearchParams(window.location.search);
+				const nextPath = urlParams.get("next");
+
+				// Whitelist de rotas permitidas para mitigar falhas de Open Redirect
+				const allowedRoutes = [
+					"/helpdesk",
+					"/helpdesk/history",
+					"/dashboard",
+					"/dashboard/ti",
+					"/dashboard/fiscal",
+					"/dashboard-ti",
+					"/login",
+					"/",
+				];
+
+				const isLoginOrRoot =
+					!nextPath || nextPath === "/" || nextPath === "/login";
+
+				// Valida e redireciona de forma segura para o destino correto
+				if (
+					!isLoginOrRoot &&
+					nextPath?.startsWith("/") &&
+					!nextPath?.startsWith("//") &&
+					allowedRoutes.includes(nextPath)
+				) {
+					window.location.href = nextPath;
+					return;
+				}
+				// Redireciona todos os usuários para /helpdesk
+				window.location.href = defaultRoute;
 			})
 			.catch((err) => {
 				// Mapeamento preliminar de erros HTTP conhecidos do backend via Axios
-				if (err.response) {
-					if (err.response.status === 401) {
-						InvalidCredentials();
-						return;
-					}
-					if (err.response.status === 425) {
-						AccessRestricted();
-						return;
-					}
+				if (err.response?.status === 425) {
+					AccessRestricted();
+					return;
 				}
+
+				// Falhas desconhecidas também precisam encerrar o loading sem
+				// revelar se o usuário existe ou qual credencial falhou.
+				InvalidCredentials();
 			});
 	}
 
