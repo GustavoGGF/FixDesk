@@ -22,7 +22,7 @@ class FirstViewAuthenticationTests(TestCase):
         Expect: HTTP 200 with the SPA entrypoint.
         """
         user = User.objects.create_user(username="helpdesk-user", password="secret")
-        group = Group.objects.create(name="Helpdesk_User")
+        group, _ = Group.objects.get_or_create(name="Helpdesk_User")
         user.groups.add(group)
         self.client.force_login(user)
 

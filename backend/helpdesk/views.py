@@ -87,7 +87,7 @@ load_dotenv()
 smtp_host = str(getenv("SERVER_SMTP"))
 smtp_port = int(getenv("SMPT_PORT", "587"))
 mail_address = str(getenv("MAIL_FIXDESK"))
-user_group = getenv("DJANGO_GROUP_USER")
+user_group = getenv("DJANGO_GROUP_USER", "Helpdesk_User") or "Helpdesk_User"
 group_tech = getenv("DJANGO_GROUP_TECH")
 types_str = getenv("VALID_TYPES")
 mail_password = getenv("MAIL_PWD")
