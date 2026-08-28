@@ -35,7 +35,7 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 # Lista de hosts/domínios permitidos para servir a aplicação.
 # Em produção, especifique apenas os domínios válidos para evitar
 # ataques de Host Header Injection.
-ALLOWED_HOSTS = ["localhost", "localhost:8080", "sappp01.lupatech.com.br", "sappp01", "10.1.1.73", "www.sappp01.lupatech.com.br", "10.244.0.133"]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "localhost:8080", "sappp01.lupatech.com.br", "sappp01", "10.1.1.73", "www.sappp01.lupatech.com.br", "10.244.0.133"]
 
 # Lista de origens confiáveis para proteção CSRF (Cross-Site Request Forgery).
 # Define quais domínios podem enviar requisições POST seguras para a aplicação.
