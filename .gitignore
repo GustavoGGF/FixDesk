@@ -88,3 +88,9 @@ yarn-error.log*
 
 # Added by ggshield
 .cache_ggshield
+
+.agents
+
+PLANO-AUTENTICACAO-SUPERUSER-TDD.*
+
+*learnings*
