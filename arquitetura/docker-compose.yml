@@ -53,6 +53,9 @@ services:
       DB_POOL_HEALTH_CHECK_INTERVAL: "300"
       SECRET_KEY: ${SECRET_KEY:?Defina SECRET_KEY no ambiente ou em um arquivo .env}
       DEBUG: ${DEBUG:-false}
+      AUTHENTICATION_MODE: ${AUTHENTICATION_MODE:-ldap}
+      ALLOW_LOCAL_SUPERUSER_LOGIN: ${ALLOW_LOCAL_SUPERUSER_LOGIN:-false}
+      SECURE_SSL_REDIRECT: ${SECURE_SSL_REDIRECT:-true}
     command:
       - /bin/sh
       - -c

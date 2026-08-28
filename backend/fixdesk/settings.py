@@ -219,6 +219,19 @@ CSRF_COOKIE_SECURE = True
 # Isso garante que o cookie de sessão só seja enviado em conexões HTTPS, prevenindo interceptação em conexões inseguras.
 SESSION_COOKIE_SECURE = True
 
+# Em produção, o Compose habilita este redirecionamento explicitamente. Mantê-lo
+# configurável permite executar o servidor de desenvolvimento sem TLS local.
+SECURE_SSL_REDIRECT = getenv("SECURE_SSL_REDIRECT", "false").lower() in (
+    "true",
+    "1",
+    "t",
+    "yes",
+)
+
+# O proxy reverso deve remover/substituir este cabeçalho antes de encaminhá-lo
+# ao Django. Assim request.is_secure() continua correto atrás do HTTPS.
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
 # Define o mecanismo de armazenamento de sessões.
 # "django.contrib.sessions.backends.db" armazena as sessões no banco de dados,
 # o que é seguro e escalável, mas pode exigir manutenção periódica para limpar sessões expiradas.
