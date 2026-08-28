@@ -1,7 +1,9 @@
 from os import getenv
 from typing import Final
 from django.conf import settings
+from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
+from django.http import HttpRequest
 
 AUTH_MODE_LDAP: Final[str] = "ldap"
 AUTH_MODE_LDAP_OR_LOCAL_SUPERUSER: Final[str] = "ldap_or_local_superuser"
@@ -135,3 +137,20 @@ def is_user_eligible_for_local_auth(user: object) -> bool:
         return False
 
     return True
+
+
+def authenticate_local_superuser(
+    request: HttpRequest | None,
+    username: str,
+    password: str,
+) -> User | None:
+    authenticated_user = authenticate(
+        request,
+        username=username,
+        password=password,
+    )
+
+    if not is_user_eligible_for_local_auth(authenticated_user):
+        return None
+
+    return authenticated_user

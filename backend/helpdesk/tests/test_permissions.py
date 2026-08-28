@@ -107,6 +107,10 @@ class PermissionsTests(TestCase):
         self.assertTrue(user_can_access_ticket(self.tech_dual_user, self.ticket_ti))
         self.assertTrue(user_can_access_ticket(self.tech_dual_user, self.ticket_fiscal))
 
+        # Superusuário local acessa chamados de qualquer área.
+        self.assertTrue(user_can_access_ticket(self.superuser, self.ticket_ti))
+        self.assertTrue(user_can_access_ticket(self.superuser, self.ticket_fiscal))
+
     def test_user_can_manage_ticket(self):
         # Requester comum não pode gerenciar tecnicamente
         self.assertFalse(user_can_manage_ticket(self.std_user, self.ticket_ti))
@@ -123,3 +127,7 @@ class PermissionsTests(TestCase):
         # Dual tech gerencia ambos
         self.assertTrue(user_can_manage_ticket(self.tech_dual_user, self.ticket_ti))
         self.assertTrue(user_can_manage_ticket(self.tech_dual_user, self.ticket_fiscal))
+
+        # Superusuário local pode gerenciar chamados de qualquer área.
+        self.assertTrue(user_can_manage_ticket(self.superuser, self.ticket_ti))
+        self.assertTrue(user_can_manage_ticket(self.superuser, self.ticket_fiscal))

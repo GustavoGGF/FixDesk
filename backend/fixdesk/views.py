@@ -16,11 +16,17 @@ from rest_framework.request import Request
 from classes.exceptions.auth_exeption import AuthenticationError, LDAPServerError
 from classes.exceptions.create_class_exeption import CreateClassError
 from classes.users.helpdesk import UserHelpDesk
-from typing import Any
+from typing import Any, Final, TypedDict
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from drf_spectacular.utils import extend_schema
 from .serializers import UserLoginRequestSerializer, UserLoginResponseSerializer, LoginErrorResponseSerializer
+from .auth_policy import (
+    authenticate_local_superuser,
+    get_authentication_mode,
+    should_try_ldap,
+    should_try_local_fallback,
+)
 
 load_dotenv()
 dominio = getenv("DOMAIN_NAME_HELPDESK")
@@ -37,6 +43,65 @@ django_group_leader = getenv("DJANGO_GROUP_LEADER", "Helpdesk_Leader_TI")
 
 basicConfig(level=INFO)
 logger = getLogger(__name__)
+
+LOCAL_SUPERUSER_ROLE: Final[str] = "Local Superuser"
+
+
+class FrontendUserData(TypedDict):
+    name: str
+    departament: str
+    job_title: str
+    mail: str
+    company: str
+    helpdesk: str
+    roles: list[str]
+    groups: list[str]
+
+
+def build_local_superuser_data(user: User) -> FrontendUserData:
+    name_parts: list[str] = [
+        value.strip()
+        for value in (user.first_name, user.last_name)
+        if isinstance(value, str) and value.strip()
+    ]
+    groups: list[str] = sorted(
+        str(group_name)
+        for group_name in user.groups.values_list("name", flat=True)
+        if group_name
+    )
+
+    return {
+        "name": " ".join(name_parts),
+        "departament": "",
+        "job_title": "",
+        "mail": user.email or "",
+        "company": "",
+        "helpdesk": "",
+        "roles": [LOCAL_SUPERUSER_ROLE],
+        "groups": groups,
+    }
+
+
+def login_local_superuser(request: Request, user: User) -> None:
+    http_request = request._request if hasattr(request, "_request") else request
+    login(http_request, user)
+
+
+def _local_superuser_response(request: Request, username: str, password: str) -> JsonResponse | None:
+    if not should_try_local_fallback():
+        return JsonResponse({"status": "invalid access"}, status=401, safe=True)
+
+    http_request = request._request if hasattr(request, "_request") else request
+    authenticated_user = authenticate_local_superuser(http_request, username, password)
+    if authenticated_user is None:
+        return JsonResponse({"status": "invalid access"}, status=401, safe=True)
+
+    login_local_superuser(request, authenticated_user)
+    return JsonResponse(
+        {"data": build_local_superuser_data(authenticated_user)},
+        status=200,
+        safe=True,
+    )
 
 
 def sync_user_managed_groups(user: User, roles: list[str]) -> None:
@@ -195,16 +260,25 @@ def validation(request: Request):
     user = str(credentials.get("user", ""))
     password = str(credentials.get("password", ""))
 
-    try:
-        ldap_data = connect_ldap_with_failover(
-            user,
-            password,
-            primary_server=server,
-            failover_servers=get_ldap_failover_servers(),
-        )
-
-    except AuthenticationError as e:
-        logger.warning("Autenticação LDAP não concluída: %s", e)
+    authentication_mode = get_authentication_mode()
+    if should_try_ldap(authentication_mode):
+        try:
+            ldap_data = connect_ldap_with_failover(
+                user,
+                password,
+                primary_server=server,
+                failover_servers=get_ldap_failover_servers(),
+            )
+        except AuthenticationError as e:
+            logger.warning("Autenticação LDAP não concluída: %s", type(e).__name__)
+            local_response = _local_superuser_response(request, user, password)
+            if local_response is not None:
+                return local_response
+            return JsonResponse({"status": "invalid access"}, status=401, safe=True)
+    else:
+        local_response = _local_superuser_response(request, user, password)
+        if local_response is not None:
+            return local_response
         return JsonResponse({"status": "invalid access"}, status=401, safe=True)
 
     # Extração dos dados do usuário autenticado no LDAP
