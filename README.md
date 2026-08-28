@@ -133,6 +133,8 @@ O sistema utiliza a biblioteca `ldap3` para validar credenciais no Active Direct
 
 As variáveis de ambiente são configuradas no arquivo `backend/.env`. O frontend não utiliza variáveis de processo — as requisições são feitas por rotas relativas resolvidas pelo Nginx.
 
+O Django aceita requisições locais pelos hosts `localhost` e `127.0.0.1` (incluindo o acesso ao servidor de desenvolvimento em `127.0.0.1:8000`). Em produção, os hosts permitidos permanecem definidos explicitamente em `backend/fixdesk/settings.py`.
+
 | Variável | Descrição | Exemplo |
 |---|---|---|
 | SERVER1 | IP do servidor LDAP/Active Directory | `10.1.1.18` |
@@ -411,6 +413,9 @@ O frontend consome a API do backend Django via rotas relativas. A camada HTTP ut
 
 - **Problema:** Erro 403 CSRF ao submeter formulários.
   **Solução:** Verifique se a origem está listada em `CSRF_TRUSTED_ORIGINS` no `settings.py`. Os middlewares customizados redirecionam para `/login` em caso de falha CSRF.
+
+- **Problema:** Erro `DisallowedHost` ao acessar o backend local por `127.0.0.1`.
+  **Solução:** Use a configuração atual de `backend/fixdesk/settings.py`, que inclui `127.0.0.1` em `ALLOWED_HOSTS`, e reinicie o servidor Django após atualizar o código.
 
 - **Problema:** O Compose redireciona requisições HTTP para HTTPS durante o desenvolvimento local.
   **Solução:** Defina `SECURE_SSL_REDIRECT=false` em `arquitetura/.env` quando não houver TLS local. Em produção, mantenha `true` e configure o proxy reverso para enviar `X-Forwarded-Proto: https`.

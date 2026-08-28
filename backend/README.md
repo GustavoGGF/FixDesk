@@ -132,6 +132,8 @@ backend/
 
 ## 5. Configuração de Variáveis de Ambiente (.env)
 
+Além das variáveis abaixo, o backend aceita localmente os hosts `localhost` e `127.0.0.1`. A lista completa de hosts permitidos é mantida explicitamente em `fixdesk/settings.py`; em produção, altere essa lista apenas para incluir domínios e endereços realmente utilizados.
+
 | Variável | Descrição | Exemplo |
 |---|---|---|
 | SERVER1 | IP do servidor LDAP/Active Directory | `10.1.1.18` |
@@ -323,6 +325,9 @@ O arquivo `arquitetura/.env` não deve ser versionado, pois contém credenciais.
 
 - **Problema:** Erro 403 CSRF ao submeter formulários.
   **Solução:** Verifique se a origem está listada em `CSRF_TRUSTED_ORIGINS` no `settings.py`. Os middlewares `CustomCsrfMiddleware` e `CsrfRedirectMiddleware` redirecionam automaticamente para `/login` em caso de falha CSRF.
+
+- **Problema:** Erro `DisallowedHost` ao acessar o backend local por `127.0.0.1`.
+  **Solução:** Confirme que `127.0.0.1` está incluído em `ALLOWED_HOSTS` no `fixdesk/settings.py` e reinicie o servidor Django.
 
 - **Problema:** Arquivos estáticos do frontend não são servidos em produção.
   **Solução:** Recompile a imagem do backend com `docker compose build --no-cache backend`. O Dockerfile compila o React, copia o resultado para `build/` e executa `collectstatic`.
