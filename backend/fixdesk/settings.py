@@ -171,6 +171,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Política de autenticação (LDAP padrão, fallback local para superusuários quando habilitado)
+AUTHENTICATION_MODE = getenv("AUTHENTICATION_MODE", "ldap")
+ALLOW_LOCAL_SUPERUSER_LOGIN = getenv("ALLOW_LOCAL_SUPERUSER_LOGIN", "false").lower() in ("true", "1", "t", "yes")
+
 # Define o código de idioma padrão do projeto.
 # "pt-br" configura o Django para usar português brasileiro como idioma padrão.
 LANGUAGE_CODE = "pt-br"
